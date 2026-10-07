@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/api-scaffold` — Phase 1.1 API scaffold
+- **Current branch:** none — PR #4 (API scaffold) waiting to be merged
 - **Next up:** Phase 1.2 (platform core: settings, roles, provinces, audit, integration interfaces)
 
 ## Legend
@@ -76,16 +76,16 @@ Cannot be defaulted:
 ## Phase 1 — Backend (API)
 
 ### 1.1 Scaffold & CI
-- [x] Laravel 13 API-only app in `api/` — PHP 8.3+ (CI 8.3 + 8.4), PostgreSQL, Valkey
-- [x] Local services via `compose.yaml`: Postgres (port 55432), Valkey, Meilisearch; separate `yekkola_test` DB
-- [x] Packages: Sanctum, Horizon, Scout + Meilisearch, query-builder, permission, medialibrary, settings, translatable, activitylog, backup, Scramble, php-jwt, libphonenumber (`muxinc/mux-php` dropped — needs Guzzle 7; Mux via HTTP client + JWT)
-- [x] Pest, PHPStan level 6 (Larastan), Pint (strict types) + `composer check`
-- [x] Base structure: `app/Domain/*` (User moved to `Identity`, ULID ids, phone-first users table), `routes/api_v1.php` under `/api/v1`, error envelope with stable codes, global `SetLocaleFromHeader`, `idempotent` middleware, CORS for the two front ends, stricter Eloquent outside production
-- [x] `Money` and `PhoneNumber` value objects + tests
-- [x] `lang/fr` + `lang/en` (laravel-lang + `errors.php`)
-- [x] Scramble OpenAPI export to `api/openapi.json` (CI fails if stale)
-- [x] GitHub Actions: `api.yml` (Pint, PHPStan, Pest, OpenAPI drift) with path filters
-- [x] CLAUDE.md "Commands" sections filled in
+- [x] Laravel 13 API-only app in `api/` — PHP 8.3+ (CI 8.3 + 8.4), PostgreSQL, Valkey — #4
+- [x] Local services via `compose.yaml`: Postgres (port 55432), Valkey, Meilisearch; separate `yekkola_test` DB — #4
+- [x] Packages: Sanctum, Horizon, Scout + Meilisearch, query-builder, permission, medialibrary, settings, translatable, activitylog, backup, Scramble, php-jwt, libphonenumber (`muxinc/mux-php` dropped — needs Guzzle 7; Mux via HTTP client + JWT) — #4
+- [x] Pest, PHPStan level 6 (Larastan), Pint (strict types) + `composer check` — #4
+- [x] Base structure: `app/Domain/*` (User moved to `Identity`, ULID ids, phone-first users table), `routes/api_v1.php` under `/api/v1`, error envelope with stable codes, global `SetLocaleFromHeader`, `idempotent` middleware, CORS for the two front ends, stricter Eloquent outside production — #4
+- [x] `Money` and `PhoneNumber` value objects + tests — #4
+- [x] `lang/fr` + `lang/en` (laravel-lang + `errors.php`) — #4
+- [x] Scramble OpenAPI export to `api/openapi.json` (CI fails if stale) — #4
+- [x] GitHub Actions: `api.yml` (Pint, PHPStan, Pest, OpenAPI drift) with path filters — #4
+- [x] CLAUDE.md "Commands" sections filled in — #4
 - [ ] Laravel Cloud `yekkola-api` app + staging deploy + queue workers **(needs: Laravel Cloud account)**
 - [ ] GitHub branch protection requiring CI — needs an always-running summary job first (path-filtered workflows don't report on docs-only PRs); do with `contract.yml` in 2.1
 
