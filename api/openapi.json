@@ -39,7 +39,7 @@
         "/me/export": {
             "post": {
                 "operationId": "me.export.store",
-                "summary": "Request a new export (built in the background)",
+                "summary": "Request a new export (built in the background). One per day",
                 "tags": [
                     "DataExport"
                 ],
@@ -61,9 +61,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -91,9 +88,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -101,7 +95,7 @@
         "/me/export/download": {
             "get": {
                 "operationId": "me.export.download",
-                "summary": "Download the latest ready export",
+                "summary": "Download the latest ready export: a short-lived signed link on object storage, streamed otherwise",
                 "tags": [
                     "DataExport"
                 ],
@@ -111,24 +105,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "headers": {
-                            "Transfer-Encoding": {
-                                "required": true,
-                                "schema": {
-                                    "type": "string",
-                                    "enum": [
-                                        "chunked"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -161,9 +141,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -188,9 +165,6 @@
                 "responses": {
                     "204": {
                         "description": "No content"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -215,7 +189,7 @@
         "/auth/otp/request": {
             "post": {
                 "operationId": "auth.otp.request",
-                "summary": "Send a sign-in code by SMS",
+                "summary": "Send a sign-in code by SMS. Always answers the same way, whether or not the number has an account",
                 "tags": [
                     "Otp"
                 ],
@@ -316,7 +290,7 @@
         "/me/phone/otp": {
             "post": {
                 "operationId": "me.phone.otp",
-                "summary": "Send a code to the new number",
+                "summary": "Send a code to the new number. Answers the same whether or not the number is free",
                 "tags": [
                     "Phone"
                 ],
@@ -365,9 +339,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
@@ -377,7 +348,7 @@
         "/me/phone": {
             "put": {
                 "operationId": "me.phone.update",
-                "summary": "Confirm the new number. Every other session and device is signed out",
+                "summary": "Confirm the new number. Every other session and device is signed out; the old number is notified",
                 "tags": [
                     "Phone"
                 ],
@@ -420,9 +391,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
@@ -464,9 +432,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -514,9 +479,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
@@ -556,9 +518,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -598,9 +557,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
