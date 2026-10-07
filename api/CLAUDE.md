@@ -58,6 +58,10 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | Retry-safe endpoint | middleware alias `idempotent` |
 | Platform settings | inject `App\Domain\Platform\Settings\*Settings` (Commerce, Payout, Protection, Catalog, Learning, Moderation). Add new keys with a settings migration in `database/settings/`. Changes are audited automatically. |
 | Audit an admin action | `App\Domain\Platform\Actions\RecordAudit::handle('thing.happened', $subject, ['reason' => ...])` |
+| Signed-in routes | the `signed-in` middleware group (= `auth:sanctum` + `active`) — never `auth:sanctum` alone. `active` (ends stale web sessions, refuses banned, limits suspended users to `me.show`/`auth.logout`) |
+| Client details for auth actions | `App\Http\Support\AuthContext::client($request)` / `signedInAt()` / `currentToken()` |
+| End all sessions/tokens | `App\Domain\Identity\Actions\SignOutEverywhere` (bumps `auth_epoch`, deletes tokens) |
+| Phone of a user | `$user->phone` (a `PhoneNumber`); `phone_e164` is only the column |
 | Roles / permissions | `App\Domain\Identity\Enums\{Role, Permission}` — policies check permissions, never role names. Re-run `RolesAndPermissionsSeeder` after changing the enums. |
 | Video/audio host | `App\Integrations\Video\VideoProvider` (fake driver now; Mux in 1.5) |
 | Mobile money | `App\Integrations\Payments\PaymentGateway` (fake driver until the aggregator is chosen) |
@@ -68,6 +72,8 @@ Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_
 **Payment rules:** look transactions up by **our** reference; a start that throws `GatewayOutcomeUnknown` stays pending and is reconciled, never retried under a new reference; `UnknownTransaction` means "keep pending", never "failed"; always compare the confirmed `amount` with what was requested; amounts must be multiples of `Currency::collectionStepMinor()` (CDF = whole francs).
 
 **FakeGateway outcomes** by the last 4 digits of the payer/recipient number (full list in `Scenario`): `0001` insufficient funds, `0002` pending forever, `0003` late success, `0004` reversal, `0005` fail then succeed, `0006` unavailable, `0007` timeout-but-succeeds, `0008` amount mismatch, `0009` rejected by payer, `0010` invalid recipient; anything else pending → succeeded on re-check. Tests can force outcomes with `queue(Scenario::...)` and outages with `makeUnavailable($rail)`; `webhookFor($reference)` builds a signed webhook.
+
+**Auth tests:** helpers in `tests/Pest.php` — `signInMobile()`, `signInWeb()`, `lastSmsCode($e164)`, `bearer($token)`, `WEB_APP` / `MOBILE_APP` headers (OTP requests need one or a `bot_token`), `freshAuth()` (call between requests: the test client reuses cached guards and models).
 
 **LogSmsSender:** numbers ending `0000` simulate a provider rejection. Logs mask the number.
 

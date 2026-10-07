@@ -53,14 +53,15 @@ final readonly class PhoneNumber implements JsonSerializable, Stringable
     /**
      * Masked form for watermarks, logs, and anything shown to other people,
      * e.g. "+243 8•• ••• 123". Keeps the country code, first digit, and last three digits.
+     * Use '*' in SMS: "•" is not in the GSM-7 alphabet (it would force 70-char UCS-2 messages).
      */
-    public function masked(): string
+    public function masked(string $maskChar = '•'): string
     {
         $util = PhoneNumberUtil::getInstance();
         $number = $util->parse($this->e164);
         $national = (string) $number->getNationalNumber();
 
-        $hidden = str_repeat('•', max(0, strlen($national) - 4));
+        $hidden = str_repeat($maskChar, max(0, strlen($national) - 4));
         $body = $national[0].$hidden.substr($national, -3);
         $groups = array_map(implode(...), array_chunk(mb_str_split($body), 3));
 

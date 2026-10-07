@@ -35,18 +35,18 @@ Students and professors sign in with their **phone number and a one-time SMS cod
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-01 | Phone input with DRC (+243) default, accepting other country codes; normalized to E.164. | Must |
+| FR-01 | Phone input with DRC (+243) default; normalized to E.164. Codes are only sent to allowed countries (*provisional: +243 only*, config `OTP_ALLOWED_COUNTRY_CODES`). | Must |
 | FR-02 | `Request OTP`: 6-digit code, 5-minute expiry, sent via `SmsSender`. Resend allowed after 60 s. | Must |
 | FR-03 | `Verify OTP`: max 5 attempts per challenge; success creates the user if new. | Must |
 | FR-04 | First sign-in collects name (required) and locale; email and province optional. | Must |
 | FR-05 | Web: Sanctum session cookie on the parent domain (shared by web app; admin uses its own session). | Must |
 | FR-06 | Mobile: token bound to a `Device` (install ID, platform, model, app version, push token). | Must |
 | FR-07 | Device list and removal; removal revokes that device's token and offline licenses (PRD-07). | Must |
-| FR-08 | Registering a device beyond the limit returns `device.limit_reached` with the current device list so the user can remove one. | Must |
-| FR-09 | Change phone: OTP to new number, then all other sessions/tokens revoked. | Must |
-| FR-10 | Rate limits: 3 OTP requests / 10 min per phone; 10 / hour per IP; bot challenge (Turnstile) on web OTP request. | Must |
+| FR-08 | Registering a device beyond the limit returns `device.limit_reached` with the current device list; the user retries verify with the **same code** plus `replace_device_id` to sign that device out. | Must |
+| FR-09 | Change phone: requires a sign-in within the last 15 minutes; OTP to the new number; then all other sessions, tokens, and devices are revoked, the old number gets an SMS notice, and the change is audited. Whether the new number is taken is never revealed at request time. | Must |
+| FR-10 | Rate limits: 3 OTP requests / 10 min per phone; 10 / hour per IP; 60 s resend cooldown; bot challenge (Turnstile) on web OTP request. Mobile requests get app attestation (Play Integrity / App Attest) in phase 3. | Must |
 | FR-11 | Account deletion: request → 14-day grace → anonymize personal data; keep financial records (legal requirement) linked to an anonymized ID. | Must |
-| FR-12 | Data export: JSON/ZIP of profile, enrollments, orders, certificates, delivered by link. | Should |
+| FR-12 | Data export: JSON of profile, devices (later: enrollments, orders, certificates), one per day, downloadable for 7 days (signed link on object storage), then deleted. | Should |
 | FR-13 | Roles: student (default), professor (after approval, PRD-02), moderator, admin (+ permission sets e.g. `finance.*`). | Must |
 | FR-14 | Staff sign-in to admin requires an active staff role; sessions expire after 12 h; optional second factor (TOTP) for admins. | Should (TOTP: Should) |
 | FR-15 | Suspended users can sign in but only see an explanation screen; banned users cannot sign in. | Must |

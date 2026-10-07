@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** none — PR #5 (platform core) waiting to be merged
-- **Next up:** Phase 1.3 (auth & identity — PRD-01)
+- **Current branch:** none — PR #6 (auth & identity) waiting to be merged
+- **Next up:** Phase 1.4 (professors — PRD-02)
 
 ## Legend
 
@@ -98,16 +98,21 @@ Cannot be defaulted:
 - [x] Production boot guard against fake/log drivers — #5
 
 ### 1.3 Auth & identity — PRD-01
-- [ ] Users, OTP challenges, devices tables (arch §3.1)
-- [ ] `PhoneNumber` Eloquent cast for `users.phone_e164` (no raw phone strings across boundaries)
-- [ ] Sanctum token expiry + device binding (`config/sanctum.php` expiration is currently null)
-- [ ] OTP request/verify with rate limits (FR-01–03, FR-10)
-- [ ] Web session (Sanctum SPA) + mobile device-bound tokens (FR-05, FR-06)
-- [ ] Profile, locale, province (FR-04)
-- [ ] Device list/remove + limit (FR-07, FR-08)
-- [ ] Change phone (FR-09)
-- [ ] Suspend/ban behaviour (FR-15)
-- [ ] Account deletion + data export (FR-11, FR-12)
+- [x] Users (phone-first, auth_epoch, deletion request), OTP challenges, devices, device-bound tokens, data exports tables — #6
+- [x] `$user->phone` returns a `PhoneNumber` (column stays `phone_e164`) — #6
+- [x] Mobile tokens expire after 90 days and are bound to a device (one token per device) — #6
+- [x] OTP request/verify: HMAC-stored codes, 5-min expiry, 5 attempts, 60 s cooldown, 3/10 min per phone, 10/h per IP, Turnstile on web (FR-01–03, FR-10) — #6
+- [x] Web session (Sanctum SPA) + mobile device-bound tokens (FR-05, FR-06) — #6
+- [x] Profile, locale, province, provinces endpoint (FR-04) — #6
+- [x] Device list/remove + limit with same-code replace flow (FR-07, FR-08) — #6
+- [x] Change phone with OTP to the new number; other sessions/devices signed out (FR-09) — #6
+- [x] Suspend/ban behaviour + "sign out everywhere" via auth_epoch (FR-15) — #6
+- [x] Account deletion (14-day grace, anonymisation command) + data export (FR-11, FR-12) — #6
+- [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
+- [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
+- [ ] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — with offline licenses (1.9)
+- [ ] Verify trusted-proxy / client-IP handling on Laravel Cloud so per-IP limits see real client IPs — first staging deploy
+- [ ] Real SMS provider driver + delivery reports — phase 4
 
 ### 1.4 Professors — PRD-02
 - [ ] Applications: submit, draft, status (FR-01–03)
@@ -303,7 +308,7 @@ Cannot be defaulted:
 - [ ] Backup restore drill on production-like data
 - [ ] Runbooks written
 - [ ] Legal pages published (ToS, privacy, professor agreement)
-- [ ] Confirm all *(provisional)* defaults (Phase 0.5, tagline, email provider) and finalise platform settings in production
+- [ ] Confirm all *(provisional)* defaults (Phase 0.5, tagline, email provider, OTP country allowlist) and finalise platform settings in production
 - [ ] Professor recruitment + first courses reviewed and live
 - [ ] Support channel (WhatsApp/email) staffed
 - [ ] Staging → production cutover checklist

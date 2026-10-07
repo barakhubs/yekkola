@@ -134,6 +134,8 @@ return [
     */
 
     'silenced' => [
+        // Payload contains the plain OTP code.
+        App\Domain\Identity\Jobs\SendOtpSms::class,
         // App\Jobs\ExampleJob::class,
     ],
 
@@ -201,7 +203,8 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            // `otp` first: users are waiting for their sign-in code.
+            'queue' => ['otp', 'default'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
