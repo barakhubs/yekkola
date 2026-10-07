@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-01-auth-identity` — Phase 1.3
+- **Current branch:** none — PR #6 (auth & identity) waiting to be merged
 - **Next up:** Phase 1.4 (professors — PRD-02)
 
 ## Legend
@@ -98,16 +98,16 @@ Cannot be defaulted:
 - [x] Production boot guard against fake/log drivers — #5
 
 ### 1.3 Auth & identity — PRD-01
-- [x] Users (phone-first, auth_epoch, deletion request), OTP challenges, devices, device-bound tokens, data exports tables
-- [x] `$user->phone` returns a `PhoneNumber` (column stays `phone_e164`)
-- [x] Mobile tokens expire after 90 days and are bound to a device (one token per device)
-- [x] OTP request/verify: HMAC-stored codes, 5-min expiry, 5 attempts, 60 s cooldown, 3/10 min per phone, 10/h per IP, Turnstile on web (FR-01–03, FR-10)
-- [x] Web session (Sanctum SPA) + mobile device-bound tokens (FR-05, FR-06)
-- [x] Profile, locale, province, provinces endpoint (FR-04)
-- [x] Device list/remove + limit with same-code replace flow (FR-07, FR-08)
-- [x] Change phone with OTP to the new number; other sessions/devices signed out (FR-09)
-- [x] Suspend/ban behaviour + "sign out everywhere" via auth_epoch (FR-15)
-- [x] Account deletion (14-day grace, anonymisation command) + data export (FR-11, FR-12)
+- [x] Users (phone-first, auth_epoch, deletion request), OTP challenges, devices, device-bound tokens, data exports tables — #6
+- [x] `$user->phone` returns a `PhoneNumber` (column stays `phone_e164`) — #6
+- [x] Mobile tokens expire after 90 days and are bound to a device (one token per device) — #6
+- [x] OTP request/verify: HMAC-stored codes, 5-min expiry, 5 attempts, 60 s cooldown, 3/10 min per phone, 10/h per IP, Turnstile on web (FR-01–03, FR-10) — #6
+- [x] Web session (Sanctum SPA) + mobile device-bound tokens (FR-05, FR-06) — #6
+- [x] Profile, locale, province, provinces endpoint (FR-04) — #6
+- [x] Device list/remove + limit with same-code replace flow (FR-07, FR-08) — #6
+- [x] Change phone with OTP to the new number; other sessions/devices signed out (FR-09) — #6
+- [x] Suspend/ban behaviour + "sign out everywhere" via auth_epoch (FR-15) — #6
+- [x] Account deletion (14-day grace, anonymisation command) + data export (FR-11, FR-12) — #6
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
 - [ ] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — with offline licenses (1.9)
