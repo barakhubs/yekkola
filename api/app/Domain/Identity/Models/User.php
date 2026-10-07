@@ -7,6 +7,7 @@ namespace App\Domain\Identity\Models;
 use App\Domain\Identity\Enums\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,6 +31,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property \Illuminate\Support\Carbon|null $last_seen_at
  */
 #[Fillable(['phone_e164', 'name', 'email', 'locale', 'city'])]
+#[Hidden(['phone_e164', 'email'])]
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable
 {

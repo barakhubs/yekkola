@@ -14,7 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
-            $table->id();
+            // ULID id: plain-text tokens are "{id}|{secret}", so the id must not be enumerable.
+            $table->ulid('id')->primary();
             $table->ulidMorphs('tokenable');
             $table->text('name');
             $table->string('token', 64)->unique();
