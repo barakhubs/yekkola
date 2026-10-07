@@ -18,8 +18,11 @@ return [
         'sms' => env('SMS_DRIVER', 'log'),
     ],
 
-    // Shared secret used to sign fake webhooks (tests, staging tools).
-    'fake_webhook_secret' => env('FAKE_WEBHOOK_SECRET', 'yekkola-fake-webhook-secret'),
+    // Secret used to sign fake webhooks. Required outside local/testing (no committed default).
+    'fake_webhook_secret' => env('FAKE_WEBHOOK_SECRET'),
+
+    // Local/staging seed: phone number (one you control) for the demo super admin. Empty = not seeded.
+    'demo_admin_phone' => env('DEMO_ADMIN_PHONE'),
 
     'mux' => [
         'token_id' => env('MUX_TOKEN_ID'),

@@ -77,6 +77,16 @@ final class IntegrationServiceProvider extends ServiceProvider
 
     private function fakeSecret(): string
     {
-        return (string) config('yekkola.fake_webhook_secret');
+        $secret = (string) config('yekkola.fake_webhook_secret');
+
+        if ($secret === '') {
+            if (! $this->app->environment(['local', 'testing'])) {
+                throw new RuntimeException('FAKE_WEBHOOK_SECRET must be set when fake drivers run outside local/testing.');
+            }
+
+            return 'local-fake-webhook-secret';
+        }
+
+        return $secret;
     }
 }
