@@ -31,6 +31,9 @@ return [
         'key_reused' => 'This idempotency key was already used for a different request.',
         'in_progress' => 'An identical request is already being processed.',
     ],
+    'webhook' => [
+        'invalid_signature' => 'Invalid webhook signature.',
+    ],
     'phone' => [
         'invalid' => 'Invalid phone number.',
     ],
