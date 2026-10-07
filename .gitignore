@@ -6,6 +6,9 @@ Thumbs.db
 !.vscode/extensions.json
 *.swp
 
+# Claude Code personal settings
+.claude/settings.local.json
+
 # Env & secrets
 .env
 .env.*
