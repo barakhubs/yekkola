@@ -48,6 +48,19 @@ it('gives leftover minor units to the earliest parts', function () {
     expect(array_map(fn (Money $m) => $m->amountMinor, $parts))->toBe([34, 33, 33]);
 });
 
+it('allocates negative amounts as the mirror of positive ones', function () {
+    $sale = Money::of(1_001, Currency::USD)->allocate([7, 3]);
+    $refund = Money::of(-1_001, Currency::USD)->allocate([7, 3]);
+
+    expect(array_map(fn (Money $m) => $m->amountMinor, $sale))->toBe([701, 300])
+        ->and(array_map(fn (Money $m) => $m->amountMinor, $refund))->toBe([-701, -300])
+        ->and(Money::of(-999, Currency::USD)->shareBps(7_000)->amountMinor)->toBe(-699);
+});
+
+it('refuses operations that would overflow', function () {
+    Money::of(PHP_INT_MAX, Currency::CDF)->allocate([2, 1]);
+})->throws(OverflowException::class);
+
 it('serialises as amount_minor and currency', function () {
     expect(json_encode(Money::of(1_234, Currency::CDF)))->toBe('{"amount_minor":1234,"currency":"CDF"}');
 });

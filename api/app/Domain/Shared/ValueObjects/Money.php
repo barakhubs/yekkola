@@ -8,6 +8,7 @@ use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\Exceptions\CurrencyMismatch;
 use InvalidArgumentException;
 use JsonSerializable;
+use OverflowException;
 
 /**
  * An amount in integer minor units with its currency. Immutable; arithmetic refuses mixed currencies.
@@ -49,8 +50,8 @@ final readonly class Money implements JsonSerializable
     }
 
     /**
-     * Share of this amount in basis points (10000 = 100%), rounded down.
-     * Use allocate() when the parts must add up exactly to the whole.
+     * Share of this amount in basis points (10000 = 100%), truncated toward zero
+     * (so a refund's share mirrors the sale's). Use allocate() when the parts must add up exactly to the whole.
      */
     public function shareBps(int $bps): self
     {
@@ -58,7 +59,7 @@ final readonly class Money implements JsonSerializable
             throw new InvalidArgumentException('Basis points must be between 0 and 10000.');
         }
 
-        return new self(intdiv($this->amountMinor * $bps, 10_000), $this->currency);
+        return new self(intdiv(self::multiply($this->amountMinor, $bps), 10_000), $this->currency);
     }
 
     /**
@@ -82,8 +83,9 @@ final readonly class Money implements JsonSerializable
         $remainders = [];
 
         foreach ($ratios as $i => $ratio) {
-            $parts[$i] = intdiv($amount * $ratio, $total);
-            $remainders[$i] = ($amount * $ratio) % $total;
+            $product = self::multiply($amount, $ratio);
+            $parts[$i] = intdiv($product, $total);
+            $remainders[$i] = $product % $total;
         }
 
         $leftover = $amount - array_sum($parts);
@@ -142,6 +144,16 @@ final readonly class Money implements JsonSerializable
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /** Integer multiplication that refuses to overflow into a float. */
+    private static function multiply(int $a, int $b): int
+    {
+        if ($b !== 0 && abs($a) > intdiv(PHP_INT_MAX, abs($b))) {
+            throw new OverflowException('Money amount too large for this operation.');
+        }
+
+        return $a * $b;
     }
 
     private function assertSameCurrency(self $other): void
