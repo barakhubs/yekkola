@@ -9,7 +9,7 @@
 - Product UI in `src/features/<domain>/`; primitives and generic blocks come from `@yekkola/ui`.
 - URL state (filters, sort, page) via nuqs. Forms via React Hook Form + Zod schemas from `api-client`.
 - All copy through next-intl (French default, English). Money/dates/phones formatted with `@yekkola/i18n` helpers.
-- Brand: primary indigo `#2c3892`, amber accent `#fdb73b` via theme tokens only — never white text on amber.
+- Brand: Nunito font (via `next/font/google`), primary indigo `#2c3892`, amber accent `#fdb73b` via theme tokens only — never white text on amber. Spec: `docs/brand.md`.
 - Video: Mux Player + the per-viewer watermark overlay component.
 
 ## Commands

@@ -7,7 +7,7 @@
 | `i18n/` | `fr.json` / `en.json` message catalogues (namespaced), money/date/phone formatters | French is the default locale. |
 | `config/` | Shared tsconfig, ESLint, Tailwind preset, Prettier | |
 
-Brand tokens (light + dark): primary `#2c3892` → `--primary` (white foreground); amber `#fdb73b` → `--brand-accent` (indigo foreground); shadcn `--secondary` stays neutral. See `project-context.md` → Brand.
+Brand: Nunito everywhere; tokens (light + dark): primary `#2c3892` → `--primary` (white foreground); amber `#fdb73b` → `--brand-accent` (indigo foreground); shadcn `--secondary` stays neutral. Full spec: `docs/brand.md`.
 
 ## Commands
 

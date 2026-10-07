@@ -42,7 +42,7 @@ Approved professors build courses in the **studio** (web): course details, curri
 | FR-01 | Create course → `Course` + first `CourseVersion` (draft). | Must |
 | FR-02 | Details editor with validation (title ≤ 80 chars, subtitle ≤ 120, description rich text, 3–8 outcomes, cover 16:9 ≥ 1280×720). | Must |
 | FR-03 | Curriculum editor: sections and lessons CRUD, drag-and-drop reorder (sections and lessons across sections), autosave. | Must |
-| FR-04 | Video/audio lesson: request Mux direct upload → resumable upload from browser with progress → status `processing → ready / errored`. Max file size per setting (default 4 GB video, 500 MB audio). | Must |
+| FR-04 | Video/audio lesson (video: `plus` quality + DRM, max 720p; audio: signed playback): request Mux direct upload → resumable upload from browser with progress → status `processing → ready / errored`. Max file size per setting (default 4 GB video, 500 MB audio). | Must |
 | FR-05 | Burned-in watermark (Yekkola logo + professor name) applied at upload via Mux overlay. | Must |
 | FR-06 | Document lesson: PDF upload (≤ 50 MB) via pre-signed URL, virus scan, page count extracted. | Must |
 | FR-07 | Quiz builder: questions (single, multiple, true/false), options, correct answers, explanation per question, points, pass mark %, optional time limit, optional max attempts, shuffle toggle. | Must |

@@ -48,7 +48,7 @@ Students enroll in free courses with one tap and buy paid courses with **mobile 
 | FR-10 | Reconciliation job: every 5 min re-query payments `pending` beyond 2 min; expire orders past timeout; late successes on expired orders still grant access (and are flagged for review). | Must |
 | FR-11 | Coupons: percent or fixed; scope platform/professor/course; validity window; max redemptions; per-user limit; funded by platform/professor/shared. Redemption counted only on payment success. | Must |
 | FR-12 | Professor coupons (PRD-03 studio): only for their own courses, professor-funded. | Should |
-| FR-13 | Bundles: fixed price for a set of courses; owned courses in a bundle → **Open** (see §10). Revenue split across professors pro-rata to list prices. | Should |
+| FR-13 | Bundles: fixed price for a set of courses; owned courses in a bundle are excluded and the bundle price is reduced pro-rata *(provisional)*. Revenue split across professors pro-rata to list prices. | Should |
 | FR-14 | Parent payer (setting-controlled): order has `buyer`/`payer_msisdn` distinct from `beneficiary`; parent can pay without an account by entering the student's phone + their own payer number; receipt sent to both. | Should |
 | FR-15 | Receipts: order number, items, amounts, currency, rail, payment reference, date; PDF downloadable; FR/EN. | Must |
 | FR-16 | Refund request within refund window and below max progress (settings) → admin approval (PRD-09) → `PaymentGateway::refund` or disbursement → enrollment revoked → ledger reversal. | Must |
@@ -94,5 +94,5 @@ Students enroll in free courses with one tap and buy paid courses with **mobile 
 ## 10. Dependencies & open questions
 
 - Aggregator selection (collection + disbursement on all three rails) — deferred, **must** be done before launch.
-- Bundle containing an already-owned course: discount or block? — **Open**.
+- Bundle containing an already-owned course — provisional: exclude + pro-rata reduction; confirm.
 - Tax (VAT) on sales and receipt requirements — **Open**, needs a DRC accountant.

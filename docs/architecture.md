@@ -496,7 +496,8 @@ Rules:
 
 ### 5.4 Design system
 
-- Tokens (colors, radius, typography, spacing) defined once in `packages/ui` as CSS variables; light + dark themes; brand assets (logo, wordmark, favicon) live there.
+- Tokens (colors, radius, typography, spacing) defined once in `packages/ui` as CSS variables; light + dark themes; brand assets (logo, wordmark, favicon) live there. Full spec: [`brand.md`](brand.md).
+- Typography: **Nunito** everywhere, via `next/font/google` (latin + latin-ext, variable, `display: swap`); bundled as assets in Flutter.
 - Brand colors: primary `#2c3892` → shadcn `--primary` (foreground white); secondary `#fdb73b` → `--brand-accent` (foreground indigo). shadcn `--secondary` stays neutral. Contrast rules in [`project-context.md`](../project-context.md#brand). Generate a full 50–950 scale for each brand color for hover/active/subtle states.
 - Charts: primary and amber are series 1 and 2; further series from a validated categorical palette that stays distinguishable alongside them (light and dark).
 - Status colors and labels for every enum (`StatusBadge` map) — one source, used by both apps.
