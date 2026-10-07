@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** none — waiting for the TODO-list PR to be merged
-- **Next up:** Phase 0 decisions + Mux spike, then Phase 1.1 (API scaffold)
+- **Current branch:** `chore/phase-0-foundations` — Phase 0 work that doesn't need accounts or outside people
+- **Next up:** Phase 1.1 (API scaffold). Phase 0 leftovers are all **(needs: …)** items for the owner.
 
 ## Legend
 
@@ -22,52 +22,54 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [x] Architecture doc (`docs/architecture.md`)
 - [x] PRDs 01–10 (`docs/prd/`)
 - [x] Folder structure + CLAUDE.md files
-- [x] Claude Code setup: settings, rules, skills, subagents, commands (PR #1)
-- [x] Git workflow + SOLID guidelines (PR #1)
+- [x] Claude Code setup: settings, rules, skills, subagents, commands — #1
+- [x] Git workflow + SOLID guidelines — #1
 - [x] Project TODO list + autonomous workflow commands — #2
-- [ ] `.gitattributes` (`* text=auto eol=lf`) to stop CRLF/LF churn
-- [ ] Runbooks skeleton in `docs/runbooks/` (stuck payments, failed payouts, Mux outage, SMS outage, compromised admin)
+- [x] `.gitattributes` (LF line endings)
+- [x] Runbooks: stuck payments, failed payouts, Mux outage, SMS outage, compromised admin (`docs/runbooks/`)
 
 ### 0.2 Brand
 - [x] Brand colours: primary `#2c3892`, secondary `#fdb73b`
-- [ ] Logo (full, icon/mark, monochrome, app icon, favicon)
-- [ ] Typography (heading + body fonts)
-- [ ] Tagline (FR/EN) — candidates: *Les meilleurs profs du Congo, partout au Congo* / *Le Congo apprend du Congo*
-- [ ] Full colour scales (50–950) + dark-mode tints, contrast-checked
-- [ ] Domain name(s) registered (`api.`, `www.`, `admin.` on one parent domain)
+- [x] Full colour scales (50–950), dark-mode tints, contrast-checked (`docs/brand.md`)
+- [x] Typography: **Nunito** everywhere, type scale (`docs/brand.md`)
+- [x] Tagline *(provisional)*: *Les meilleurs profs du Congo, partout au Congo.*
+- [ ] Logo set — brief in `docs/brand.md` §4 **(needs: owner / designer)**
+- [ ] Domain name(s) on one parent domain (`api.`, `www.`, `admin.`) **(needs: owner to purchase)**
 
-### 0.3 Accounts & services
-- [ ] GitHub repo settings: branch protection on `main`, required checks, squash/merge policy
+### 0.3 Accounts & services — all **(needs: owner — account + billing)**
 - [ ] Laravel Cloud organisation + `staging` and `production` environments
 - [ ] Mux account (DRM enabled, signing keys, webhook secret)
 - [ ] Meilisearch Cloud project
 - [ ] Sentry projects (api, web, admin, mobile)
 - [ ] PostHog (or equivalent) project
-- [ ] Transactional email provider (Postmark / Resend / SES) — **Open** (PRD-10)
+- [ ] Transactional email provider — provisional choice: Resend (Laravel mail driver) **(needs: account)**
 - [ ] Firebase project (FCM) for push
 - [ ] Google Play + Apple developer accounts (needed by phase 3)
+- [-] GitHub branch protection — moved to Phase 1.1 (needs CI checks first)
 
-### 0.4 Technical spikes (de-risk early)
-- [ ] Mux spike: direct upload → DRM playback on web → per-viewer overlay (PRD-07)
-- [ ] Mux spike: offline DRM download + playback on Android and iOS native SDKs (PRD-07 FR-14)
-- [ ] Verify Mux DRM + offline for **audio-only** assets (PRD-07 §10)
-- [ ] Verify Mux download resolution tiers per platform
-- [ ] Mux pricing estimate at projected catalogue size
-- [ ] Laravel Cloud: deploy a test Next.js app from a monorepo subfolder (pnpm workspace build from root)
-- [ ] Latency benchmark from several DRC cities to `eu-west-2` vs `eu-central-1` → choose region
+### 0.4 Technical spikes
+- [x] Mux research: DRM needs `plus` quality; **audio-only can't use DRM** → signed playback + encrypted offline files; download tiers; free tiers (`docs/research/mux.md`)
+- [x] Mux cost estimate (`docs/research/mux.md` §4)
+- [x] Spike plans written (`docs/spikes/`)
+- [ ] Run Mux DRM + offline spike (`docs/spikes/mux-drm-offline.md`) **(needs: Mux account)**
+- [ ] Run Next.js-on-Laravel-Cloud monorepo spike (`docs/spikes/laravel-cloud-nextjs.md`) **(needs: Laravel Cloud account)**
+- [ ] Run region latency measurement → choose region (`docs/spikes/region-latency.md`) **(needs: RIPE Atlas credits or DRC testers)**
 
-### 0.5 Business & legal decisions (record with `/decide`)
-- [ ] Default revenue split
-- [ ] Payout schedule + minimum payout
-- [ ] Active currencies at launch (USD / CDF / both)
-- [ ] Launch categories (academic vs professional/vocational)
-- [ ] Tax treatment (VAT on sales, withholding on payouts) — accountant
-- [ ] Legal entity; terms of service; privacy policy; professor agreement — counsel
-- [ ] Minimum age + minors' data policy
-- [ ] Disbursement fee responsibility (PRD-08 BR-03)
-- [ ] Bundle containing an owned course: discount or block (PRD-05 §10)
-- [ ] Review SLA targets (PRD-09 §9)
-- [ ] WhatsApp as a notification channel? (PRD-10 §8)
+### 0.5 Business & legal decisions
+Provisional defaults recorded in `project-context.md` → *Platform settings* (confirm before launch — Phase 5):
+- [x] Revenue split — 70% professor / 30% platform *(provisional)*
+- [x] Payouts — monthly, minimum 10 USD / 25,000 CDF *(provisional)*
+- [x] Currencies — USD + CDF enabled, USD default *(provisional)*
+- [x] Launch categories — academic + professional tree (`docs/catalogue-categories.md`) *(provisional)*
+- [x] Disbursement fees — platform pays *(provisional)*
+- [x] Bundle with an owned course — exclude + pro-rata price *(provisional)*
+- [x] Review SLAs — courses 48 h, applications 72 h *(provisional)*
+- [x] WhatsApp channel — post-launch backlog *(provisional)*
+
+Cannot be defaulted:
+- [ ] Tax treatment (VAT on sales, withholding on payouts) **(needs: DRC accountant)**
+- [ ] Legal entity; terms of service; privacy policy; professor agreement **(needs: counsel)**
+- [ ] Minimum age + minors' data policy **(needs: counsel)**
 
 ---
 
@@ -81,6 +83,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [ ] `Money` and `PhoneNumber` value objects + tests
 - [ ] `lang/fr` + `lang/en` scaffolding
 - [ ] GitHub Actions: `api.yml` (tests, PHPStan, Pint) with path filters
+- [ ] GitHub branch protection on `main` requiring the CI checks
 - [ ] Laravel Cloud `yekkola-api` app + staging deploy + queue workers
 - [ ] Update CLAUDE.md "Commands" sections with real commands
 
@@ -296,7 +299,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [ ] Backup restore drill on production-like data
 - [ ] Runbooks written
 - [ ] Legal pages published (ToS, privacy, professor agreement)
-- [ ] Platform settings finalised in production
+- [ ] Confirm all *(provisional)* defaults (Phase 0.5, tagline, email provider) and finalise platform settings in production
 - [ ] Professor recruitment + first courses reviewed and live
 - [ ] Support channel (WhatsApp/email) staffed
 - [ ] Staging → production cutover checklist
