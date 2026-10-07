@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Domain\Identity\Models\OtpChallenge;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// Identity (PRD-01)
+Schedule::command('identity:purge-deleted-accounts')->dailyAt('02:00')->onOneServer();
+Schedule::command('model:prune', ['--model' => [OtpChallenge::class]])->dailyAt('03:00')->onOneServer();
