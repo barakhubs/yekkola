@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Integrations\Video;
 
 use App\Domain\Authoring\Enums\MediaKind;
+use App\Integrations\InvalidWebhookPayload;
 use App\Integrations\InvalidWebhookSignature;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Cache\Repository as Cache;
@@ -15,14 +16,15 @@ use InvalidArgumentException;
 /**
  * Fake video host for local, staging, and tests. Refused in production.
  *
- * Uploads become assets that are ready immediately (use markErrored() to simulate failures).
- * Tokens are opaque strings that encode what was asked for, so tests can assert on them.
+ * Uploads become assets that are ready immediately (markErrored() simulates failures). Tokens are opaque
+ * strings encoding what was asked for, so tests can assert on them. A real browser upload flow for staging
+ * (local upload endpoint + webhook) comes with Phase 1.5.
  */
 final class FakeVideoProvider implements VideoProvider
 {
-    public const WEBHOOK_SECRET_HEADER = 'X-Fake-Signature';
+    public const WEBHOOK_SIGNATURE_HEADER = 'X-Fake-Signature';
 
-    private const CACHE_PREFIX = 'fake-video:';
+    private const PREFIX = 'fake-video:';
 
     public function __construct(
         private readonly Cache $cache,
@@ -39,14 +41,13 @@ final class FakeVideoProvider implements VideoProvider
         $uploadId = 'fake-upload-'.Str::ulid();
         $assetId = 'fake-asset-'.Str::ulid();
 
-        $this->cache->forever(self::CACHE_PREFIX.$assetId, [
+        $this->cache->put(self::PREFIX.$assetId, [
             'status' => VideoAssetStatus::Ready->value,
             'playback_id' => 'fake-playback-'.Str::ulid(),
             'passthrough' => $request->passthrough,
             'kind' => $request->kind->value,
-            'upload_id' => $uploadId,
-        ]);
-        $this->cache->forever(self::CACHE_PREFIX.'upload:'.$uploadId, $assetId);
+        ], now()->addDays(30));
+        $this->cache->put(self::PREFIX.'upload:'.$uploadId, $assetId, now()->addDays(30));
 
         return new DirectUpload($uploadId, 'https://uploads.fake.test/'.$uploadId);
     }
@@ -54,10 +55,10 @@ final class FakeVideoProvider implements VideoProvider
     public function getAsset(string $assetId): VideoAsset
     {
         /** @var array{status: string, playback_id: string, passthrough: string}|null $state */
-        $state = $this->cache->get(self::CACHE_PREFIX.$assetId);
+        $state = $this->cache->get(self::PREFIX.$assetId);
 
         if ($state === null) {
-            return new VideoAsset($assetId, VideoAssetStatus::Errored, errorMessage: 'Asset not found.');
+            throw new VideoAssetNotFound("No asset [{$assetId}].");
         }
 
         $status = VideoAssetStatus::from($state['status']);
@@ -74,17 +75,21 @@ final class FakeVideoProvider implements VideoProvider
 
     public function deleteAsset(string $assetId): void
     {
-        $this->cache->forget(self::CACHE_PREFIX.$assetId);
+        $this->cache->forget(self::PREFIX.$assetId);
     }
 
     public function playbackTokens(string $playbackId, MediaKind $kind, int $ttlSeconds): PlaybackTokens
     {
         $expiresAt = CarbonImmutable::now()->addSeconds($ttlSeconds);
+        $suffix = "{$playbackId}:{$expiresAt->getTimestamp()}";
+        $isVideo = $kind === MediaKind::Video;
 
         return new PlaybackTokens(
-            playbackToken: "fake-playback-token:{$playbackId}:{$expiresAt->getTimestamp()}",
-            drmToken: $kind->supportsDrm() ? "fake-drm-token:{$playbackId}:{$expiresAt->getTimestamp()}" : null,
+            playbackToken: "fake-playback-token:{$suffix}",
+            drmToken: $kind->supportsDrm() ? "fake-drm-token:{$suffix}" : null,
             expiresAt: $expiresAt,
+            thumbnailToken: $isVideo ? "fake-thumbnail-token:{$suffix}" : null,
+            storyboardToken: $isVideo ? "fake-storyboard-token:{$suffix}" : null,
         );
     }
 
@@ -97,12 +102,23 @@ final class FakeVideoProvider implements VideoProvider
         return "fake-offline-token:{$playbackId}:license={$licenseSeconds}";
     }
 
+    public function audioDownloadUrl(string $playbackId, int $ttlSeconds): string
+    {
+        $expires = CarbonImmutable::now()->addSeconds($ttlSeconds)->getTimestamp();
+
+        return "https://downloads.fake.test/{$playbackId}/audio.m4a?expires={$expires}";
+    }
+
     public function parseWebhook(Request $request): VideoWebhookEvent
     {
         $expected = hash_hmac('sha256', $request->getContent(), $this->webhookSecret);
 
-        if (! hash_equals($expected, (string) $request->header(self::WEBHOOK_SECRET_HEADER))) {
+        if (! hash_equals($expected, (string) $request->header(self::WEBHOOK_SIGNATURE_HEADER))) {
             throw InvalidWebhookSignature::make();
+        }
+
+        if (! is_string($request->input('id')) || $request->input('id') === '') {
+            throw InvalidWebhookPayload::missing('id');
         }
 
         return new VideoWebhookEvent(
@@ -118,16 +134,16 @@ final class FakeVideoProvider implements VideoProvider
     /** Simulate a processing failure for an asset. */
     public function markErrored(string $assetId): void
     {
-        $state = $this->cache->get(self::CACHE_PREFIX.$assetId);
+        $state = $this->cache->get(self::PREFIX.$assetId);
         if (is_array($state)) {
             $state['status'] = VideoAssetStatus::Errored->value;
-            $this->cache->forever(self::CACHE_PREFIX.$assetId, $state);
+            $this->cache->put(self::PREFIX.$assetId, $state, now()->addDays(30));
         }
     }
 
     public function assetIdForUpload(string $uploadId): ?string
     {
-        $assetId = $this->cache->get(self::CACHE_PREFIX.'upload:'.$uploadId);
+        $assetId = $this->cache->get(self::PREFIX.'upload:'.$uploadId);
 
         return is_string($assetId) ? $assetId : null;
     }
@@ -142,7 +158,7 @@ final class FakeVideoProvider implements VideoProvider
         $body = (string) json_encode($payload);
 
         $request = Request::create('/api/v1/webhooks/video', 'POST', server: ['CONTENT_TYPE' => 'application/json'], content: $body);
-        $request->headers->set(self::WEBHOOK_SECRET_HEADER, hash_hmac('sha256', $body, $this->webhookSecret));
+        $request->headers->set(self::WEBHOOK_SIGNATURE_HEADER, hash_hmac('sha256', $body, $this->webhookSecret));
 
         return $request;
     }

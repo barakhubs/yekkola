@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use App\Domain\Authoring\Enums\MediaKind;
+use App\Integrations\InvalidWebhookPayload;
 use App\Integrations\InvalidWebhookSignature;
 use App\Integrations\Video\DirectUploadRequest;
 use App\Integrations\Video\FakeVideoProvider;
+use App\Integrations\Video\VideoAssetNotFound;
 use App\Integrations\Video\VideoAssetStatus;
 use App\Integrations\Video\VideoEventType;
 use App\Integrations\Video\VideoProvider;
@@ -27,25 +29,35 @@ it('creates a direct upload URL for the browser', function (Closure $make, Media
         ->and($upload->url)->toStartWith('https://');
 })->with('video providers')->with([MediaKind::Video, MediaKind::Audio]);
 
-it('issues a DRM token for video but not for audio', function (Closure $make) {
+it('issues DRM, thumbnail and storyboard tokens for video only', function (Closure $make) {
     $provider = $make();
 
     $video = $provider->playbackTokens('pb-1', MediaKind::Video, 3_600);
     $audio = $provider->playbackTokens('pb-2', MediaKind::Audio, 3_600);
 
     expect($video->drmToken)->not->toBeNull()
-        ->and($audio->drmToken)->toBeNull()
+        ->and($video->thumbnailToken)->not->toBeNull()
+        ->and($video->storyboardToken)->not->toBeNull()
+        ->and($video->expiresAt->isFuture())->toBeTrue()
         ->and($audio->playbackToken)->not->toBeEmpty()
-        ->and($video->expiresAt->isFuture())->toBeTrue();
+        ->and($audio->drmToken)->toBeNull()
+        ->and($audio->thumbnailToken)->toBeNull();
 })->with('video providers');
 
-it('issues offline license tokens', function (Closure $make) {
-    expect($make()->offlineLicenseToken('pb-1', 14 * 86_400, 3_600))->not->toBeEmpty();
+it('issues offline license tokens and audio download URLs', function (Closure $make) {
+    $provider = $make();
+
+    expect($provider->offlineLicenseToken('pb-1', 14 * 86_400, 3_600))->not->toBeEmpty()
+        ->and($provider->audioDownloadUrl('pb-2', 600))->toStartWith('https://');
 })->with('video providers');
+
+it('reports unknown assets as not found, not as errored', function (Closure $make) {
+    $make()->getAsset('missing-asset');
+})->with('video providers')->throws(VideoAssetNotFound::class);
 
 it('rejects webhooks with a bad signature', function (Closure $make) {
     $request = Request::create('/api/v1/webhooks/video', 'POST', content: '{"id":"1"}');
-    $request->headers->set(FakeVideoProvider::WEBHOOK_SECRET_HEADER, 'forged');
+    $request->headers->set(FakeVideoProvider::WEBHOOK_SIGNATURE_HEADER, 'forged');
 
     $make()->parseWebhook($request);
 })->with('video providers')->throws(InvalidWebhookSignature::class);
@@ -76,3 +88,9 @@ it('parses webhooks it signed itself, ignoring unknown event types', function ()
         ->and($ready->passthrough)->toBe('media-1')
         ->and($other->type)->toBe(VideoEventType::Other);
 });
+
+it('rejects signed webhooks without an event id', function () {
+    $provider = new FakeVideoProvider(cache()->store(), 'secret');
+
+    $provider->parseWebhook($provider->webhookRequest(['type' => 'asset_ready']));
+})->throws(InvalidWebhookPayload::class);
