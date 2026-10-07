@@ -99,6 +99,8 @@ Cannot be defaulted:
 
 ### 1.3 Auth & identity — PRD-01
 - [ ] Users, OTP challenges, devices tables (arch §3.1)
+- [ ] `PhoneNumber` Eloquent cast for `users.phone_e164` (no raw phone strings across boundaries)
+- [ ] Sanctum token expiry + device binding (`config/sanctum.php` expiration is currently null)
 - [ ] OTP request/verify with rate limits (FR-01–03, FR-10)
 - [ ] Web session (Sanctum SPA) + mobile device-bound tokens (FR-05, FR-06)
 - [ ] Profile, locale, province (FR-04)
