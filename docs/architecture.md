@@ -222,8 +222,8 @@ PostgreSQL. Conventions:
 | `devices` | id, user_id, platform (`android`/`ios`), install_id (unique per user), name, app_version, push_token, registered_at, last_active_at, revoked_at | Counts toward the registered device limit when `revoked_at` is null. |
 | `personal_access_tokens` | Sanctum + `device_id` | Mobile tokens are bound to a device. |
 | `stream_sessions` | id, user_id, client (`web`/`android`/`ios`), lesson_uid, started_at, last_heartbeat_at, ended_at | Enforces concurrent web streams. Short-lived; can live in Redis instead. |
-| `provinces` | id, code, name | Seeded with the 26 DRC provinces. |
-| `roles`, `permissions`, … | spatie/laravel-permission | Roles: student, professor, moderator, admin; permission sets e.g. `finance.*`. |
+| `provinces` | id, code (ISO 3166-2:CD, unique), name | Seeded with the 26 DRC provinces (`ProvinceSeeder`); `users.province_id` is optional. |
+| `roles`, `permissions`, … | spatie/laravel-permission (guard `web`; `model_id` is a ULID) | Roles and permissions come from the `Role`/`Permission` enums. Roles: student, professor, moderator, admin, super-admin. Finance permissions (`finance.*`) are granted individually. |
 
 ### 3.2 Professors
 
@@ -300,8 +300,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | `reports` | id, reporter_id, reportable_type (`course`/`review`/`thread`/`reply`/`professor`), reportable_id, reason, details, status (`open`/`actioned`/`dismissed`), handled_by, resolution_note, handled_at | |
 | `notifications` | Laravel database notifications | In-app feed. |
 | `notification_preferences` | user_id, type, channel (`push`/`sms`/`email`/`in_app`), enabled | Defaults in code; rows only for overrides. |
-| `settings` | spatie/laravel-settings | |
-| `activity_log` | spatie/laravel-activitylog | All admin actions + settings changes. |
+| `settings` | spatie/laravel-settings | Groups: commerce, payouts, protection, catalog, learning, moderation. Defaults in `database/settings/`. |
+| `activity_log` | spatie/laravel-activitylog (ULID id; subject/causer ids are strings) | All admin actions (`RecordAudit`) + settings changes (before/after, automatic). |
 | `webhook_events` | id, provider (`mux`/…), event_id (unique per provider), type, payload, received_at, processed_at, error | Mux inbox (payments use `payment_events`). |
 | `course_daily_stats` | course_id, date, views, enrollments, paid_enrollments, revenue_minor, currency, completions, avg_rating | Rolled up nightly + incrementally; feeds dashboards. |
 | `platform_daily_stats` | date, signups, active_students, orders, gmv_minor (per currency), payouts_minor, … | Admin dashboard. |

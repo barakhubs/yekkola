@@ -47,4 +47,22 @@ Run PHP commands from PowerShell on Windows (Herd's PHP); Bash may pick up a dif
 | Queue dashboard | `php artisan horizon` (Linux only — needs `pcntl`) |
 | Installing packages on Windows | add `--ignore-platform-req=ext-pcntl --ignore-platform-req=ext-posix` |
 
-Notes: Laravel's test client sends `Accept-Language: en-us` by default — set the header explicitly in locale-sensitive tests. Shared building blocks: `App\Domain\Shared\ValueObjects\{Money, PhoneNumber}`, `App\Domain\Shared\Exceptions\DomainException` (renders as the error envelope), middleware alias `idempotent`.
+Notes: Laravel's test client sends `Accept-Language: en-us` by default — set the header explicitly in locale-sensitive tests.
+
+## Building blocks
+
+| Need | Use |
+|---|---|
+| Money / phone numbers | `App\Domain\Shared\ValueObjects\{Money, PhoneNumber}` |
+| Business-rule error | throw a subclass of `App\Domain\Shared\Exceptions\DomainException` (renders as the error envelope; not reported) |
+| Retry-safe endpoint | middleware alias `idempotent` |
+| Platform settings | inject `App\Domain\Platform\Settings\*Settings` (Commerce, Payout, Protection, Catalog, Learning, Moderation). Add new keys with a settings migration in `database/settings/`. Changes are audited automatically. |
+| Audit an admin action | `App\Domain\Platform\Actions\RecordAudit::handle('thing.happened', $subject, ['reason' => ...])` |
+| Roles / permissions | `App\Domain\Identity\Enums\{Role, Permission}` — policies check permissions, never role names. Re-run `RolesAndPermissionsSeeder` after changing the enums. |
+| Video/audio host | `App\Integrations\Video\VideoProvider` (fake driver now; Mux in 1.5) |
+| Mobile money | `App\Integrations\Payments\PaymentGateway` (fake driver until the aggregator is chosen) |
+| SMS | `App\Integrations\Sms\SmsSender` (`log` driver until the provider is chosen) |
+
+Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_DRIVER`); production refuses to boot with `fake`/`log`. New real drivers must pass the contract tests in `tests/Feature/Integrations/*ContractTest.php` (add them to the dataset).
+
+**FakeGateway outcomes** by the last 4 digits of the payer/recipient number: `0001` fails, `0002` stays pending, `0003` late success, `0004` succeeds then reverses, anything else pending → succeeded on re-check. Tests can force outcomes with `FakeGateway::queue(Scenario::...)`.

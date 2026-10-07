@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** none — PR #4 (API scaffold) waiting to be merged
-- **Next up:** Phase 1.2 (platform core: settings, roles, provinces, audit, integration interfaces)
+- **Current branch:** `feature/platform-core` — Phase 1.2
+- **Next up:** Phase 1.3 (auth & identity — PRD-01)
 
 ## Legend
 
@@ -90,12 +90,12 @@ Cannot be defaulted:
 - [ ] GitHub branch protection requiring CI — needs an always-running summary job first (path-filtered workflows don't report on docs-only PRs); do with `contract.yml` in 2.1
 
 ### 1.2 Platform core
-- [ ] Settings classes + seeded defaults (project-context *Platform settings*)
-- [ ] Roles & permissions seed (student, professor, moderator, admin, `finance.*`)
-- [ ] Provinces seed (26)
-- [ ] Audit log wiring for admin actions
-- [ ] Integration interfaces + fakes (Mux via HTTP client + `firebase/php-jwt`): `VideoProvider`/Fake, `PaymentGateway`/FakeGateway, `SmsSender`/LogSmsSender (+ shared contract tests)
-- [ ] Production boot guard against fake/log drivers
+- [x] Settings classes (commerce, payouts, protection, catalog, learning, moderation) + seeded defaults
+- [x] Roles & permissions from enums (student, professor, moderator, admin, super-admin; `finance.*` granted individually) + seeder
+- [x] Provinces seed (26, ISO 3166-2:CD) + optional `users.province_id`
+- [x] Audit log: ULID entries, `RecordAudit` action, automatic before/after audit of settings changes
+- [x] Integration interfaces + fakes: `VideoProvider`/`FakeVideoProvider`, `PaymentGateway`/`FakeGateway` (scenarios by number suffix), `SmsSender`/`LogSmsSender` + contract tests
+- [x] Production boot guard against fake/log drivers
 
 ### 1.3 Auth & identity — PRD-01
 - [ ] Users, OTP challenges, devices tables (arch §3.1)

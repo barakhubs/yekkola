@@ -53,7 +53,7 @@ Students enroll in free courses with one tap and buy paid courses with **mobile 
 | FR-15 | Receipts: order number, items, amounts, currency, rail, payment reference, date; PDF downloadable; FR/EN. | Must |
 | FR-16 | Refund request within refund window and below max progress (settings) → admin approval (PRD-09) → `PaymentGateway::refund` or disbursement → enrollment revoked → ledger reversal. | Must |
 | FR-17 | Order history page with status and receipt links. | Must |
-| FR-18 | `FakeGateway` driver supports scripted outcomes (success, fail, pending forever, late success, reversal) for tests and staging. | Must |
+| FR-18 | `FakeGateway` driver supports scripted outcomes (success, fail, pending forever, late success, reversal) for tests and staging — chosen by the payer number's last 4 digits (`0001` fail, `0002` pending forever, `0003` late success, `0004` reversal) so testers can trigger them from the UI. | Must |
 | FR-19 | Admin can pause a rail or gateway (setting); checkout hides paused rails with a message. | Must |
 
 ## 5. Business rules
