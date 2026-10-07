@@ -34,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'idempotent' => EnsureIdempotency::class,
             'active' => EnsureAccountActive::class,
         ]);
+        // Every signed-in route uses this group, so the account checks can't be forgotten.
+        $middleware->group('signed-in', ['auth:sanctum', 'active']);
         // Authentication always runs before idempotency, whatever the order on the route.
         $middleware->appendToPriorityList(Authenticate::class, EnsureIdempotency::class);
     })

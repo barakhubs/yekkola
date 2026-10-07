@@ -13,7 +13,7 @@ beforeEach(fn () => $this->seed(RolesAndPermissionsSeeder::class));
 // Request (FR-01, FR-02, FR-10)
 
 it('sends a 6-digit code by SMS and stores only its hash', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '0812345678'])
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '0812345678'], MOBILE_APP)
         ->assertAccepted()
         ->assertJsonStructure(['data' => ['challenge_id', 'expires_at', 'resend_after_seconds']]);
 
@@ -33,53 +33,101 @@ it('rejects invalid phone numbers', function () {
 });
 
 it('enforces a 60-second resend cooldown', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'])->assertAccepted();
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
 
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'])
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)
         ->assertStatus(429)
         ->assertJsonPath('code', 'otp.cooldown')
         ->assertHeader('Retry-After');
 
     $this->travel(61)->seconds();
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'])->assertAccepted();
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
 });
 
 it('allows 3 codes per phone per 10 minutes', function () {
     foreach (range(1, 3) as $_) {
-        $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'])->assertAccepted();
+        $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
         $this->travel(61)->seconds();
     }
 
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'])
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)
         ->assertStatus(429)
         ->assertJsonPath('code', 'otp.rate_limited');
 });
 
 it('allows 10 codes per IP per hour', function () {
+    config(['yekkola.auth.otp_global_hourly_budget' => 100]);
     foreach (range(1, 10) as $i) {
-        $this->postJson('/api/v1/auth/otp/request', ['phone' => '+2438123400'.str_pad((string) $i, 2, '0', STR_PAD_LEFT)])->assertAccepted();
+        $this->postJson('/api/v1/auth/otp/request', ['phone' => '+2438123400'.str_pad((string) $i, 2, '0', STR_PAD_LEFT)], MOBILE_APP)->assertAccepted();
     }
 
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812340099'])
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812340099'], MOBILE_APP)
         ->assertStatus(429)
         ->assertJsonPath('code', 'otp.rate_limited');
 });
 
-it('requires a passing bot check from the web app', function (?string $token, int $status) {
-    $this->postJson('/api/v1/auth/otp/request', array_filter(['phone' => '+243812345678', 'bot_token' => $token]), WEB_APP)
+it('requires a passing bot check unless the caller is the mobile app', function (array $headers, ?string $token, int $status) {
+    $this->postJson('/api/v1/auth/otp/request', array_filter(['phone' => '+243812345678', 'bot_token' => $token]), $headers)
         ->assertStatus($status);
 })->with([
-    'missing' => [null, 422],
-    'failed' => ['fail', 422],
-    'valid' => ['ok', 202],
+    'web, missing token' => [WEB_APP, null, 422],
+    'web, failed token' => [WEB_APP, 'fail', 422],
+    'web, valid token' => [WEB_APP, 'ok', 202],
+    'script without browser headers or token' => [[], null, 422],
+    'script without browser headers, valid token' => [[], 'ok', 202],
+    'mobile app' => [MOBILE_APP, null, 202],
 ]);
 
-it('refuses codes for banned accounts', function () {
+it('answers banned numbers like any other, without sending an SMS', function () {
     User::factory()->banned()->create(['phone_e164' => '+243812345678']);
 
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'])
-        ->assertForbidden()
-        ->assertJsonPath('code', 'account.banned');
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
+
+    expect(app(App\Integrations\Sms\SmsSender::class)->sent())->toBeEmpty();
+});
+
+it('only sends codes to supported countries', function () {
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+256772123456'], MOBILE_APP)
+        ->assertUnprocessable()
+        ->assertJsonPath('code', 'phone.country_not_supported');
+});
+
+it('pauses all OTP SMS when the global hourly budget is spent', function () {
+    config(['yekkola.auth.otp_global_hourly_budget' => 2]);
+
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812340001'], MOBILE_APP)->assertAccepted();
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812340002'], MOBILE_APP)->assertAccepted();
+
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812340003'], MOBILE_APP)
+        ->assertStatus(503)
+        ->assertJsonPath('code', 'otp.temporarily_unavailable');
+});
+
+it('locks a number after 15 wrong codes in a day, across new codes', function () {
+    $payload = ['phone' => '+243812345678', 'device' => mobileDevice()];
+
+    foreach (range(1, 3) as $_) {
+        $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
+        $wrong = lastSmsCode('+243812345678') === '000000' ? '111111' : '000000';
+        foreach (range(1, 5) as $__) {
+            $this->postJson('/api/v1/auth/otp/verify', [...$payload, 'code' => $wrong]);
+        }
+        $this->travel(11)->minutes();
+    }
+
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
+
+    $this->postJson('/api/v1/auth/otp/verify', [...$payload, 'code' => lastSmsCode('+243812345678')])
+        ->assertStatus(429)
+        ->assertJsonPath('code', 'otp.locked');
+});
+
+it('keeps the plain code off the queue in clear text', function () {
+    $job = new App\Domain\Identity\Jobs\SendOtpSms('+243812345678', '123456', 'fr');
+
+    expect($job)->toBeInstanceOf(Illuminate\Contracts\Queue\ShouldBeEncrypted::class)
+        ->and($job->tries)->toBe(1)
+        ->and(config('horizon.silenced'))->toContain(App\Domain\Identity\Jobs\SendOtpSms::class);
 });
 
 // Verify (FR-03, FR-05, FR-06)
@@ -103,7 +151,7 @@ it('signs a new mobile user in with a device-bound token', function () {
 });
 
 it('creates the account in the request language', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
 
     $this->postJson('/api/v1/auth/otp/verify', [
         'phone' => '+243812345678', 'code' => lastSmsCode('+243812345678'), 'device' => mobileDevice(),
@@ -125,7 +173,7 @@ it('signs a web user in with a session', function () {
 });
 
 it('refuses to sign in a client that is neither the web app nor a device', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
 
     $this->postJson('/api/v1/auth/otp/verify', ['phone' => '+243812345678', 'code' => lastSmsCode('+243812345678')])
         ->assertUnprocessable()
@@ -142,7 +190,7 @@ it('recognises returning users', function () {
 });
 
 it('counts wrong codes and burns the challenge after 5', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     $code = lastSmsCode('+243812345678');
     $wrong = $code === '000000' ? '111111' : '000000';
     $payload = ['phone' => '+243812345678', 'device' => mobileDevice()];
@@ -160,7 +208,7 @@ it('counts wrong codes and burns the challenge after 5', function () {
 });
 
 it('rejects expired codes', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     $code = lastSmsCode('+243812345678');
 
     $this->travel(6)->minutes();
@@ -170,7 +218,7 @@ it('rejects expired codes', function () {
 });
 
 it('accepts each code only once', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     $code = lastSmsCode('+243812345678');
     $payload = ['phone' => '+243812345678', 'code' => $code, 'device' => mobileDevice()];
 
@@ -179,10 +227,10 @@ it('accepts each code only once', function () {
 });
 
 it('replaces an earlier unused code when a new one is requested', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     $first = lastSmsCode('+243812345678');
     $this->travel(61)->seconds();
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     $second = lastSmsCode('+243812345678');
 
     if ($first !== $second) {
@@ -214,7 +262,7 @@ it('enforces the device limit and lets the user replace a device with the same c
     signInMobile(installId: 'install-b-000002')->assertOk();
     $this->travel(61)->seconds();
 
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     $code = lastSmsCode('+243812345678');
     $payload = ['phone' => '+243812345678', 'code' => $code, 'device' => mobileDevice('install-c-000003')];
 
@@ -235,7 +283,7 @@ it('enforces the device limit and lets the user replace a device with the same c
 });
 
 it('does not let a banned user sign in', function () {
-    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678']);
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP);
     User::factory()->banned()->create(['phone_e164' => '+243812345678']);
 
     $this->postJson('/api/v1/auth/otp/verify', ['phone' => '+243812345678', 'code' => lastSmsCode('+243812345678'), 'device' => mobileDevice()])

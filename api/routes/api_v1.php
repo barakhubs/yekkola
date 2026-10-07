@@ -30,16 +30,16 @@ Route::prefix('auth')->name('auth.')->group(function () {
 });
 
 // Account (any signed-in user)
-Route::middleware(['auth:sanctum', 'active'])->prefix('me')->name('me.')->group(function () {
+Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('show');
-    Route::patch('/', [ProfileController::class, 'update'])->name('update');
+    Route::patch('/', [ProfileController::class, 'update'])->middleware('throttle:profile-update')->name('update');
     Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
     Route::delete('/deletion', [ProfileController::class, 'cancelDeletion'])->name('deletion.cancel');
 
     Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
     Route::delete('/devices/{device}', [DeviceController::class, 'destroy'])->name('devices.destroy');
 
-    Route::post('/phone/otp', [PhoneController::class, 'requestOtp'])->name('phone.otp');
+    Route::post('/phone/otp', [PhoneController::class, 'requestOtp'])->middleware('throttle:otp-verify')->name('phone.otp');
     Route::put('/phone', [PhoneController::class, 'update'])->middleware('throttle:otp-verify')->name('phone.update');
 
     Route::post('/export', [DataExportController::class, 'store'])->name('export.store');

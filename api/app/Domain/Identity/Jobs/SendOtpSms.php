@@ -7,24 +7,26 @@ namespace App\Domain\Identity\Jobs;
 use App\Domain\Shared\ValueObjects\PhoneNumber;
 use App\Integrations\Sms\SmsSender;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Lang;
 
 /**
- * Sends one OTP by SMS. On the high-priority queue: the user is waiting for it.
+ * Sends one OTP by SMS, on the high-priority `otp` queue (the user is waiting).
+ *
+ * The payload carries the plain code, so it is encrypted on the queue and silenced in Horizon
+ * (config/horizon.php). One try only: a late retry would deliver a stale or duplicate code —
+ * the user can request a new one after the cooldown.
  */
-final class SendOtpSms implements ShouldQueue
+final class SendOtpSms implements ShouldBeEncrypted, ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
 
-    /** Codes expire in minutes; retrying later than that is pointless. */
-    public int $tries = 3;
-
-    public int $backoff = 5;
+    public int $tries = 1;
 
     public function __construct(
         public readonly string $phoneE164,

@@ -43,6 +43,8 @@ final class AppServiceProvider extends ServiceProvider
 
         // OTP verification (sign-in, phone change): coarse per-IP cap on top of the per-challenge attempt limit.
         RateLimiter::for('otp-verify', fn (Request $request) => Limit::perMinutes(10, 30)->by($request->ip()));
+        // Profile updates (limits probing which emails are taken).
+        RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         // Every platform settings change is audited with before/after values.
         Event::listen(SavingSettings::class, AuditSettingsChange::class);

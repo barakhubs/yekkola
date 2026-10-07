@@ -12,6 +12,7 @@ return [
         'unauthenticated' => 'Veuillez vous connecter pour continuer.',
         'forbidden' => "Vous n'avez pas l'autorisation d'effectuer cette action.",
         'csrf_mismatch' => 'Votre session a expiré. Veuillez réessayer.',
+        'reauthentication_required' => 'Pour votre sécurité, reconnectez-vous puis réessayez.',
         'session_expired' => 'Vous avez été déconnecté. Veuillez vous reconnecter.',
         'client_unknown' => 'Client non reconnu : envoyez les informations de l’appareil ou utilisez le site web.',
     ],
@@ -43,6 +44,8 @@ return [
         'expired' => 'Ce code a expiré. Demandez un nouveau code.',
         'invalid' => 'Code incorrect.',
         'too_many_attempts' => 'Trop de tentatives. Demandez un nouveau code.',
+        'locked' => 'Trop de codes incorrects pour ce numéro. Réessayez plus tard.',
+        'temporarily_unavailable' => 'L’envoi de codes est temporairement indisponible. Réessayez plus tard.',
     ],
     'account' => [
         'banned' => 'Ce compte a été désactivé.',
@@ -58,10 +61,14 @@ return [
     'export' => [
         'not_ready' => "Aucun export disponible pour l'instant.",
         'in_progress' => 'Un export est déjà en cours de préparation.',
+        'not_found' => 'Aucun export demandé.',
+        'rate_limited' => 'Vous pouvez demander un export par jour.',
+        'filename' => 'yekkola-mes-donnees.json',
     ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',
         'taken' => 'Ce numéro est déjà utilisé par un autre compte.',
         'unchanged' => 'C’est déjà votre numéro actuel.',
+        'country_not_supported' => 'Les numéros de ce pays ne sont pas encore pris en charge.',
     ],
 ];

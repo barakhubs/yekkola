@@ -14,11 +14,9 @@ use App\Http\Requests\Auth\RequestOtpRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Http\Resources\DeviceResource;
 use App\Http\Resources\UserResource;
-use App\Integrations\BotChallenge\BotChallenge;
+use App\Http\Support\AuthContext;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 /**
  * Phone + SMS code sign-in (PRD-01). Web apps get a session cookie; mobile apps get a device-bound token.
@@ -26,17 +24,11 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 final class OtpController extends Controller
 {
     /**
-     * Send a sign-in code by SMS.
+     * Send a sign-in code by SMS. Always answers the same way, whether or not the number has an account.
      */
-    public function request(RequestOtpRequest $request, RequestOtp $requestOtp, BotChallenge $botChallenge): JsonResponse
+    public function request(RequestOtpRequest $request, RequestOtp $requestOtp): JsonResponse
     {
-        // Browsers must pass the human check; mobile apps get app attestation later (TODO).
-        if (EnsureFrontendRequestsAreStateful::fromFrontend($request)
-            && ! $botChallenge->verify((string) $request->input('bot_token'), $request->ip())) {
-            throw IdentityException::botChallengeFailed();
-        }
-
-        $challenge = $requestOtp->handle($request->phone(), OtpPurpose::Login, $request->ip(), $request->userAgent());
+        $challenge = $requestOtp->handle($request->phone(), OtpPurpose::Login, AuthContext::client($request));
 
         return new JsonResponse(['data' => [
             'challenge_id' => $challenge->id,
@@ -51,16 +43,16 @@ final class OtpController extends Controller
     public function verify(VerifyOtpRequest $request, SignInWithOtp $signIn): JsonResponse
     {
         $device = $request->deviceData();
-        $isWeb = EnsureFrontendRequestsAreStateful::fromFrontend($request);
+        $client = AuthContext::client($request);
 
-        if ($device === null && ! $isWeb) {
+        if ($device === null && ! $client->isBrowser) {
             throw IdentityException::clientUnknown();
         }
 
         $result = $signIn->handle(
             $request->phone(),
             (string) $request->input('code'),
-            App::getLocale(),
+            $client->locale,
             $device,
             $request->input('replace_device_id'),
         );
@@ -69,6 +61,7 @@ final class OtpController extends Controller
             Auth::guard('web')->login($result->user);
             $request->session()->regenerate();
             $request->session()->put(EnsureAccountActive::SESSION_EPOCH_KEY, $result->user->auth_epoch);
+            $request->session()->put(AuthContext::SESSION_SIGNED_IN_AT, now()->getTimestamp());
         }
 
         $result->user->load('province');

@@ -25,6 +25,9 @@ pest()->extend(TestCase::class)
 /** Headers that make a request look like it comes from the web app (Sanctum stateful domain). */
 const WEB_APP = ['Referer' => 'http://localhost:3000/', 'Origin' => 'http://localhost:3000'];
 
+/** Headers the mobile app sends (no bot check until app attestation lands). */
+const MOBILE_APP = ['X-Device-Id' => 'install-android-0001'];
+
 function lastSmsCode(string $e164): string
 {
     /** @var App\Integrations\Sms\LogSmsSender $sms */
@@ -53,7 +56,7 @@ function mobileDevice(string $installId = 'install-android-0001', string $platfo
 function signInMobile(string $phone = '+243812345678', string $installId = 'install-android-0001', array $extra = []): TestResponse
 {
     test()->seed(RolesAndPermissionsSeeder::class);
-    test()->postJson('/api/v1/auth/otp/request', ['phone' => $phone])->assertAccepted();
+    test()->postJson('/api/v1/auth/otp/request', ['phone' => $phone], ['X-Device-Id' => $installId])->assertAccepted();
 
     return test()->postJson('/api/v1/auth/otp/verify', [
         'phone' => $phone,

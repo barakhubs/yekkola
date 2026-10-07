@@ -55,6 +55,10 @@ final class IntegrationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         self::assertSafeForEnvironment($this->app->isProduction(), (array) config('yekkola.drivers'));
+
+        if ($this->app->isProduction() && $this->driver('bot_challenge') === 'turnstile' && (string) config('yekkola.turnstile.secret') === '') {
+            throw new RuntimeException('TURNSTILE_SECRET_KEY must be set in production.');
+        }
     }
 
     /**

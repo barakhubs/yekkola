@@ -134,6 +134,8 @@ return [
     */
 
     'silenced' => [
+        // Payload contains the plain OTP code.
+        App\Domain\Identity\Jobs\SendOtpSms::class,
         // App\Jobs\ExampleJob::class,
     ],
 
