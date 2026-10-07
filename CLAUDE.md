@@ -6,7 +6,8 @@
 
 - Before building a feature, read its PRD in `docs/prd/` and follow `docs/architecture.md` (schema, endpoints, file structure). Reference requirement IDs (e.g. `PRD-05 FR-07`) in commits and PRs.
 - If you change the schema, an endpoint, or the structure, update `docs/architecture.md` in the same change. `project-context.md` wins when docs disagree.
-- Never hard-code values listed under *Platform settings* or *Open decisions* in `project-context.md` — they are admin settings or undecided; ask.
+- **Work autonomously.** Don't hand tasks to the user or wait for go-aheads — plan, build, test, review, commit, push, and open the PR yourself. The only user step is merging PRs.
+- Never hard-code values listed under *Platform settings* or *Open decisions* in `project-context.md`. Don't block on them either: implement behind a setting/interface with a safe default, document the default, and add a `TODO.md` item to confirm it.
 - Business logic lives only in the API. Front ends (web, admin, mobile) display and submit.
 - Any API change: regenerate the OpenAPI spec and `packages/api-client` in the same change.
 - All user-facing text goes through translations (French default, English). No hard-coded copy.
@@ -21,10 +22,10 @@
 
 - **Every feature, fix, or change goes on its own branch** — never commit work directly to `main`.
 - **Before creating a branch:** switch to `main` and pull (`git checkout main && git pull --ff-only origin main`). Only branch from an up-to-date `main`.
-- **One open branch at a time.** Before starting a new branch, check for unmerged work (`git branch --no-merged main`, `gh pr list --author @me --state open`). If a branch or PR is still open, finish it (push, open PR, get it merged) first — or ask before starting another.
+- **One open branch at a time.** Before starting a new branch, check for unmerged work (`git branch --no-merged main`, `gh pr list --author @me --state open`). Unpushed work → finish it with `/open-pr`. A PR waiting to be merged → report it and don't start another branch.
 - Branch names: `feature/<short-name>`, `fix/<short-name>`, `chore/<short-name>`, `docs/<short-name>` (include the PRD ID when relevant, e.g. `feature/prd-01-phone-otp`).
-- After a PR is merged: switch to `main`, pull, delete the local branch.
-- Commits and PRs: short, human-style; no AI attribution. Use `/start-feature`, `/commit`, `/open-pr`.
+- Claude opens PRs; **the user merges them** (Claude never merges its own PRs). After a merge, the next `/start-feature` switches to `main`, pulls, and deletes merged local branches.
+- Commits and PRs: short, human-style, related changes in separate commits; no AI attribution. Flow: `/start-feature` → work → `/commit` → `/open-pr`.
 
 ## Layout
 
