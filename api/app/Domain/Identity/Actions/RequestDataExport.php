@@ -10,26 +10,38 @@ use App\Domain\Identity\Jobs\BuildDataExport;
 use App\Domain\Identity\Models\DataExport;
 use App\Domain\Identity\Models\User;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Cache\LockProvider;
 
 /**
- * Queues a personal-data export (PRD-01 FR-12). One export may be in progress at a time.
+ * Queues a personal-data export (PRD-01 FR-12): one in progress at a time, one per day.
  */
 final class RequestDataExport
 {
-    public function __construct(private readonly Dispatcher $bus) {}
+    public function __construct(
+        private readonly Dispatcher $bus,
+        private readonly LockProvider $locks,
+    ) {}
 
     public function handle(User $user): DataExport
     {
-        $pending = DataExport::query()
-            ->where('user_id', $user->id)
-            ->where('status', DataExportStatus::Pending)
-            ->exists();
+        $lock = $this->locks->lock('data-export:'.$user->id, 10);
+        $lock->block(5);
 
-        if ($pending) {
-            throw IdentityException::exportInProgress();
+        try {
+            $latest = DataExport::query()->where('user_id', $user->id)->latest()->first();
+
+            if ($latest?->status === DataExportStatus::Pending) {
+                throw IdentityException::exportInProgress();
+            }
+
+            if ($latest !== null && $latest->status === DataExportStatus::Ready && $latest->created_at->gt(now()->subDay())) {
+                throw IdentityException::exportRateLimited((int) now()->diffInSeconds($latest->created_at->addDay()));
+            }
+
+            $export = DataExport::query()->create(['user_id' => $user->id, 'status' => DataExportStatus::Pending]);
+        } finally {
+            $lock->release();
         }
-
-        $export = DataExport::query()->create(['user_id' => $user->id, 'status' => DataExportStatus::Pending]);
 
         $this->bus->dispatch(new BuildDataExport($export->id));
 

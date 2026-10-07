@@ -62,10 +62,17 @@ final class RegisterDevice
 
         $replace = $replaceDeviceId === null ? null : $active->firstWhere('id', $replaceDeviceId);
 
-        if ($replace === null || $active->count() - 1 >= $limit) {
+        if ($replace === null) {
             throw IdentityException::deviceLimitReached($active, $limit);
         }
 
         $this->revokeDevice->handle($replace);
+
+        // If the limit was lowered below the user's active count, also sign out the least recently used
+        // surplus devices so the user isn't stuck (PRD-07 BR-03).
+        $active->reject(fn ($d) => $d->id === $replace->id)
+            ->sortBy(fn ($d) => $d->last_active_at?->getTimestamp() ?? 0)
+            ->take(max(0, $active->count() - $limit))
+            ->each(fn ($d) => $this->revokeDevice->handle($d));
     }
 }

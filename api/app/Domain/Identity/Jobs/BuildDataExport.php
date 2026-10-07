@@ -7,7 +7,6 @@ namespace App\Domain\Identity\Jobs;
 use App\Domain\Identity\Enums\DataExportStatus;
 use App\Domain\Identity\Models\DataExport;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Filesystem\Factory as Storage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -25,7 +24,7 @@ final class BuildDataExport implements ShouldQueue
 
     public function __construct(public readonly string $exportId) {}
 
-    public function handle(Storage $storage): void
+    public function handle(): void
     {
         $export = DataExport::query()->with('user.province', 'user.devices')->findOrFail($this->exportId);
         $user = $export->user;
@@ -54,7 +53,7 @@ final class BuildDataExport implements ShouldQueue
         ];
 
         $path = "exports/{$user->id}/{$export->id}.json";
-        $storage->disk(DataExport::DISK)->put($path, (string) json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        DataExport::disk()->put($path, (string) json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $export->forceFill([
             'status' => DataExportStatus::Ready,

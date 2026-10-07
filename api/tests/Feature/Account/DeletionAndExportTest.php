@@ -21,6 +21,18 @@ it('records a deletion request and lets the user cancel it', function () {
     $this->deleteJson('/api/v1/me/deletion', [], bearer($token))->assertOk()->assertJsonPath('data.deletion_requested_at', null);
 });
 
+it('never anonymises banned accounts (no ban evasion by deletion)', function () {
+    $token = signInMobile()->json('data.token');
+    freshAuth();
+    $this->deleteJson('/api/v1/me', [], bearer($token))->assertOk();
+    userByPhone('+243812345678')->forceFill(['status' => App\Domain\Identity\Enums\UserStatus::Banned])->save();
+
+    $this->travel(15)->days();
+    $this->artisan('identity:purge-deleted-accounts')->assertSuccessful();
+
+    expect(userByPhone('+243812345678')->trashed())->toBeFalse();
+});
+
 it('anonymises accounts after the 14-day grace period and frees the number', function () {
     $token = signInMobile()->json('data.token');
     freshAuth();
@@ -40,7 +52,8 @@ it('anonymises accounts after the 14-day grace period and frees the number', fun
         ->and($erased->name)->toBeNull()
         ->and($erased->tokens()->count())->toBe(0)
         ->and(Device::query()->active()->count())->toBe(0)
-        ->and(Activity::query()->where('event', 'user.anonymized')->exists())->toBeTrue();
+        ->and(Activity::query()->where('event', 'user.anonymized')->exists())->toBeTrue()
+        ->and(App\Domain\Identity\Models\OtpChallenge::query()->count())->toBe(0);
 
     freshAuth();
     $this->getJson('/api/v1/me', bearer($token))->assertUnauthorized();
@@ -53,7 +66,7 @@ it('anonymises accounts after the 14-day grace period and frees the number', fun
 // Export (FR-12)
 
 it('builds a personal-data export the user can download', function () {
-    Storage::fake(DataExport::DISK);
+    Storage::fake('local');
     $token = signInMobile()->json('data.token');
 
     freshAuth();
@@ -82,10 +95,40 @@ it('allows one export in progress at a time', function () {
     $this->postJson('/api/v1/me/export', [], bearer($token))->assertStatus(409)->assertJsonPath('code', 'export.in_progress');
 });
 
-it('refuses downloads before an export is ready or after it expires', function () {
-    Storage::fake(DataExport::DISK);
+it('allows one export per day', function () {
+    Storage::fake('local');
     $token = signInMobile()->json('data.token');
 
+    freshAuth();
+    $this->postJson('/api/v1/me/export', [], bearer($token))->assertAccepted();
+    freshAuth();
+    $this->postJson('/api/v1/me/export', [], bearer($token))->assertStatus(429)->assertJsonPath('code', 'export.rate_limited');
+
+    $this->travel(25)->hours();
+    freshAuth();
+    $this->postJson('/api/v1/me/export', [], bearer($token))->assertAccepted();
+});
+
+it('prunes expired export files', function () {
+    Storage::fake('local');
+    $token = signInMobile()->json('data.token');
+    freshAuth();
+    $this->postJson('/api/v1/me/export', [], bearer($token));
+    $path = DataExport::query()->sole()->path;
+
+    $this->travel(9)->days();
+    $this->artisan('model:prune', ['--model' => [DataExport::class]])->assertSuccessful();
+
+    expect(DataExport::query()->count())->toBe(0);
+    Storage::disk('local')->assertMissing($path);
+});
+
+it('refuses downloads before an export is ready or after it expires', function () {
+    Storage::fake('local');
+    $token = signInMobile()->json('data.token');
+
+    freshAuth();
+    $this->getJson('/api/v1/me/export', bearer($token))->assertNotFound()->assertJsonPath('code', 'export.not_found');
     freshAuth();
     $this->get('/api/v1/me/export/download', bearer($token))->assertStatus(409)->assertJsonPath('code', 'export.not_ready');
 

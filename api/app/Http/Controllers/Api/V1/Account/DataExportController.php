@@ -10,8 +10,9 @@ use App\Domain\Identity\Models\DataExport;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DataExportResource;
-use Illuminate\Contracts\Filesystem\Factory as Storage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 final class DataExportController extends Controller
 {
     /**
-     * Request a new export (built in the background).
+     * Request a new export (built in the background). One per day.
      */
     public function store(Request $request, RequestDataExport $requestExport): JsonResponse
     {
@@ -36,13 +37,13 @@ final class DataExportController extends Controller
      */
     public function show(Request $request): DataExportResource
     {
-        return new DataExportResource($this->latest($request) ?? throw IdentityException::exportNotReady());
+        return new DataExportResource($this->latest($request) ?? throw IdentityException::exportNotFound());
     }
 
     /**
-     * Download the latest ready export.
+     * Download the latest ready export: a short-lived signed link on object storage, streamed otherwise.
      */
-    public function download(Request $request, Storage $storage): StreamedResponse
+    public function download(Request $request): StreamedResponse|RedirectResponse
     {
         $export = $this->latest($request);
 
@@ -50,7 +51,17 @@ final class DataExportController extends Controller
             throw IdentityException::exportNotReady();
         }
 
-        return $storage->disk(DataExport::DISK)->download((string) $export->path, 'yekkola-mes-donnees.json');
+        $disk = DataExport::disk();
+        $filename = (string) __('errors.export.filename');
+
+        if ($disk instanceof FilesystemAdapter && $disk->providesTemporaryUrls() && config('yekkola.private_disk') !== 'local') {
+            return redirect()->away($disk->temporaryUrl((string) $export->path, now()->addMinutes(5), [
+                'ResponseContentDisposition' => 'attachment; filename="'.$filename.'"',
+            ]));
+        }
+
+        /** @var FilesystemAdapter $disk */
+        return $disk->download((string) $export->path, $filename);
     }
 
     private function latest(Request $request): ?DataExport
