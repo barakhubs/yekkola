@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(git fetch*)",
+      "Bash(git pull --ff-only*)",
+      "Bash(git checkout main)",
+      "Bash(git switch*)",
+      "Bash(gh pr list*)",
+      "Bash(gh pr view*)",
+      "Bash(gh pr status*)",
+      "Bash(php artisan test*)",
+      "Bash(php artisan route:list*)",
+      "Bash(composer test*)",
+      "Bash(./vendor/bin/pest*)",
+      "Bash(./vendor/bin/phpstan*)",
+      "Bash(./vendor/bin/pint*)",
+      "Bash(pnpm lint*)",
+      "Bash(pnpm typecheck*)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm turbo*)",
+      "Bash(flutter analyze*)",
+      "Bash(flutter test*)",
+      "Bash(dart format*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(gh pr create*)",
+      "Bash(gh pr merge*)",
+      "Bash(php artisan migrate*)",
+      "Bash(composer require*)",
+      "Bash(pnpm add*)",
+      "Bash(flutter pub add*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.production)",
+      "Read(**/.env.staging)",
+      "Bash(php artisan migrate:fresh*)",
+      "Bash(php artisan db:wipe*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)"
+    ]
+  }
+}

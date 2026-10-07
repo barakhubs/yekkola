@@ -13,6 +13,15 @@
 - Do not privilege Kinshasa or any city/province in copy, defaults, or data.
 - External services (Mux, payments, SMS) are only reached through their interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`); tests use the fake drivers.
 
+## Git workflow
+
+- **Every feature, fix, or change goes on its own branch** — never commit work directly to `main`.
+- **Before creating a branch:** switch to `main` and pull (`git checkout main && git pull --ff-only origin main`). Only branch from an up-to-date `main`.
+- **One open branch at a time.** Before starting a new branch, check for unmerged work (`git branch --no-merged main`, `gh pr list --author @me --state open`). If a branch or PR is still open, finish it (push, open PR, get it merged) first — or ask before starting another.
+- Branch names: `feature/<short-name>`, `fix/<short-name>`, `chore/<short-name>`, `docs/<short-name>` (include the PRD ID when relevant, e.g. `feature/prd-01-phone-otp`).
+- After a PR is merged: switch to `main`, pull, delete the local branch.
+- Commits and PRs: short, human-style; no AI attribution. Use `/start-feature`, `/commit`, `/open-pr`.
+
 ## Layout
 
 | Folder | What | Notes |
@@ -23,6 +32,14 @@
 | `packages/` | Shared front-end packages (ui, api-client, i18n, config) | See `packages/CLAUDE.md` |
 | `mobile/` | Flutter app (phase 3) | See `mobile/CLAUDE.md` |
 | `docs/` | Architecture, PRDs, runbooks | |
+
+## Claude Code setup (`.claude/`)
+
+- **Commands:** `/start-feature <branch>`, `/implement <PRD-NN FR-NN>`, `/review`, `/commit`, `/open-pr`, `/decide <decision>`, `/docs-sync`, `/new-prd <area>`
+- **Subagents:** `api-engineer`, `frontend-engineer`, `flutter-engineer`, `test-writer`, `reviewer` (read-only), `ledger-auditor` (read-only), `docs-keeper`
+- **Skills:** `api-endpoint`, `schema-change`, `frontend-feature`, `flutter-feature`, `prd-author`
+- **Rules** (load by path): money & ledger, database, i18n, generated code, content protection
+- Commits: short, human-style subject line, no AI attribution (enforced in `.claude/settings.json`).
 
 ## Commands
 
