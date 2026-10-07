@@ -7,13 +7,15 @@ return [
     /*
      * If set to false, no activities will be saved to the database.
      */
-    'enabled' => env('ACTIVITY_LOGGER_ENABLED', true),
+    // The audit log is mandatory (PRD-09 FR-16) — never switch it off.
+    'enabled' => true,
 
     /*
      * When the clean-command is executed, all recording activities older than
      * the number of days specified here will be deleted.
      */
-    'delete_records_older_than_days' => 365,
+    // Audit entries are immutable — never schedule activitylog:clean.
+    'delete_records_older_than_days' => null,
 
     /*
      * If no log name is passed to the activity() helper

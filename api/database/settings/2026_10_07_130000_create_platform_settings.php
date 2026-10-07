@@ -16,6 +16,7 @@ return new class extends SettingsMigration
         $this->migrator->add('commerce.enabled_currencies', ['USD', 'CDF']);           // provisional
         $this->migrator->add('commerce.default_currency', 'USD');                       // provisional
         $this->migrator->add('commerce.default_revenue_share_bps', 7_000);              // provisional: 70% professor
+        $this->migrator->add('commerce.enabled_gateways', ['fake']);                   // real aggregator added when integrated
         $this->migrator->add('commerce.enabled_rails', ['orange', 'airtel', 'mpesa']);
         $this->migrator->add('commerce.price_limits_minor', [                            // provisional
             'USD' => ['min' => 100, 'max' => 50_000],                                   // 1.00 – 500.00 USD

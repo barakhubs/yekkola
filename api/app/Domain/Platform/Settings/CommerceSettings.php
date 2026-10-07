@@ -23,6 +23,10 @@ final class CommerceSettings extends Settings
     /** Professor's share of a sale in basis points (7000 = 70%). Overridable per professor and course. */
     public int $default_revenue_share_bps;
 
+    // Payment gateways accepting payments (driver names); remove one to pause it during an outage.
+    /** @phpstan-var array<int, string> */
+    public array $enabled_gateways;
+
     // Mobile-money rails accepting payments (App\Domain\Commerce\Enums\MobileMoneyRail values).
     /** @phpstan-var array<int, string> */
     public array $enabled_rails;
