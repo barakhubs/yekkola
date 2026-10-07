@@ -65,4 +65,10 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 
 Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_DRIVER`); production refuses to boot with `fake`/`log`. New real drivers must pass the contract tests in `tests/Feature/Integrations/*ContractTest.php` (add them to the dataset).
 
-**FakeGateway outcomes** by the last 4 digits of the payer/recipient number: `0001` fails, `0002` stays pending, `0003` late success, `0004` succeeds then reverses, anything else pending → succeeded on re-check. Tests can force outcomes with `FakeGateway::queue(Scenario::...)`.
+**Payment rules:** look transactions up by **our** reference; a start that throws `GatewayOutcomeUnknown` stays pending and is reconciled, never retried under a new reference; `UnknownTransaction` means "keep pending", never "failed"; always compare the confirmed `amount` with what was requested; amounts must be multiples of `Currency::collectionStepMinor()` (CDF = whole francs).
+
+**FakeGateway outcomes** by the last 4 digits of the payer/recipient number (full list in `Scenario`): `0001` insufficient funds, `0002` pending forever, `0003` late success, `0004` reversal, `0005` fail then succeed, `0006` unavailable, `0007` timeout-but-succeeds, `0008` amount mismatch, `0009` rejected by payer, `0010` invalid recipient; anything else pending → succeeded on re-check. Tests can force outcomes with `queue(Scenario::...)` and outages with `makeUnavailable($rail)`; `webhookFor($reference)` builds a signed webhook.
+
+**LogSmsSender:** numbers ending `0000` simulate a provider rejection. Logs mask the number.
+
+Fake drivers outside local/testing need `FAKE_WEBHOOK_SECRET`. Set `DEMO_ADMIN_PHONE` (a number you control) to seed a demo super admin locally/on staging.

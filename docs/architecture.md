@@ -85,7 +85,7 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 1. `POST /checkout/quote` → server computes price, discounts, currency (never trusts client totals).
 2. `POST /orders` with `Idempotency-Key` → `Order(pending)` + items with **snapshotted** price and revenue split.
 3. `POST /orders/{id}/payments {rail, msisdn}` → `PaymentGateway::collect()` → `Payment(pending)`; student approves the USSD prompt on their phone.
-4. Gateway webhook → `/webhooks/payments/{gateway}` → dedupe → verify signature → re-query gateway for status (never trust webhook body alone) → `Payment(succeeded)`.
+4. Gateway webhook → `/webhooks/payments/{gateway}` → verify signature → dedupe by event id → re-query the gateway **by our payment reference** (never trust the webhook body alone) → compare the confirmed amount/currency with the payment → `Payment(succeeded)`. A start call that times out (`GatewayOutcomeUnknown`) stays pending and is reconciled the same way — never retried under a new reference.
 5. `PaymentSucceeded` event → `Order(paid)` → `Enrollment` per item → ledger transaction (gateway clearing ↔ professor earnings (held) + platform revenue) → receipt notification.
 6. Client polls `GET /orders/{id}` until terminal state. A scheduled reconciliation job re-queries all payments stuck in `pending` past the timeout.
 
@@ -285,7 +285,7 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `ledger_accounts` | id, type, owner_type, owner_id (null), currency, unique `(type, owner_type, owner_id, currency)` | Types: `gateway_clearing`, `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`. |
+| `ledger_accounts` | id, type, owner_type, owner_id (null), currency, unique `(type, owner_type, owner_id, currency)` | Types: `gateway_clearing`, `gateway_fees` (aggregator collection/disbursement fees), `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`. |
 | `ledger_transactions` | id, type (`sale`/`release`/`refund`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Immutable. |
 | `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor, currency, created_at | Sum of debits = sum of credits per transaction (enforced in code + DB check via trigger or test). |
 | `payout_batches` | id, status (`draft`/`approved`/`processing`/`completed`/`partially_failed`), currency, period_end, created_by, approved_by, approved_at | |
