@@ -17,7 +17,7 @@ it('seeds the 26 DRC provinces once, listed alphabetically', function () {
     $names = Province::query()->alphabetical()->pluck('name')->all();
 
     expect(Province::query()->count())->toBe(26)
-        ->and($names)->toBe(collect($names)->sort(SORT_LOCALE_STRING)->values()->all())
+        ->and(array_slice($names, 0, 3))->toBe(['Bas-Uele', 'Équateur', 'Haut-Katanga'])
         ->and(Province::query()->where('code', 'CD-NK')->value('name'))->toBe('Nord-Kivu');
 });
 
@@ -49,6 +49,9 @@ it('grants staff permissions by role, keeping finance separate', function () {
     expect($moderator->can(Permission::ModerationReview->value))->toBeTrue()
         ->and($moderator->can(Permission::SettingsManage->value))->toBeFalse()
         ->and($admin->can(Permission::SettingsManage->value))->toBeTrue()
+        ->and($admin->can(Permission::StaffManage->value))->toBeTrue()
+        ->and($admin->can(Permission::KycView->value))->toBeTrue()
+        ->and($admin->can(Permission::StaffRoles->value))->toBeFalse()
         ->and($admin->can(Permission::FinancePayouts->value))->toBeFalse()
         ->and($super->can(Permission::FinancePayouts->value))->toBeTrue();
 

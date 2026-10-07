@@ -23,6 +23,8 @@ enum Permission: string
     case FinanceAdjustments = 'finance.adjustments';
     case SettingsManage = 'settings.manage';
     case StaffManage = 'staff.manage';
+    /** Assign or change staff roles — super admin only (PRD-09 §3). */
+    case StaffRoles = 'staff.roles';
     case AuditView = 'audit.view';
     case KycView = 'kyc.view';
 }

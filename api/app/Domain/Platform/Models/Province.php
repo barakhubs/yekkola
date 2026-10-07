@@ -26,6 +26,7 @@ final class Province extends Model
      */
     public function scopeAlphabetical(Builder $query): void
     {
-        $query->orderBy('name');
+        // ICU collation so accented names sort naturally (Équateur between Bas-Uele and Haut-Katanga).
+        $query->orderByRaw('name COLLATE "und-x-icu"');
     }
 }

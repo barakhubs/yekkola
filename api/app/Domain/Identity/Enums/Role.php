@@ -41,6 +41,8 @@ enum Role: string
                 Permission::CatalogManage,
                 Permission::CommerceView,
                 Permission::SettingsManage,
+                Permission::StaffManage,
+                Permission::KycView,
                 Permission::AuditView,
             ],
             self::SuperAdmin => Permission::cases(),
