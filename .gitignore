@@ -1,0 +1,63 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Laravel (api/)
+api/vendor/
+api/node_modules/
+api/public/storage
+api/public/hot
+api/storage/*.key
+api/storage/logs/*
+api/storage/framework/cache/*
+api/storage/framework/sessions/*
+api/storage/framework/views/*
+api/storage/framework/testing/*
+api/bootstrap/cache/*.php
+api/.phpunit.result.cache
+api/.phpunit.cache/
+
+# Node / Next.js / Turborepo
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+pnpm-debug.log*
+.pnpm-store/
+.vercel/
+
+# Flutter (mobile/)
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/build/
+mobile/**/build/
+mobile/.packages
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/android/app/*.jks
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+*.keystore
+
+# Testing / tooling
+playwright-report/
+test-results/
