@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Domain\Identity\Console\PurgeDeletedAccounts;
 use App\Domain\Shared\Exceptions\DomainException;
 use App\Http\ApiErrorResponse;
+use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureIdempotency;
 use App\Http\Middleware\SetLocaleFromHeader;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -20,12 +22,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         apiPrefix: 'api/v1',
     )
+    ->withCommands([
+        PurgeDeletedAccounts::class,
+    ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.
         $middleware->statefulApi();
         // Global so every response — including 404s for unknown routes — is localised.
         $middleware->prepend(SetLocaleFromHeader::class);
-        $middleware->alias(['idempotent' => EnsureIdempotency::class]);
+        $middleware->alias([
+            'idempotent' => EnsureIdempotency::class,
+            'active' => EnsureAccountActive::class,
+        ]);
         // Authentication always runs before idempotency, whatever the order on the route.
         $middleware->appendToPriorityList(Authenticate::class, EnsureIdempotency::class);
     })

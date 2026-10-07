@@ -52,6 +52,10 @@ final class ApiErrorResponse
 
         $headers = $e instanceof HttpExceptionInterface ? $e->getHeaders() : [];
 
+        if (isset($extra['retry_after']) && is_int($extra['retry_after'])) {
+            $headers['Retry-After'] = (string) $extra['retry_after'];
+        }
+
         return new JsonResponse(array_merge($extra, $body), $status, $headers);
     }
 

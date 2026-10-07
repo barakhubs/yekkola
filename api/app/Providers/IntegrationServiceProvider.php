@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Integrations\BotChallenge\BotChallenge;
+use App\Integrations\BotChallenge\FakeBotChallenge;
+use App\Integrations\BotChallenge\TurnstileBotChallenge;
 use App\Integrations\Payments\FakeGateway;
 use App\Integrations\Payments\PaymentGateway;
 use App\Integrations\Sms\LogSmsSender;
@@ -40,6 +43,12 @@ final class IntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(SmsSender::class, fn (Application $app): SmsSender => match ($this->driver('sms')) {
             'log' => new LogSmsSender($app->make('log')),
             default => throw new InvalidArgumentException('Unknown SMS driver ['.$this->driver('sms').'].'),
+        });
+
+        $this->app->singleton(BotChallenge::class, fn (Application $app): BotChallenge => match ($this->driver('bot_challenge')) {
+            'fake' => new FakeBotChallenge,
+            'turnstile' => new TurnstileBotChallenge($app->make('http'), $app->make('log'), (string) config('yekkola.turnstile.secret')),
+            default => throw new InvalidArgumentException('Unknown bot challenge driver ['.$this->driver('bot_challenge').'].'),
         });
     }
 

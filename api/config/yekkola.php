@@ -16,6 +16,28 @@ return [
         'payments' => env('PAYMENT_DRIVER', 'fake'),
         // log | <provider> (deferred until the SMS gateway is chosen)
         'sms' => env('SMS_DRIVER', 'log'),
+        // fake | turnstile (web OTP requests)
+        'bot_challenge' => env('BOT_CHALLENGE_DRIVER', 'fake'),
+    ],
+
+    'turnstile' => [
+        'secret' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
+    'auth' => [
+        // Mobile API tokens expire after this many days (users sign in again with an OTP).
+        'token_ttl_days' => (int) env('AUTH_TOKEN_TTL_DAYS', 90),
+        'otp_ttl_minutes' => 5,
+        'otp_max_attempts' => 5,
+        'otp_resend_after_seconds' => 60,
+        // PRD-01 FR-10
+        'otp_per_phone' => ['max' => 3, 'decay_seconds' => 600],
+        'otp_per_ip' => ['max' => 10, 'decay_seconds' => 3_600],
+        // Grace period before a deletion request anonymises the account (FR-11).
+        'deletion_grace_days' => 14,
+        'export_ttl_days' => 7,
+        // Android SMS Retriever app hash (11 chars) appended to OTP texts once the app exists.
+        'sms_retriever_hash' => env('SMS_RETRIEVER_HASH'),
     ],
 
     // Secret used to sign fake webhooks. Required outside local/testing (no committed default).
