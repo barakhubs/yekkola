@@ -24,7 +24,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [x] Folder structure + CLAUDE.md files
 - [x] Claude Code setup: settings, rules, skills, subagents, commands (PR #1)
 - [x] Git workflow + SOLID guidelines (PR #1)
-- [x] Project TODO list + autonomous workflow commands
+- [x] Project TODO list + autonomous workflow commands — #2
 - [ ] `.gitattributes` (`* text=auto eol=lf`) to stop CRLF/LF churn
 - [ ] Runbooks skeleton in `docs/runbooks/` (stuck payments, failed payouts, Mux outage, SMS outage, compromised admin)
 
