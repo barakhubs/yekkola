@@ -33,6 +33,7 @@ return [
     ],
     'webhook' => [
         'invalid_signature' => 'Signature du webhook invalide.',
+        'invalid_payload' => 'Contenu du webhook invalide.',
     ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',

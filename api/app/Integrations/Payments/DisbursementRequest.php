@@ -18,5 +18,9 @@ final readonly class DisbursementRequest
         public PhoneNumber $recipient,
         public string $recipientName,
         public string $description,
-    ) {}
+        /** For refunds: the reference of the original collection being refunded. */
+        public ?string $relatedReference = null,
+    ) {
+        TransferGuard::assertValid($reference, $amount, $description);
+    }
 }

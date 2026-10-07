@@ -17,5 +17,7 @@ final readonly class CollectionRequest
         public MobileMoneyRail $rail,
         public PhoneNumber $payer,
         public string $description,
-    ) {}
+    ) {
+        TransferGuard::assertValid($reference, $amount, $description);
+    }
 }
