@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `docs/project-todo` — this TODO list
+- **Current branch:** none — waiting for the TODO-list PR to be merged
 - **Next up:** Phase 0 decisions + Mux spike, then Phase 1.1 (API scaffold)
 
 ## Legend
@@ -24,7 +24,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [x] Folder structure + CLAUDE.md files
 - [x] Claude Code setup: settings, rules, skills, subagents, commands (PR #1)
 - [x] Git workflow + SOLID guidelines (PR #1)
-- [~] Project TODO list (this file)
+- [x] Project TODO list + autonomous workflow commands
 - [ ] `.gitattributes` (`* text=auto eol=lf`) to stop CRLF/LF churn
 - [ ] Runbooks skeleton in `docs/runbooks/` (stuck payments, failed payouts, Mux outage, SMS outage, compromised admin)
 
