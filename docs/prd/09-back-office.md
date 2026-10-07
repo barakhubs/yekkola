@@ -81,4 +81,4 @@ Review SLA (time from submit to decision), application SLA, report resolution ti
 
 ## 9. Open questions
 
-- Review SLA targets (e.g. 48 h for courses) — **Open**, operations decision.
+- Review SLA targets — provisional: courses 48 h, applications 72 h (platform setting); confirm.

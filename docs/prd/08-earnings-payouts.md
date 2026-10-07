@@ -52,7 +52,7 @@ Every sale is split between the professor and the platform and recorded in a **d
 
 - **BR-01** Revenue share is taken from the order item snapshot, never recomputed.
 - **BR-02** Ledger rows are never updated or deleted; corrections are reversing/adjusting transactions.
-- **BR-03** Payout fees: who pays aggregator disbursement fees — **Open**.
+- **BR-03** Payout fees: paid by the platform *(provisional setting)*.
 - **BR-04** Withholding tax on professor earnings — **Open** (accountant).
 - **BR-05** Payouts are in the same currency the earnings were made in.
 
@@ -83,5 +83,5 @@ Every sale is split between the professor and the platform and recorded in a **d
 ## 10. Open questions
 
 - Default revenue split, payout schedule, minimum payout — business decisions → settings.
-- Disbursement fee responsibility — **Open**.
+- Disbursement fee responsibility — provisional: platform pays; confirm.
 - Tax/withholding — **Open**.

@@ -34,7 +34,7 @@ Professors' income depends on content not being freely shared. Yekkola uses **Mu
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-01 | All video/audio assets created with DRM playback policy; no public playback IDs (except preview lessons, which use signed tokens without enrollment). | Must |
+| FR-01 | Video assets created with `video_quality: plus` and the DRM playback policy; audio-only assets with signed playback (Mux has no DRM for audio). No public playback IDs (preview lessons use signed tokens without enrollment). | Must |
 | FR-02 | Playback token endpoint: checks enrollment/preview, account status, device/stream limits; returns signed playback token + DRM license token (short TTL, e.g. 6 h) + watermark text. | Must |
 | FR-03 | Burned-in watermark at upload (Yekkola logo + professor name), via Mux overlay. | Must |
 | FR-04 | Per-viewer overlay: name + masked phone (e.g. `Marie K. · +243 8•• ••• 123`), semi-transparent, moving position every 30–60 s; web and mobile players. | Must |
@@ -69,7 +69,7 @@ Professors' income depends on content not being freely shared. Yekkola uses **Mu
 - Phone storage full mid-download → pause with message; resume after space is freed.
 - App reinstalled → new install ID → counts as a new device unless the old one is removed (show guidance).
 - Student refunded while offline → content plays until license expiry or next sync, whichever comes first.
-- Mux SDK cannot download audio-only assets offline → fall back: **Open** (see §10).
+- Audio offline: no DRM available — downloaded via signed URL and encrypted at rest with a per-device key (see `docs/research/mux.md` §2).
 
 ## 8. Acceptance criteria
 
@@ -85,6 +85,6 @@ Professors' income depends on content not being freely shared. Yekkola uses **Mu
 
 ## 10. Open questions / to verify
 
-- Mux DRM + offline download support for **audio-only** assets (verify early; fallback: encrypted audio via a different mechanism).
+- ~~Mux DRM for audio-only assets~~ — resolved: not supported; audio uses signed playback + encrypted-at-rest offline files (`docs/research/mux.md`). Validate in the Mux spike.
 - Exact Mux resolution tiers available for downloads on each platform.
 - Mux DRM license pricing at expected volume.

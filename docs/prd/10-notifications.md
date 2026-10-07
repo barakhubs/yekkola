@@ -77,5 +77,5 @@ Yekkola tells users what matters — payment results, course approvals, answers 
 
 ## 8. Open questions
 
-- WhatsApp as a channel (receipts, answers) via WhatsApp Business API — high reach in DRC; **Open**.
+- WhatsApp as a channel (receipts, answers) via WhatsApp Business API — provisional: post-launch backlog.
 - Transactional email provider (e.g. Postmark/Resend/SES) — **Open**, small decision.

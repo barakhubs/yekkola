@@ -10,6 +10,12 @@
 | `project-context.md` (this file) | Product, principles, stack, decisions, scope |
 | [`docs/architecture.md`](docs/architecture.md) | System architecture, repo/file structure, database schema, API catalogue, UI architecture, scaling, security |
 | [`docs/prd/`](docs/prd/) | One PRD per product area — requirements, rules, acceptance criteria |
+| [`docs/brand.md`](docs/brand.md) | Colours, scales, contrast, Nunito type scale, tagline, logo brief |
+| [`docs/research/`](docs/research/) | Vendor research (Mux findings + cost estimate) |
+| [`docs/spikes/`](docs/spikes/) | De-risking experiments: plans and results |
+| [`docs/runbooks/`](docs/runbooks/) | Incident playbooks |
+| [`docs/catalogue-categories.md`](docs/catalogue-categories.md) | Launch category tree (provisional seed) |
+| [`TODO.md`](TODO.md) | Start-to-finish task list |
 
 When docs disagree, **this file wins**; fix the other doc in the same PR.
 
@@ -59,21 +65,22 @@ Use these terms consistently in code, API, and UI copy.
 | **Primary** | `#2c3892` (deep indigo) | Main buttons, links, active nav, headers, focus rings, primary chart series |
 | **Secondary** | `#fdb73b` (amber) | Highlights and accents: "Gratuit" badges, ratings stars, featured tags, promo banners, progress/celebration moments, second chart series |
 
+| **Font** | **Nunito** (Google Fonts, OFL) | Everything — UI, headings, body — on web and mobile. Weights 400/600/700/800. Self-hosted via `next/font` on web, bundled in the Flutter app. |
+
 **Contrast rules (WCAG AA):**
 - White text on primary: ~10:1 ✓ — default for primary buttons.
-- Primary text on secondary: ~5.7:1 ✓ — use indigo (or near-black) text on amber surfaces.
-- Secondary text on primary: ~5.7:1 ✓ — amber accents on indigo backgrounds are fine.
-- **White text on secondary: ~1.8:1 ✗** and **secondary text on white ✗** — never use amber for text or as a background behind white text.
-- Dark mode: primary is too dark on dark backgrounds — use a lighter indigo tint for interactive elements, verified ≥ 4.5:1 against the dark surface.
+- Primary text on secondary: ~5.7:1 ✓ — use indigo text on amber surfaces.
+- **White text on secondary: ~1.8:1 ✗** and **secondary text on white ✗** — for amber-coloured text use `amber-700`.
+- Dark mode: interactive elements use `indigo-300` (10:1 on `#0f172a`).
 
-**Tokens:** defined once in `packages/ui` (CSS variables, light + dark) and mirrored in the Flutter theme. Map shadcn `--primary` to brand indigo (`--primary-foreground` white). Keep shadcn's `--secondary` as a neutral (it's used for low-emphasis buttons everywhere) and expose amber as a separate `--brand-accent` / `--brand-accent-foreground` (indigo) token, so amber stays a highlight rather than flooding the UI. Logos, wordmark, and fonts: to be added to `packages/ui` when ready.
+**Tokens:** shadcn `--primary` = indigo (`indigo-800` light / `indigo-300` dark); amber exposed as a separate `--brand-accent` token; shadcn `--secondary` stays neutral. Full 50–950 scales, usage table, type scale, tagline, and logo brief: [`docs/brand.md`](docs/brand.md).
 
 ## Content model
 
 `Course → CourseVersion → Sections → Lessons`, where each lesson is one of:
 
 - **Video** — the expensive one: transcoding, DRM, bandwidth. Hosted on Mux.
-- **Audio** — lecture-style content at a fraction of video's data cost. Hosted on Mux as audio-only assets. Treat as first-class, not an afterthought.
+- **Audio** — lecture-style content at a fraction of video's data cost. Hosted on Mux as audio-only assets (signed playback — Mux doesn't support DRM on audio). Treat as first-class, not an afterthought.
 - **Document** — PDF/slides/worksheets. Stored in object storage.
 - **Quiz** — multiple-choice/true-false practice tests with scoring and explanations. Central to the exam-prep persona.
 
@@ -87,11 +94,12 @@ Use these terms consistently in code, API, and UI copy.
 
 Paid content must not be trivially shareable — piracy directly undercuts professor income. Protection applies to free courses too (it is the professor's content).
 
-- **Video & audio:** Mux DRM (Widevine / FairPlay). Signed playback + DRM tokens are issued by the API only to users with an active enrollment (or for preview lessons).
+- **Video:** Mux DRM (Widevine / FairPlay). Signed playback + DRM tokens are issued by the API only to users with an active enrollment (or for preview lessons).
+- **Audio:** Mux signed playback (short-lived tokens, same access checks) — Mux can't DRM audio-only assets. Offline audio is encrypted at rest in app-private storage with a per-device key and the same expiry as offline licenses. Weaker than DRM; accepted for v1 (see [`docs/research/mux.md`](docs/research/mux.md) §2).
 - **Watermarking, two layers:**
   - *Burned in at upload* (Mux `overlay_settings`): Yekkola logo + professor name, identical for all viewers.
   - *Per-viewer overlay in the player*: viewer's name/phone drawn over the video by our web and mobile players, repositioning periodically. Mux has no per-viewer watermark, so this is ours — a deterrent against screen recording, not forensic tracing.
-- **Offline (mobile):** downloaded through Mux's native SDKs as DRM-protected files with a persistent license. Never store plain media files on device.
+- **Offline (mobile):** video downloaded through Mux's native SDKs as DRM-protected files with a persistent license; audio encrypted at rest (above). Never store plain media files on device.
 - **Documents:** served via short-lived signed URLs; every download is stamped with the student's name/phone (per-student PDF watermark, generated on a queue and cached).
 - **Devices:**
   - *Registered devices* (mobile apps — can hold offline downloads) are limited per account (admin setting, default 2).
@@ -120,7 +128,8 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 - **Flutter gap:** Mux ships native players with offline-download managers for Android (`MuxDownloadManager`, Media3) and iOS (`MuxOfflineAccessManager`, AVFoundation), but **no Flutter SDK**. Phase 3 includes a small in-house Flutter plugin wrapping these native SDKs via platform channels (download, progress, delete, play with overlay). Prototype it early — it is the riskiest mobile piece.
 - **Token signing:** `muxinc/mux-php` on the API; Mux signing keys live only in API env vars.
 - Keep a `VideoProvider` interface (direct upload, webhook handling, playback/DRM tokens, offline token) so domain code doesn't depend on Mux directly.
-- **To verify early:** DRM on audio-only assets; offline download of audio-only assets in the native SDKs; Mux pricing (encoding, storage, delivery, DRM licenses) against projected catalogue size.
+- **Quality level:** DRM requires `video_quality: plus` (basic can't use DRM). Cap lecture video at 720p to control encoding, storage, and delivery cost.
+- **Research & cost estimate:** [`docs/research/mux.md`](docs/research/mux.md) (≈ $270/month at launch scale, ≈ $3.7k/month at 10k active students — illustrative). Remaining checks are in the [Mux spike](docs/spikes/mux-drm-offline.md).
 
 ## Business model
 
@@ -311,11 +320,13 @@ Each area has a PRD in [`docs/prd/`](docs/prd/).
 
 These are business decisions the admin makes and changes at runtime from the React back office (via admin API endpoints) — **not** values to hard-code or decide in code. Store them in the database (`spatie/laravel-settings`), seed sensible defaults, and record every change in the audit log.
 
+Defaults marked *(provisional)* are working values so nothing blocks; confirm them before launch (TODO 0.5).
+
 | Setting | Default | Notes |
 |---|---|---|
-| Enabled currencies + default currency (USD / CDF) | USD | Code supports both; each price and money row keeps its own currency. |
-| Default revenue split | (to set) | Overridable per professor and per course; snapshotted per order item. |
-| Content categories | — | Admin creates, edits, orders, and hides categories (fr/en names). |
+| Enabled currencies + default currency (USD / CDF) | USD and CDF enabled, USD default *(provisional)* | Code supports both; each price and money row keeps its own currency. |
+| Default revenue split | 70% professor / 30% platform *(provisional)* | Overridable per professor and per course; snapshotted per order item. |
+| Content categories | Seeded from [`docs/catalogue-categories.md`](docs/catalogue-categories.md) *(provisional)* | Admin creates, edits, orders, and hides categories (fr/en names). |
 | Separate payer on orders (parent pays for student) | on | Feature is built; admin turns it on/off. |
 | Registered device limit per account | 2 | Mobile devices that can hold downloads. |
 | Concurrent web streams per account | 1 | |
@@ -323,7 +334,9 @@ These are business decisions the admin makes and changes at runtime from the Rea
 | Free-course limits | unlimited | Max free courses and/or free media hours per professor. |
 | Payment gateways / rails enabled | — | Pause a gateway or rail during an outage. Adding a gateway is dev work. |
 | Refund window | 7 days | Days after purchase a student can request a refund (and max progress %, e.g. 20%). |
-| Payout minimum + schedule | (to set) | Minimum balance to be paid out; weekly/bi-weekly/monthly batch cadence. |
+| Payout minimum + schedule | Monthly; minimum 10 USD / 25,000 CDF *(provisional)* | Minimum balance to be paid out; weekly/bi-weekly/monthly batch cadence. |
+| Disbursement fees | Paid by platform *(provisional)* | Who bears the aggregator's payout fee. |
+| Review SLA targets | Courses 48 h, applications 72 h *(provisional)* | Shown on the admin dashboard. |
 | Earnings hold period | 7 days | Sale earnings become payable after the refund window, protecting against refunds. |
 | Order payment timeout | 15 min | Pending mobile-money payments expire after this. |
 | Certificate completion rule | 100% lessons + all quizzes passed | Adjustable threshold. |
@@ -339,9 +352,14 @@ Technical decisions — integrations depend on them. Deferred (see *Build sequen
 - Payment aggregator(s) to integrate (pending DRC rail + disbursement confirmation)
 - SMS gateway (pending DRC deliverability test)
 
-Business/legal — needed before launch, do not invent values in code:
+Business — provisional defaults are in *Platform settings*; confirm before launch:
 
-- Default revenue split and payout schedule (become settings once decided)
-- Tax treatment (VAT on sales, withholding on professor payouts) — confirm with a DRC accountant
-- Legal entity, terms of service, privacy policy, professor agreement — confirm with counsel
-- Minimum age for accounts and how minors' data is handled
+- Revenue split, payout schedule/minimum, active currencies, launch categories, disbursement fees, review SLAs
+- Bundle containing an already-owned course: provisional — owned courses are excluded and the bundle price is reduced pro-rata (PRD-05)
+- WhatsApp channel: provisional — post-launch backlog (PRD-10)
+
+Legal/tax — cannot be defaulted; needs professionals, required before launch:
+
+- Tax treatment (VAT on sales, withholding on professor payouts) — DRC accountant
+- Legal entity, terms of service, privacy policy, professor agreement — counsel
+- Minimum age for accounts and how minors' data is handled — counsel
