@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/platform-core` — Phase 1.2
+- **Current branch:** none — PR #5 (platform core) waiting to be merged
 - **Next up:** Phase 1.3 (auth & identity — PRD-01)
 
 ## Legend
@@ -90,12 +90,12 @@ Cannot be defaulted:
 - [ ] GitHub branch protection requiring CI — needs an always-running summary job first (path-filtered workflows don't report on docs-only PRs); do with `contract.yml` in 2.1
 
 ### 1.2 Platform core
-- [x] Settings classes (commerce, payouts, protection, catalog, learning, moderation) + seeded defaults
-- [x] Roles & permissions from enums (student, professor, moderator, admin, super-admin; `finance.*` granted individually) + seeder
-- [x] Provinces seed (26, ISO 3166-2:CD) + optional `users.province_id`
-- [x] Audit log: ULID entries, `RecordAudit` action, automatic before/after audit of settings changes
-- [x] Integration interfaces + fakes: `VideoProvider`/`FakeVideoProvider`, `PaymentGateway`/`FakeGateway` (scenarios by number suffix), `SmsSender`/`LogSmsSender` + contract tests
-- [x] Production boot guard against fake/log drivers
+- [x] Settings classes (commerce, payouts, protection, catalog, learning, moderation) + seeded defaults — #5
+- [x] Roles & permissions from enums (student, professor, moderator, admin, super-admin; `finance.*` granted individually) + seeder — #5
+- [x] Provinces seed (26, ISO 3166-2:CD) + optional `users.province_id` — #5
+- [x] Audit log: ULID entries, `RecordAudit` action, automatic before/after audit of settings changes — #5
+- [x] Integration interfaces + fakes: `VideoProvider`/`FakeVideoProvider`, `PaymentGateway`/`FakeGateway` (scenarios by number suffix), `SmsSender`/`LogSmsSender` + contract tests — #5
+- [x] Production boot guard against fake/log drivers — #5
 
 ### 1.3 Auth & identity — PRD-01
 - [ ] Users, OTP challenges, devices tables (arch §3.1)
