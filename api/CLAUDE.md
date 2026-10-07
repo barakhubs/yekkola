@@ -32,4 +32,19 @@ Guardrails — don't over-engineer:
 
 ## Commands
 
-Not scaffolded yet. Add once Laravel is installed (serve, test, Pint, PHPStan, OpenAPI export, Horizon).
+Run PHP commands from PowerShell on Windows (Herd's PHP); Bash may pick up a different PHP without `pgsql`.
+
+| Task | Command |
+|---|---|
+| Start local services (repo root) | `docker compose up -d` — Postgres on **55432**, Valkey 6379, Meilisearch 7700 |
+| First setup | `composer setup` |
+| Serve | `php artisan serve` → `http://localhost:8000/api/v1/ping` |
+| All checks (CI equivalent) | `composer check` |
+| Tests | `composer test` (Pest, Postgres `yekkola_test`) |
+| Style | `composer format` (fix) / `composer lint` (check) |
+| Static analysis | `composer analyse` (PHPStan level 6 + Larastan) |
+| OpenAPI spec | `composer openapi` → `api/openapi.json` (commit it; CI fails if stale) |
+| Queue dashboard | `php artisan horizon` (Linux only — needs `pcntl`) |
+| Installing packages on Windows | add `--ignore-platform-req=ext-pcntl --ignore-platform-req=ext-posix` |
+
+Notes: Laravel's test client sends `Accept-Language: en-us` by default — set the header explicitly in locale-sensitive tests. Shared building blocks: `App\Domain\Shared\ValueObjects\{Money, PhoneNumber}`, `App\Domain\Shared\Exceptions\DomainException` (renders as the error envelope), middleware alias `idempotent`.
