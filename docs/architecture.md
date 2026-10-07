@@ -152,7 +152,7 @@ yekkola/
 │   │   │   │   └── Webhooks/
 │   │   │   ├── Requests/                  Form requests mirrored by audience
 │   │   │   ├── Resources/                 API Resources (JSON shapes)
-│   │   │   └── Middleware/                SetLocaleFromHeader, EnsureAccountActive, EnsureDeviceRegistered, IdempotencyKey
+│   │   │   └── Middleware/                SetLocaleFromHeader, EnsureAccountActive, EnsureDeviceRegistered, EnsureIdempotency (alias `idempotent`)
 │   │   ├── Jobs/                          Cross-domain jobs (reconciliation, rollups)
 │   │   └── Providers/
 │   ├── config/  database/(migrations, factories, seeders)  lang/(fr, en)

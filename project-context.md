@@ -126,7 +126,7 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 - **Playback (web):** Mux Player (React) with signed playback + DRM tokens, plus our per-viewer overlay.
 - **Offline (mobile):** Mux DRM persistent licenses. The API signs the DRM token with `offline: true` and `licenseExpiration` = the admin *offline license duration* setting; `playDuration` optional.
 - **Flutter gap:** Mux ships native players with offline-download managers for Android (`MuxDownloadManager`, Media3) and iOS (`MuxOfflineAccessManager`, AVFoundation), but **no Flutter SDK**. Phase 3 includes a small in-house Flutter plugin wrapping these native SDKs via platform channels (download, progress, delete, play with overlay). Prototype it early — it is the riskiest mobile piece.
-- **Token signing:** `muxinc/mux-php` on the API; Mux signing keys live only in API env vars.
+- **Mux client:** Laravel HTTP client for the Mux REST API + `firebase/php-jwt` for signed playback/DRM tokens. (The official `muxinc/mux-php` SDK requires Guzzle 7; Laravel 13 ships Guzzle 8.) Mux keys live only in API env vars.
 - Keep a `VideoProvider` interface (direct upload, webhook handling, playback/DRM tokens, offline token) so domain code doesn't depend on Mux directly.
 - **Quality level:** DRM requires `video_quality: plus` (basic can't use DRM). Cap lecture video at 720p to control encoding, storage, and delivery cost.
 - **Research & cost estimate:** [`docs/research/mux.md`](docs/research/mux.md) (≈ $270/month at launch scale, ≈ $3.7k/month at 10k active students — illustrative). Remaining checks are in the [Mux spike](docs/spikes/mux-drm-offline.md).
@@ -165,7 +165,7 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 **The backend serves no UI.** No Blade views, no Inertia, no Filament, no server-rendered admin. Every client — web app, back office, mobile — is an equal consumer of the same `/api/v1`. (The only exceptions are ops tools for engineers, e.g. the Horizon dashboard, behind admin auth.) Full design: [`docs/architecture.md`](docs/architecture.md).
 
 ### Backend (API only)
-- Laravel (current major release; pin the version at project start), installed as an API-only app, PHP 8.4+
+- Laravel 13 (API-only), PHP 8.3+ locally and in CI (8.3 + 8.4); run 8.4 on Laravel Cloud
 - PostgreSQL; ULID primary keys (non-enumerable, safe in URLs)
 - Laravel Sanctum — cookie-based SPA auth for the web app and back office (same parent domain); API tokens for mobile
 - **Versioned JSON API (`/api/v1`)** with route groups by audience: `public`, `student`, `professor`, `admin`. Authorization via policies + roles, never by which client is calling.
