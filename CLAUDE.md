@@ -13,6 +13,10 @@
 - Do not privilege Kinshasa or any city/province in copy, defaults, or data.
 - External services (Mux, payments, SMS) are only reached through their interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`); tests use the fake drivers.
 
+## TODO list
+
+`TODO.md` is the single start-to-finish task list. **Keep it current on every piece of work**, in the same branch/PR: mark tasks `[~]` when starting and `[x]` (with PR number) when done, add newly discovered work under the right phase, update the *Now* section and *Last updated*. See "How to update" at the bottom of `TODO.md`.
+
 ## Git workflow
 
 - **Every feature, fix, or change goes on its own branch** — never commit work directly to `main`.

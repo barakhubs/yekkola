@@ -13,4 +13,5 @@ Start branch: $ARGUMENTS
    If any unmerged branch or open PR exists, **stop**. Tell me which, and suggest finishing it (`/open-pr`, get it merged) before starting a new one. Only continue if I explicitly say so.
 3. `git checkout main` then `git pull --ff-only origin main`. If the pull fails or there's no remote, stop and tell me.
 4. Create the branch: `git switch -c <name>`. Name format: `feature/…`, `fix/…`, `chore/…`, `docs/…` — kebab-case, short; include the PRD ID when relevant. If $ARGUMENTS is empty or doesn't fit, propose a name and ask.
-5. Confirm: current branch and the `main` commit it started from.
+5. Update `TODO.md`: mark the matching task(s) `[~]`, set *Now → Current branch*, bump *Last updated*. If the work isn't listed, add it under the right phase.
+6. Confirm: current branch, the `main` commit it started from, and the TODO items now in progress.

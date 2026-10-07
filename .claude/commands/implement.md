@@ -11,5 +11,5 @@ Implement: $ARGUMENTS
 3. Propose a short plan: API changes (schema, actions, endpoints, tests), then front-end/mobile changes. Wait for my go-ahead if the plan touches the data model or money flows.
 4. Implement backend first (use the `api-engineer` approach / `api-endpoint` and `schema-change` skills), then UI (`frontend-feature` / `flutter-feature`).
 5. Run tests, lint, and typecheck for every part touched.
-6. Update `docs/architecture.md` if schema or endpoints changed.
+6. Update `docs/architecture.md` if schema or endpoints changed. Update `TODO.md`: tick completed items, add any newly discovered work, update *Now*.
 7. Summarize: requirement IDs done, files changed, tests run and results, anything left open. Do not commit unless I ask.
