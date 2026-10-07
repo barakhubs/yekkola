@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** none — PR #4 (API scaffold) waiting to be merged
-- **Next up:** Phase 1.2 (platform core: settings, roles, provinces, audit, integration interfaces)
+- **Current branch:** none — PR #5 (platform core) waiting to be merged
+- **Next up:** Phase 1.3 (auth & identity — PRD-01)
 
 ## Legend
 
@@ -90,12 +90,12 @@ Cannot be defaulted:
 - [ ] GitHub branch protection requiring CI — needs an always-running summary job first (path-filtered workflows don't report on docs-only PRs); do with `contract.yml` in 2.1
 
 ### 1.2 Platform core
-- [ ] Settings classes + seeded defaults (project-context *Platform settings*)
-- [ ] Roles & permissions seed (student, professor, moderator, admin, `finance.*`)
-- [ ] Provinces seed (26)
-- [ ] Audit log wiring for admin actions
-- [ ] Integration interfaces + fakes (Mux via HTTP client + `firebase/php-jwt`): `VideoProvider`/Fake, `PaymentGateway`/FakeGateway, `SmsSender`/LogSmsSender (+ shared contract tests)
-- [ ] Production boot guard against fake/log drivers
+- [x] Settings classes (commerce, payouts, protection, catalog, learning, moderation) + seeded defaults — #5
+- [x] Roles & permissions from enums (student, professor, moderator, admin, super-admin; `finance.*` granted individually) + seeder — #5
+- [x] Provinces seed (26, ISO 3166-2:CD) + optional `users.province_id` — #5
+- [x] Audit log: ULID entries, `RecordAudit` action, automatic before/after audit of settings changes — #5
+- [x] Integration interfaces + fakes: `VideoProvider`/`FakeVideoProvider`, `PaymentGateway`/`FakeGateway` (scenarios by number suffix), `SmsSender`/`LogSmsSender` + contract tests — #5
+- [x] Production boot guard against fake/log drivers — #5
 
 ### 1.3 Auth & identity — PRD-01
 - [ ] Users, OTP challenges, devices tables (arch §3.1)
@@ -121,7 +121,7 @@ Cannot be defaulted:
 - [ ] Courses, versions, sections, lessons, media assets, quizzes schema (arch §3.3)
 - [ ] Course CRUD + details validation (FR-01, FR-02)
 - [ ] Curriculum CRUD + reorder (FR-03)
-- [ ] Mux direct upload + webhook handling + burned-in watermark (FR-04, FR-05)
+- [ ] Mux direct upload + webhook handling + burned-in watermark (FR-04, FR-05) — Mux driver (HTTP + php-jwt) passing the VideoProvider contract tests; fake upload endpoint so staging can run the studio flow end to end
 - [ ] Document upload + virus scan (FR-06)
 - [ ] Quiz builder API (FR-07)
 - [ ] Previews, pricing, free toggle, free-course limits (FR-08, FR-09, FR-15, FR-18)
@@ -138,8 +138,8 @@ Cannot be defaulted:
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
 - [ ] Orders, items, payments, events, refunds, coupons, bundles schema (arch §3.4)
 - [ ] Free enroll (FR-01)
-- [ ] Quote + order creation with idempotency + snapshots (FR-02–04)
-- [ ] Payment start, webhook inbox, re-query, state machine (FR-05–09)
+- [ ] Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs)
+- [ ] Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry
 - [ ] Reconciliation + expiry job (FR-10)
 - [ ] Coupons (FR-11, FR-12) and bundles (FR-13)
 - [ ] Parent payer (FR-14)
@@ -181,7 +181,7 @@ Cannot be defaulted:
 - [ ] Orders, payments (recheck), refunds
 - [ ] Coupons, bundles
 - [ ] Ledger explorer, adjustments, payout batches
-- [ ] Settings + audit log + staff endpoints
+- [ ] Settings + audit log + staff endpoints — settings update action validates invariants (bps 0–10000, limits per enabled currency, hold ≥ refund window, schedule enum) and wraps save in a transaction
 
 ### 1.12 Notifications — PRD-10
 - [ ] Notification classes per catalogue event, fr/en templates (FR-01, FR-02)

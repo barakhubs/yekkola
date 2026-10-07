@@ -51,9 +51,9 @@ Students enroll in free courses with one tap and buy paid courses with **mobile 
 | FR-13 | Bundles: fixed price for a set of courses; owned courses in a bundle are excluded and the bundle price is reduced pro-rata *(provisional)*. Revenue split across professors pro-rata to list prices. | Should |
 | FR-14 | Parent payer (setting-controlled): order has `buyer`/`payer_msisdn` distinct from `beneficiary`; parent can pay without an account by entering the student's phone + their own payer number; receipt sent to both. | Should |
 | FR-15 | Receipts: order number, items, amounts, currency, rail, payment reference, date; PDF downloadable; FR/EN. | Must |
-| FR-16 | Refund request within refund window and below max progress (settings) → admin approval (PRD-09) → `PaymentGateway::refund` or disbursement → enrollment revoked → ledger reversal. | Must |
+| FR-16 | Refund request within refund window and below max progress (settings) → admin approval (PRD-09) → disbursement to the original payer (`DisbursementRequest` with `relatedReference` = the original payment), capped at what was collected → enrollment revoked → ledger reversal. | Must |
 | FR-17 | Order history page with status and receipt links. | Must |
-| FR-18 | `FakeGateway` driver supports scripted outcomes (success, fail, pending forever, late success, reversal) for tests and staging. | Must |
+| FR-18 | `FakeGateway` driver supports scripted outcomes (success, fail, pending forever, late success, reversal) for tests and staging — chosen by the payer number's last 4 digits so testers can trigger them from the UI: `0001` insufficient funds, `0002` pending forever, `0003` late success, `0004` reversal, `0005` fail then succeed, `0006` gateway unavailable, `0007` timeout but succeeds (reconcile), `0008` confirmed amount differs, `0009` rejected by payer, `0010` invalid recipient (payouts). | Must |
 | FR-19 | Admin can pause a rail or gateway (setting); checkout hides paused rails with a message. | Must |
 
 ## 5. Business rules

@@ -31,6 +31,10 @@ return [
         'key_reused' => 'Cette clé d’idempotence a déjà été utilisée pour une autre requête.',
         'in_progress' => 'Une requête identique est déjà en cours de traitement.',
     ],
+    'webhook' => [
+        'invalid_signature' => 'Signature du webhook invalide.',
+        'invalid_payload' => 'Contenu du webhook invalide.',
+    ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',
     ],

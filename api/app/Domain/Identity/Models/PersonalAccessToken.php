@@ -10,7 +10,8 @@ use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 /**
  * Sanctum token with a ULID primary key (registered in AppServiceProvider).
  */
-final class PersonalAccessToken extends SanctumPersonalAccessToken
+// Not final: Sanctum::actingAs() mocks the token model in tests.
+class PersonalAccessToken extends SanctumPersonalAccessToken
 {
     use HasUlids;
 }

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Domain\Identity\Models\PersonalAccessToken;
+use App\Domain\Platform\Listeners\AuditSettingsChange;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use LogicException;
+use Spatie\LaravelSettings\Events\SavingSettings;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +34,9 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+
+        // Every platform settings change is audited with before/after values.
+        Event::listen(SavingSettings::class, AuditSettingsChange::class);
 
         // Catch lazy loading, silently discarded attributes, and missing attributes outside production.
         Model::shouldBeStrict(! $this->app->isProduction());

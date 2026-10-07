@@ -19,4 +19,16 @@ enum Currency: string
             self::USD, self::CDF => 2,
         };
     }
+
+    /**
+     * Smallest amount mobile money can actually move, in minor units. CDF is collected in whole francs,
+     * so every price, quote, and order total must be a multiple of this (round when computing them).
+     */
+    public function collectionStepMinor(): int
+    {
+        return match ($this) {
+            self::USD => 1,
+            self::CDF => 100,
+        };
+    }
 }

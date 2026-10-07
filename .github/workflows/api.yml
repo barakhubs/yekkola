@@ -51,6 +51,9 @@ jobs:
           - 6379:6379
 
     env:
+      # Without this, Laravel defaults to production (no .env during composer install) and the
+      # integration guard correctly refuses the fake drivers.
+      APP_ENV: testing
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
