@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `chore/phase-0-foundations` — Phase 0 work that doesn't need accounts or outside people
+- **Current branch:** none — PR #3 (Phase 0) waiting to be merged
 - **Next up:** Phase 1.1 (API scaffold). Phase 0 leftovers are all **(needs: …)** items for the owner.
 
 ## Legend
@@ -25,13 +25,13 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [x] Claude Code setup: settings, rules, skills, subagents, commands — #1
 - [x] Git workflow + SOLID guidelines — #1
 - [x] Project TODO list + autonomous workflow commands — #2
-- [x] `.gitattributes` (LF line endings)
-- [x] Runbooks: stuck payments, failed payouts, Mux outage, SMS outage, compromised admin (`docs/runbooks/`)
+- [x] `.gitattributes` (LF line endings) — #3
+- [x] Runbooks: stuck payments, failed payouts, Mux outage, SMS outage, compromised admin (`docs/runbooks/`) — #3
 
 ### 0.2 Brand
 - [x] Brand colours: primary `#2c3892`, secondary `#fdb73b`
-- [x] Full colour scales (50–950), dark-mode tints, contrast-checked (`docs/brand.md`)
-- [x] Typography: **Nunito** everywhere, type scale (`docs/brand.md`)
+- [x] Full colour scales (50–950), dark-mode tints, contrast-checked (`docs/brand.md`) — #3
+- [x] Typography: **Nunito** everywhere, type scale (`docs/brand.md`) — #3
 - [x] Tagline *(provisional)*: *Les meilleurs profs du Congo, partout au Congo.*
 - [ ] Logo set — brief in `docs/brand.md` §4 **(needs: owner / designer)**
 - [ ] Domain name(s) on one parent domain (`api.`, `www.`, `admin.`) **(needs: owner to purchase)**
@@ -49,8 +49,8 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 
 ### 0.4 Technical spikes
 - [x] Mux research: DRM needs `plus` quality; **audio-only can't use DRM** → signed playback + encrypted offline files; download tiers; free tiers (`docs/research/mux.md`)
-- [x] Mux cost estimate (`docs/research/mux.md` §4)
-- [x] Spike plans written (`docs/spikes/`)
+- [x] Mux cost estimate (`docs/research/mux.md` §4) — #3
+- [x] Spike plans written (`docs/spikes/`) — #3
 - [ ] Run Mux DRM + offline spike (`docs/spikes/mux-drm-offline.md`) **(needs: Mux account)**
 - [ ] Run Next.js-on-Laravel-Cloud monorepo spike (`docs/spikes/laravel-cloud-nextjs.md`) **(needs: Laravel Cloud account)**
 - [ ] Run region latency measurement → choose region (`docs/spikes/region-latency.md`) **(needs: RIPE Atlas credits or DRC testers)**
