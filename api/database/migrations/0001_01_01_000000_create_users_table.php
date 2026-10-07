@@ -13,7 +13,8 @@ return new class extends Migration
         // Phone (E.164) is the identity; sign-in is by OTP, so there is no password column.
         Schema::create('users', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('phone_e164', 16)->unique();
+            // 40 chars: anonymised accounts get a "deleted:<ulid>" placeholder to free the real number.
+            $table->string('phone_e164', 40)->unique();
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable()->unique();
@@ -21,7 +22,11 @@ return new class extends Migration
             $table->string('locale', 2)->default('fr');
             $table->string('city')->nullable();
             $table->string('status', 16)->default('active')->index();
+            // Bumped to sign the user out everywhere (phone change, suspension, ban, admin force sign-out).
+            $table->unsignedInteger('auth_epoch')->default(0);
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamp('last_seen_at')->nullable();
+            $table->timestamp('deletion_requested_at')->nullable()->index();
             $table->timestamps();
             $table->softDeletes();
         });
