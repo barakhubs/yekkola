@@ -48,4 +48,6 @@
 
 ## Commands
 
-Not scaffolded yet. Add install, dev, test, lint, and build commands here once the repo is set up.
+- Local services: `docker compose up -d` (Postgres 55432, Valkey 6379, Meilisearch 7700)
+- API: see `api/CLAUDE.md` → Commands (`composer setup`, `composer check`)
+- Web apps and mobile: added when scaffolded (Phase 2 / 3)
