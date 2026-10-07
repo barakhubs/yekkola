@@ -110,6 +110,8 @@ Cannot be defaulted:
 - [x] Account deletion (14-day grace, anonymisation command) + data export (FR-11, FR-12)
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
+- [ ] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — with offline licenses (1.9)
+- [ ] Verify trusted-proxy / client-IP handling on Laravel Cloud so per-IP limits see real client IPs — first staging deploy
 - [ ] Real SMS provider driver + delivery reports — phase 4
 
 ### 1.4 Professors — PRD-02
@@ -306,7 +308,7 @@ Cannot be defaulted:
 - [ ] Backup restore drill on production-like data
 - [ ] Runbooks written
 - [ ] Legal pages published (ToS, privacy, professor agreement)
-- [ ] Confirm all *(provisional)* defaults (Phase 0.5, tagline, email provider) and finalise platform settings in production
+- [ ] Confirm all *(provisional)* defaults (Phase 0.5, tagline, email provider, OTP country allowlist) and finalise platform settings in production
 - [ ] Professor recruitment + first courses reviewed and live
 - [ ] Support channel (WhatsApp/email) staffed
 - [ ] Staging → production cutover checklist

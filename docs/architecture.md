@@ -321,7 +321,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 - Envelope: `{ "data": …, "meta": { pagination… }, "links": {…} }`.
 - Errors: RFC 9457-style `{ "type", "title", "status", "detail", "code", "errors": { field: [msg] } }` with a stable machine `code` (e.g. `otp.expired`, `enrollment.required`, `device.limit_reached`).
 - Idempotency: `Idempotency-Key` header required on `POST /orders`, `POST /orders/{id}/payments`, payout approvals; replays return the original response.
-- Rate limits (per user/IP/phone): OTP request 3/10 min per phone, 10/h per IP; OTP verify 5 attempts per challenge; payments 10/h per user; default 120/min per user.
+- Rate limits (per user/IP/phone): OTP request 3/10 min per phone, 10/h per IP, 60 s cooldown, global hourly SMS budget; OTP verify 5 attempts per challenge and 15 wrong codes per number per day, plus 30/10 min per IP; profile updates 10/min per user; data export 1/day; payments 10/h per user; default 120/min per user. Limits use atomic increments (hit, then compare).
 - Webhooks: signature-verified, deduplicated by event ID, acknowledged fast (`2xx`), processed on the queue.
 
 ### 4.2 Endpoint catalogue

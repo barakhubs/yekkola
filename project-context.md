@@ -267,7 +267,8 @@ yekkola/
 - **Phone number (E.164) + SMS OTP is the primary sign-in**; email is optional (for receipts/recovery).
 - SMS gateway must have confirmed DRC deliverability — do not assume Uganda-side providers work.
 - Until the SMS gateway is integrated, OTPs go through an `SmsSender` interface with a **log driver** (codes written to the log; fixed test codes allowed only outside production). Production must refuse to boot with the log driver.
-- OTP abuse protection: per-phone and per-IP rate limits, attempt limits, and a bot challenge (e.g. Cloudflare Turnstile) on web — SMS pumping costs real money.
+- OTP abuse protection (SMS pumping costs real money): per-phone and per-IP limits, a global hourly SMS budget (circuit breaker), a country allowlist (*provisional: DRC +243 only*), 5 attempts per code and 15 wrong codes per number per day, Cloudflare Turnstile for browsers/scripts; the mobile app gets app attestation in phase 3. Responses never reveal whether a number has an account.
+- Phone change needs a sign-in within the last 15 minutes, notifies the old number by SMS, and signs out every other session and device.
 - Device registry per user (device limits, push tokens, token revocation).
 - Details: [`docs/prd/01-auth-identity.md`](docs/prd/01-auth-identity.md).
 
