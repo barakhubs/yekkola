@@ -14,6 +14,22 @@ Pure JSON API (`/api/v1`). Serves no UI — no Blade views, Inertia, or Filament
 - Money and webhooks: idempotency keys and event-ID deduplication. Ledger rows are never updated or deleted.
 - Every endpoint gets Pest feature tests (auth, validation, authorization, happy path).
 
+## Code design (SOLID, pragmatically)
+
+- **Single responsibility:** one Action per business operation (`CreateOrder`, `IssuePlaybackToken`). Controllers only do request → action → resource. Validation in Form Requests, authorization in Policies, shaping in Resources.
+- **Open/closed:** extend by adding, not editing — new provider = new driver class; new reaction to a domain event = new listener.
+- **Liskov:** fake drivers (`FakeGateway`, `LogSmsSender`, `FakeVideoProvider`) honour the same contract as real ones, including failures, timeouts, and reversals. Contract tests run against both.
+- **Interface segregation:** small, focused interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`) — no catch-all service interfaces.
+- **Dependency inversion:** domain code depends on interfaces; implementations are bound in service providers and injected via the constructor.
+
+Guardrails — don't over-engineer:
+- **No repository layer over Eloquent.** Actions use models directly; reusable queries go in model scopes or dedicated query classes.
+- **Interfaces only where there's a real swap or test fake** (external services, possibly the ledger). Don't create an interface per class.
+- **Constructor injection** for services; no `new` on services inside actions. Facades only for framework concerns (Log, Cache, Queue, DB).
+- **Value objects** for core concepts: `Money` (amount_minor + currency, arithmetic refuses mixed currencies) and `PhoneNumber` (E.164, masking). No loose ints/strings for these across boundaries.
+- **Composition over inheritance:** no deep base classes for actions or controllers; small traits only when genuinely shared.
+- Actions are `final`, have one public method, and are unit-testable without HTTP.
+
 ## Commands
 
 Not scaffolded yet. Add once Laravel is installed (serve, test, Pint, PHPStan, OpenAPI export, Horizon).
