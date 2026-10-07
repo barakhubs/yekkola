@@ -11,12 +11,15 @@ return [
     'auth' => [
         'unauthenticated' => 'Please sign in to continue.',
         'forbidden' => 'You are not allowed to do this.',
+        'csrf_mismatch' => 'Your session expired. Please try again.',
     ],
     'resource' => [
         'not_found' => 'Not found.',
     ],
     'http' => [
+        'bad_request' => 'Bad request.',
         'method_not_allowed' => 'Method not allowed.',
+        'payload_too_large' => 'The request is too large.',
         'error' => 'The request could not be processed.',
     ],
     'rate_limited' => 'Too many attempts. Please try again later.',
@@ -27,9 +30,6 @@ return [
         'key_missing' => 'The Idempotency-Key header is required for this request.',
         'key_reused' => 'This idempotency key was already used for a different request.',
         'in_progress' => 'An identical request is already being processed.',
-    ],
-    'money' => [
-        'currency_mismatch' => 'The amounts are not in the same currency.',
     ],
     'phone' => [
         'invalid' => 'Invalid phone number.',

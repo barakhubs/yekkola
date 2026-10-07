@@ -10,23 +10,26 @@ use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Picks the response language from `Accept-Language` (fr or en). French is the default.
+ * Picks the response language from `Accept-Language` (fr or en). French is the default and the fallback
+ * for unsupported languages.
  */
 final class SetLocaleFromHeader
 {
+    /** First entry is the default. */
     private const SUPPORTED = ['fr', 'en'];
 
     public function handle(Request $request, Closure $next): Response
     {
-        // No header → platform default (French). Unsupported languages fall back to the first supported (French).
+        // Symfony returns the first supported locale when nothing in the header matches.
         $locale = $request->headers->has('Accept-Language')
-            ? ($request->getPreferredLanguage(self::SUPPORTED) ?? config('app.locale'))
-            : config('app.locale');
+            ? (string) $request->getPreferredLanguage(self::SUPPORTED)
+            : self::SUPPORTED[0];
 
         App::setLocale($locale);
 
         $response = $next($request);
         $response->headers->set('Content-Language', $locale);
+        $response->setVary('Accept-Language', false);
 
         return $response;
     }
