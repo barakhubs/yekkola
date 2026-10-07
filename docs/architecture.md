@@ -217,10 +217,11 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `users` | id, phone_e164 (unique), phone_verified_at, email (unique, null), email_verified_at, name, locale (`fr`/`en`), province_id (null), city (null), status (`active`/`suspended`/`banned`), last_seen_at, deleted_at | Phone is the identity. |
-| `otp_challenges` | id, phone_e164, purpose (`login`/`change_phone`), code_hash, attempts, expires_at, consumed_at, ip, user_agent | Prune after 24 h. |
+| `users` | id, phone_e164 (unique, 40 chars — anonymised rows hold `deleted:<ulid>`), phone_verified_at, email (unique, null), email_verified_at, name, locale (`fr`/`en`), province_id (null), city (null), status (`active`/`suspended`/`banned`), auth_epoch, last_login_at, last_seen_at, deletion_requested_at, deleted_at | Phone is the identity; no password. `auth_epoch` is bumped to end every web session ("sign out everywhere"). |
+| `otp_challenges` | id, phone_e164, purpose (`login`/`change_phone`), user_id (change_phone), code_hash (HMAC, never the code), attempts, expires_at, consumed_at, ip, user_agent | Pruned after 24 h (`model:prune`). A new code consumes earlier unused ones. |
 | `devices` | id, user_id, platform (`android`/`ios`), install_id (unique per user), name, app_version, push_token, registered_at, last_active_at, revoked_at | Counts toward the registered device limit when `revoked_at` is null. |
-| `personal_access_tokens` | Sanctum + `device_id` | Mobile tokens are bound to a device. |
+| `personal_access_tokens` | Sanctum, ULID id, + `device_id`, `expires_at` (90 days) | One token per device; revoking the device deletes it. |
+| `data_exports` | id, user_id, status (`pending`/`ready`/`failed`), path (private disk), ready_at, expires_at | Personal-data exports (PRD-01 FR-12), downloadable for 7 days. |
 | `stream_sessions` | id, user_id, client (`web`/`android`/`ios`), lesson_uid, started_at, last_heartbeat_at, ended_at | Enforces concurrent web streams. Short-lived; can live in Redis instead. |
 | `provinces` | id, code (ISO 3166-2:CD, unique), name | Seeded with the 26 DRC provinces (`ProvinceSeeder`); `users.province_id` is optional. |
 | `roles`, `permissions`, … | spatie/laravel-permission (guard `web`; `model_id` is a ULID) | Roles and permissions come from the `Role`/`Permission` enums. Roles: student, professor, moderator, admin, super-admin. Finance permissions (`finance.*`) are granted individually. |
@@ -333,17 +334,21 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /auth/otp/verify | Verify OTP → session (web) or token (mobile, with device payload) |
 | POST | /auth/logout | End session / revoke current token |
 | GET / PATCH | /me | Profile (name, email, locale, province) |
-| POST | /me/phone/change | Change phone (OTP to new number) |
+| POST | /me/phone/otp | Send a code to the new number |
+| PUT | /me/phone | Confirm the new number (signs out other sessions/devices) |
 | GET | /me/devices | List registered devices |
 | DELETE | /me/devices/{id} | Remove device (revokes token + offline licenses) |
-| POST | /me/export | Request data export |
-| DELETE | /me | Request account deletion |
+| POST / GET | /me/export | Request a data export / latest export status |
+| GET | /me/export/download | Download the latest ready export |
+| DELETE | /me | Request account deletion (14-day grace) |
+| DELETE | /me/deletion | Cancel a pending deletion |
 
 **Public**
 
 | Method | Path | Purpose |
 |---|---|---|
 | GET | /config | Public settings: currencies, locales, feature flags, min app version |
+| GET | /provinces | The 26 provinces (profile form) |
 | GET | /categories | Category tree |
 | GET | /courses | Catalogue + search (`q`, category, price `free`/`paid`, language, level, audience, sort) |
 | GET | /courses/{slug} | Course detail (live version, curriculum outline, preview lessons) |
