@@ -7,17 +7,23 @@ use App\Http\Controllers\Api\V1\Account\DataExportController;
 use App\Http\Controllers\Api\V1\Account\DeviceController;
 use App\Http\Controllers\Api\V1\Account\PhoneController;
 use App\Http\Controllers\Api\V1\Account\ProfileController;
+use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
+use App\Http\Controllers\Api\V1\Professor\CourseController;
+use App\Http\Controllers\Api\V1\Professor\DraftController;
 use App\Http\Controllers\Api\V1\Professor\KycController;
+use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
 use App\Http\Controllers\Api\V1\Public\ProfessorController;
 use App\Http\Controllers\Api\V1\Public\ProvinceController;
+use App\Http\Controllers\Api\V1\Webhooks\FakeVideoUploadController;
+use App\Http\Controllers\Api\V1\Webhooks\VideoWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -78,6 +84,35 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
     Route::get('/kyc', [KycController::class, 'show'])->name('kyc.show');
     Route::post('/kyc', [KycController::class, 'store'])->middleware('throttle:uploads')->name('kyc.store');
 
+    // Courses (PRD-03)
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+    Route::patch('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+    Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+    Route::post('/courses/{course}/draft', [CourseController::class, 'startDraft'])->name('courses.draft.start');
+    Route::post('/courses/{course}/submit', [CourseController::class, 'submit'])->name('courses.submit');
+    Route::post('/courses/{course}/withdraw', [CourseController::class, 'withdraw'])->name('courses.withdraw');
+    Route::post('/courses/{course}/unpublish', [CourseController::class, 'unpublish'])->name('courses.unpublish');
+    Route::post('/courses/{course}/republish', [CourseController::class, 'republish'])->name('courses.republish');
+    Route::post('/courses/{course}/archive', [CourseController::class, 'archive'])->name('courses.archive');
+
+    // Course builder: the draft version
+    Route::get('/courses/{course}/draft', [DraftController::class, 'show'])->name('draft.show');
+    Route::patch('/courses/{course}/draft', [DraftController::class, 'update'])->name('draft.update');
+    Route::post('/courses/{course}/draft/cover', [DraftController::class, 'cover'])->middleware('throttle:uploads')->name('draft.cover');
+    Route::put('/courses/{course}/draft/order', [DraftController::class, 'reorder'])->name('draft.reorder');
+    Route::post('/courses/{course}/draft/sections', [DraftController::class, 'storeSection'])->name('draft.sections.store');
+    Route::patch('/courses/{course}/draft/sections/{section}', [DraftController::class, 'updateSection'])->name('draft.sections.update');
+    Route::delete('/courses/{course}/draft/sections/{section}', [DraftController::class, 'destroySection'])->name('draft.sections.destroy');
+    Route::post('/courses/{course}/draft/lessons', [DraftController::class, 'storeLesson'])->name('draft.lessons.store');
+    Route::patch('/courses/{course}/draft/lessons/{lesson}', [DraftController::class, 'updateLesson'])->name('draft.lessons.update');
+    Route::delete('/courses/{course}/draft/lessons/{lesson}', [DraftController::class, 'destroyLesson'])->name('draft.lessons.destroy');
+    Route::post('/courses/{course}/draft/lessons/{lesson}/media', [DraftController::class, 'mediaUpload'])->middleware('throttle:uploads')->name('draft.lessons.media');
+    Route::post('/courses/{course}/draft/lessons/{lesson}/document', [DraftController::class, 'document'])->middleware('throttle:uploads')->name('draft.lessons.document');
+    Route::put('/courses/{course}/draft/lessons/{lesson}/quiz', [DraftController::class, 'quiz'])->name('draft.lessons.quiz');
+    Route::get('/media/{media}', [MediaController::class, 'show'])->name('media.show');
+
     Route::post('/payout-method/otp', [PayoutMethodController::class, 'requestOtp'])->middleware('throttle:otp-verify')->name('payout-method.otp');
     Route::put('/payout-method', [PayoutMethodController::class, 'update'])->middleware('throttle:otp-verify')->name('payout-method.update');
 });
@@ -92,6 +127,12 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::post('/professor-applications/{application}/reject', [AdminApplicationController::class, 'reject'])->name('professor-applications.reject');
         Route::post('/professor-applications/{application}/request-info', [AdminApplicationController::class, 'requestInfo'])->name('professor-applications.request-info');
         Route::get('/professor-applications/{application}/credentials/{file}', [AdminApplicationController::class, 'credentialFile'])->name('professor-applications.credential');
+
+        // Course review queue (PRD-09 FR-07)
+        Route::get('/course-versions', [CourseVersionController::class, 'index'])->name('course-versions.index');
+        Route::get('/course-versions/{version}', [CourseVersionController::class, 'show'])->name('course-versions.show');
+        Route::post('/course-versions/{version}/approve', [CourseVersionController::class, 'approve'])->name('course-versions.approve');
+        Route::post('/course-versions/{version}/reject', [CourseVersionController::class, 'reject'])->name('course-versions.reject');
     });
 
     Route::middleware('can:'.Permission::KycView->value)->group(function () {
@@ -113,3 +154,9 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::post('/professors/{professor}/reinstate', [AdminProfessorController::class, 'reinstate'])->name('professors.reinstate');
     });
 });
+
+// Webhooks: no auth; each provider verifies its signature.
+Route::post('/webhooks/video', VideoWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.video');
+
+// Fake video driver only (local, staging): stands in for the provider's upload URL.
+Route::put('/_fake/video-uploads/{upload}', FakeVideoUploadController::class)->name('fake.video-upload');
