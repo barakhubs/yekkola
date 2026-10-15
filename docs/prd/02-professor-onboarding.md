@@ -34,7 +34,7 @@ Any user can apply to teach. Applications are **reviewed manually** by Yekkola s
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-01 | Application form: full name, subjects (from categories), level taught, years of experience, current/previous institutions, credentials (text + optional uploads), sample lesson (upload ≤ 5 min or link), motivation, province (optional), agreement to professor terms. | Must |
+| FR-01 | Application form (implemented: subjects as free text until categories exist in 1.6; sample lesson as an https link — upload via Mux comes with 1.5): full name, subjects (from categories), level taught, years of experience, current/previous institutions, credentials (text + optional uploads), sample lesson (upload ≤ 5 min or link), motivation, province (optional), agreement to professor terms. | Must |
 | FR-02 | Draft autosave; submit locks the application. One open application per user. | Must |
 | FR-03 | Status visible to applicant: submitted, under review, needs info, approved, rejected (with reason). | Must |
 | FR-04 | Admin queue (PRD-09): filter by status, subject, date; detail view with all materials; actions approve / reject / request info, each with a note. | Must |
