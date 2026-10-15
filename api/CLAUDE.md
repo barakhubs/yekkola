@@ -70,7 +70,7 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | Roles / permissions | `App\Domain\Identity\Enums\{Role, Permission}` — policies check permissions, never role names. Re-run `RolesAndPermissionsSeeder` after changing the enums. |
 | Video/audio host | `App\Integrations\Video\VideoProvider`: `MuxVideoProvider` (HTTP + RS256 JWTs) or `FakeVideoProvider` (uploads complete via `PUT /api/v1/_fake/video-uploads/{id}`) |
 | Public catalogue | `Course::query()->listed()` is the only public filter (published, live version, active professor); cards eager-load `BrowseCourses::cardRelations()` |
-| Search index | `Course` is Scout-searchable (queued, after commit); `SyncCourseIndex` reindexes on professor/user/category changes. Run `php artisan scout:sync-index-settings` on deploy |
+| Search index | `Course` is Scout-searchable (queued, after commit); `SyncCourseIndex` reindexes (after commit) on professor/user/category changes; `MakeListedSearchable` re-checks listing when the job runs. Production refuses any driver but `meilisearch`. Run `php artisan scout:sync-index-settings` on deploy |
 | Course drafts | `EditDraft::withDraft($course, fn ($draft) => …)` locks the draft and refuses unless editable; review transitions in `CourseReview` |
 | Mobile money | `App\Integrations\Payments\PaymentGateway` (fake driver until the aggregator is chosen) |
 | SMS | `App\Integrations\Sms\SmsSender` (`log` driver until the provider is chosen) |

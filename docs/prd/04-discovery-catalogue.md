@@ -67,7 +67,7 @@ Students find courses through the home page, categories, search, and professor p
 ## 7. Edge cases
 
 - Course price changes while a student is on the page → checkout quote always reflects the current price (PRD-05).
-- Search service down → fall back to database query for category browsing; search shows a friendly error.
+- Search service down → browsing is unaffected (filters run in the database); search falls back to a simple database match on titles and professor names (no typo tolerance) and retries the search service after a minute.
 
 ## 8. Acceptance criteria
 

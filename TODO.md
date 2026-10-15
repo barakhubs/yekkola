@@ -163,6 +163,8 @@ Cannot be defaulted:
 - [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against real Mux renditions
 - [ ] Add `php artisan scout:sync-index-settings` to the Cloud deploy commands; check French typo tolerance on Meilisearch Cloud
 - [ ] Search suggestions as you type (FR-03, Should)
+- [ ] Catalogue throttle: key on the real client IP behind apps/web SSR (trusted proxies / forwarded IP)
+- [ ] Accent-insensitive database fallback (`unaccent`); push filters into Meilisearch for very broad searches (> 1,000 hits)
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
 - [ ] Orders, items, payments, events, refunds, coupons, bundles schema (arch §3.4)
