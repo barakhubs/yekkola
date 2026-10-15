@@ -75,6 +75,38 @@ it('makes a course free, clearing its price, within the free-course limit', func
         ->assertJsonPath('code', 'course.free_limit_reached');
 });
 
+it("counts the course's own media against the free-hours limit", function () {
+    $course = courseReadyForReview($this->professor); // 20 minutes of video
+
+    $settings = app(CatalogSettings::class);
+    $settings->free_media_hours_limit = 0;
+    $settings->save();
+
+    $this->patchJson("/api/v1/professor/courses/{$course->id}", ['is_free' => true])
+        ->assertUnprocessable()
+        ->assertJsonPath('code', 'course.free_hours_limit_reached');
+});
+
+it("keeps professors out of each other's sections, lessons and media", function () {
+    $mine = newCourse();
+    $section = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/sections", ['title' => 'Section A'])->json('data.id');
+    $lesson = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/lessons", ['section_id' => $section, 'type' => 'video', 'title' => 'Vidéo'])->json('data.id');
+    $media = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/lessons/{$lesson}/media")->json('data.media.id');
+
+    actingAsProfessor('Autre Professeur');
+    $theirs = newCourse('Chimie');
+    $theirSection = $this->postJson("/api/v1/professor/courses/{$theirs['id']}/draft/sections", ['title' => 'Section B'])->json('data.id');
+
+    $this->patchJson("/api/v1/professor/courses/{$mine['id']}/draft/sections/{$section}", ['title' => 'Piraté'])->assertNotFound();
+    $this->patchJson("/api/v1/professor/courses/{$theirs['id']}/draft/sections/{$section}", ['title' => 'Piraté'])->assertNotFound();
+    $this->deleteJson("/api/v1/professor/courses/{$theirs['id']}/draft/lessons/{$lesson}")->assertNotFound();
+    $this->postJson("/api/v1/professor/courses/{$theirs['id']}/draft/lessons", ['section_id' => $section, 'type' => 'quiz', 'title' => 'Intrus'])->assertNotFound();
+    $this->getJson("/api/v1/professor/media/{$media}")->assertNotFound();
+    $this->putJson("/api/v1/professor/courses/{$theirs['id']}/draft/order", ['sections' => [
+        ['id' => $theirSection, 'lessons' => [$lesson]],
+    ]])->assertUnprocessable();
+});
+
 it('edits draft details and requires a 16:9 cover of at least 1280x720', function () {
     $course = newCourse();
 

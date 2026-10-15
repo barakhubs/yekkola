@@ -102,6 +102,7 @@ return [
         'invalid_transition' => 'This action is not possible for this course right now.',
         'not_ready_for_review' => 'Complete the course before submitting it for review.',
         'free_limit_reached' => 'You have reached the maximum number of free courses.',
+        'free_hours_limit_reached' => 'This course would exceed the limit of :limit hours of free content.',
         'cannot_delete_published' => 'A published course cannot be deleted; archive it instead.',
         'own_course' => 'You cannot review your own course.',
         'invalid_order' => 'The order sent does not match the course content.',

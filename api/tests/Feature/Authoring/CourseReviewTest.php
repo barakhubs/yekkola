@@ -122,6 +122,44 @@ it('keeps the live version unchanged while a new draft is edited, then supersede
         ->and($this->course->refresh()->liveVersion->title)->toBe('Mathématiques – édition 2027');
 });
 
+it('does not approve while the professor is suspended', function () {
+    $this->professor->update(['status' => 'suspended']);
+    actingAsStaff();
+
+    $this->postJson("/api/v1/admin/course-versions/{$this->version->id}/approve")
+        ->assertForbidden()
+        ->assertJsonPath('code', 'professor.suspended');
+
+    expect($this->version->refresh()->state)->toBe(VersionState::InReview);
+});
+
+it('keeps an archived course archived when an update is approved', function () {
+    publish();
+    $this->postJson("/api/v1/professor/courses/{$this->course->id}/archive")->assertOk();
+    $this->postJson("/api/v1/professor/courses/{$this->course->id}/draft")->assertCreated();
+    $this->postJson("/api/v1/professor/courses/{$this->course->id}/submit")->assertOk();
+
+    actingAsStaff();
+    $this->postJson('/api/v1/admin/course-versions/'.$this->course->refresh()->draft_version_id.'/approve')->assertOk();
+
+    expect($this->course->refresh()->status)->toBe(CourseStatus::Archived);
+});
+
+it('keeps deleted courses out of the review queue', function () {
+    $this->deleteJson("/api/v1/professor/courses/{$this->course->id}")
+        ->assertStatus(409)
+        ->assertJsonPath('code', 'course.invalid_transition');
+
+    actingAsStaff();
+    $this->postJson("/api/v1/admin/course-versions/{$this->version->id}/reject", ['note' => 'Incomplet.'])->assertOk();
+    Sanctum::actingAs($this->professor->user);
+    $this->deleteJson("/api/v1/professor/courses/{$this->course->id}")->assertNoContent();
+
+    actingAsStaff();
+    $this->getJson('/api/v1/admin/course-versions')->assertOk()->assertJsonCount(0, 'data');
+    $this->getJson("/api/v1/admin/course-versions/{$this->version->id}")->assertNotFound();
+});
+
 it('unpublishes, republishes without review, and archives', function () {
     publish();
 

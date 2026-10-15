@@ -144,6 +144,11 @@ Cannot be defaulted:
 - [ ] Clean up unreferenced Mux assets (BR-05)
 - [ ] Studio "changes since live" view, student-view preview, download sizes per lesson (FR-14, FR-19, FR-20)
 - [ ] Verify DRM + signed thumbnails policy and lowest `max_resolution_tier` in the Mux spike
+- [ ] Request the Mux upload outside the draft lock (no HTTP call while the row is locked)
+- [ ] Admin "changes since live": compare quiz/document content and positions, not lesson timestamps
+- [ ] Separate, larger rate limit for authoring uploads (shared `uploads` limiter is 30/h)
+- [ ] Clean up document files when a section is deleted or a draft copy rolls back
+- [ ] Re-poll media assets still waiting for upload; test out-of-order webhooks
 
 ### 1.6 Catalogue & search — PRD-04
 - [ ] Categories API (tree, fr/en)

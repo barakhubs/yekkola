@@ -26,6 +26,7 @@ final class CourseVersionController extends Controller
     {
         $versions = QueryBuilder::for(CourseVersion::query()
             ->where('state', '!=', VersionState::Draft)
+            ->whereHas('course')
             ->with('course.professor', 'course.category', 'course.liveVersion', 'course.draftVersion'))
             ->allowedFilters(AllowedFilter::exact('state'))
             ->allowedSorts('submitted_at', 'reviewed_at')
@@ -38,7 +39,7 @@ final class CourseVersionController extends Controller
 
     public function show(CourseVersion $version): AdminCourseVersionResource
     {
-        abort_if($version->state === VersionState::Draft, 404);
+        abort_if($version->state === VersionState::Draft || $version->course === null, 404);
 
         return $this->present($version);
     }

@@ -17,7 +17,7 @@ final class CreateCourseRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'min:5', 'max:80'],
             'language' => ['sometimes', Rule::in(['fr', 'en'])],
-            'category_id' => ['sometimes', 'nullable', 'ulid', Rule::exists('categories', 'id')],
+            'category_id' => ['sometimes', 'nullable', 'ulid', Rule::exists('categories', 'id')->where('is_visible', true)],
         ];
     }
 }

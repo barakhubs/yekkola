@@ -102,6 +102,7 @@ return [
         'invalid_transition' => 'Cette action n’est pas possible pour ce cours actuellement.',
         'not_ready_for_review' => 'Complétez le cours avant de l’envoyer en révision.',
         'free_limit_reached' => 'Vous avez atteint le nombre maximal de cours gratuits.',
+        'free_hours_limit_reached' => 'Ce cours dépasserait la limite de :limit heures de contenu gratuit.',
         'cannot_delete_published' => 'Un cours déjà publié ne peut pas être supprimé ; archivez-le.',
         'own_course' => 'Vous ne pouvez pas examiner votre propre cours.',
         'invalid_order' => 'L’ordre envoyé ne correspond pas au contenu du cours.',

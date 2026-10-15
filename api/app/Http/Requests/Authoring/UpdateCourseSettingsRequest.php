@@ -20,7 +20,7 @@ final class UpdateCourseSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['sometimes', 'nullable', 'ulid', Rule::exists('categories', 'id')],
+            'category_id' => ['sometimes', 'nullable', 'ulid', Rule::exists('categories', 'id')->where('is_visible', true)],
             'language' => ['sometimes', Rule::in(['fr', 'en'])],
             'level' => ['sometimes', Rule::enum(CourseLevel::class)],
             'audience' => ['sometimes', 'array', 'max:4'],

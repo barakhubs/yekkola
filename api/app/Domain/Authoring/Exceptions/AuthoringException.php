@@ -49,6 +49,11 @@ final class AuthoringException extends DomainException
         return new self('course.free_limit_reached', 422, ['limit' => $limit]);
     }
 
+    public static function freeHoursLimit(int $hours): self
+    {
+        return new self('course.free_hours_limit_reached', 422, ['limit' => $hours]);
+    }
+
     public static function previewLimit(int $max): self
     {
         return new self('lesson.preview_limit_reached', 422, ['max' => $max]);

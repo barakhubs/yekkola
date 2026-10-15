@@ -86,6 +86,10 @@ final class CourseReview
     public function approve(CourseVersion $version, User $staff, ?string $note): CourseVersion
     {
         $result = $this->decide($version, $staff, function (Course $locked, CourseVersion $draft) use ($staff, $note): CourseVersion {
+            if (! $locked->professor->isActive()) {
+                throw AuthoringException::professorSuspended(); // review is paused while suspended (PRD-03 §7)
+            }
+
             if ($locked->live_version_id !== null) {
                 CourseVersion::query()->whereKey($locked->live_version_id)->update(['state' => VersionState::Superseded]);
             }
@@ -100,7 +104,8 @@ final class CourseReview
             $locked->forceFill([
                 'live_version_id' => $draft->id,
                 'draft_version_id' => null,
-                'status' => $locked->status === CourseStatus::Unpublished ? CourseStatus::Unpublished : CourseStatus::Published,
+                // An update never changes visibility: unpublished and archived courses stay so.
+                'status' => in_array($locked->status, [CourseStatus::Unpublished, CourseStatus::Archived], true) ? $locked->status : CourseStatus::Published,
                 'published_at' => $locked->published_at ?? now(),
                 'total_duration_seconds' => (int) $draft->lessons()->sum('duration_seconds'),
             ])->save();
@@ -140,7 +145,7 @@ final class CourseReview
      */
     public function checklist(Course $course, CourseVersion $draft): array
     {
-        $lessons = $draft->lessons()->with('mediaAsset', 'quiz', 'media')->get();
+        $lessons = $draft->lessons()->with('mediaAsset', 'quiz.questions', 'media')->get();
         $outcomes = count($draft->outcomes);
 
         return array_keys(array_filter([
@@ -161,6 +166,10 @@ final class CourseReview
      */
     private function decide(CourseVersion $version, User $staff, Closure $apply): CourseVersion
     {
+        if ($version->course === null) {
+            throw AuthoringException::invalidTransition();
+        }
+
         if ($version->course->professor->user_id === $staff->id) {
             throw AuthoringException::ownCourse();
         }

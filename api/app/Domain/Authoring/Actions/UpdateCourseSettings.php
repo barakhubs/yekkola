@@ -7,6 +7,7 @@ namespace App\Domain\Authoring\Actions;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Platform\Settings\CommerceSettings;
 use App\Domain\Shared\Enums\Currency;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -19,12 +20,21 @@ final class UpdateCourseSettings
     public function __construct(
         private readonly CommerceSettings $commerce,
         private readonly FreeCourseLimits $freeLimits,
+        private readonly ConnectionInterface $db,
     ) {}
 
     /**
      * @param  array<string, mixed>  $data  Validated: category_id, language, level, audience, is_free, price_minor, currency.
      */
     public function handle(Course $course, array $data): Course
+    {
+        return $this->db->transaction(fn (): Course => $this->apply($course, $data));
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function apply(Course $course, array $data): Course
     {
         $isFree = (bool) ($data['is_free'] ?? $course->is_free);
 
@@ -45,12 +55,14 @@ final class UpdateCourseSettings
 
     private function assertValidPrice(mixed $priceMinor, mixed $currencyCode): void
     {
-        if (! is_int($priceMinor) || ! is_string($currencyCode)) {
-            throw ValidationException::withMessages(['price_minor' => __('validation.required', ['attribute' => 'price'])]);
+        if (! is_numeric($priceMinor) || ! is_string($currencyCode)) {
+            throw ValidationException::withMessages(['price_minor' => __('validation.required', ['attribute' => __('validation.attributes.price')])]);
         }
 
+        $priceMinor = (int) $priceMinor;
+
         if (! in_array($currencyCode, $this->commerce->enabled_currencies, true)) {
-            throw ValidationException::withMessages(['currency' => __('validation.in', ['attribute' => 'currency'])]);
+            throw ValidationException::withMessages(['currency' => __('validation.in', ['attribute' => __('validation.attributes.currency')])]);
         }
 
         $currency = Currency::from($currencyCode);
@@ -58,13 +70,13 @@ final class UpdateCourseSettings
 
         if ($limits !== null && ($priceMinor < $limits['min'] || $priceMinor > $limits['max'])) {
             throw ValidationException::withMessages(['price_minor' => __('validation.between.numeric', [
-                'attribute' => 'price', 'min' => $limits['min'], 'max' => $limits['max'],
+                'attribute' => __('validation.attributes.price'), 'min' => $limits['min'], 'max' => $limits['max'],
             ])]);
         }
 
         if ($priceMinor % $currency->collectionStepMinor() !== 0) {
             throw ValidationException::withMessages(['price_minor' => __('validation.multiple_of', [
-                'attribute' => 'price', 'value' => $currency->collectionStepMinor(),
+                'attribute' => __('validation.attributes.price'), 'value' => $currency->collectionStepMinor(),
             ])]);
         }
     }

@@ -43,6 +43,10 @@ final class CourseLifecycle
                 throw AuthoringException::cannotDeletePublished();
             }
 
+            if ($locked->status === CourseStatus::InReview) {
+                throw AuthoringException::invalidTransition(); // withdraw first, so the review queue never points at a deleted course
+            }
+
             $locked->delete();
         });
     }
