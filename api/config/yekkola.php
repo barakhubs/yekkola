@@ -64,6 +64,9 @@ return [
         'max_avatar_upload_kb' => 5_120,
     ],
 
+    // Public files (avatars): `public` in development, an S3/R2 disk with public URLs in staging/production.
+    'public_disk' => env('PUBLIC_DISK', 'public'),
+
     // Private files (data exports, later KYC): `local` in development, an S3/R2 disk in staging/production.
     'private_disk' => env('PRIVATE_DISK', 'local'),
 
