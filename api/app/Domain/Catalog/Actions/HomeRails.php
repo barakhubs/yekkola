@@ -20,7 +20,7 @@ final class HomeRails
     public function handle(): array
     {
         return [
-            'featured' => $this->rail(fn (Builder $q) => $q->whereNotNull('featured_position')->orderBy('featured_position')),
+            'featured' => $this->rail(fn (Builder $q) => $q->whereNotNull('featured_position')->orderBy('featured_position'), (int) config('yekkola.catalogue.max_featured')),
             // TODO(1.8): rank by enrollments in the last 30 days once enrollments exist.
             'popular' => $this->rail(fn (Builder $q) => $q->orderByDesc('enrollment_count')->orderByDesc('published_at')),
             'new' => $this->rail(fn (Builder $q) => $q->orderByDesc('published_at')),
@@ -32,11 +32,11 @@ final class HomeRails
      * @param  callable(Builder<Course>): mixed  $scope
      * @return Collection<int, Course>
      */
-    private function rail(callable $scope): Collection
+    private function rail(callable $scope, ?int $size = null): Collection
     {
         $query = Course::query()->listed()->with(BrowseCourses::cardRelations());
         $scope($query);
 
-        return $query->limit((int) config('yekkola.catalogue.rail_size'))->get();
+        return $query->limit($size ?? (int) config('yekkola.catalogue.rail_size'))->get();
     }
 }

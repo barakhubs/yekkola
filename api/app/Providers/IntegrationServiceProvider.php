@@ -14,10 +14,12 @@ use App\Integrations\Sms\SmsSender;
 use App\Integrations\Video\FakeVideoProvider;
 use App\Integrations\Video\MuxVideoProvider;
 use App\Integrations\Video\VideoProvider;
+use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
+use Meilisearch\Client as MeilisearchClient;
 use RuntimeException;
 
 /**
@@ -48,6 +50,16 @@ final class IntegrationServiceProvider extends ServiceProvider
             default => throw new InvalidArgumentException('Unknown SMS driver ['.$this->driver('sms').'].'),
         });
 
+        // Search: short timeouts so a hung Meilisearch falls back to the database instead of blocking requests.
+        $this->app->singleton(MeilisearchClient::class, fn (): MeilisearchClient => new MeilisearchClient(
+            (string) config('scout.meilisearch.host'),
+            config('scout.meilisearch.key'),
+            new GuzzleClient([
+                'connect_timeout' => (float) config('scout.meilisearch.connect_timeout'),
+                'timeout' => (float) config('scout.meilisearch.timeout'),
+            ]),
+        ));
+
         $this->app->singleton(BotChallenge::class, fn (Application $app): BotChallenge => match ($this->driver('bot_challenge')) {
             'fake' => new FakeBotChallenge,
             'turnstile' => new TurnstileBotChallenge($app->make(HttpFactory::class), $app->make('log'), (string) config('yekkola.turnstile.secret')),
@@ -66,6 +78,10 @@ final class IntegrationServiceProvider extends ServiceProvider
                     throw new RuntimeException("yekkola.{$key} must use object storage in production (instances are stateless).");
                 }
             }
+        }
+
+        if ($this->app->isProduction() && config('scout.driver') !== 'meilisearch') {
+            throw new RuntimeException('SCOUT_DRIVER must be meilisearch in production.');
         }
 
         if ($this->app->isProduction() && $this->driver('bot_challenge') === 'turnstile' && (string) config('yekkola.turnstile.secret') === '') {

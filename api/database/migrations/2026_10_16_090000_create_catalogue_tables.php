@@ -21,6 +21,7 @@ return new class extends Migration
             $table->index(['status', 'published_at']);
             $table->index(['status', 'enrollment_count']);
             $table->index(['status', 'rating_avg']);
+            $table->rawIndex('audience jsonb_path_ops', 'courses_audience_gin')->algorithm('gin');
         });
 
         Schema::create('wishlist_items', function (Blueprint $table) {
@@ -40,6 +41,7 @@ return new class extends Migration
             $table->dropIndex(['status', 'published_at']);
             $table->dropIndex(['status', 'enrollment_count']);
             $table->dropIndex(['status', 'rating_avg']);
+            $table->dropIndex('courses_audience_gin');
             $table->dropColumn('featured_position');
             $table->boolean('is_featured')->default(false);
         });

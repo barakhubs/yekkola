@@ -6,7 +6,7 @@ namespace App\Domain\Catalog\Jobs;
 
 use App\Domain\Authoring\Models\Course;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -14,9 +14,9 @@ use Illuminate\Queue\InteractsWithQueue;
 /**
  * Re-syncs the search index for every course of a professor or a category after something the index
  * depends on changed outside the course row (professor name or status, account ban, category name).
- * Courses that are no longer listed are removed from the index.
+ * Courses that are no longer listed are removed from the index. Dispatched after commit, so it sees the change.
  */
-final class ReindexCourses implements ShouldQueue
+final class ReindexCourses implements ShouldQueueAfterCommit
 {
     use Dispatchable;
     use InteractsWithQueue;

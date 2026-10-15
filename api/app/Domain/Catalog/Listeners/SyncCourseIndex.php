@@ -44,8 +44,14 @@ final class SyncCourseIndex
 
     public function categorySaved(Category $category): void
     {
-        if ($category->wasChanged('name')) {
-            ReindexCourses::dispatch('category_id', $category->id);
+        if (! $category->wasChanged(['name', 'parent_id'])) {
+            return;
+        }
+
+        // Courses index their category's and its parent's names.
+        $ids = [$category->id, ...Category::query()->where('parent_id', $category->id)->pluck('id')->all()];
+        foreach ($ids as $id) {
+            ReindexCourses::dispatch('category_id', (string) $id);
         }
     }
 }

@@ -175,3 +175,34 @@ it('reindexes a professor\'s courses when their status or name changes', functio
     $this->professor->update(['status' => 'suspended']);
     Queue::assertPushed(ReindexCourses::class, fn (ReindexCourses $job) => $job->value === $this->professor->id);
 });
+
+it('hides courses of banned or deleted professor accounts', function () {
+    $this->professor->user->forceFill(['status' => 'banned'])->save();
+    $this->getJson('/api/v1/courses')->assertJsonCount(0, 'data');
+
+    $this->professor->user->forceFill(['status' => 'active'])->save();
+    $this->professor->user->delete();
+    $this->getJson("/api/v1/courses/{$this->maths->slug}")->assertNotFound();
+});
+
+it('sorts by newest and leaves hidden subcategories out of a parent', function () {
+    $this->maths->update(['published_at' => now()->subDay()]);
+    expect(slugs($this->getJson('/api/v1/courses?sort=newest')))->toBe([$this->sciences->slug, $this->maths->slug]);
+
+    Category::query()->where('slug', 'exetat-sciences')->update(['is_visible' => false]);
+    expect(slugs($this->getJson('/api/v1/courses?category=exetat')))->toBe([]);
+});
+
+it('drops featured courses that are no longer listed', function () {
+    $this->maths->update(['featured_position' => 1, 'status' => CourseStatus::Unpublished]);
+    $this->sciences->update(['featured_position' => 2]);
+
+    expect(collect($this->getJson('/api/v1/featured')->json('data.featured'))->pluck('slug')->all())->toBe([$this->sciences->slug]);
+});
+
+it('skips the search service for a minute after it fails', function () {
+    config(['scout.driver' => 'meilisearch', 'scout.meilisearch.host' => 'http://127.0.0.1:9']);
+    $this->getJson('/api/v1/courses?q=physique')->assertOk();
+
+    expect(cache()->has('catalogue:search-down'))->toBeTrue();
+});

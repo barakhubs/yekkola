@@ -27,6 +27,9 @@ final class SetFeaturedCourses
     public function handle(array $courseIds, User $staff): void
     {
         $this->db->transaction(function () use ($courseIds, $staff): void {
+            // One writer at a time: concurrent saves would otherwise merge into one list.
+            $this->db->statement('select pg_advisory_xact_lock(hashtext(?))', ['catalog.featured']);
+
             $listed = Course::query()->listed()->whereIn('id', $courseIds)->lockForUpdate()->pluck('id')->all();
             if (count($listed) !== count($courseIds)) {
                 throw ValidationException::withMessages(['course_ids' => __('catalog.featured.not_listed')]);

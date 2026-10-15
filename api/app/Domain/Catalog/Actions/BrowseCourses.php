@@ -6,6 +6,7 @@ namespace App\Domain\Catalog\Actions;
 
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Catalog\Models\Category;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Psr\Log\LoggerInterface;
@@ -14,14 +15,22 @@ use Throwable;
 /**
  * The public catalogue and search (PRD-04 FR-02, FR-03). Meilisearch only ranks the text matches
  * (typo-tolerant); every filter and sort runs in Postgres on listed courses, so browsing and search
- * share one implementation. When the search service is down, a plain database match takes over.
+ * share one implementation. When the search service is down, a plain database match takes over, and
+ * search is skipped for a minute (circuit breaker) so requests don't each wait for the timeout.
+ * Known limit: filters apply to the top MAX_HITS matches, so a very broad `q` with a narrow filter can
+ * miss low-ranked courses.
  */
 final class BrowseCourses
 {
     /** Search hits considered per query (Meilisearch's default pagination ceiling). */
     private const MAX_HITS = 1_000;
 
-    public function __construct(private readonly LoggerInterface $log) {}
+    private const DOWN_KEY = 'catalogue:search-down';
+
+    public function __construct(
+        private readonly LoggerInterface $log,
+        private readonly Repository $cache,
+    ) {}
 
     /**
      * @param  array{q?: string|null, category?: string|null, price?: string|null, currency?: string|null, language?: string|null, level?: string|null, audience?: string|null, sort?: string|null}  $filters
@@ -61,10 +70,15 @@ final class BrowseCourses
      */
     private function search(string $q): ?array
     {
+        if ($this->cache->has(self::DOWN_KEY)) {
+            return null;
+        }
+
         try {
             return array_values(array_map('strval', Course::search($q)->take(self::MAX_HITS)->keys()->all()));
         } catch (Throwable $e) {
             $this->log->warning('Course search unavailable, falling back to the database', ['exception' => $e::class]);
+            $this->cache->put(self::DOWN_KEY, true, 60);
 
             return null;
         }
@@ -90,7 +104,7 @@ final class BrowseCourses
     {
         if (filled($filters['category'] ?? null)) {
             $category = Category::query()->where('slug', $filters['category'])->first();
-            $ids = $category === null ? [] : [$category->id, ...$category->children()->pluck('id')->all()];
+            $ids = $category === null ? [] : [$category->id, ...$category->children()->where('is_visible', true)->pluck('id')->all()];
             $query->whereIn('category_id', $ids);
         }
 

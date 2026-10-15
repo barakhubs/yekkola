@@ -20,7 +20,7 @@ return [
     |
     */
 
-    'driver' => env('SCOUT_DRIVER', 'collection'),
+    'driver' => env('SCOUT_DRIVER', 'meilisearch'),
 
     /*
     |--------------------------------------------------------------------------
@@ -143,6 +143,9 @@ return [
     'meilisearch' => [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
+        // Seconds. Search falls back to the database on failure, so fail fast.
+        'connect_timeout' => env('MEILISEARCH_CONNECT_TIMEOUT', 1),
+        'timeout' => env('MEILISEARCH_TIMEOUT', 2),
         'index-settings' => [
             // Meilisearch only ranks matches (typo tolerance on by default); filters and sorts run in
             // Postgres, see App\Domain\Catalog\Actions\BrowseCourses. Sync on deploy: scout:sync-index-settings.
