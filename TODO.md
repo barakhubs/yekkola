@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-04-catalogue` — Phase 1.6
+- **Waiting:** PR #9 (catalogue & search, Phase 1.6) to be merged
 - **Next up:** Phase 1.7 (checkout & payments — PRD-05)
 
 ## Legend
@@ -151,11 +151,11 @@ Cannot be defaulted:
 - [ ] Re-poll media assets still waiting for upload; test out-of-order webhooks
 
 ### 1.6 Catalogue & search — PRD-04
-- [x] Categories API (visible tree, fr/en, course counts) (FR-02)
-- [x] Catalogue with filters + sorts; course page with curriculum outline and download sizes; professor page with courses (FR-02, FR-04, FR-05, FR-07, BR-01, BR-02, FR-12)
-- [x] Home rails + admin-ordered featured list (FR-01, BR-03)
-- [x] Meilisearch indexing (queued, after commit, reindex on professor/category changes) with database fallback (FR-03, FR-11)
-- [x] Wishlist (erased on deletion, in data export) (FR-08)
+- [x] Categories API (visible tree, fr/en, course counts) (FR-02) — #9
+- [x] Catalogue with filters + sorts; course page with curriculum outline and download sizes; professor page with courses (FR-02, FR-04, FR-05, FR-07, BR-01, BR-02, FR-12) — #9
+- [x] Home rails + admin-ordered featured list (FR-01, BR-03) — #9
+- [x] Meilisearch indexing (queued, after commit, reindex on professor/category changes) with database fallback (FR-03, FR-11) — #9
+- [x] Wishlist (erased on deletion, in data export) (FR-08) — #9
 - [ ] Certificate verification endpoint (FR-09) — with certificates in 1.8
 - [ ] Preview playback tokens without login (FR-06) — with playback in 1.9
 - [ ] Popular rail by enrollments in the last 30 days — with 1.8
