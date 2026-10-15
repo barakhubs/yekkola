@@ -81,7 +81,7 @@ final class CourseController extends Controller
     {
         $draft = $start->handle($this->course($request, $course));
 
-        return (new CourseVersionResource($draft->load('sections.lessons.mediaAsset', 'sections.lessons.quiz.questions.options')))
+        return (new CourseVersionResource($draft->load('sections.lessons.mediaAsset', 'sections.lessons.quiz.questions.options', 'sections.lessons.media')))
             ->response()->setStatusCode(201);
     }
 
@@ -89,14 +89,14 @@ final class CourseController extends Controller
     {
         $version = $review->submit($this->course($request, $course));
 
-        return new CourseVersionResource($version->load('sections.lessons.mediaAsset', 'sections.lessons.quiz.questions.options'));
+        return new CourseVersionResource($version->load('sections.lessons.mediaAsset', 'sections.lessons.quiz.questions.options', 'sections.lessons.media'));
     }
 
     public function withdraw(Request $request, string $course, CourseReview $review): CourseVersionResource
     {
         $version = $review->withdraw($this->course($request, $course));
 
-        return new CourseVersionResource($version->load('sections.lessons.mediaAsset', 'sections.lessons.quiz.questions.options'));
+        return new CourseVersionResource($version->load('sections.lessons.mediaAsset', 'sections.lessons.quiz.questions.options', 'sections.lessons.media'));
     }
 
     public function unpublish(Request $request, string $course, CourseLifecycle $lifecycle): StudioCourseResource

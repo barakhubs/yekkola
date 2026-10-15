@@ -75,7 +75,7 @@ final class MuxVideoProvider implements VideoProvider
             $settings['static_renditions'] = [['resolution' => 'audio-only']];
         }
 
-        $data = $this->send(fn (PendingRequest $http) => $http->post(self::API.'/uploads', [
+        $data = $this->send(retry: false, call: fn (PendingRequest $http) => $http->post(self::API.'/uploads', [
             'cors_origin' => $request->corsOrigin,
             'new_asset_settings' => $settings,
         ]));
@@ -234,13 +234,16 @@ final class MuxVideoProvider implements VideoProvider
      * @param  callable(PendingRequest): \Illuminate\Http\Client\Response  $call
      * @return array<string, mixed>
      */
-    private function send(callable $call, bool $expectJson = true): array
+    private function send(callable $call, bool $expectJson = true, bool $retry = true): array
     {
         $http = $this->http
             ->withBasicAuth($this->required('token_id'), $this->required('token_secret'))
             ->acceptJson()
-            ->timeout(15)
-            ->retry(2, 500, fn ($e) => $e instanceof ConnectionException, throw: true);
+            ->timeout(15);
+
+        if ($retry) { // POSTs aren't idempotent: a retried timeout could create a second upload
+            $http = $http->retry(2, 500, fn ($e) => $e instanceof ConnectionException, throw: true);
+        }
 
         $response = $call($http)->throw();
 

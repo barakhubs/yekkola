@@ -29,7 +29,7 @@ final class VideoWebhookController extends Controller
             throw $e;
         }
 
-        $stored = WebhookEvent::query()->firstOrCreate(
+        $stored = WebhookEvent::query()->createOrFirst(
             ['provider' => $videos->name(), 'event_id' => $event->eventId],
             [
                 'type' => $event->type->value,

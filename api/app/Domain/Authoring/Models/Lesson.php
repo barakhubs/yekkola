@@ -102,7 +102,7 @@ final class Lesson extends Model implements HasMedia
         return match ($this->type) {
             LessonType::Video, LessonType::Audio => $this->mediaAsset?->status === MediaAssetStatus::Ready,
             LessonType::Document => $this->getFirstMedia(self::DOCUMENT) !== null,
-            LessonType::Quiz => ($this->quiz?->questions()->count() ?? 0) > 0,
+            LessonType::Quiz => $this->quiz?->questions->isNotEmpty() ?? false,
         };
     }
 }

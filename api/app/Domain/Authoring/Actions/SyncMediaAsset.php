@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Domain\Authoring\Actions;
 
 use App\Domain\Authoring\Enums\MediaAssetStatus;
+use App\Domain\Authoring\Enums\VersionState;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\MediaAsset;
+use App\Integrations\Video\VideoAsset;
 use App\Integrations\Video\VideoAssetNotFound;
 use App\Integrations\Video\VideoAssetStatus;
 use App\Integrations\Video\VideoEventType;
 use App\Integrations\Video\VideoProvider;
 use App\Integrations\Video\VideoWebhookEvent;
+use Illuminate\Database\ConnectionInterface;
 
 /**
  * Applies a provider event to our MediaAsset. The event only says *something changed*: the asset's real
@@ -20,7 +23,10 @@ use App\Integrations\Video\VideoWebhookEvent;
  */
 final class SyncMediaAsset
 {
-    public function __construct(private readonly VideoProvider $videos) {}
+    public function __construct(
+        private readonly VideoProvider $videos,
+        private readonly ConnectionInterface $db,
+    ) {}
 
     public function fromEvent(VideoWebhookEvent $event): ?MediaAsset
     {
@@ -29,19 +35,9 @@ final class SyncMediaAsset
             return null;
         }
 
-        if ($event->type === VideoEventType::UploadCancelled) {
-            $asset->forceFill(['status' => MediaAssetStatus::Cancelled])->save();
-
-            return $asset;
-        }
-
-        if ($event->assetId !== null && $asset->provider_asset_id === null) {
-            $asset->forceFill(['provider_asset_id' => $event->assetId, 'status' => MediaAssetStatus::Processing])->save();
-        }
-
-        return in_array($event->type, [VideoEventType::AssetReady, VideoEventType::AssetErrored, VideoEventType::AssetCreated], true)
-            ? $this->refresh($asset)
-            : $asset;
+        return $this->db->transaction(function () use ($asset, $event): MediaAsset {
+            return $this->apply(MediaAsset::query()->whereKey($asset->id)->lockForUpdate()->firstOrFail(), $event);
+        });
     }
 
     public function refresh(MediaAsset $asset): MediaAsset
@@ -54,6 +50,40 @@ final class SyncMediaAsset
             $remote = $this->videos->getAsset($asset->provider_asset_id);
         } catch (VideoAssetNotFound) {
             return $asset; // not visible yet — the next event or poll will catch up
+        }
+
+        return $this->db->transaction(function () use ($asset, $remote): MediaAsset {
+            return $this->store(MediaAsset::query()->whereKey($asset->id)->lockForUpdate()->firstOrFail(), $remote);
+        });
+    }
+
+    private function apply(MediaAsset $asset, VideoWebhookEvent $event): MediaAsset
+    {
+        if ($event->type === VideoEventType::UploadCancelled) {
+            $asset->forceFill(['status' => MediaAssetStatus::Cancelled])->save();
+
+            return $asset;
+        }
+
+        if ($event->assetId !== null && $asset->provider_asset_id === null) {
+            $asset->forceFill(['provider_asset_id' => $event->assetId, 'status' => MediaAssetStatus::Processing])->save();
+        }
+
+        if ($asset->provider_asset_id === null || ! in_array($event->type, [VideoEventType::AssetReady, VideoEventType::AssetErrored, VideoEventType::AssetCreated], true)) {
+            return $asset;
+        }
+
+        try {
+            return $this->store($asset, $this->videos->getAsset($asset->provider_asset_id));
+        } catch (VideoAssetNotFound) {
+            return $asset; // not visible yet — the next event or poll will catch up
+        }
+    }
+
+    private function store(MediaAsset $asset, VideoAsset $remote): MediaAsset
+    {
+        if ($asset->status === MediaAssetStatus::Ready && $remote->status === VideoAssetStatus::Preparing) {
+            return $asset; // a stale read racing a newer event — never move back from ready
         }
 
         $status = match ($remote->status) {
@@ -72,7 +102,11 @@ final class SyncMediaAsset
         ])->save();
 
         if ($status === MediaAssetStatus::Ready) {
-            Lesson::query()->where('media_asset_id', $asset->id)->update(['duration_seconds' => $duration]);
+            // Approved versions are immutable: only open versions pick up the duration (later copies inherit it).
+            Lesson::query()
+                ->where('media_asset_id', $asset->id)
+                ->whereHas('version', fn ($q) => $q->whereIn('state', [VersionState::Draft, VersionState::Rejected, VersionState::InReview]))
+                ->update(['duration_seconds' => $duration]);
         }
 
         return $asset;
