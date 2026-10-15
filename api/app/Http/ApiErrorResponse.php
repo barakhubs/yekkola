@@ -7,6 +7,7 @@ namespace App\Http;
 use App\Domain\Shared\Exceptions\DomainException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -66,6 +67,7 @@ final class ApiErrorResponse
     {
         return match (true) {
             $e instanceof DomainException => [$e->status, $e->errorCode, $e->context],
+            $e instanceof LockTimeoutException => [409, 'request.busy', []],
             $e instanceof ValidationException => [422, 'validation.failed', ['errors' => $e->errors()]],
             $e instanceof AuthenticationException => [401, 'auth.unauthenticated', []],
             $e instanceof AuthorizationException => self::fromStatus($e->status() ?? 403),

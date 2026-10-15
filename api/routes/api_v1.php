@@ -98,6 +98,9 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/kyc-submissions', [KycSubmissionController::class, 'index'])->name('kyc-submissions.index');
         Route::get('/kyc-submissions/{submission}', [KycSubmissionController::class, 'show'])->name('kyc-submissions.show');
         Route::get('/kyc-submissions/{submission}/files/{kind}', [KycSubmissionController::class, 'file'])->name('kyc-submissions.file');
+    });
+
+    Route::middleware(['can:'.Permission::KycView->value, 'can:'.Permission::KycReview->value])->group(function () {
         Route::post('/kyc-submissions/{submission}/verify', [KycSubmissionController::class, 'verify'])->name('kyc-submissions.verify');
         Route::post('/kyc-submissions/{submission}/reject', [KycSubmissionController::class, 'reject'])->name('kyc-submissions.reject');
     });

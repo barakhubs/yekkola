@@ -30,7 +30,7 @@ final class ProfessorApplicationController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $applications = QueryBuilder::for(ProfessorApplication::query()->where('status', '!=', ApplicationStatus::Draft)->with('user', 'province'))
+        $applications = QueryBuilder::for(ProfessorApplication::query()->where('status', '!=', ApplicationStatus::Draft)->with('user', 'province', 'media'))
             ->allowedFilters(
                 AllowedFilter::exact('status'),
                 AllowedFilter::callback('subject', fn ($q, $value) => $q->whereJsonContains('subjects', $value)),
@@ -88,7 +88,12 @@ final class ProfessorApplicationController extends Controller
 
         $audit->handle('professor_application.credential_viewed', $application, ['file' => $media->uuid]);
 
-        return $media->toInlineResponse($request);
+        $response = $media->toInlineResponse($request);
+        $response->headers->set('Cache-Control', 'no-store, private');
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('Content-Security-Policy', "sandbox; default-src 'none'");
+
+        return $response;
     }
 
     private function staff(Request $request): User

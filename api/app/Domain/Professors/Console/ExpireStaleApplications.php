@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Professors\Console;
 
+use App\Domain\Platform\Actions\RecordAudit;
 use App\Domain\Professors\Enums\ApplicationStatus;
 use App\Domain\Professors\Models\ProfessorApplication;
 use Illuminate\Console\Command;
@@ -17,12 +18,22 @@ final class ExpireStaleApplications extends Command
 
     protected $description = 'Expire professor applications whose info request went unanswered';
 
-    public function handle(): int
+    public function handle(RecordAudit $audit): int
     {
-        $count = ProfessorApplication::query()
+        $cutoff = now()->subDays((int) config('yekkola.professors.needs_info_expiry_days'));
+        $count = 0;
+
+        // Only applications the applicant hasn't touched since the cutoff.
+        ProfessorApplication::query()
             ->where('status', ApplicationStatus::NeedsInfo)
-            ->where('info_requested_at', '<=', now()->subDays((int) config('yekkola.professors.needs_info_expiry_days')))
-            ->update(['status' => ApplicationStatus::Expired, 'decided_at' => now()]);
+            ->where('info_requested_at', '<=', $cutoff)
+            ->where('updated_at', '<=', $cutoff)
+            ->lazyById()
+            ->each(function (ProfessorApplication $application) use ($audit, &$count): void {
+                $application->forceFill(['status' => ApplicationStatus::Expired, 'decided_at' => now()])->save();
+                $audit->handle('professor_application.expired', $application);
+                $count++;
+            });
 
         $this->info("Expired {$count} application(s).");
 

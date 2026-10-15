@@ -81,7 +81,7 @@ it('lets a rejected professor resubmit', function () {
     $this->post('/api/v1/professor/kyc', ['document_type' => 'passport', ...idFiles(false)], ['Accept' => 'application/json']);
     $submission = KycSubmission::query()->sole();
 
-    actingAsStaff(Role::Moderator, [Permission::KycView]);
+    actingAsStaff(Role::Moderator, [Permission::KycView, Permission::KycReview]);
     $this->postJson("/api/v1/admin/kyc-submissions/{$submission->id}/reject")->assertUnprocessable();
     $this->postJson("/api/v1/admin/kyc-submissions/{$submission->id}/reject", ['note' => 'Photo floue.'])->assertOk();
     $this->postJson("/api/v1/admin/kyc-submissions/{$submission->id}/verify")->assertStatus(409)->assertJsonPath('code', 'kyc.not_pending');

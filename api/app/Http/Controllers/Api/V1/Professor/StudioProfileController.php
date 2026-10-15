@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Professor;
 
+use App\Domain\Professors\Actions\AcceptProfessorTerms;
 use App\Domain\Professors\Actions\UpdateProfessorProfile;
 use App\Domain\Professors\Enums\LegalDocument;
 use App\Domain\Professors\Models\ProfessorProfile;
-use App\Domain\Professors\Models\TermsAcceptance;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Professor\UpdateProfessorProfileRequest;
 use App\Http\Requests\Professor\UploadAvatarRequest;
 use App\Http\Resources\ProfessorProfileResource;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * The professor's own profile in the studio (PRD-02 FR-07, FR-10).
@@ -40,15 +41,13 @@ final class StudioProfileController extends Controller
     /**
      * Accept the current professor agreement (required again whenever its version changes).
      */
-    public function acceptTerms(Request $request): ProfessorProfileResource
+    public function acceptTerms(Request $request, AcceptProfessorTerms $accept): ProfessorProfileResource
     {
-        $request->validate(['version' => ['required', 'string', 'in:'.LegalDocument::ProfessorAgreement->currentVersion()]]);
+        // The client echoes the version it showed, so nobody accepts a text they didn't see.
+        $request->validate(['version' => ['required', 'string', Rule::in([LegalDocument::ProfessorAgreement->currentVersion()])]]);
 
         $profile = $this->profile($request);
-
-        if (! TermsAcceptance::hasAcceptedCurrent($profile->user_id, LegalDocument::ProfessorAgreement)) {
-            TermsAcceptance::record($profile->user_id, LegalDocument::ProfessorAgreement, $request->ip());
-        }
+        $accept->handle($profile->user_id, $request->ip());
 
         return new ProfessorProfileResource($profile->load('province'));
     }

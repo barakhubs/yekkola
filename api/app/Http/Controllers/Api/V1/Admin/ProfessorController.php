@@ -23,7 +23,7 @@ final class ProfessorController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        $professors = QueryBuilder::for(ProfessorProfile::query()->with('user', 'province'))
+        $professors = QueryBuilder::for(ProfessorProfile::query()->with('user', 'province', 'media'))
             ->allowedFilters(
                 AllowedFilter::exact('status'),
                 AllowedFilter::exact('kyc_status'),

@@ -25,6 +25,9 @@ return [
         'payload_too_large' => 'Le contenu envoyé est trop volumineux.',
         'error' => 'La requête n’a pas pu être traitée.',
     ],
+    'request' => [
+        'busy' => 'Une autre opération est en cours. Réessayez dans un instant.',
+    ],
     'rate_limited' => 'Trop de tentatives. Veuillez réessayer plus tard.',
     'server' => [
         'error' => 'Erreur du serveur. Veuillez réessayer.',

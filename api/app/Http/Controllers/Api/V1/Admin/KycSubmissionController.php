@@ -25,7 +25,7 @@ final class KycSubmissionController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        $submissions = QueryBuilder::for(KycSubmission::query()->with('profile'))
+        $submissions = QueryBuilder::for(KycSubmission::query()->with('profile', 'media'))
             ->allowedFilters(AllowedFilter::exact('status'), AllowedFilter::exact('document_type'))
             ->allowedSorts('created_at', 'reviewed_at')
             ->defaultSort('created_at')
@@ -54,7 +54,12 @@ final class KycSubmissionController extends Controller
 
         $audit->handle('kyc.file_viewed', $submission, ['file' => $kind]);
 
-        return $media->toInlineResponse($request);
+        $response = $media->toInlineResponse($request);
+        $response->headers->set('Cache-Control', 'no-store, private');
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('Content-Security-Policy', "sandbox; default-src 'none'");
+
+        return $response;
     }
 
     public function verify(Request $request, KycSubmission $submission, ReviewKyc $review): KycSubmissionResource

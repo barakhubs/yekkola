@@ -61,7 +61,8 @@ final class RequestOtp
             $challenge = $this->createChallenge($phone, $purpose, $forUser, $client, $code);
 
             if ($this->shouldSend($phone, $purpose, $forUser)) {
-                $this->bus->dispatch(new SendOtpSms($phone->e164, $code, $client->locale));
+                $template = $purpose === OtpPurpose::PayoutMethod ? 'otp_payout' : 'otp';
+                $this->bus->dispatch(new SendOtpSms($phone->e164, $code, $client->locale, $template));
             }
 
             return $challenge;

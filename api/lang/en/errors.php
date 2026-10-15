@@ -25,6 +25,9 @@ return [
         'payload_too_large' => 'The request is too large.',
         'error' => 'The request could not be processed.',
     ],
+    'request' => [
+        'busy' => 'Another operation is in progress. Try again in a moment.',
+    ],
     'rate_limited' => 'Too many attempts. Please try again later.',
     'server' => [
         'error' => 'Server error. Please try again.',
