@@ -12,8 +12,10 @@ use App\Integrations\Payments\PaymentGateway;
 use App\Integrations\Sms\LogSmsSender;
 use App\Integrations\Sms\SmsSender;
 use App\Integrations\Video\FakeVideoProvider;
+use App\Integrations\Video\MuxVideoProvider;
 use App\Integrations\Video\VideoProvider;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
 use RuntimeException;
@@ -32,6 +34,7 @@ final class IntegrationServiceProvider extends ServiceProvider
         // Singletons so a request (or test) sees one consistent fake.
         $this->app->singleton(VideoProvider::class, fn (Application $app): VideoProvider => match ($this->driver('video')) {
             'fake' => new FakeVideoProvider($app->make('cache')->store(), $this->fakeSecret()),
+            'mux' => new MuxVideoProvider($app->make(HttpFactory::class), (array) config('yekkola.mux')),
             default => throw new InvalidArgumentException('Unknown video driver ['.$this->driver('video').'].'),
         });
 
@@ -47,7 +50,7 @@ final class IntegrationServiceProvider extends ServiceProvider
 
         $this->app->singleton(BotChallenge::class, fn (Application $app): BotChallenge => match ($this->driver('bot_challenge')) {
             'fake' => new FakeBotChallenge,
-            'turnstile' => new TurnstileBotChallenge($app->make('http'), $app->make('log'), (string) config('yekkola.turnstile.secret')),
+            'turnstile' => new TurnstileBotChallenge($app->make(HttpFactory::class), $app->make('log'), (string) config('yekkola.turnstile.secret')),
             default => throw new InvalidArgumentException('Unknown bot challenge driver ['.$this->driver('bot_challenge').'].'),
         });
     }

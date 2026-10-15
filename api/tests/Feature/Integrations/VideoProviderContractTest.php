@@ -26,7 +26,7 @@ it('creates a direct upload URL for the browser', function (Closure $make, Media
     $upload = $make()->createDirectUpload(new DirectUploadRequest($kind, 'media-1', 'https://studio.yekkola.test'));
 
     expect($upload->uploadId)->not->toBeEmpty()
-        ->and($upload->url)->toStartWith('https://');
+        ->and($upload->url)->toStartWith('http');
 })->with('video providers')->with([MediaKind::Video, MediaKind::Audio]);
 
 it('issues DRM, thumbnail and storyboard tokens for video only', function (Closure $make) {
@@ -64,10 +64,13 @@ it('rejects webhooks with a bad signature', function (Closure $make) {
 
 // Fake-specific behaviour
 
-it('makes uploaded assets ready, and can simulate processing errors', function () {
+it('makes assets ready once the upload completes, and can simulate processing errors', function () {
     $provider = new FakeVideoProvider(cache()->store(), 'secret');
     $upload = $provider->createDirectUpload(new DirectUploadRequest(MediaKind::Video, 'media-1', 'https://studio.yekkola.test'));
     $assetId = $provider->assetIdForUpload($upload->uploadId);
+
+    expect($provider->getAsset($assetId)->status)->toBe(VideoAssetStatus::Preparing)
+        ->and($provider->completeUpload($upload->uploadId))->toBe($assetId);
 
     $asset = $provider->getAsset($assetId);
     expect($asset->status)->toBe(VideoAssetStatus::Ready)

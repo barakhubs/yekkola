@@ -20,6 +20,7 @@ final class DatabaseSeeder extends Seeder
         $this->call([
             ProvinceSeeder::class,
             RolesAndPermissionsSeeder::class,
+            CategorySeeder::class,
         ]);
 
         // Local/staging demo admin — only when a number you control is configured (never a guessed real number).

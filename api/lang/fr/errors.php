@@ -69,6 +69,7 @@ return [
         'filename' => 'yekkola-mes-donnees.json',
     ],
     'professor' => [
+        'suspended' => 'Votre compte professeur est suspendu.',
         'already_professor' => 'Vous êtes déjà professeur sur Yekkola.',
         'slug_already_changed' => 'L’adresse de votre page ne peut être modifiée qu’une seule fois.',
         'required' => 'Cette section est réservée aux professeurs approuvés.',
@@ -92,6 +93,23 @@ return [
         'back_required' => 'Ajoutez le verso de votre pièce d’identité.',
         'not_found' => 'Aucune vérification d’identité trouvée.',
         'not_pending' => 'Cette vérification a déjà été traitée.',
+    ],
+    'course' => [
+        'draft_not_editable' => 'Ce brouillon est en cours de révision et ne peut pas être modifié.',
+        'no_draft' => 'Ce cours n’a pas de brouillon en cours.',
+        'draft_exists' => 'Un brouillon existe déjà pour ce cours.',
+        'not_published' => 'Ce cours n’a jamais été publié.',
+        'invalid_transition' => 'Cette action n’est pas possible pour ce cours actuellement.',
+        'not_ready_for_review' => 'Complétez le cours avant de l’envoyer en révision.',
+        'free_limit_reached' => 'Vous avez atteint le nombre maximal de cours gratuits.',
+        'free_hours_limit_reached' => 'Ce cours dépasserait la limite de :limit heures de contenu gratuit.',
+        'cannot_delete_published' => 'Un cours déjà publié ne peut pas être supprimé ; archivez-le.',
+        'own_course' => 'Vous ne pouvez pas examiner votre propre cours.',
+        'invalid_order' => 'L’ordre envoyé ne correspond pas au contenu du cours.',
+    ],
+    'lesson' => [
+        'preview_limit_reached' => 'Nombre maximal de leçons d’aperçu atteint.',
+        'type_mismatch' => 'Ce contenu ne correspond pas au type de leçon.',
     ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',

@@ -204,7 +204,7 @@ return [
         'supervisor-1' => [
             'connection' => 'redis',
             // `otp` first: users are waiting for their sign-in code.
-            'queue' => ['otp', 'default'],
+            'queue' => ['otp', 'default', 'media'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
