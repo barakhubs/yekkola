@@ -240,14 +240,14 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `categories` | id, parent_id (null), slug, name (jsonb), description (jsonb), icon, position, is_visible | Two levels max. |
-| `courses` | id, professor_id, slug (unique), status (`draft`/`in_review`/`published`/`unpublished`/`archived`), live_version_id (null), draft_version_id (null), category_id, language (`fr`/`en`), level (`beginner`/`intermediate`/`advanced`/`all`), audience (jsonb tags e.g. `exetat`, `university`), is_free, price_minor, currency, revenue_share_bps (null), is_featured, published_at, rating_avg, rating_count, enrollment_count, total_duration_seconds, deleted_at | Denormalized counters updated by events. |
-| `course_versions` | id, course_id, number, state (`draft`/`in_review`/`approved`/`rejected`/`superseded`), title, subtitle, description, outcomes (jsonb), requirements (jsonb), cover_image (media), promo_lesson_uid (null), submitted_at, reviewed_by, reviewed_at, review_notes | Approved versions are immutable. |
+| `categories` | id, parent_id (null), slug, name (jsonb fr/en), description (jsonb), icon, position, is_visible | Two levels max. Seeded by `CategorySeeder` from docs/catalogue-categories.md. |
+| `courses` | id, professor_profile_id, slug (unique), status (`draft`/`in_review`/`published`/`unpublished`/`archived`), live_version_id, draft_version_id, category_id, language, level, audience (jsonb), is_free, price_minor, currency, revenue_share_bps, is_featured, published_at, rating_avg, rating_count, enrollment_count, total_duration_seconds, deleted_at | Settings (price, category…) apply immediately; content lives in versions. |
+| `course_versions` | id, course_id, number, state (`draft`/`in_review`/`rejected`/`approved`/`superseded`), title, subtitle, description, outcomes, requirements, changelog, cover (media, public disk), submitted_at, reviewed_by, reviewed_at, review_notes | Partial unique index: one draft/in-review/rejected version per course. Approved versions are never edited. |
 | `sections` | id, course_version_id, title, position | |
-| `lessons` | id, course_version_id, section_id, uid (stable across versions), type (`video`/`audio`/`document`/`quiz`), title, description, position, is_preview, duration_seconds, media_asset_id (null), document_media_id (null), quiz_id (null) | Unique `(course_version_id, uid)`. New version = copy rows, keep `uid`. |
-| `media_assets` | id, professor_id, kind (`video`/`audio`), provider (`mux`), provider_upload_id, provider_asset_id, playback_id, status (`waiting_upload`/`processing`/`ready`/`errored`), duration_seconds, max_resolution, size_bytes_estimates (jsonb per tier), error (jsonb) | Reusable across versions (copying a version doesn't re-upload). |
-| `quizzes` | id, course_version_id, title, pass_mark_pct, time_limit_seconds (null), max_attempts (null), shuffle_questions | |
-| `quiz_questions` | id, quiz_id, type (`single`/`multiple`/`true_false`), prompt, explanation, points, position, media (null) | |
+| `lessons` | id, course_version_id, section_id, uid (stable across versions), type (`video`/`audio`/`document`/`quiz`), title, description, position, is_preview, duration_seconds, media_asset_id | Unique `(course_version_id, uid)`. Document PDF in `media` (collection `document`, private disk). |
+| `media_assets` | id, professor_profile_id, kind (`video`/`audio`), provider, provider_upload_id, provider_asset_id, playback_id, status (`waiting_upload`/`processing`/`ready`/`errored`/`cancelled`), duration_seconds, error | Reused across versions (a new draft doesn't re-upload). |
+| `quizzes` | id, lesson_id (unique), pass_mark_pct, time_limit_seconds, max_attempts, shuffle_questions | One per quiz lesson; copied with the lesson. |
+| `quiz_questions` | id, quiz_id, type (`single`/`multiple`/`true_false`), prompt, explanation, points, position | |
 | `quiz_options` | id, quiz_question_id, text, is_correct, position | `is_correct` never sent to students before submission. |
 
 ### 3.4 Commerce
@@ -305,7 +305,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | `notification_preferences` | user_id, type, channel (`push`/`sms`/`email`/`in_app`), enabled | Defaults in code; rows only for overrides. |
 | `settings` | spatie/laravel-settings | Groups: commerce, payouts, protection, catalog, learning, moderation. Defaults in `database/settings/`. |
 | `activity_log` | spatie/laravel-activitylog (ULID id; subject/causer ids are strings) | All admin actions (`RecordAudit`) + settings changes (before/after, automatic). |
-| `webhook_events` | id, provider (`mux`/…), event_id (unique per provider), type, payload, received_at, processed_at, error | Mux inbox (payments use `payment_events`). |
+| `webhook_events` | id, provider, event_id (unique per provider), type, payload (jsonb), received_at, processed_at, error | Video provider inbox, processed by `ProcessVideoWebhook` on the `media` queue (payments use `payment_events`). |
 | `course_daily_stats` | course_id, date, views, enrollments, paid_enrollments, revenue_minor, currency, completions, avg_rating | Rolled up nightly + incrementally; feeds dashboards. |
 | `platform_daily_stats` | date, signups, active_students, orders, gmv_minor (per currency), payouts_minor, … | Admin dashboard. |
 
@@ -408,19 +408,20 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /professor/terms/accept | Accept the current professor agreement |
 | GET / POST | /professor/kyc | Latest identity check / submit (multipart front, back, selfie) |
 | POST / PUT | /professor/payout-method[/otp] | Code to own number / set rail + number (48 h hold on change) |
-| GET / POST | /professor/courses | List / create |
-| GET / PATCH / DELETE | /professor/courses/{id} | Course settings (category, language, price, free) |
+| GET / POST | /professor/courses | List / create (creates draft v1) |
+| GET / PATCH / DELETE | /professor/courses/{id} | Settings (category, language, level, audience, price/free — immediate) / delete if never published |
 | POST | /professor/courses/{id}/draft | Start a draft from the live version |
-| GET / PATCH | /professor/courses/{id}/draft | Draft metadata |
+| POST | /professor/courses/{id}/(submit\|withdraw) | Review submission |
+| POST | /professor/courses/{id}/(unpublish\|republish\|archive) | Visibility |
+| GET / PATCH | /professor/courses/{id}/draft | Draft with curriculum + submit checklist / details |
+| POST | /professor/courses/{id}/draft/cover | Cover image (16:9, ≥ 1280×720) |
 | POST / PATCH / DELETE | /professor/courses/{id}/draft/sections[/{sid}] | Sections |
 | POST / PATCH / DELETE | /professor/courses/{id}/draft/lessons[/{lid}] | Lessons |
-| PUT | /professor/courses/{id}/draft/order | Reorder sections + lessons |
-| POST | /professor/courses/{id}/draft/submit | Submit for review |
-| POST | /professor/courses/{id}/unpublish | Unpublish |
-| POST | /professor/media/uploads | Mux direct-upload URL (`kind` video/audio) |
-| GET | /professor/media/{id} | Media status |
-| POST | /professor/documents/uploads | Pre-signed upload for a document |
-| CRUD | /professor/quizzes/{id}/questions | Quiz builder |
+| PUT | /professor/courses/{id}/draft/order | Full order of sections + lessons |
+| POST | /professor/courses/{id}/draft/lessons/{lid}/media | Direct-upload URL for a video/audio lesson |
+| POST | /professor/courses/{id}/draft/lessons/{lid}/document | PDF (multipart) |
+| PUT | /professor/courses/{id}/draft/lessons/{lid}/quiz | Whole quiz (settings + questions + options) |
+| GET | /professor/media/{id} | Media processing status |
 | GET | /professor/analytics/overview | KPIs + time series |
 | GET | /professor/analytics/courses/{id} | Per-course stats, funnel, quiz performance |
 | GET | /professor/earnings | Balances (held/available/paid) |
@@ -445,8 +446,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/kyc-submissions/{id}/(verify\|reject) | Decide (`kyc.review`) |
 | GET / PATCH | /admin/professors[/{id}] | List/search; revenue-share override with note (`professors.manage`) |
 | POST | /admin/professors/{id}/(suspend\|reinstate) | With reason |
-| GET | /admin/course-versions?state=in_review | Content review queue |
-| POST | /admin/course-versions/{id}/(approve\|reject) | Decide with notes |
+| GET | /admin/course-versions[/{id}] | Review queue (`?filter[state]=in_review`); detail with curriculum + changes since live |
+| POST | /admin/course-versions/{id}/(approve\|reject) | Decide (note required to reject) |
 | GET / PATCH | /admin/courses[/{id}] | Unpublish, feature, takedown |
 | CRUD | /admin/categories (+ `PUT /admin/categories/order`) | Categories |
 | GET | /admin/reports; POST /admin/reports/{id}/resolve | Moderation |
@@ -467,7 +468,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path |
 |---|---|
-| POST | /webhooks/mux |
+| POST | /webhooks/video | Video provider (Mux) |
+| PUT | /_fake/video-uploads/{upload} | Fake video driver only: stands in for the upload URL (local, staging) |
 | POST | /webhooks/payments/{gateway} |
 | POST | /webhooks/sms/{provider} (delivery reports) |
 

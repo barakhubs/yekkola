@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** none — PR #7 (professor onboarding) waiting to be merged
-- **Next up:** Phase 1.5 (authoring — PRD-03)
+- **Current branch:** `feature/prd-03-course-authoring` — Phase 1.5
+- **Next up:** Phase 1.6 (catalogue & search — PRD-04)
 
 ## Legend
 
@@ -124,21 +124,26 @@ Cannot be defaulted:
 - [x] Suspend / reinstate, revenue-share override, payable rule (FR-11, BR-01–03) — #7
 - [ ] Link application/profile subjects to catalogue categories — with 1.6
 - [ ] Hide suspended professors' courses from catalogue and search — with 1.6
-- [ ] Sample lesson upload (≤ 5 min) through Mux — with 1.5
+- [ ] Sample lesson upload (≤ 5 min) through Mux — now possible with the Mux driver; wire into the application form
 - [ ] Notifications on application/KYC decisions — with 1.12
 - [ ] Check payout number prefix matches the chosen rail — with the payment aggregator (phase 4)
 - [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
 
 ### 1.5 Authoring — PRD-03
-- [ ] Courses, versions, sections, lessons, media assets, quizzes schema (arch §3.3)
-- [ ] Course CRUD + details validation (FR-01, FR-02)
-- [ ] Curriculum CRUD + reorder (FR-03)
-- [ ] Mux direct upload + webhook handling + burned-in watermark (FR-04, FR-05) — Mux driver (HTTP + php-jwt) passing the VideoProvider contract tests; fake upload endpoint so staging can run the studio flow end to end
-- [ ] Document upload + virus scan (FR-06)
-- [ ] Quiz builder API (FR-07)
-- [ ] Previews, pricing, free toggle, free-course limits (FR-08, FR-09, FR-15, FR-18)
-- [ ] Submit / withdraw / approve / reject / new draft from live (FR-10–13)
-- [ ] Unpublish / archive / delete rules (FR-16, FR-17)
+- [x] Schema: categories (+ seed), courses, versions, sections, lessons (stable uid), media assets, quizzes, webhook inbox
+- [x] Course create + settings (category, language, level, audience, price/free with limits and CDF whole francs) (FR-01, FR-09, FR-15, FR-18)
+- [x] Draft details + cover; curriculum CRUD + full reorder; preview limit (FR-02, FR-03, FR-08)
+- [x] Mux driver (HTTP + RS256 JWTs): DRM video uploads with burned-in logo, signed audio with audio rendition, tokens, offline license, signed webhooks (FR-04, FR-05)
+- [x] Webhook inbox (dedupe, re-fetch from provider, `media` queue) + fake upload endpoint for staging
+- [x] Document lessons (PDF, private disk); quiz builder with answer validation (FR-06, FR-07)
+- [x] Submit checklist, submit / withdraw, staff approve / reject (locked, audited), start new draft from live (uids kept, media reused) (FR-10–13)
+- [x] Unpublish / republish / archive; delete only if never published (FR-16, FR-17)
+- [ ] Delete only with zero enrollments — with 1.8
+- [ ] Virus scan + page count for documents; pre-signed document uploads (FR-06)
+- [ ] Professor name in the burned-in watermark (needs per-professor overlay image) (FR-05)
+- [ ] Clean up unreferenced Mux assets (BR-05)
+- [ ] Studio "changes since live" view, student-view preview, download sizes per lesson (FR-14, FR-19, FR-20)
+- [ ] Verify DRM + signed thumbnails policy and lowest `max_resolution_tier` in the Mux spike
 
 ### 1.6 Catalogue & search — PRD-04
 - [ ] Categories API (tree, fr/en)
