@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #8 (course authoring, Phase 1.5) to be merged
-- **Next up:** Phase 1.6 (catalogue & search — PRD-04)
+- **Current branch:** `feature/prd-04-catalogue` — Phase 1.6
+- **Next up:** Phase 1.7 (checkout & payments — PRD-05)
 
 ## Legend
 
@@ -151,11 +151,18 @@ Cannot be defaulted:
 - [ ] Re-poll media assets still waiting for upload; test out-of-order webhooks
 
 ### 1.6 Catalogue & search — PRD-04
-- [ ] Categories API (tree, fr/en)
-- [ ] Course + professor public endpoints, featured rails (FR-01, FR-05, FR-07)
-- [ ] Meilisearch indexing + filters + French typo tolerance (FR-03, FR-11)
-- [ ] Certificate verification endpoint (FR-09)
-- [ ] Wishlist (FR-08)
+- [x] Categories API (visible tree, fr/en, course counts) (FR-02)
+- [x] Catalogue with filters + sorts; course page with curriculum outline and download sizes; professor page with courses (FR-02, FR-04, FR-05, FR-07, BR-01, BR-02, FR-12)
+- [x] Home rails + admin-ordered featured list (FR-01, BR-03)
+- [x] Meilisearch indexing (queued, after commit, reindex on professor/category changes) with database fallback (FR-03, FR-11)
+- [x] Wishlist (erased on deletion, in data export) (FR-08)
+- [ ] Certificate verification endpoint (FR-09) — with certificates in 1.8
+- [ ] Preview playback tokens without login (FR-06) — with playback in 1.9
+- [ ] Popular rail by enrollments in the last 30 days — with 1.8
+- [ ] API response cache for public pages (tag-invalidated on publish)
+- [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against real Mux renditions
+- [ ] Add `php artisan scout:sync-index-settings` to the Cloud deploy commands; check French typo tolerance on Meilisearch Cloud
+- [ ] Search suggestions as you type (FR-03, Should)
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
 - [ ] Orders, items, payments, events, refunds, coupons, bundles schema (arch §3.4)
