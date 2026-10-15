@@ -2368,20 +2368,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "course_ids": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "maxItems": 24,
-                                        "uniqueItems": true
-                                    }
-                                },
-                                "required": [
-                                    "course_ids"
-                                ]
+                                "$ref": "#/components/schemas/FeaturedCoursesRequest"
                             }
                         }
                     }
@@ -2408,11 +2395,11 @@
                             }
                         }
                     },
-                    "422": {
-                        "$ref": "#/components/responses/ValidationException"
-                    },
                     "403": {
                         "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -4600,15 +4587,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "course_id": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "course_id"
-                                ]
+                                "$ref": "#/components/schemas/WishlistRequest"
                             }
                         }
                     }
@@ -5384,7 +5363,7 @@
                                                 "type": "boolean"
                                             },
                                             "download_bytes": {
-                                                "type": "string"
+                                                "type": "integer"
                                             }
                                         },
                                         "required": [
@@ -5760,6 +5739,23 @@
                     "document"
                 ],
                 "title": "DocumentRequest"
+            },
+            "FeaturedCoursesRequest": {
+                "type": "object",
+                "properties": {
+                    "course_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "maxItems": 24,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "course_ids"
+                ],
+                "title": "FeaturedCoursesRequest"
             },
             "KycDocumentType": {
                 "type": "string",
@@ -7700,6 +7696,18 @@
                     "code"
                 ],
                 "title": "VerifyOtpRequest"
+            },
+            "WishlistRequest": {
+                "type": "object",
+                "properties": {
+                    "course_id": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "course_id"
+                ],
+                "title": "WishlistRequest"
             }
         },
         "responses": {
