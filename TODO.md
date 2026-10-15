@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-03-course-authoring` — Phase 1.5
+- **Waiting:** PR #8 (course authoring, Phase 1.5) to be merged
 - **Next up:** Phase 1.6 (catalogue & search — PRD-04)
 
 ## Legend
@@ -130,14 +130,14 @@ Cannot be defaulted:
 - [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
 
 ### 1.5 Authoring — PRD-03
-- [x] Schema: categories (+ seed), courses, versions, sections, lessons (stable uid), media assets, quizzes, webhook inbox
-- [x] Course create + settings (category, language, level, audience, price/free with limits and CDF whole francs) (FR-01, FR-09, FR-15, FR-18)
-- [x] Draft details + cover; curriculum CRUD + full reorder; preview limit (FR-02, FR-03, FR-08)
-- [x] Mux driver (HTTP + RS256 JWTs): DRM video uploads with burned-in logo, signed audio with audio rendition, tokens, offline license, signed webhooks (FR-04, FR-05)
-- [x] Webhook inbox (dedupe, re-fetch from provider, `media` queue) + fake upload endpoint for staging
-- [x] Document lessons (PDF, private disk); quiz builder with answer validation (FR-06, FR-07)
-- [x] Submit checklist, submit / withdraw, staff approve / reject (locked, audited), start new draft from live (uids kept, media reused) (FR-10–13)
-- [x] Unpublish / republish / archive; delete only if never published (FR-16, FR-17)
+- [x] Schema: categories (+ seed), courses, versions, sections, lessons (stable uid), media assets, quizzes, webhook inbox — #8
+- [x] Course create + settings (category, language, level, audience, price/free with limits and CDF whole francs) (FR-01, FR-09, FR-15, FR-18) — #8
+- [x] Draft details + cover; curriculum CRUD + full reorder; preview limit (FR-02, FR-03, FR-08) — #8
+- [x] Mux driver (HTTP + RS256 JWTs): DRM video uploads with burned-in logo, signed audio with audio rendition, tokens, offline license, signed webhooks (FR-04, FR-05) — #8
+- [x] Webhook inbox (dedupe, re-fetch from provider, `media` queue) + fake upload endpoint for staging — #8
+- [x] Document lessons (PDF, private disk); quiz builder with answer validation (FR-06, FR-07) — #8
+- [x] Submit checklist, submit / withdraw, staff approve / reject (locked, audited), start new draft from live (uids kept, media reused) (FR-10–13) — #8
+- [x] Unpublish / republish / archive; delete only if never published (FR-16, FR-17) — #8
 - [ ] Delete only with zero enrollments — with 1.8
 - [ ] Virus scan + page count for documents; pre-signed document uploads (FR-06)
 - [ ] Professor name in the burned-in watermark (needs per-professor overlay image) (FR-05)
