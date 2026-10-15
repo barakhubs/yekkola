@@ -10,11 +10,14 @@ use App\Domain\Catalog\Models\Category;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 /**
  * The sellable unit (PRD-03). Course-level settings (category, language, level, price) apply immediately;
@@ -34,16 +37,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $price_minor
  * @property string|null $currency
  * @property int|null $revenue_share_bps
- * @property bool $is_featured
+ * @property int|null $featured_position
  * @property \Illuminate\Support\Carbon|null $published_at
  * @property int $enrollment_count
+ * @property float $rating_avg
+ * @property int $rating_count
  * @property int $total_duration_seconds
  * @property \Illuminate\Support\Carbon $created_at
  */
 final class Course extends Model
 {
     use HasUlids;
+    use Searchable;
     use SoftDeletes;
+
+    /** PRD-04 BR-02: below this many reviews the course shows "Nouveau" instead of a rating. */
+    public const MIN_REVIEWS_FOR_RATING = 3;
 
     protected $guarded = [];
 
@@ -52,8 +61,8 @@ final class Course extends Model
         'language' => 'fr',
         'level' => 'all',
         'is_free' => false,
-        'is_featured' => false,
         'enrollment_count' => 0,
+        'rating_count' => 0,
         'total_duration_seconds' => 0,
     ];
 
@@ -67,7 +76,9 @@ final class Course extends Model
             'level' => CourseLevel::class,
             'audience' => 'array',
             'is_free' => 'boolean',
-            'is_featured' => 'boolean',
+            'featured_position' => 'integer',
+            'rating_avg' => 'float',
+            'rating_count' => 'integer',
             'price_minor' => 'integer',
             'revenue_share_bps' => 'integer',
             'published_at' => 'datetime',
@@ -134,5 +145,86 @@ final class Course extends Model
     public function wasEverPublished(): bool
     {
         return $this->live_version_id !== null;
+    }
+
+    /** Null until the course has enough reviews (BR-02). */
+    public function publicRating(): ?float
+    {
+        return $this->rating_count >= self::MIN_REVIEWS_FOR_RATING ? round($this->rating_avg, 1) : null;
+    }
+
+    /**
+     * What the public catalogue may show (PRD-04 BR-01, FR-12): published, with a live version, from an
+     * active professor whose account is active.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeListed(Builder $query): void
+    {
+        $query->where('status', CourseStatus::Published)
+            ->whereNotNull('live_version_id')
+            ->whereHas('professor', fn (Builder $q) => $q->public());
+    }
+
+    public function isListed(): bool
+    {
+        return $this->status === CourseStatus::Published
+            && $this->live_version_id !== null
+            && $this->professor->isActive()
+            && $this->professor->user?->isActive() === true;
+    }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->isListed();
+    }
+
+    /** Only what the index holds or lists by; price and other filters are read from Postgres. */
+    public function searchIndexShouldBeUpdated(): bool
+    {
+        return $this->wasRecentlyCreated || $this->wasChanged(['status', 'live_version_id', 'category_id', 'audience', 'deleted_at']);
+    }
+
+    /**
+     * Text Meilisearch ranks on (PRD-04 FR-03). Filters and sorts are applied in Postgres.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        $live = $this->liveVersion;
+        $category = $this->category;
+
+        return [
+            'id' => $this->id,
+            'title' => $live?->title,
+            'subtitle' => $live?->subtitle,
+            'description' => $live?->description,
+            'outcomes' => $live->outcomes ?? [],
+            'professor_name' => $this->professor->display_name,
+            'category_names' => array_values(array_filter([
+                ...array_values($category?->getTranslations('name') ?? []),
+                ...array_values($category?->parent?->getTranslations('name') ?? []),
+            ])),
+            'audience' => $this->audience,
+        ];
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    protected function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query->with('liveVersion', 'professor.user', 'category.parent');
+    }
+
+    /**
+     * @param  Collection<int, self>  $models
+     * @return Collection<int, self>
+     */
+    public function makeSearchableUsing(Collection $models): Collection
+    {
+        return $models->loadMissing('liveVersion', 'professor.user', 'category.parent');
     }
 }
