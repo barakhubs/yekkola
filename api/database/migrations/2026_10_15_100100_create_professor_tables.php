@@ -49,6 +49,11 @@ return new class extends Migration
             $table->text('decision_note')->nullable();
             $table->timestamp('decided_at')->nullable();
             $table->timestamps();
+
+            $table->index('user_id');
+            $table->index('reviewer_id');
+            $table->index('province_id');
+            $table->index('decided_at');
         });
 
         // One open application per user (FR-02).
@@ -81,6 +86,12 @@ return new class extends Migration
             $table->unsignedInteger('rating_count')->default(0);
             $table->unsignedInteger('student_count')->default(0);
             $table->timestamps();
+
+            $table->index('application_id');
+            $table->index('province_id');
+            $table->index('display_name');
+            $table->index('student_count');
+            $table->index('created_at');
         });
 
         Schema::create('kyc_submissions', function (Blueprint $table) {
@@ -92,7 +103,14 @@ return new class extends Migration
             $table->timestamp('reviewed_at')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->timestamps();
+
+            $table->index('professor_profile_id');
+            $table->index('reviewed_by');
+            $table->index('created_at');
         });
+
+        // One pending identity check per professor (FR-08).
+        DB::statement("CREATE UNIQUE INDEX kyc_submissions_one_pending ON kyc_submissions (professor_profile_id) WHERE status = 'pending'");
     }
 
     public function down(): void

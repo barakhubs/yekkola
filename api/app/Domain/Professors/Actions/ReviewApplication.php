@@ -12,6 +12,7 @@ use App\Domain\Professors\Events\ApplicationDecided;
 use App\Domain\Professors\Exceptions\ProfessorException;
 use App\Domain\Professors\Models\ProfessorApplication;
 use App\Domain\Professors\Models\ProfessorProfile;
+use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 
@@ -19,9 +20,14 @@ use Illuminate\Database\ConnectionInterface;
  * Staff decisions on professor applications (PRD-02 FR-04/05, PRD-09 FR-05): start review, approve,
  * reject, or request more information — each audited with the reviewer's note. Staff can't decide on
  * their own application (PRD-09 BR-02).
+ *
+ * The transitions of one application's state machine live together. Each one re-reads the application
+ * under a row lock, so two reviewers acting at once can't both succeed.
  */
 final class ReviewApplication
 {
+    private const DECIDABLE = [ApplicationStatus::Submitted, ApplicationStatus::UnderReview];
+
     public function __construct(
         private readonly ConnectionInterface $db,
         private readonly RecordAudit $recordAudit,
@@ -31,98 +37,109 @@ final class ReviewApplication
 
     public function startReview(ProfessorApplication $application, User $staff): ProfessorApplication
     {
-        $this->guard($application, $staff, [ApplicationStatus::Submitted]);
+        return $this->transition($application, $staff, [ApplicationStatus::Submitted], function (ProfessorApplication $locked) use ($staff): ProfessorApplication {
+            $locked->forceFill([
+                'status' => ApplicationStatus::UnderReview,
+                'reviewer_id' => $staff->id,
+                'review_started_at' => now(),
+            ])->save();
 
-        $application->forceFill([
-            'status' => ApplicationStatus::UnderReview,
-            'reviewer_id' => $staff->id,
-            'review_started_at' => now(),
-        ])->save();
+            $this->recordAudit->handle('professor_application.review_started', $locked, causer: $staff);
 
-        $this->recordAudit->handle('professor_application.review_started', $application, causer: $staff);
-
-        return $application;
+            return $locked;
+        }, notify: false);
     }
 
     public function approve(ProfessorApplication $application, User $staff, ?string $note): ProfessorProfile
     {
-        $this->guard($application, $staff, [ApplicationStatus::Submitted, ApplicationStatus::UnderReview]);
+        $profile = null;
 
-        $profile = $this->db->transaction(function () use ($application, $staff, $note): ProfessorProfile {
-            $application->forceFill([
+        $this->transition($application, $staff, self::DECIDABLE, function (ProfessorApplication $locked) use ($staff, $note, &$profile): ProfessorApplication {
+            $locked->forceFill([
                 'status' => ApplicationStatus::Approved,
                 'reviewer_id' => $staff->id,
                 'decision_note' => $note,
                 'decided_at' => now(),
             ])->save();
 
-            $applicant = $application->user;
+            $applicant = $locked->user;
             $profile = ProfessorProfile::query()->create([
                 'user_id' => $applicant->id,
-                'application_id' => $application->id,
-                'slug' => $this->slugs->unique((string) $application->full_name),
-                'display_name' => (string) $application->full_name,
-                'subjects' => $application->subjects,
-                'province_id' => $application->province_id,
+                'application_id' => $locked->id,
+                'slug' => $this->slugs->unique((string) $locked->full_name),
+                'display_name' => (string) $locked->full_name,
+                'subjects' => $locked->subjects,
+                'province_id' => $locked->province_id,
             ]);
 
             $applicant->assignRole(Role::Professor->value);
 
-            $this->recordAudit->handle('professor_application.approved', $application, ['note' => $note], causer: $staff);
+            $this->recordAudit->handle('professor_application.approved', $locked, ['note' => $note], causer: $staff);
 
-            return $profile;
+            return $locked;
         });
 
-        $this->events->dispatch(new ApplicationDecided($application));
-
+        /** @var ProfessorProfile $profile */
         return $profile;
     }
 
     public function reject(ProfessorApplication $application, User $staff, string $note): ProfessorApplication
     {
-        $this->guard($application, $staff, [ApplicationStatus::Submitted, ApplicationStatus::UnderReview]);
+        return $this->transition($application, $staff, self::DECIDABLE, function (ProfessorApplication $locked) use ($staff, $note): ProfessorApplication {
+            $locked->forceFill([
+                'status' => ApplicationStatus::Rejected,
+                'reviewer_id' => $staff->id,
+                'decision_note' => $note,
+                'decided_at' => now(),
+            ])->save();
 
-        $application->forceFill([
-            'status' => ApplicationStatus::Rejected,
-            'reviewer_id' => $staff->id,
-            'decision_note' => $note,
-            'decided_at' => now(),
-        ])->save();
+            $this->recordAudit->handle('professor_application.rejected', $locked, ['note' => $note], causer: $staff);
 
-        $this->recordAudit->handle('professor_application.rejected', $application, ['note' => $note], causer: $staff);
-        $this->events->dispatch(new ApplicationDecided($application));
-
-        return $application;
+            return $locked;
+        });
     }
 
     public function requestInfo(ProfessorApplication $application, User $staff, string $note): ProfessorApplication
     {
-        $this->guard($application, $staff, [ApplicationStatus::Submitted, ApplicationStatus::UnderReview]);
+        return $this->transition($application, $staff, self::DECIDABLE, function (ProfessorApplication $locked) use ($staff, $note): ProfessorApplication {
+            $locked->forceFill([
+                'status' => ApplicationStatus::NeedsInfo,
+                'reviewer_id' => $staff->id,
+                'info_request_note' => $note,
+                'info_requested_at' => now(),
+            ])->save();
 
-        $application->forceFill([
-            'status' => ApplicationStatus::NeedsInfo,
-            'reviewer_id' => $staff->id,
-            'info_request_note' => $note,
-            'info_requested_at' => now(),
-        ])->save();
+            $this->recordAudit->handle('professor_application.info_requested', $locked, ['note' => $note], causer: $staff);
 
-        $this->recordAudit->handle('professor_application.info_requested', $application, ['note' => $note], causer: $staff);
-        $this->events->dispatch(new ApplicationDecided($application));
-
-        return $application;
+            return $locked;
+        });
     }
 
     /**
      * @param  list<ApplicationStatus>  $allowed
+     * @param  Closure(ProfessorApplication): ProfessorApplication  $apply
      */
-    private function guard(ProfessorApplication $application, User $staff, array $allowed): void
+    private function transition(ProfessorApplication $application, User $staff, array $allowed, Closure $apply, bool $notify = true): ProfessorApplication
     {
         if ($application->user_id === $staff->id) {
             throw ProfessorException::ownApplication();
         }
 
-        if (! in_array($application->status, $allowed, true)) {
-            throw ProfessorException::invalidTransition();
+        /** @var ProfessorApplication $result */
+        $result = $this->db->transaction(function () use ($application, $allowed, $apply): ProfessorApplication {
+            $locked = ProfessorApplication::query()->whereKey($application->id)->lockForUpdate()->firstOrFail();
+
+            if (! in_array($locked->status, $allowed, true)) {
+                throw ProfessorException::invalidTransition();
+            }
+
+            return $apply($locked);
+        });
+
+        if ($notify) {
+            $this->events->dispatch(new ApplicationDecided($result));
         }
+
+        return $result;
     }
 }
