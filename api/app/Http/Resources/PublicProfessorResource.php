@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Domain\Authoring\Models\Course;
 use App\Domain\Professors\Models\ProfessorProfile;
+use App\Http\Resources\Catalog\CourseCardResource;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,6 +18,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class PublicProfessorResource extends JsonResource
 {
+    /** @var Collection<int, Course>|null */
+    private ?Collection $courses = null;
+
+    /**
+     * Adds the professor's listed courses (the professor page, PRD-04 FR-07).
+     *
+     * @param  Collection<int, Course>  $courses
+     */
+    public function withCourses(Collection $courses): self
+    {
+        $this->courses = $courses;
+
+        return $this;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -35,6 +53,7 @@ final class PublicProfessorResource extends JsonResource
             'rating_count' => (int) $this->getAttribute('rating_count'),
             'student_count' => (int) $this->getAttribute('student_count'),
             'member_since' => $this->created_at->toIso8601String(),
+            'courses' => $this->when($this->courses !== null, fn () => CourseCardResource::collection($this->courses)),
         ];
     }
 }

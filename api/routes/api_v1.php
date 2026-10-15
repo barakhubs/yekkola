@@ -7,7 +7,9 @@ use App\Http\Controllers\Api\V1\Account\DataExportController;
 use App\Http\Controllers\Api\V1\Account\DeviceController;
 use App\Http\Controllers\Api\V1\Account\PhoneController;
 use App\Http\Controllers\Api\V1\Account\ProfileController;
+use App\Http\Controllers\Api\V1\Account\WishlistController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
+use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
@@ -20,6 +22,8 @@ use App\Http\Controllers\Api\V1\Professor\KycController;
 use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
+use App\Http\Controllers\Api\V1\Public\CategoryController;
+use App\Http\Controllers\Api\V1\Public\CourseController as PublicCourseController;
 use App\Http\Controllers\Api\V1\Public\ProfessorController;
 use App\Http\Controllers\Api\V1\Public\ProvinceController;
 use App\Http\Controllers\Api\V1\Webhooks\FakeVideoUploadController;
@@ -36,6 +40,12 @@ Route::get('/ping', fn () => ['status' => 'ok'])->name('ping');
 
 // Public
 Route::get('/provinces', [ProvinceController::class, 'index'])->name('provinces.index');
+
+// Public catalogue (PRD-04)
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/courses', [PublicCourseController::class, 'index'])->middleware('throttle:catalogue')->name('courses.index');
+Route::get('/courses/{slug}', [PublicCourseController::class, 'show'])->name('courses.show');
+Route::get('/featured', [PublicCourseController::class, 'featured'])->name('featured');
 
 // Auth (PRD-01)
 Route::prefix('auth')->name('auth.')->group(function () {
@@ -60,6 +70,10 @@ Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
     Route::post('/export', [DataExportController::class, 'store'])->name('export.store');
     Route::get('/export', [DataExportController::class, 'show'])->name('export.show');
     Route::get('/export/download', [DataExportController::class, 'download'])->name('export.download');
+
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/wishlist/{course}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
 });
 
 // Public professor pages (PRD-02 FR-12)
@@ -144,6 +158,11 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
     Route::middleware(['can:'.Permission::KycView->value, 'can:'.Permission::KycReview->value])->group(function () {
         Route::post('/kyc-submissions/{submission}/verify', [KycSubmissionController::class, 'verify'])->name('kyc-submissions.verify');
         Route::post('/kyc-submissions/{submission}/reject', [KycSubmissionController::class, 'reject'])->name('kyc-submissions.reject');
+    });
+
+    Route::middleware('can:'.Permission::CatalogManage->value)->group(function () {
+        Route::get('/featured-courses', [FeaturedCourseController::class, 'index'])->name('featured-courses.index');
+        Route::put('/featured-courses', [FeaturedCourseController::class, 'update'])->name('featured-courses.update');
     });
 
     Route::middleware('can:'.Permission::ProfessorsManage->value)->group(function () {

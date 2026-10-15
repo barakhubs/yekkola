@@ -6,6 +6,7 @@ namespace App\Domain\Identity\Jobs;
 
 use App\Domain\Identity\Enums\DataExportStatus;
 use App\Domain\Identity\Models\DataExport;
+use App\Domain\Learning\Actions\Wishlist;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,7 +25,7 @@ final class BuildDataExport implements ShouldQueue
 
     public function __construct(public readonly string $exportId) {}
 
-    public function handle(): void
+    public function handle(Wishlist $wishlist): void
     {
         $export = DataExport::query()->with('user.province', 'user.devices')->findOrFail($this->exportId);
         $user = $export->user;
@@ -50,6 +51,7 @@ final class BuildDataExport implements ShouldQueue
                 'last_active_at' => $d->last_active_at?->toIso8601String(),
                 'revoked_at' => $d->revoked_at?->toIso8601String(),
             ])->all(),
+            'wishlist' => $wishlist->slugs($user),
         ];
 
         $path = "exports/{$user->id}/{$export->id}.json";
