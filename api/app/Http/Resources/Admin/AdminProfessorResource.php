@@ -25,7 +25,7 @@ final class AdminProfessorResource extends JsonResource
         return [
             ...(new PublicProfessorResource($this->resource))->toArray($request),
             'user_id' => $this->user_id,
-            'phone' => $this->user->phone->masked(),
+            'phone' => $this->user?->maskedPhone(),
             'status' => $this->status->value,
             'suspended_at' => $this->suspended_at?->toIso8601String(),
             'suspension_reason' => $this->suspension_reason,

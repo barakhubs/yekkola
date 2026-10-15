@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Identity\Actions;
 
+use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\DataExport;
 use App\Domain\Identity\Models\OtpChallenge;
 use App\Domain\Identity\Models\User;
 use App\Domain\Platform\Actions\RecordAudit;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Str;
 
@@ -23,6 +25,7 @@ final class AnonymizeUser
         private readonly SignOutEverywhere $signOutEverywhere,
         private readonly RevokeDevice $revokeDevice,
         private readonly RecordAudit $recordAudit,
+        private readonly Dispatcher $events,
     ) {}
 
     public function handle(User $user): void
@@ -47,6 +50,9 @@ final class AnonymizeUser
 
             OtpChallenge::query()->where('user_id', $user->id)->orWhere('phone_e164', $phone)->delete();
             $this->db->table('sessions')->where('user_id', $user->id)->delete();
+
+            // Other domains erase their own personal data in this same transaction.
+            $this->events->dispatch(new UserAnonymizing($user));
 
             $user->forceFill([
                 'phone_e164' => 'deleted:'.Str::ulid(),

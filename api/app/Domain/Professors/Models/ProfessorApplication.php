@@ -84,7 +84,8 @@ final class ProfessorApplication extends Model implements HasMedia
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        // Anonymised accounts are soft-deleted; staff views still need the row.
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     /**

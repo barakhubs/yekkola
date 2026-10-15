@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Professors\Models;
 
 use App\Domain\Commerce\Enums\MobileMoneyRail;
+use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
 use App\Domain\Platform\Models\Province;
 use App\Domain\Professors\Enums\KycStatus;
@@ -88,7 +89,7 @@ final class ProfessorProfile extends Model implements HasMedia
     {
         $this->addMediaCollection(self::AVATAR)
             ->singleFile()
-            ->useDisk('public')
+            ->useDisk((string) config('yekkola.public_disk'))
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
     }
 
@@ -97,7 +98,8 @@ final class ProfessorProfile extends Model implements HasMedia
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        // Anonymised accounts are soft-deleted; staff views still need the row.
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     /**
@@ -123,7 +125,8 @@ final class ProfessorProfile extends Model implements HasMedia
      */
     public function scopePublic(Builder $query): void
     {
-        $query->where('status', ProfessorStatus::Active);
+        $query->where('status', ProfessorStatus::Active)
+            ->whereHas('user', fn (Builder $q) => $q->where('status', UserStatus::Active)->whereNull('deleted_at'));
     }
 
     public function isActive(): bool

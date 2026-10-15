@@ -138,6 +138,17 @@ final class User extends Authenticatable
         return $this->hasOne(ProfessorProfile::class);
     }
 
+    /** Masked phone for staff views; null once the account is anonymised. */
+    public function maskedPhone(): ?string
+    {
+        return str_starts_with($this->phone_e164, 'deleted:') ? null : $this->phone->masked();
+    }
+
+    public function isAnonymised(): bool
+    {
+        return str_starts_with($this->phone_e164, 'deleted:');
+    }
+
     public function isActive(): bool
     {
         return $this->status === UserStatus::Active;
