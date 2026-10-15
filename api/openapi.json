@@ -2396,7 +2396,10 @@
                         "type": "string"
                     },
                     "phone": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "status": {
                         "type": "string"
@@ -2700,7 +2703,209 @@
             "ProfessorApplicationResource": {
                 "anyOf": [
                     {
-                        "type": "array"
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            },
+                            "full_name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "subjects": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "levels": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "years_experience": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "institutions": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "credentials": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sample_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "motivation": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "province": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ProvinceResource"
+                                    },
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "object"
+                                    }
+                                ]
+                            },
+                            "credential_files": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "mime_type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "size": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "mime_type",
+                                        "size"
+                                    ]
+                                }
+                            },
+                            "is_editable": {
+                                "type": "boolean"
+                            },
+                            "info_request_note": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "decision_note": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "submitted_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "decided_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "applicant": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "phone": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "anonymised": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "phone",
+                                    "anonymised"
+                                ]
+                            },
+                            "reviewer_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "review_started_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "terms_version": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "status",
+                            "full_name",
+                            "subjects",
+                            "levels",
+                            "years_experience",
+                            "institutions",
+                            "credentials",
+                            "sample_url",
+                            "motivation",
+                            "province",
+                            "credential_files",
+                            "is_editable",
+                            "info_request_note",
+                            "decision_note",
+                            "submitted_at",
+                            "decided_at",
+                            "created_at",
+                            "applicant",
+                            "reviewer_id",
+                            "review_started_at",
+                            "terms_version"
+                        ]
                     },
                     {
                         "type": "object",
