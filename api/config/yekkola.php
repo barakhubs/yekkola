@@ -80,6 +80,8 @@ return [
         'signing_private_key' => env('MUX_SIGNING_PRIVATE_KEY'),
         'webhook_secret' => env('MUX_WEBHOOK_SECRET'),
         'drm_configuration_id' => env('MUX_DRM_CONFIGURATION_ID'),
+        // Burned-in watermark image (Yekkola logo PNG, public URL) applied to every uploaded video.
+        'watermark_url' => env('MUX_WATERMARK_URL'),
     ],
 
 ];

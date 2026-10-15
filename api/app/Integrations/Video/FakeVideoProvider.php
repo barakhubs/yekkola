@@ -16,9 +16,10 @@ use InvalidArgumentException;
 /**
  * Fake video host for local, staging, and tests. Refused in production.
  *
- * Uploads become assets that are ready immediately (markErrored() simulates failures). Tokens are opaque
- * strings encoding what was asked for, so tests can assert on them. A real browser upload flow for staging
- * (local upload endpoint + webhook) comes with Phase 1.5.
+ * The upload URL points at our own fake endpoint (PUT /api/v1/_fake/video-uploads/{id}), so the real studio
+ * upload flow works on staging: the "upload" completes the asset (completeUpload) and processes it like a
+ * provider webhook. markErrored() simulates processing failures. Tokens are opaque strings encoding what was
+ * asked for, so tests can assert on them.
  */
 final class FakeVideoProvider implements VideoProvider
 {
@@ -42,14 +43,14 @@ final class FakeVideoProvider implements VideoProvider
         $assetId = 'fake-asset-'.Str::ulid();
 
         $this->cache->put(self::PREFIX.$assetId, [
-            'status' => VideoAssetStatus::Ready->value,
+            'status' => VideoAssetStatus::Preparing->value,
             'playback_id' => 'fake-playback-'.Str::ulid(),
             'passthrough' => $request->passthrough,
             'kind' => $request->kind->value,
         ], now()->addDays(30));
         $this->cache->put(self::PREFIX.'upload:'.$uploadId, $assetId, now()->addDays(30));
 
-        return new DirectUpload($uploadId, 'https://uploads.fake.test/'.$uploadId);
+        return new DirectUpload($uploadId, rtrim((string) config('app.url'), '/').'/api/v1/_fake/video-uploads/'.$uploadId);
     }
 
     public function getAsset(string $assetId): VideoAsset
@@ -129,6 +130,22 @@ final class FakeVideoProvider implements VideoProvider
             passthrough: $request->input('passthrough'),
             payload: $request->all(),
         );
+    }
+
+    /** Simulate the browser upload finishing and processing completing. Returns the asset id. */
+    public function completeUpload(string $uploadId): ?string
+    {
+        $assetId = $this->assetIdForUpload($uploadId);
+        $state = $assetId === null ? null : $this->cache->get(self::PREFIX.$assetId);
+
+        if (! is_array($state)) {
+            return null;
+        }
+
+        $state['status'] = VideoAssetStatus::Ready->value;
+        $this->cache->put(self::PREFIX.$assetId, $state, now()->addDays(30));
+
+        return $assetId;
     }
 
     /** Simulate a processing failure for an asset. */
