@@ -36,6 +36,190 @@
                 }
             }
         },
+        "/professor/application": {
+            "get": {
+                "operationId": "professor.application.show",
+                "summary": "The user's open application, or their latest one (to show a decision)",
+                "tags": [
+                    "Application"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "operationId": "professor.application.save",
+                "summary": "Create or autosave the draft",
+                "tags": [
+                    "Application"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveApplicationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/application/submit": {
+            "post": {
+                "operationId": "professor.application.submit",
+                "summary": "Submit for review, accepting the current professor agreement",
+                "tags": [
+                    "Application"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "accept_terms": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "accept_terms"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/application/credentials": {
+            "post": {
+                "operationId": "professor.application.credentials.store",
+                "summary": "Attach a credential file (PDF or image, max 5)",
+                "tags": [
+                    "Application"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UploadFileRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/application/credentials/{file}": {
+            "delete": {
+                "operationId": "professor.application.credentials.destroy",
+                "summary": "Remove a credential file",
+                "tags": [
+                    "Application"
+                ],
+                "parameters": [
+                    {
+                        "name": "file",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    }
+                }
+            }
+        },
         "/me/export": {
             "post": {
                 "operationId": "me.export.store",
@@ -169,6 +353,421 @@
                 }
             }
         },
+        "/professor/kyc": {
+            "get": {
+                "operationId": "professor.kyc.show",
+                "summary": "Latest identity check",
+                "tags": [
+                    "Kyc"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`KycSubmissionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/KycSubmissionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "professor.kyc.store",
+                "summary": "Submit ID front, back (not for passports), and a selfie",
+                "tags": [
+                    "Kyc"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubmitKycRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`KycSubmissionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/KycSubmissionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/kyc-submissions": {
+            "get": {
+                "operationId": "admin.kyc-submissions.index",
+                "tags": [
+                    "KycSubmission"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `KycSubmissionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/KycSubmissionResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/kyc-submissions/{submission}": {
+            "get": {
+                "operationId": "admin.kyc-submissions.show",
+                "tags": [
+                    "KycSubmission"
+                ],
+                "parameters": [
+                    {
+                        "name": "submission",
+                        "in": "path",
+                        "required": true,
+                        "description": "The submission ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`KycSubmissionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/KycSubmissionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/kyc-submissions/{submission}/files/{kind}": {
+            "get": {
+                "operationId": "admin.kyc-submissions.file",
+                "summary": "Stream one document image (front, back, selfie). Audited",
+                "tags": [
+                    "KycSubmission"
+                ],
+                "parameters": [
+                    {
+                        "name": "submission",
+                        "in": "path",
+                        "required": true,
+                        "description": "The submission ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "kind",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/kyc-submissions/{submission}/verify": {
+            "post": {
+                "operationId": "admin.kyc-submissions.verify",
+                "tags": [
+                    "KycSubmission"
+                ],
+                "parameters": [
+                    {
+                        "name": "submission",
+                        "in": "path",
+                        "required": true,
+                        "description": "The submission ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`KycSubmissionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/KycSubmissionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/kyc-submissions/{submission}/reject": {
+            "post": {
+                "operationId": "admin.kyc-submissions.reject",
+                "tags": [
+                    "KycSubmission"
+                ],
+                "parameters": [
+                    {
+                        "name": "submission",
+                        "in": "path",
+                        "required": true,
+                        "description": "The submission ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`KycSubmissionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/KycSubmissionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/auth/logout": {
             "post": {
                 "operationId": "auth.logout",
@@ -272,6 +871,91 @@
                                         "data": {
                                             "type": "array",
                                             "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/payout-method/otp": {
+            "post": {
+                "operationId": "professor.payout-method.otp",
+                "tags": [
+                    "PayoutMethod"
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "challenge_id": {
+                                                    "type": "string"
+                                                },
+                                                "expires_at": {
+                                                    "type": "string"
+                                                },
+                                                "resend_after_seconds": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "challenge_id",
+                                                "expires_at",
+                                                "resend_after_seconds"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/professor/payout-method": {
+            "put": {
+                "operationId": "professor.payout-method.update",
+                "tags": [
+                    "PayoutMethod"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePayoutMethodRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorProfileResource"
                                         }
                                     },
                                     "required": [
@@ -393,6 +1077,878 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professors/{slug}": {
+            "get": {
+                "operationId": "professors.show",
+                "summary": "A professor's public page (courses are added with the catalogue)",
+                "tags": [
+                    "Professor"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PublicProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PublicProfessorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/professors": {
+            "get": {
+                "operationId": "admin.professors.index",
+                "tags": [
+                    "Professor"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AdminProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminProfessorResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/professors/{professor}": {
+            "get": {
+                "operationId": "admin.professors.show",
+                "tags": [
+                    "Professor"
+                ],
+                "parameters": [
+                    {
+                        "name": "professor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The professor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AdminProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminProfessorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "admin.professors.update",
+                "summary": "Revenue-share override (null = platform default). Future sales only",
+                "tags": [
+                    "Professor"
+                ],
+                "parameters": [
+                    {
+                        "name": "professor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The professor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfessorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminProfessorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/professors/{professor}/suspend": {
+            "post": {
+                "operationId": "admin.professors.suspend",
+                "tags": [
+                    "Professor"
+                ],
+                "parameters": [
+                    {
+                        "name": "professor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The professor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminProfessorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/professors/{professor}/reinstate": {
+            "post": {
+                "operationId": "admin.professors.reinstate",
+                "tags": [
+                    "Professor"
+                ],
+                "parameters": [
+                    {
+                        "name": "professor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The professor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminProfessorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications": {
+            "get": {
+                "operationId": "admin.professor-applications.index",
+                "summary": "Queue: filter by status/subject/date, oldest submissions first by default",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications/{application}": {
+            "get": {
+                "operationId": "admin.professor-applications.show",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications/{application}/start-review": {
+            "post": {
+                "operationId": "admin.professor-applications.start-review",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications/{application}/approve": {
+            "post": {
+                "operationId": "admin.professor-applications.approve",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminProfessorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminProfessorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications/{application}/reject": {
+            "post": {
+                "operationId": "admin.professor-applications.reject",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications/{application}/request-info": {
+            "post": {
+                "operationId": "admin.professor-applications.request-info",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorApplicationResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/professor-applications/{application}/credentials/{file}": {
+            "get": {
+                "operationId": "admin.professor-applications.credential",
+                "summary": "Stream a credential file to staff (audited)",
+                "tags": [
+                    "ProfessorApplication"
+                ],
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "path",
+                        "required": true,
+                        "description": "The application ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "file",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     }
                 }
             }
@@ -592,10 +2148,383 @@
                     }
                 }
             }
+        },
+        "/professor/profile": {
+            "get": {
+                "operationId": "professor.profile.show",
+                "tags": [
+                    "StudioProfile"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorProfileResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "professor.profile.update",
+                "tags": [
+                    "StudioProfile"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfessorProfileRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorProfileResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/profile/avatar": {
+            "post": {
+                "operationId": "professor.profile.avatar",
+                "summary": "Upload or replace the profile photo",
+                "tags": [
+                    "StudioProfile"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UploadAvatarRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorProfileResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/terms/accept": {
+            "post": {
+                "operationId": "professor.terms.accept",
+                "summary": "Accept the current professor agreement (required again whenever its version changes)",
+                "tags": [
+                    "StudioProfile"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "version": {
+                                        "type": "string",
+                                        "enum": [
+                                            "2026-10-draft"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "version"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProfessorProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProfessorProfileResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "AdminProfessorResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "headline": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "label",
+                                "url"
+                            ]
+                        }
+                    },
+                    "avatar_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "province": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ProvinceResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "is_verified": {
+                        "type": "boolean"
+                    },
+                    "rating_avg": {
+                        "type": "number"
+                    },
+                    "rating_count": {
+                        "type": "integer"
+                    },
+                    "student_count": {
+                        "type": "integer"
+                    },
+                    "member_since": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "suspended_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "suspension_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "kyc_status": {
+                        "type": "string"
+                    },
+                    "verified_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "revenue_share_bps": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "payout_method": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "rail": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "rail",
+                            "phone",
+                            "name"
+                        ]
+                    },
+                    "payout_hold_until": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_payable": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "slug",
+                    "display_name",
+                    "headline",
+                    "bio",
+                    "subjects",
+                    "links",
+                    "avatar_url",
+                    "province",
+                    "is_verified",
+                    "rating_avg",
+                    "rating_count",
+                    "student_count",
+                    "member_since",
+                    "user_id",
+                    "phone",
+                    "status",
+                    "suspended_at",
+                    "suspension_reason",
+                    "kyc_status",
+                    "verified_at",
+                    "revenue_share_bps",
+                    "payout_method",
+                    "payout_hold_until",
+                    "is_payable"
+                ],
+                "title": "AdminProfessorResource"
+            },
+            "ChangePayoutMethodRequest": {
+                "type": "object",
+                "properties": {
+                    "rail": {
+                        "$ref": "#/components/schemas/MobileMoneyRail"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "maxLength": 32
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 120
+                    },
+                    "code": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "rail",
+                    "phone",
+                    "name",
+                    "code"
+                ],
+                "title": "ChangePayoutMethodRequest"
+            },
             "ChangePhoneRequest": {
                 "type": "object",
                 "properties": {
@@ -707,6 +2636,634 @@
                 ],
                 "title": "DeviceResource"
             },
+            "KycDocumentType": {
+                "type": "string",
+                "enum": [
+                    "national_id",
+                    "voter_card",
+                    "passport"
+                ],
+                "title": "KycDocumentType"
+            },
+            "KycSubmissionResource": {
+                "anyOf": [
+                    {
+                        "type": "array"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "document_type": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            },
+                            "rejection_reason": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "submitted_at": {
+                                "type": "string"
+                            },
+                            "reviewed_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "document_type",
+                            "status",
+                            "rejection_reason",
+                            "submitted_at",
+                            "reviewed_at"
+                        ]
+                    }
+                ],
+                "title": "KycSubmissionResource"
+            },
+            "MobileMoneyRail": {
+                "type": "string",
+                "description": "DRC mobile-money rails. MTN is not present in the DRC \u2014 don't add it.\n",
+                "enum": [
+                    "orange",
+                    "airtel",
+                    "mpesa"
+                ],
+                "title": "MobileMoneyRail"
+            },
+            "ProfessorApplicationResource": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            },
+                            "full_name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "subjects": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "levels": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "years_experience": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "institutions": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "credentials": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sample_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "motivation": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "province": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ProvinceResource"
+                                    },
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "object"
+                                    }
+                                ]
+                            },
+                            "credential_files": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "mime_type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "size": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "mime_type",
+                                        "size"
+                                    ]
+                                }
+                            },
+                            "is_editable": {
+                                "type": "boolean"
+                            },
+                            "info_request_note": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "decision_note": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "submitted_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "decided_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "applicant": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "phone": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "anonymised": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "phone",
+                                    "anonymised"
+                                ]
+                            },
+                            "reviewer_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "review_started_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "terms_version": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "status",
+                            "full_name",
+                            "subjects",
+                            "levels",
+                            "years_experience",
+                            "institutions",
+                            "credentials",
+                            "sample_url",
+                            "motivation",
+                            "province",
+                            "credential_files",
+                            "is_editable",
+                            "info_request_note",
+                            "decision_note",
+                            "submitted_at",
+                            "decided_at",
+                            "created_at",
+                            "applicant",
+                            "reviewer_id",
+                            "review_started_at",
+                            "terms_version"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            },
+                            "full_name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "subjects": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "levels": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "years_experience": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "institutions": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "credentials": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sample_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "motivation": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "province": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ProvinceResource"
+                                    },
+                                    {
+                                        "type": "null"
+                                    },
+                                    {
+                                        "type": "object"
+                                    }
+                                ]
+                            },
+                            "credential_files": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "mime_type": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "size": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "name",
+                                        "mime_type",
+                                        "size"
+                                    ]
+                                }
+                            },
+                            "is_editable": {
+                                "type": "boolean"
+                            },
+                            "info_request_note": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "decision_note": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "submitted_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "decided_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "created_at": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "status",
+                            "full_name",
+                            "subjects",
+                            "levels",
+                            "years_experience",
+                            "institutions",
+                            "credentials",
+                            "sample_url",
+                            "motivation",
+                            "province",
+                            "credential_files",
+                            "is_editable",
+                            "info_request_note",
+                            "decision_note",
+                            "submitted_at",
+                            "decided_at",
+                            "created_at"
+                        ]
+                    }
+                ],
+                "title": "ProfessorApplicationResource"
+            },
+            "ProfessorProfileResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "headline": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "label",
+                                "url"
+                            ]
+                        }
+                    },
+                    "avatar_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "province": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ProvinceResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "is_verified": {
+                        "type": "boolean"
+                    },
+                    "rating_avg": {
+                        "type": "number"
+                    },
+                    "rating_count": {
+                        "type": "integer"
+                    },
+                    "student_count": {
+                        "type": "integer"
+                    },
+                    "member_since": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "suspension_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "can_change_slug": {
+                        "type": "boolean"
+                    },
+                    "kyc_status": {
+                        "type": "string"
+                    },
+                    "payout_method": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "rail": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "updated_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "rail",
+                            "phone",
+                            "name",
+                            "updated_at"
+                        ]
+                    },
+                    "payout_hold_until": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_payable": {
+                        "type": "boolean"
+                    },
+                    "terms": {
+                        "type": "object",
+                        "properties": {
+                            "current_version": {
+                                "type": "string"
+                            },
+                            "accepted": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "current_version",
+                            "accepted"
+                        ]
+                    },
+                    "onboarding": {
+                        "type": "object",
+                        "properties": {
+                            "profile_complete": {
+                                "type": "string"
+                            },
+                            "kyc_verified": {
+                                "type": "boolean"
+                            },
+                            "payout_method_set": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "profile_complete",
+                            "kyc_verified",
+                            "payout_method_set"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "slug",
+                    "display_name",
+                    "headline",
+                    "bio",
+                    "subjects",
+                    "links",
+                    "avatar_url",
+                    "province",
+                    "is_verified",
+                    "rating_avg",
+                    "rating_count",
+                    "student_count",
+                    "member_since",
+                    "status",
+                    "suspension_reason",
+                    "can_change_slug",
+                    "kyc_status",
+                    "payout_method",
+                    "payout_hold_until",
+                    "is_payable",
+                    "terms",
+                    "onboarding"
+                ],
+                "title": "ProfessorProfileResource"
+            },
             "ProvinceResource": {
                 "type": "object",
                 "properties": {
@@ -726,6 +3283,104 @@
                     "name"
                 ],
                 "title": "ProvinceResource"
+            },
+            "PublicProfessorResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "type": "string"
+                    },
+                    "headline": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "label",
+                                "url"
+                            ]
+                        }
+                    },
+                    "avatar_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "province": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ProvinceResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "is_verified": {
+                        "type": "boolean"
+                    },
+                    "rating_avg": {
+                        "type": "number"
+                    },
+                    "rating_count": {
+                        "type": "integer"
+                    },
+                    "student_count": {
+                        "type": "integer"
+                    },
+                    "member_since": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "slug",
+                    "display_name",
+                    "headline",
+                    "bio",
+                    "subjects",
+                    "links",
+                    "avatar_url",
+                    "province",
+                    "is_verified",
+                    "rating_avg",
+                    "rating_count",
+                    "student_count",
+                    "member_since"
+                ],
+                "title": "PublicProfessorResource"
             },
             "RequestOtpRequest": {
                 "type": "object",
@@ -760,6 +3415,236 @@
                     "phone"
                 ],
                 "title": "RequestPhoneChangeOtpRequest"
+            },
+            "SaveApplicationRequest": {
+                "type": "object",
+                "description": "Autosave of the application form (PRD-02 FR-01/02). Every field is optional while drafting;\ncompleteness is checked on submit.",
+                "properties": {
+                    "full_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "minLength": 3,
+                        "maxLength": 120
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 60
+                        },
+                        "maxItems": 10,
+                        "uniqueItems": true
+                    },
+                    "levels": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TeachingLevel"
+                        },
+                        "maxItems": 4,
+                        "uniqueItems": true
+                    },
+                    "years_experience": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 60
+                    },
+                    "institutions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "credentials": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 4000
+                    },
+                    "sample_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uri",
+                        "maxLength": 500
+                    },
+                    "motivation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 4000
+                    },
+                    "province_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "title": "SaveApplicationRequest"
+            },
+            "StaffNoteRequest": {
+                "type": "object",
+                "description": "A staff decision with a note/reason (PRD-09 FR-18: destructive actions need a typed reason).\nPass `?required=0` semantics via the route: approve allows an empty note.",
+                "properties": {
+                    "note": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "note"
+                ],
+                "title": "StaffNoteRequest"
+            },
+            "SubmitKycRequest": {
+                "type": "object",
+                "properties": {
+                    "document_type": {
+                        "$ref": "#/components/schemas/KycDocumentType"
+                    },
+                    "front": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 8192 kilobytes."
+                    },
+                    "back": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 8192 kilobytes."
+                    },
+                    "selfie": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 8192 kilobytes."
+                    }
+                },
+                "required": [
+                    "document_type",
+                    "front",
+                    "selfie"
+                ],
+                "title": "SubmitKycRequest"
+            },
+            "TeachingLevel": {
+                "type": "string",
+                "description": "Levels a professor teaches (application form, profile).\n",
+                "enum": [
+                    "secondary",
+                    "exetat",
+                    "university",
+                    "professional"
+                ],
+                "title": "TeachingLevel"
+            },
+            "UpdateProfessorProfileRequest": {
+                "type": "object",
+                "properties": {
+                    "display_name": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 120
+                    },
+                    "slug": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "minLength": 3,
+                        "maxLength": 60
+                    },
+                    "headline": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 120
+                    },
+                    "bio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 3000
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 60
+                        },
+                        "maxItems": 10,
+                        "uniqueItems": true
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {
+                                    "type": "string",
+                                    "maxLength": 40
+                                },
+                                "url": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 300
+                                }
+                            },
+                            "required": [
+                                "label",
+                                "url"
+                            ]
+                        },
+                        "maxItems": 5
+                    },
+                    "province_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "title": "UpdateProfessorProfileRequest"
+            },
+            "UpdateProfessorRequest": {
+                "type": "object",
+                "description": "Admin-only professor settings (PRD-02 BR-02): revenue-share override (null = platform default).",
+                "properties": {
+                    "revenue_share_bps": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 10000
+                    },
+                    "note": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "revenue_share_bps",
+                    "note"
+                ],
+                "title": "UpdateProfessorRequest"
             },
             "UpdateProfileRequest": {
                 "type": "object",
@@ -799,6 +3684,37 @@
                     }
                 },
                 "title": "UpdateProfileRequest"
+            },
+            "UploadAvatarRequest": {
+                "type": "object",
+                "properties": {
+                    "avatar": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 5120 kilobytes."
+                    }
+                },
+                "required": [
+                    "avatar"
+                ],
+                "title": "UploadAvatarRequest"
+            },
+            "UploadFileRequest": {
+                "type": "object",
+                "description": "A single credential file (PDF or image) for an application.",
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 10240 kilobytes."
+                    }
+                },
+                "required": [
+                    "file"
+                ],
+                "title": "UploadFileRequest"
             },
             "UserResource": {
                 "type": "object",
@@ -970,6 +3886,44 @@
             },
             "AuthenticationException": {
                 "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthorizationException": {
+                "description": "Authorization error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ModelNotFoundException": {
+                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {

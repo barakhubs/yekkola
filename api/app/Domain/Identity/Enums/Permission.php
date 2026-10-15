@@ -27,4 +27,6 @@ enum Permission: string
     case StaffRoles = 'staff.roles';
     case AuditView = 'audit.view';
     case KycView = 'kyc.view';
+    /** Verify or reject identity checks (unblocks payouts). */
+    case KycReview = 'kyc.review';
 }

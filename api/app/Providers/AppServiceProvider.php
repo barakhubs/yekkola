@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\PersonalAccessToken;
 use App\Domain\Identity\Support\OtpCodeHasher;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
+use App\Domain\Professors\Listeners\EraseProfessorData;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Foundation\Application;
@@ -43,11 +45,16 @@ final class AppServiceProvider extends ServiceProvider
 
         // OTP verification (sign-in, phone change): coarse per-IP cap on top of the per-challenge attempt limit.
         RateLimiter::for('otp-verify', fn (Request $request) => Limit::perMinutes(10, 30)->by($request->ip()));
+        // File uploads (credentials, avatar, KYC).
+        RateLimiter::for('uploads', fn (Request $request) => Limit::perHour(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Profile updates (limits probing which emails are taken).
         RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         // Every platform settings change is audited with before/after values.
         Event::listen(SavingSettings::class, AuditSettingsChange::class);
+
+        // Account deletion: each domain erases its own personal data (PRD-01 FR-11).
+        Event::listen(UserAnonymizing::class, EraseProfessorData::class);
 
         // Catch lazy loading, silently discarded attributes, and missing attributes outside production.
         Model::shouldBeStrict(! $this->app->isProduction());

@@ -32,13 +32,15 @@ final class SendOtpSms implements ShouldBeEncrypted, ShouldQueue
         public readonly string $phoneE164,
         public readonly string $code,
         public readonly string $locale,
+        /** Translation key under auth_sms, e.g. otp, otp_payout. */
+        public readonly string $template = 'otp',
     ) {
         $this->onQueue('otp');
     }
 
     public function handle(SmsSender $sms): void
     {
-        $message = Lang::get('auth_sms.otp', [
+        $message = Lang::get('auth_sms.'.$this->template, [
             'code' => $this->code,
             'minutes' => config('yekkola.auth.otp_ttl_minutes'),
         ], $this->locale);

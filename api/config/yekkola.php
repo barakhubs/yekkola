@@ -51,6 +51,22 @@ return [
     // Secret used to sign fake webhooks. Required outside local/testing (no committed default).
     'fake_webhook_secret' => env('FAKE_WEBHOOK_SECRET'),
 
+    // Current versions of legal texts users must accept (PRD-02 FR-10). Bump to require re-acceptance.
+    'terms' => [
+        'professor_agreement' => env('TERMS_PROFESSOR_AGREEMENT_VERSION', '2026-10-draft'),
+    ],
+
+    'professors' => [
+        // "Needs info" applications left unanswered this long expire (PRD-02 §7).
+        'needs_info_expiry_days' => 30,
+        'max_credential_upload_kb' => 10_240,
+        'max_kyc_upload_kb' => 8_192,
+        'max_avatar_upload_kb' => 5_120,
+    ],
+
+    // Public files (avatars): `public` in development, an S3/R2 disk with public URLs in staging/production.
+    'public_disk' => env('PUBLIC_DISK', 'public'),
+
     // Private files (data exports, later KYC): `local` in development, an S3/R2 disk in staging/production.
     'private_disk' => env('PRIVATE_DISK', 'local'),
 

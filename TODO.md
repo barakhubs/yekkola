@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see *How to update*).
-> Last updated: 2026-10-07
+> Last updated: 2026-10-15
 
 ## Now
 
-- **Current branch:** none — PR #6 (auth & identity) waiting to be merged
-- **Next up:** Phase 1.4 (professors — PRD-02)
+- **Current branch:** none — PR #7 (professor onboarding) waiting to be merged
+- **Next up:** Phase 1.5 (authoring — PRD-03)
 
 ## Legend
 
@@ -115,12 +115,19 @@ Cannot be defaulted:
 - [ ] Real SMS provider driver + delivery reports — phase 4
 
 ### 1.4 Professors — PRD-02
-- [ ] Applications: submit, draft, status (FR-01–03)
-- [ ] Profiles + public slug (FR-05, FR-07)
-- [ ] KYC documents on private disk (FR-08)
-- [ ] Payout method with OTP + hold (FR-09)
-- [ ] Terms acceptance versioning (FR-10)
-- [ ] Suspension effects (FR-11)
+- [x] Applications: draft autosave, credentials (max 5, private disk), submit with agreement, needs-info loop, reapply cooldown, 30-day expiry (FR-01–03, FR-06) — #7
+- [x] Staff review: queue + filters, start review, approve (profile + role + unique slug), reject, request info, audited, no self-review (FR-04, FR-05) — #7
+- [x] Profiles + public page by slug, slug editable once, avatar (FR-05, FR-07, FR-12) — #7
+- [x] KYC: front/back/selfie on private disk, one pending at a time, staff verify/reject, audited file streaming (FR-08, BR-04) — #7
+- [x] Payout method confirmed by OTP to the account number; 48 h hold on change; number encrypted (FR-09) — #7
+- [x] Terms acceptance versioning + re-acceptance gate on studio routes (FR-10) — #7
+- [x] Suspend / reinstate, revenue-share override, payable rule (FR-11, BR-01–03) — #7
+- [ ] Link application/profile subjects to catalogue categories — with 1.6
+- [ ] Hide suspended professors' courses from catalogue and search — with 1.6
+- [ ] Sample lesson upload (≤ 5 min) through Mux — with 1.5
+- [ ] Notifications on application/KYC decisions — with 1.12
+- [ ] Check payout number prefix matches the chosen rail — with the payment aggregator (phase 4)
+- [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
 
 ### 1.5 Authoring — PRD-03
 - [ ] Courses, versions, sections, lessons, media assets, quizzes schema (arch §3.3)

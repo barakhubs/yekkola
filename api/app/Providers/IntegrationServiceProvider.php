@@ -56,6 +56,15 @@ final class IntegrationServiceProvider extends ServiceProvider
     {
         self::assertSafeForEnvironment($this->app->isProduction(), (array) config('yekkola.drivers'));
 
+        if ($this->app->isProduction()) {
+            foreach (['public_disk', 'private_disk'] as $key) {
+                $disk = (string) config('yekkola.'.$key);
+                if (config("filesystems.disks.{$disk}.driver") === 'local') {
+                    throw new RuntimeException("yekkola.{$key} must use object storage in production (instances are stateless).");
+                }
+            }
+        }
+
         if ($this->app->isProduction() && $this->driver('bot_challenge') === 'turnstile' && (string) config('yekkola.turnstile.secret') === '') {
             throw new RuntimeException('TURNSTILE_SECRET_KEY must be set in production.');
         }

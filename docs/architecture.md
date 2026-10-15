@@ -230,9 +230,11 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `professor_applications` | id, user_id, status (`submitted`/`under_review`/`approved`/`rejected`/`needs_info`), expertise, subjects (jsonb), credentials (jsonb), sample_media_url, motivation, reviewer_id, decision_note, decided_at | One open application per user. |
-| `professor_profiles` | id, user_id (unique), slug (unique), display_name, headline, bio, avatar (media), province_id, status (`active`/`suspended`), verified_at, revenue_share_bps (null = default), kyc_status (`pending`/`verified`/`rejected`), payout_rail, payout_msisdn (encrypted), payout_name, rating_avg, rating_count, student_count | Created on application approval. |
-| `kyc_documents` | id, professor_profile_id, type (`national_id`/`voter_card`/`passport`/`other`), media (private disk), status, reviewed_by, reviewed_at | Private bucket only. |
+| `professor_applications` | id, user_id, status (`draft`/`submitted`/`under_review`/`needs_info`/`approved`/`rejected`/`expired`), full_name, subjects (jsonb), levels (jsonb), years_experience, institutions, credentials (text), sample_url, motivation, province_id, terms_version, submitted_at, reviewer_id, review_started_at, info_request_note, info_requested_at, decision_note, decided_at | Partial unique index: one open application per user. Credential files in `media` (collection `credentials`, private disk). |
+| `professor_profiles` | id, user_id (unique), application_id, slug (unique), slug_changed_at, display_name, headline, bio, subjects, links (jsonb), avatar (media, public disk), province_id, status (`active`/`suspended`), suspended_at, suspension_reason, kyc_status (`none`/`pending`/`verified`/`rejected`), verified_at, revenue_share_bps (null = default), payout_rail, payout_msisdn (encrypted), payout_name, payout_method_updated_at, payout_hold_until, rating_avg, rating_count, student_count | Created on application approval. Payable = active + KYC verified + payout method + no hold. |
+| `kyc_submissions` | id, professor_profile_id, document_type (`national_id`/`voter_card`/`passport`), status (`pending`/`verified`/`rejected`), reviewed_by, reviewed_at, rejection_reason | Files in `media` (collections `front`, `back`, `selfie`, private disk), streamed only to `kyc.view` staff, every view audited. |
+| `terms_acceptances` | id, user_id, document (`professor_agreement`), version, accepted_at, ip | Append-only. Current versions in `config/yekkola.php` → `terms`. |
+| `media` | spatie/laravel-medialibrary (bigint id, `uuid` used in URLs, ULID `model_id`) | Avatars on `yekkola.public_disk`, credentials and KYC on `yekkola.private_disk` (both object storage in production; boot fails on a local disk). Erased with the account (`UserAnonymizing` event). |
 
 ### 3.3 Catalog & authoring
 
@@ -317,7 +319,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 - Auth: web/admin use Sanctum SPA cookies (`GET /sanctum/csrf-cookie` first; `X-XSRF-TOKEN`); mobile uses `Authorization: Bearer <token>` + `X-Device-Id`.
 - Locale: `Accept-Language: fr|en` → messages, validation errors, translatable fields.
 - IDs: ULIDs; public pages use slugs.
-- Lists: `?page[size]=&page[number]=` (offset) for admin tables; `?cursor=` for infinite feeds and large tables. Filters `?filter[status]=…`, sorting `?sort=-created_at`, includes `?include=professor`.
+- Lists: `?page=&per_page=` (offset, per_page 1–100, default 25) for admin tables; `?cursor=` for infinite feeds and large tables. Filters `?filter[status]=…`, sorting `?sort=-created_at`, includes `?include=professor`.
 - Envelope: `{ "data": …, "meta": { pagination… }, "links": {…} }`.
 - Errors: RFC 9457-style `{ "type", "title", "status", "detail", "code", "errors": { field: [msg] } }` with a stable machine `code` (e.g. `otp.expired`, `enrollment.required`, `device.limit_reached`).
 - Idempotency: `Idempotency-Key` header required on `POST /orders`, `POST /orders/{id}/payments`, payout approvals; replays return the original response.
@@ -398,10 +400,14 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path | Purpose |
 |---|---|---|
-| POST / GET | /professor/application | Apply / application status (any user) |
-| GET / PATCH | /professor/profile | Public profile |
-| POST | /professor/kyc-documents | Upload KYC (pre-signed upload) |
-| PATCH | /professor/payout-method | Rail + number (OTP-confirmed) |
+| GET / PUT | /professor/application | Application status / create or autosave draft (any signed-in user) |
+| POST | /professor/application/submit | Submit with `accept_terms` |
+| POST / DELETE | /professor/application/credentials[/{file}] | Credential files (multipart, max 5) |
+| GET / PATCH | /professor/profile | Own profile (incl. onboarding + terms status) |
+| POST | /professor/profile/avatar | Profile photo (multipart) |
+| POST | /professor/terms/accept | Accept the current professor agreement |
+| GET / POST | /professor/kyc | Latest identity check / submit (multipart front, back, selfie) |
+| POST / PUT | /professor/payout-method[/otp] | Code to own number / set rail + number (48 h hold on change) |
 | GET / POST | /professor/courses | List / create |
 | GET / PATCH / DELETE | /professor/courses/{id} | Course settings (category, language, price, free) |
 | POST | /professor/courses/{id}/draft | Start a draft from the live version |
@@ -431,9 +437,14 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/dashboard | KPIs + charts |
 | GET / PATCH | /admin/users[/{id}] | Search, view, suspend/ban/reactivate |
 | POST | /admin/users/{id}/enrollments | Grant enrollment |
-| GET | /admin/professor-applications | Queue |
-| POST | /admin/professor-applications/{id}/(approve\|reject\|request-info) | Decide |
-| GET / PATCH | /admin/professors[/{id}] | Suspend, revenue-share override, verify KYC |
+| GET | /admin/professor-applications[/{id}] | Queue (`moderation.review`) |
+| POST | /admin/professor-applications/{id}/(start-review\|approve\|reject\|request-info) | Decide (note required except approve) |
+| GET | /admin/professor-applications/{id}/credentials/{file} | Stream a credential file (audited) |
+| GET | /admin/kyc-submissions[/{id}] | Identity checks (`kyc.view`) |
+| GET | /admin/kyc-submissions/{id}/files/{front\|back\|selfie} | Stream an ID image (audited) |
+| POST | /admin/kyc-submissions/{id}/(verify\|reject) | Decide (`kyc.review`) |
+| GET / PATCH | /admin/professors[/{id}] | List/search; revenue-share override with note (`professors.manage`) |
+| POST | /admin/professors/{id}/(suspend\|reinstate) | With reason |
 | GET | /admin/course-versions?state=in_review | Content review queue |
 | POST | /admin/course-versions/{id}/(approve\|reject) | Decide with notes |
 | GET / PATCH | /admin/courses[/{id}] | Unpublish, feature, takedown |

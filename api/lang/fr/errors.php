@@ -25,6 +25,9 @@ return [
         'payload_too_large' => 'Le contenu envoyé est trop volumineux.',
         'error' => 'La requête n’a pas pu être traitée.',
     ],
+    'request' => [
+        'busy' => 'Une autre opération est en cours. Réessayez dans un instant.',
+    ],
     'rate_limited' => 'Trop de tentatives. Veuillez réessayer plus tard.',
     'server' => [
         'error' => 'Erreur du serveur. Veuillez réessayer.',
@@ -64,6 +67,31 @@ return [
         'not_found' => 'Aucun export demandé.',
         'rate_limited' => 'Vous pouvez demander un export par jour.',
         'filename' => 'yekkola-mes-donnees.json',
+    ],
+    'professor' => [
+        'already_professor' => 'Vous êtes déjà professeur sur Yekkola.',
+        'slug_already_changed' => 'L’adresse de votre page ne peut être modifiée qu’une seule fois.',
+        'required' => 'Cette section est réservée aux professeurs approuvés.',
+    ],
+    'application' => [
+        'not_found' => 'Aucune candidature trouvée.',
+        'locked' => 'Cette candidature ne peut plus être modifiée.',
+        'incomplete' => 'Complétez tous les champs obligatoires avant d’envoyer votre candidature.',
+        'reapply_cooldown' => 'Vous pourrez soumettre une nouvelle candidature plus tard.',
+        'invalid_transition' => 'Cette action n’est pas possible pour une candidature dans cet état.',
+        'own_application' => 'Vous ne pouvez pas examiner votre propre dossier.',
+        'too_many_credentials' => 'Nombre maximal de fichiers atteint.',
+    ],
+    'terms' => [
+        'not_accepted' => 'Vous devez accepter le contrat professeur.',
+        'acceptance_required' => 'Le contrat professeur a changé. Acceptez la nouvelle version pour continuer.',
+    ],
+    'kyc' => [
+        'already_pending' => 'Une vérification d’identité est déjà en cours.',
+        'already_verified' => 'Votre identité est déjà vérifiée.',
+        'back_required' => 'Ajoutez le verso de votre pièce d’identité.',
+        'not_found' => 'Aucune vérification d’identité trouvée.',
+        'not_pending' => 'Cette vérification a déjà été traitée.',
     ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',

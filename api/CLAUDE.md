@@ -28,7 +28,8 @@ Guardrails — don't over-engineer:
 - **Constructor injection** for services; no `new` on services inside actions. Facades only for framework concerns (Log, Cache, Queue, DB).
 - **Value objects** for core concepts: `Money` (amount_minor + currency, arithmetic refuses mixed currencies) and `PhoneNumber` (E.164, masking). No loose ints/strings for these across boundaries.
 - **Composition over inheritance:** no deep base classes for actions or controllers; small traits only when genuinely shared.
-- Actions are `final`, have one public method, and are unit-testable without HTTP.
+- Actions are `final`, have one public method, and are unit-testable without HTTP. Exception: the transitions of one aggregate's state machine (e.g. `ReviewApplication`: start/approve/reject/request-info) may share a class so the locking and guard logic lives in one place.
+- State transitions re-read the row with `lockForUpdate()` inside a transaction and check the status there — never trust a route-bound model's status.
 
 ## Commands
 
@@ -59,6 +60,10 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | Platform settings | inject `App\Domain\Platform\Settings\*Settings` (Commerce, Payout, Protection, Catalog, Learning, Moderation). Add new keys with a settings migration in `database/settings/`. Changes are audited automatically. |
 | Audit an admin action | `App\Domain\Platform\Actions\RecordAudit::handle('thing.happened', $subject, ['reason' => ...])` |
 | Signed-in routes | the `signed-in` middleware group (= `auth:sanctum` + `active`) — never `auth:sanctum` alone. `active` (ends stale web sessions, refuses banned, limits suspended users to `me.show`/`auth.logout`) |
+| Professor studio routes | `signed-in` + `professor` middleware (approved professor + current agreement accepted; profile on `$request->attributes->get('professor_profile')`) |
+| Admin routes | `signed-in` + `staff`, then `can:<Permission value>` per group |
+| Pagination | `->paginate($this->perPage($request))` (`?page=&per_page=`) |
+| Files (credentials, KYC, avatar) | spatie/laravel-medialibrary; private files on `config('yekkola.private_disk')`, streamed to staff through audited endpoints only |
 | Client details for auth actions | `App\Http\Support\AuthContext::client($request)` / `signedInAt()` / `currentToken()` |
 | End all sessions/tokens | `App\Domain\Identity\Actions\SignOutEverywhere` (bumps `auth_epoch`, deletes tokens) |
 | Phone of a user | `$user->phone` (a `PhoneNumber`); `phone_e164` is only the column |
@@ -74,6 +79,8 @@ Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_
 **FakeGateway outcomes** by the last 4 digits of the payer/recipient number (full list in `Scenario`): `0001` insufficient funds, `0002` pending forever, `0003` late success, `0004` reversal, `0005` fail then succeed, `0006` unavailable, `0007` timeout-but-succeeds, `0008` amount mismatch, `0009` rejected by payer, `0010` invalid recipient; anything else pending → succeeded on re-check. Tests can force outcomes with `queue(Scenario::...)` and outages with `makeUnavailable($rail)`; `webhookFor($reference)` builds a signed webhook.
 
 **Auth tests:** helpers in `tests/Pest.php` — `signInMobile()`, `signInWeb()`, `lastSmsCode($e164)`, `bearer($token)`, `WEB_APP` / `MOBILE_APP` headers (OTP requests need one or a `bot_token`), `freshAuth()` (call between requests: the test client reuses cached guards and models).
+
+**Professor/staff tests:** `actingAsProfessor()`, `actingAsStaff(Role, [extra Permission])`, `fakePdf()`; fake `Storage::fake('local')` / `('public')` for uploads.
 
 **LogSmsSender:** numbers ending `0000` simulate a provider rejection. Logs mask the number.
 

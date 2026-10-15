@@ -6,6 +6,7 @@ namespace App\Domain\Identity\Models;
 
 use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Platform\Models\Province;
+use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Shared\ValueObjects\PhoneNumber;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -66,6 +68,11 @@ final class User extends Authenticatable
         'locale' => 'fr',
         'status' => 'active',
         'auth_epoch' => 0,
+        'last_login_at' => null,
+        'last_seen_at' => null,
+        'deletion_requested_at' => null,
+        'province_id' => null,
+        'city' => null,
     ];
 
     /**
@@ -121,6 +128,25 @@ final class User extends Authenticatable
     public function getRememberTokenName(): string
     {
         return '';
+    }
+
+    /**
+     * @return HasOne<ProfessorProfile, $this>
+     */
+    public function professorProfile(): HasOne
+    {
+        return $this->hasOne(ProfessorProfile::class);
+    }
+
+    /** Masked phone for staff views; null once the account is anonymised. */
+    public function maskedPhone(): ?string
+    {
+        return str_starts_with($this->phone_e164, 'deleted:') ? null : $this->phone->masked();
+    }
+
+    public function isAnonymised(): bool
+    {
+        return str_starts_with($this->phone_e164, 'deleted:');
     }
 
     public function isActive(): bool

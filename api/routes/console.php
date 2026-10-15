@@ -8,4 +8,5 @@ use Illuminate\Support\Facades\Schedule;
 
 // Identity (PRD-01)
 Schedule::command('identity:purge-deleted-accounts')->dailyAt('02:00')->onOneServer();
+Schedule::command('professors:expire-stale-applications')->dailyAt('02:30')->onOneServer();
 Schedule::command('model:prune', ['--model' => [OtpChallenge::class, DataExport::class]])->dailyAt('03:00')->onOneServer();
