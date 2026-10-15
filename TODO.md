@@ -127,6 +127,7 @@ Cannot be defaulted:
 - [ ] Sample lesson upload (≤ 5 min) through Mux — with 1.5
 - [ ] Notifications on application/KYC decisions — with 1.12
 - [ ] Check payout number prefix matches the chosen rail — with the payment aggregator (phase 4)
+- [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
 
 ### 1.5 Authoring — PRD-03
 - [ ] Courses, versions, sections, lessons, media assets, quizzes schema (arch §3.3)

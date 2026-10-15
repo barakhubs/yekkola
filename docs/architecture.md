@@ -234,7 +234,7 @@ PostgreSQL. Conventions:
 | `professor_profiles` | id, user_id (unique), application_id, slug (unique), slug_changed_at, display_name, headline, bio, subjects, links (jsonb), avatar (media, public disk), province_id, status (`active`/`suspended`), suspended_at, suspension_reason, kyc_status (`none`/`pending`/`verified`/`rejected`), verified_at, revenue_share_bps (null = default), payout_rail, payout_msisdn (encrypted), payout_name, payout_method_updated_at, payout_hold_until, rating_avg, rating_count, student_count | Created on application approval. Payable = active + KYC verified + payout method + no hold. |
 | `kyc_submissions` | id, professor_profile_id, document_type (`national_id`/`voter_card`/`passport`), status (`pending`/`verified`/`rejected`), reviewed_by, reviewed_at, rejection_reason | Files in `media` (collections `front`, `back`, `selfie`, private disk), streamed only to `kyc.view` staff, every view audited. |
 | `terms_acceptances` | id, user_id, document (`professor_agreement`), version, accepted_at, ip | Append-only. Current versions in `config/yekkola.php` → `terms`. |
-| `media` | spatie/laravel-medialibrary (bigint id, `uuid` used in URLs, ULID `model_id`) | Avatars (public disk), credentials and KYC (private disk). |
+| `media` | spatie/laravel-medialibrary (bigint id, `uuid` used in URLs, ULID `model_id`) | Avatars on `yekkola.public_disk`, credentials and KYC on `yekkola.private_disk` (both object storage in production; boot fails on a local disk). Erased with the account (`UserAnonymizing` event). |
 
 ### 3.3 Catalog & authoring
 
@@ -442,7 +442,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/professor-applications/{id}/credentials/{file} | Stream a credential file (audited) |
 | GET | /admin/kyc-submissions[/{id}] | Identity checks (`kyc.view`) |
 | GET | /admin/kyc-submissions/{id}/files/{front\|back\|selfie} | Stream an ID image (audited) |
-| POST | /admin/kyc-submissions/{id}/(verify\|reject) | Decide |
+| POST | /admin/kyc-submissions/{id}/(verify\|reject) | Decide (`kyc.review`) |
 | GET / PATCH | /admin/professors[/{id}] | List/search; revenue-share override with note (`professors.manage`) |
 | POST | /admin/professors/{id}/(suspend\|reinstate) | With reason |
 | GET | /admin/course-versions?state=in_review | Content review queue |

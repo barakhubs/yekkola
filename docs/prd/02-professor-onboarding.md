@@ -40,7 +40,7 @@ Any user can apply to teach. Applications are **reviewed manually** by Yekkola s
 | FR-04 | Admin queue (PRD-09): filter by status, subject, date; detail view with all materials; actions approve / reject / request info, each with a note. | Must |
 | FR-05 | On approve: create `ProfessorProfile`, grant professor role, notify, unlock studio. | Must |
 | FR-06 | Rejected applicants may reapply after a cooldown (setting, default 30 days). | Should |
-| FR-07 | Profile editor: display name, slug (auto, editable once), photo, headline, bio (rich text, limited), subjects, social/website links, province. | Must |
+| FR-07 | Profile editor: display name, slug (auto, editable once), photo (re-encoded to strip metadata), headline, bio (plain text, max 3,000 characters; clients render line breaks only), subjects, social/website links, province. | Must |
 | FR-08 | KYC: upload ID (national ID / voter card / passport) front + back + selfie; stored on private disk; staff verify or reject. | Must |
 | FR-09 | Payout method: rail + phone number + account name; changing it requires OTP and triggers a 48-hour payout hold. | Must |
 | FR-10 | Professor terms acceptance recorded with version and timestamp; re-acceptance required when terms change. | Must |

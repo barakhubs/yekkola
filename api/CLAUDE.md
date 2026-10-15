@@ -28,7 +28,8 @@ Guardrails — don't over-engineer:
 - **Constructor injection** for services; no `new` on services inside actions. Facades only for framework concerns (Log, Cache, Queue, DB).
 - **Value objects** for core concepts: `Money` (amount_minor + currency, arithmetic refuses mixed currencies) and `PhoneNumber` (E.164, masking). No loose ints/strings for these across boundaries.
 - **Composition over inheritance:** no deep base classes for actions or controllers; small traits only when genuinely shared.
-- Actions are `final`, have one public method, and are unit-testable without HTTP.
+- Actions are `final`, have one public method, and are unit-testable without HTTP. Exception: the transitions of one aggregate's state machine (e.g. `ReviewApplication`: start/approve/reject/request-info) may share a class so the locking and guard logic lives in one place.
+- State transitions re-read the row with `lockForUpdate()` inside a transaction and check the status there — never trust a route-bound model's status.
 
 ## Commands
 
