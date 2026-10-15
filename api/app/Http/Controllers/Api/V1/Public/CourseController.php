@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1\Public;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Catalog\Actions\BrowseCourses;
 use App\Domain\Catalog\Actions\HomeRails;
+use App\Domain\Catalog\DownloadEstimate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalog\BrowseCoursesRequest;
 use App\Http\Resources\Catalog\CourseCardResource;
@@ -30,7 +31,7 @@ final class CourseController extends Controller
         return CourseCardResource::collection($courses);
     }
 
-    public function show(string $slug): CourseDetailResource
+    public function show(string $slug, DownloadEstimate $estimate): CourseDetailResource
     {
         $course = Course::query()
             ->listed()
@@ -43,7 +44,7 @@ final class CourseController extends Controller
             ])
             ->firstOrFail();
 
-        return new CourseDetailResource($course);
+        return new CourseDetailResource($course, $estimate);
     }
 
     /**

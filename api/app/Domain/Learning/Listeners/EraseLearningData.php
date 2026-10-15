@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Learning\Listeners;
 
 use App\Domain\Identity\Events\UserAnonymizing;
-use App\Domain\Learning\Actions\Wishlist;
+use App\Domain\Learning\Models\WishlistItem;
 
 /**
  * Erases a deleted account's learning data (PRD-01 FR-11). For now the wishlist; enrollments, progress,
@@ -13,10 +13,8 @@ use App\Domain\Learning\Actions\Wishlist;
  */
 final class EraseLearningData
 {
-    public function __construct(private readonly Wishlist $wishlist) {}
-
     public function handle(UserAnonymizing $event): void
     {
-        $this->wishlist->clear($event->user);
+        WishlistItem::query()->where('user_id', $event->user->id)->delete();
     }
 }

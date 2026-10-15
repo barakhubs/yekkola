@@ -9,9 +9,9 @@ use App\Domain\Catalog\Actions\BrowseCourses;
 use App\Domain\Catalog\Actions\SetFeaturedCourses;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Catalog\FeaturedCoursesRequest;
 use App\Http\Resources\Catalog\CourseCardResource;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -27,18 +27,11 @@ final class FeaturedCourseController extends Controller
     /**
      * Replaces the featured list; the order given is the display order.
      */
-    public function update(Request $request, SetFeaturedCourses $setFeatured): AnonymousResourceCollection
+    public function update(FeaturedCoursesRequest $request, SetFeaturedCourses $setFeatured): AnonymousResourceCollection
     {
-        $request->validate([
-            'course_ids' => ['present', 'array', 'max:'.(int) config('yekkola.catalogue.max_featured')],
-            'course_ids.*' => ['ulid', 'distinct'],
-        ]);
-
         /** @var User $staff */
         $staff = $request->user();
-        /** @var list<string> $ids */
-        $ids = array_values($request->input('course_ids', []));
-        $setFeatured->handle($ids, $staff);
+        $setFeatured->handle($request->courseIds(), $staff);
 
         return CourseCardResource::collection($this->featured());
     }

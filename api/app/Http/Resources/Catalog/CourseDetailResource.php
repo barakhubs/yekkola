@@ -20,13 +20,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class CourseDetailResource extends JsonResource
 {
+    public function __construct(Course $course, private readonly DownloadEstimate $estimate)
+    {
+        parent::__construct($course);
+    }
+
     /**
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
         $live = $this->liveVersion;
-        $estimate = app(DownloadEstimate::class);
+        $estimate = $this->estimate;
         $downloadBytes = 0;
 
         $sections = $live->sections->map(function (Section $section) use ($estimate, &$downloadBytes): array {

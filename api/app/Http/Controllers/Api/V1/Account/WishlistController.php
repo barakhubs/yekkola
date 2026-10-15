@@ -4,41 +4,45 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Account;
 
-use App\Domain\Authoring\Models\Course;
+use App\Domain\Catalog\Actions\BrowseCourses;
 use App\Domain\Identity\Models\User;
-use App\Domain\Learning\Actions\Wishlist;
+use App\Domain\Learning\Actions\AddToWishlist;
+use App\Domain\Learning\Actions\RemoveFromWishlist;
+use App\Domain\Learning\Models\WishlistItem;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Catalog\WishlistRequest;
 use App\Http\Resources\Catalog\CourseCardResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 /**
- * The signed-in user's wishlist (PRD-04 FR-08).
+ * The signed-in user's wishlist (PRD-04 FR-08): listed courses only, newest saved first.
  */
 final class WishlistController extends Controller
 {
-    public function index(Request $request, Wishlist $wishlist): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return CourseCardResource::collection($wishlist->list($this->user($request), $this->perPage($request)));
+        $courses = WishlistItem::coursesFor($this->user($request)->id)
+            ->with(BrowseCourses::cardRelations())
+            ->paginate($this->perPage($request));
+
+        return CourseCardResource::collection($courses);
     }
 
     /**
      * Saves a listed course. Idempotent.
      */
-    public function store(Request $request, Wishlist $wishlist): Response
+    public function store(WishlistRequest $request, AddToWishlist $add): Response
     {
-        $request->validate(['course_id' => ['required', 'ulid']]);
-
-        $course = Course::query()->listed()->findOrFail($request->string('course_id')->toString());
-        $wishlist->add($this->user($request), $course);
+        $add->handle($this->user($request), $request->string('course_id')->toString());
 
         return response()->noContent();
     }
 
-    public function destroy(Request $request, string $course, Wishlist $wishlist): Response
+    public function destroy(Request $request, string $course, RemoveFromWishlist $remove): Response
     {
-        $wishlist->remove($this->user($request), $course);
+        $remove->handle($this->user($request), $course);
 
         return response()->noContent();
     }
