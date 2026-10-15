@@ -162,6 +162,7 @@ final class RequestOtp
         return match ($purpose) {
             OtpPurpose::Login => ! (bool) $owner?->isBanned(),
             OtpPurpose::ChangePhone => $owner === null,
+            OtpPurpose::PayoutMethod => true,
         };
     }
 }

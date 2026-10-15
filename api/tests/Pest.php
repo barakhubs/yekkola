@@ -91,3 +91,48 @@ function userByPhone(string $e164): User
 {
     return User::query()->where('phone_e164', $e164)->sole();
 }
+
+/*
+| Professor & staff helpers (PRD-02, PRD-09).
+*/
+
+/**
+ * A signed-in staff member (Sanctum::actingAs) with a role and optional extra permissions.
+ *
+ * @param  list<App\Domain\Identity\Enums\Permission>  $extra
+ */
+function actingAsStaff(App\Domain\Identity\Enums\Role $role = App\Domain\Identity\Enums\Role::Moderator, array $extra = []): User
+{
+    test()->seed(RolesAndPermissionsSeeder::class);
+    $user = User::factory()->create();
+    $user->assignRole($role->value);
+    foreach ($extra as $permission) {
+        $user->givePermissionTo($permission->value);
+    }
+    Laravel\Sanctum\Sanctum::actingAs($user);
+
+    return $user;
+}
+
+/** An approved professor who accepted the current agreement, signed in via Sanctum::actingAs. */
+function actingAsProfessor(string $name = 'Marie Kabila'): App\Domain\Professors\Models\ProfessorProfile
+{
+    test()->seed(RolesAndPermissionsSeeder::class);
+    $user = User::factory()->create(['name' => $name]);
+    $user->assignRole(App\Domain\Identity\Enums\Role::Student->value, App\Domain\Identity\Enums\Role::Professor->value);
+    App\Domain\Professors\Models\TermsAcceptance::record($user->id, App\Domain\Professors\Enums\LegalDocument::ProfessorAgreement, null);
+    $profile = App\Domain\Professors\Models\ProfessorProfile::query()->create([
+        'user_id' => $user->id,
+        'slug' => app(App\Domain\Professors\Actions\ProfessorSlugs::class)->unique($name),
+        'display_name' => $name,
+    ]);
+    Laravel\Sanctum\Sanctum::actingAs($user);
+
+    return $profile;
+}
+
+/** A small valid PDF upload (real PDF magic bytes, so MIME sniffing accepts it). */
+function fakePdf(string $name = 'diplome.pdf'): Illuminate\Http\UploadedFile
+{
+    return Illuminate\Http\UploadedFile::fake()->createWithContent($name, "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n");
+}

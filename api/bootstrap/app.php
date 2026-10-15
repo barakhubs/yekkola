@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
+use App\Domain\Professors\Console\ExpireStaleApplications;
 use App\Domain\Shared\Exceptions\DomainException;
 use App\Http\ApiErrorResponse;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureIdempotency;
+use App\Http\Middleware\EnsureProfessor;
+use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\SetLocaleFromHeader;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
@@ -24,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withCommands([
         PurgeDeletedAccounts::class,
+        ExpireStaleApplications::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.
@@ -33,6 +37,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'idempotent' => EnsureIdempotency::class,
             'active' => EnsureAccountActive::class,
+            'professor' => EnsureProfessor::class,
+            'staff' => EnsureStaff::class,
         ]);
         // Every signed-in route uses this group, so the account checks can't be forgotten.
         $middleware->group('signed-in', ['auth:sanctum', 'active']);

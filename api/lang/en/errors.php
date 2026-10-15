@@ -65,6 +65,31 @@ return [
         'rate_limited' => 'You can request one export per day.',
         'filename' => 'yekkola-my-data.json',
     ],
+    'professor' => [
+        'already_professor' => 'You are already a professor on Yekkola.',
+        'slug_already_changed' => 'Your page address can only be changed once.',
+        'required' => 'This area is for approved professors.',
+    ],
+    'application' => [
+        'not_found' => 'No application found.',
+        'locked' => 'This application can no longer be edited.',
+        'incomplete' => 'Fill in all required fields before submitting your application.',
+        'reapply_cooldown' => 'You can submit a new application later.',
+        'invalid_transition' => 'This action is not possible for an application in this state.',
+        'own_application' => 'You cannot review your own file.',
+        'too_many_credentials' => 'Maximum number of files reached.',
+    ],
+    'terms' => [
+        'not_accepted' => 'You must accept the professor agreement.',
+        'acceptance_required' => 'The professor agreement has changed. Accept the new version to continue.',
+    ],
+    'kyc' => [
+        'already_pending' => 'An identity check is already in progress.',
+        'already_verified' => 'Your identity is already verified.',
+        'back_required' => 'Add the back of your ID document.',
+        'not_found' => 'No identity check found.',
+        'not_pending' => 'This check has already been handled.',
+    ],
     'phone' => [
         'invalid' => 'Invalid phone number.',
         'taken' => 'This number is already used by another account.',
