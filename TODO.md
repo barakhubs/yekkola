@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #12 (parent payer, Phase 1.7c) to be merged
-- **Next up:** 1.7d receipts + refunds
+- **Current branch:** `feature/prd-05-receipts-refunds` — Phase 1.7d
+- **Next up:** Phase 1.8 (learning — PRD-06)
 
 ## Legend
 
@@ -181,10 +181,12 @@ Cannot be defaulted:
 - [ ] Receipt SMS to the payer number as well as the student (PRD-10, on `OrderPaid`)
 - [ ] Confirm buy-for-others limits (`config/yekkola.php` → `checkout`) and how long payer numbers are kept (counsel)
 - [ ] Receipt SMS count against the global SMS budget (no SMS pumping through gift orders)
-- [ ] d: Receipts PDF (FR-15)
-- [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
-- [ ] d: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
+- [~] d: Receipts JSON + PDF, fr/en (FR-15)
+- [~] d: Refund request + approval flow + payout to the original payer (FR-16) — sale parts from `SaleSplit`
+- [~] d: Staff send back `unapplied_receipt` money — amount mismatch, duplicate payment, already owned
 - [ ] Reconciliation: one queued job per due payment once volume needs it
+- [ ] VAT lines on receipts once tax treatment is decided (0.5)
+- [ ] Revoke certificates when a course is refunded (with 1.8)
 
 ### 1.8 Learning — PRD-06
 - [ ] Enrollments, progress, quiz attempts, certificates, reviews, threads schema (arch §3.5)

@@ -258,7 +258,7 @@ PostgreSQL. Conventions:
 | `order_items` | id, order_id, course_id, bundle_id, professor_profile_id, title_snapshot, list_price_minor, discount_minor, price_minor, discount_funded_by (`platform`/`professor`/`shared`), revenue_share_bps (snapshot: course → professor → platform default), currency | Snapshot = what the ledger uses. Sale split by `discount_funded_by` (provisional): platform (staff coupons only) → professor earns their share of the list price capped at the price paid, `discounts_platform` pays the platform's shortfall; professor → platform keeps its share of the list price; shared (bundles) → both shares on the price paid. A line discounted to 0 earns nobody anything (enrollment source `coupon`). |
 | `payments` | id (our reference at the gateway), order_id, idempotency_key (unique per order), gateway, rail (`orange`/`airtel`/`mpesa`), msisdn (encrypted), amount_minor, currency, confirmed_amount_minor, fee_minor, status (`initiated`/`pending`/`succeeded`/`failed`/`expired`/`reversed`), gateway_reference (unique per gateway), operator_reference, failure_code, failure_message, flag, last_result (encrypted), checks, last_checked_at, succeeded_at | Several attempts per order, one in flight at a time. |
 | `payment_events` | id, gateway, event_id (unique per gateway), kind (`collection`/`disbursement`), reference (our payment/payout/refund id), payload (encrypted — can carry payer numbers), received_at, processed_at, error, attempts | Webhook inbox (only signature-valid events are stored); processed by `ProcessPaymentEvent` on the `payments` queue, unknown references retried. |
-| `refunds` | id, order_id, order_item_id, amount_minor, currency, reason, status (`requested`/`approved`/`rejected`/`processing`/`completed`/`failed`), requested_by, decided_by, decided_at, gateway_reference | |
+| `refunds` | id, kind (`item`/`unapplied`), order_id, order_item_id, payment_id (collection refunded), amount_minor, currency, status (`requested`/`approved`/`rejected`/`processing`/`completed`/`failed`), reason, requested_by, decided_by, decided_at, decision_note, attempt (gateway reference `R-{id}-{attempt}`), gateway, gateway_reference, operator_reference, fee_minor, failure_code, failure_message, checks, last_checked_at, completed_at | One live refund per course and per unapplied payment. Approval (staff, `finance.refunds`) revokes access, posts `refund` (sale parts from `SaleSplit` → `refunds_payable`) and pays the original payer by disbursement; `refund_paid` on success. Failed payouts are retried under a new reference. The coupon use is not given back. |
 | `coupons` | id, code (unique, stored upper-case), scope (`platform`/`professor`/`course`), professor_profile_id (null), course_id (null), discount_type (`percent`/`fixed`), value (percent 1–100, or minor units), currency (fixed only), funded_by, max_redemptions, per_user_limit, starts_at, ends_at, is_active, created_by | Only active/end date/limits change after creation. Open orders using a coupon count as reservations; limits re-checked under a row lock at order creation. |
 | `coupon_redemptions` | id, coupon_id, user_id (beneficiary), order_id (unique), created_at | Recorded when the order grants access (payment success or free order); deleted when that payment is reversed. A late success past the limit is kept and the order flagged `coupon_over_limit`. |
 | `bundles` | id, professor_profile_id (null = platform bundle), slug, title, description, price_minor, currency, status (`draft`/`active`/`archived`) | ≥ 2 paid courses in its currency, priced below their total. Owned courses lower the price pro-rata (provisional); revenue split pro-rata to list prices. No coupon on top. |
@@ -289,7 +289,7 @@ PostgreSQL. Conventions:
 | Table | Columns (key) | Notes |
 |---|---|---|
 | `ledger_accounts` | id, type, owner_type (`platform`/`professor`), owner_id (null for platform), currency, unique `(type, owner_type, owner_id, currency)` NULLS NOT DISTINCT | Types: `gateway_clearing`, `gateway_fees` (aggregator collection/disbursement fees), `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`. |
-| `ledger_transactions` | id, type (`sale`/`sale_reversal`/`unapplied_receipt`/`unapplied_receipt_reversal`/`release`/`refund`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Unique `(type, reference_type, reference_id)`: a replay can never post twice. Append-only (DB triggers, incl. TRUNCATE). Written only by `PostLedgerTransaction`. |
+| `ledger_transactions` | id, type (`sale`/`sale_reversal`/`unapplied_receipt`/`unapplied_receipt_reversal`/`release`/`refund`/`refund_paid`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Unique `(type, reference_type, reference_id)`: a replay can never post twice. Append-only (DB triggers, incl. TRUNCATE). Written only by `PostLedgerTransaction`. |
 | `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor (> 0, CHECK), currency, created_at | Sum of debits = sum of credits per transaction (enforced in `PostLedgerTransaction`, checked in tests and by the integrity job). Append-only (DB trigger). |
 | `payout_batches` | id, status (`draft`/`approved`/`processing`/`completed`/`partially_failed`), currency, period_end, created_by, approved_by, approved_at | |
 | `payouts` | id, payout_batch_id, professor_id, amount_minor, currency, rail, msisdn (encrypted), status (`pending`/`processing`/`paid`/`failed`), gateway_reference, failure_reason, paid_at | |
@@ -398,8 +398,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /orders/{id} | Order + payments (polling; re-checks an in-flight payment at most every 10 s) |
 | POST | /orders/{id}/cancel | Cancel unpaid order |
 | GET | /me/orders | Order history: orders I bought and orders bought for me (only the buyer can pay) |
-| GET | /me/orders/{id}/receipt | Receipt (JSON + PDF link) |
-| POST | /orders/{id}/refund-requests | Request refund |
+| GET | /orders/{id}/receipt[.pdf] | Receipt as JSON or PDF (request language) for buyer and student; guests: `GET /guest/orders/{id}/receipt.pdf` |
+| POST | /orders/{id}/refund-requests | Request a refund `{order_item_id, reason}` (window and progress limits from settings) |
+| GET | /me/refunds | My refund requests |
 
 **Professor** (`/professor`, role: professor except application endpoints)
 
@@ -461,7 +462,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | PATCH | /admin/reviews/{id}, /admin/threads/{id} | Hide/restore |
 | GET | /admin/orders[/{id}], /admin/payments[/{id}] | Commerce views |
 | POST | /admin/payments/{id}/recheck | Force status re-query |
-| GET | /admin/refunds; POST /admin/refunds/{id}/(approve\|reject) | Refunds |
+| GET | /admin/refunds[/{id}]; POST /admin/refunds/{id}/(approve\|reject\|retry) | Refund queue with policy facts (`finance.refunds`, audited) |
+| POST | /admin/payments/{id}/refund | Send back a payment's unapplied money (`finance.refunds`) |
 | GET / POST / GET {id} / PATCH {id} | /admin/coupons | Coupons with usage — platform-funded only (`promotions.manage`, audited) |
 | GET / POST / PATCH {id} | /admin/bundles | Bundles (`promotions.manage`, audited); archiving never re-validates prices |
 | GET | /admin/ledger/accounts, /admin/ledger/transactions | Finance views |
