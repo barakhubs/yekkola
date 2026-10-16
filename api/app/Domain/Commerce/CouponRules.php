@@ -51,7 +51,7 @@ final class CouponRules
      * @param  list<QuoteLine>  $lines
      * @return list<QuoteLine>
      */
-    public function apply(Coupon $coupon, array $lines, Currency $currency, string $beneficiaryId): array
+    public function apply(Coupon $coupon, array $lines, Currency $currency, ?string $beneficiaryId): array
     {
         $eligible = array_keys(array_filter($lines, fn (QuoteLine $l) => $this->inScope($coupon, $l)));
 
@@ -72,13 +72,17 @@ final class CouponRules
         return $lines;
     }
 
-    public function assertWithinLimits(Coupon $coupon, string $beneficiaryId, ?string $exceptOrderId = null): void
+    /**
+     * @param  string|null  $beneficiaryId  Null skips the per-student limit (orders bought by someone else; an
+     *                                      overrun is flagged when the order is fulfilled).
+     */
+    public function assertWithinLimits(Coupon $coupon, ?string $beneficiaryId, ?string $exceptOrderId = null): void
     {
         if ($coupon->max_redemptions !== null && $this->uses($coupon, null, $exceptOrderId) >= $coupon->max_redemptions) {
             throw CommerceException::couponExhausted();
         }
 
-        if ($coupon->per_user_limit !== null && $this->uses($coupon, $beneficiaryId, $exceptOrderId) >= $coupon->per_user_limit) {
+        if ($beneficiaryId !== null && $coupon->per_user_limit !== null && $this->uses($coupon, $beneficiaryId, $exceptOrderId) >= $coupon->per_user_limit) {
             throw CommerceException::couponAlreadyUsed();
         }
     }
@@ -116,7 +120,8 @@ final class CouponRules
         $reserved = Order::query()->where('coupon_id', $coupon->id)
             ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
             ->where('expires_at', '>', now())
-            ->when($userId !== null, fn ($q) => $q->where('beneficiary_id', $userId))
+            // Per student: only their own open orders — someone else's pending order never uses up their limit.
+            ->when($userId !== null, fn ($q) => $q->where('beneficiary_id', $userId)->where('buyer_id', $userId))
             ->when($exceptOrderId !== null, fn ($q) => $q->whereKeyNot($exceptOrderId))
             ->count();
 

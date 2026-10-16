@@ -3704,6 +3704,142 @@
                 }
             }
         },
+        "/guest/orders": {
+            "post": {
+                "operationId": "guest.orders.store",
+                "summary": "Requires an `Idempotency-Key` header and a passed bot challenge (`bot_token`)",
+                "tags": [
+                    "GuestOrder"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GuestOrderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`OrderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/OrderResource"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "access_token"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/guest/orders/{order}": {
+            "get": {
+                "operationId": "guest.orders.show",
+                "tags": [
+                    "GuestOrder"
+                ],
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`OrderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/OrderResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/guest/orders/{order}/payments": {
+            "post": {
+                "operationId": "guest.orders.pay",
+                "summary": "Requires an `Idempotency-Key`. The number defaults to the payer named on the order",
+                "tags": [
+                    "GuestOrder"
+                ],
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StartPaymentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`PaymentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PaymentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/professor/kyc": {
             "get": {
                 "operationId": "professor.kyc.show",
@@ -4178,7 +4314,7 @@
         "/orders": {
             "post": {
                 "operationId": "orders.store",
-                "summary": "Requires an `Idempotency-Key` header: retrying with the same key returns the same order",
+                "summary": "Requires an `Idempotency-Key` header: retrying with the same key returns the same order. With\n`beneficiary_phone`, the courses go to that student (admin setting \"separate payer\")",
                 "tags": [
                     "Order"
                 ],
@@ -4219,7 +4355,7 @@
         "/orders/{order}": {
             "get": {
                 "operationId": "orders.show",
-                "summary": "Order status for the waiting screen. A payment still in flight is re-checked with the gateway\n(at most every few seconds), so the screen moves on even if a webhook is late",
+                "summary": "Order status for the waiting screen",
                 "tags": [
                     "Order"
                 ],
@@ -4251,6 +4387,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     }
                 }
             }
@@ -4258,7 +4397,7 @@
         "/orders/{order}/payments": {
             "post": {
                 "operationId": "orders.pay",
-                "summary": "Starts a mobile-money payment: the payer approves it on their phone. Requires an `Idempotency-Key`",
+                "summary": "Starts a mobile-money payment: the payer approves it on their phone. Requires an `Idempotency-Key`.\nThe number defaults to the payer named on the order, then to the buyer's own",
                 "tags": [
                     "Order"
                 ],
@@ -7399,6 +7538,21 @@
                             "null"
                         ],
                         "maxLength": 40
+                    },
+                    "beneficiary_phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Buying for another student (FR-14): their phone, and optionally the number that will pay.",
+                        "maxLength": 20
+                    },
+                    "payer_msisdn": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 20
                     }
                 },
                 "title": "CourseSelectionRequest"
@@ -7759,6 +7913,53 @@
                     "course_ids"
                 ],
                 "title": "FeaturedCoursesRequest"
+            },
+            "GuestOrderRequest": {
+                "type": "object",
+                "description": "A parent with no account buying for a student (PRD-05 FR-14): the student's phone is required, and a bot\nchallenge (Turnstile) must be passed.",
+                "properties": {
+                    "course_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "maxItems": 20,
+                        "uniqueItems": true
+                    },
+                    "bundle_id": {
+                        "type": "string"
+                    },
+                    "coupon_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 40
+                    },
+                    "beneficiary_phone": {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "payer_msisdn": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 20
+                    },
+                    "bot_token": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 4096
+                    }
+                },
+                "required": [
+                    "beneficiary_phone"
+                ],
+                "title": "GuestOrderRequest"
             },
             "KycDocumentType": {
                 "type": "string",
@@ -9248,7 +9449,7 @@
             },
             "StartPaymentRequest": {
                 "type": "object",
-                "description": "Operator and payer number for a payment (PRD-05 FR-05). The number defaults to the buyer's own.",
+                "description": "Operator and payer number for a payment (PRD-05 FR-05, FR-14).",
                 "properties": {
                     "rail": {
                         "$ref": "#/components/schemas/MobileMoneyRail"
@@ -10168,8 +10369,8 @@
                     }
                 }
             },
-            "AuthenticationException": {
-                "description": "Unauthenticated",
+            "ModelNotFoundException": {
+                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -10187,8 +10388,8 @@
                     }
                 }
             },
-            "ModelNotFoundException": {
-                "description": "Not found",
+            "AuthenticationException": {
+                "description": "Unauthenticated",
                 "content": {
                     "application/json": {
                         "schema": {

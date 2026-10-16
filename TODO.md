@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #11 (coupons & bundles, Phase 1.7b) to be merged
-- **Next up:** 1.7c parent payer; then 1.7d receipts + refunds
+- **Waiting:** PR #12 (parent payer, Phase 1.7c) to be merged
+- **Next up:** 1.7d receipts + refunds
 
 ## Legend
 
@@ -177,7 +177,10 @@ Cannot be defaulted:
 - [x] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry — #10
 - [x] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17) — #10
 - [x] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02); `promotions.manage` permission — #11
-- [ ] c: Parent payer (FR-14)
+- [x] c: Parent payer (FR-14) — signed-in buyer for another student, and guest checkout with an order token — #12
+- [ ] Receipt SMS to the payer number as well as the student (PRD-10, on `OrderPaid`)
+- [ ] Confirm buy-for-others limits (`config/yekkola.php` → `checkout`) and how long payer numbers are kept (counsel)
+- [ ] Receipt SMS count against the global SMS budget (no SMS pumping through gift orders)
 - [ ] d: Receipts PDF (FR-15)
 - [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
 - [ ] d: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned

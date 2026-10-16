@@ -9,10 +9,11 @@ use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Exceptions\CommerceException;
 use App\Domain\Commerce\Models\Coupon;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Commerce\NewOrder;
 use App\Domain\Commerce\QuoteLine;
-use App\Domain\Identity\Models\User;
 use App\Domain\Platform\Settings\CommerceSettings;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Creates an order from a fresh server-side quote (PRD-05 FR-03, FR-11, FR-13). The buyer's `Idempotency-Key` is stored
@@ -32,41 +33,51 @@ final class CreateOrder
         private readonly CompleteFreeOrder $completeFree,
     ) {}
 
-    /**
-     * @param  list<string>  $courseIds
-     */
-    public function handle(User $buyer, array $courseIds, string $idempotencyKey, ?string $bundleId = null, ?string $couponCode = null): Order
+    public function handle(NewOrder $new): Order
     {
-        $existing = Order::query()->where('buyer_id', $buyer->id)->where('idempotency_key', $idempotencyKey)->first();
+        $existing = $this->byKey($new)->first();
         if ($existing !== null) {
             return $existing;
         }
 
-        $quote = $this->quote->handle($buyer, $courseIds, $bundleId, $couponCode);
+        $beneficiary = $new->beneficiary;
+        $quote = $this->quote->handle($beneficiary, $new->courseIds, $new->bundleId, $new->couponCode, private: $new->forAnother());
 
-        // One open order per course: a second one could be paid too and charge the student twice.
-        $open = Order::query()
-            ->where('beneficiary_id', $buyer->id)
-            ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
-            ->where('expires_at', '>', now())
-            ->whereHas('items', fn ($q) => $q->whereIn('course_id', array_map(fn (QuoteLine $l) => $l->course->id, $quote->lines)))
-            ->first();
-        if ($open !== null) {
-            throw CommerceException::openOrderExists($open->id);
+        // One open order per course and buyer: a second one could be paid too and charge twice. Only the
+        // buyer's own orders count — someone else's unpaid order never blocks the student (a double purchase is
+        // then refunded, see PaymentLifecycle). Guests are covered by their idempotency key.
+        if ($new->buyer !== null) {
+            $open = Order::query()
+                ->where('buyer_id', $new->buyer->id)
+                ->where('beneficiary_id', $beneficiary->id)
+                ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
+                ->where('expires_at', '>', now())
+                ->whereHas('items', fn ($q) => $q->whereIn('course_id', array_map(fn (QuoteLine $l) => $l->course->id, $quote->lines)))
+                ->first();
+            if ($open !== null) {
+                throw CommerceException::openOrderExists($open->id);
+            }
         }
 
-        return $this->db->transaction(function () use ($buyer, $quote, $idempotencyKey): Order {
+        return $this->db->transaction(function () use ($new, $beneficiary, $quote): Order {
             if ($quote->coupon !== null) {
                 // Serialise checkouts on the same coupon: limits are re-checked under the lock.
                 $coupon = Coupon::query()->whereKey($quote->coupon->id)->lockForUpdate()->firstOrFail();
-                $this->coupons->assertWithinLimits($coupon, $buyer->id);
+                $this->coupons->assertWithinLimits($coupon, $new->forAnother() ? null : $beneficiary->id);
             }
 
+            // The lookup keys match the unique index exactly, so a concurrent duplicate finds the winner.
+            $keys = $new->buyer !== null
+                ? ['buyer_id' => $new->buyer->id, 'idempotency_key' => $new->idempotencyKey]
+                : ['buyer_id' => null, 'beneficiary_id' => $beneficiary->id, 'idempotency_key' => $new->idempotencyKey];
+
             $order = Order::query()->createOrFirst(
-                ['buyer_id' => $buyer->id, 'idempotency_key' => $idempotencyKey],
+                $keys,
                 [
                     'number' => $this->number(),
-                    'beneficiary_id' => $buyer->id,
+                    'beneficiary_id' => $beneficiary->id,
+                    'payer_msisdn' => $new->payer?->e164,
+                    'guest_token_hash' => $new->guestTokenHash,
                     'status' => OrderStatus::Pending,
                     'currency' => $quote->currency->value,
                     'subtotal_minor' => $quote->subtotal()->amountMinor,
@@ -101,6 +112,18 @@ final class CreateOrder
 
             return $order;
         });
+    }
+
+    /**
+     * @return Builder<Order>
+     */
+    private function byKey(NewOrder $new): Builder
+    {
+        return Order::query()
+            ->where('idempotency_key', $new->idempotencyKey)
+            ->when($new->buyer !== null,
+                fn (Builder $q) => $q->where('buyer_id', $new->buyer?->id),
+                fn (Builder $q) => $q->whereNull('buyer_id')->where('beneficiary_id', $new->beneficiary->id));
     }
 
     /** e.g. YK-7F3K9Q2M: short enough to read over the phone to support. */

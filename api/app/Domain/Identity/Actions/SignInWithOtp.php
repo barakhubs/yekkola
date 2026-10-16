@@ -45,10 +45,12 @@ final class SignInWithOtp
                 return new SignInResult($user, false);
             }
 
-            $isNew = $user === null;
+            // New = never signed in before, including accounts a parent's purchase created (PRD-05 FR-14):
+            // they still go through onboarding (name, language) and UserRegistered.
+            $isNew = $user === null || $user->phone_verified_at === null;
             $user ??= User::query()->create(['phone_e164' => $phone->e164, 'locale' => $locale]);
 
-            if ($isNew) {
+            if (! $user->hasRole(Role::Student->value)) {
                 $user->assignRole(Role::Student->value);
             }
 

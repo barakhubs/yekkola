@@ -70,10 +70,13 @@ final class StartPayment
             if (Payment::query()->where('order_id', $order->id)->where('status', PaymentStatus::Succeeded)->exists()) {
                 throw CommerceException::notPayable();
             }
-            // Bought meanwhile through another order: don't charge twice.
-            $owned = Enrollment::query()->active()->where('user_id', $order->beneficiary_id)->whereIn('course_id', $order->items->pluck('course_id'))->count();
-            if ($owned === $order->items->count()) {
-                throw CommerceException::nothingToBuy();
+            // Bought meanwhile through another order: don't charge twice. Only for the student's own orders —
+            // telling someone else would reveal what the student owns (their payment is refunded instead).
+            if ($order->buyer_id === $order->beneficiary_id) {
+                $owned = Enrollment::query()->active()->where('user_id', $order->beneficiary_id)->whereIn('course_id', $order->items->pluck('course_id'))->count();
+                if ($owned === $order->items->count()) {
+                    throw CommerceException::nothingToBuy();
+                }
             }
 
             $payment = Payment::query()->create([

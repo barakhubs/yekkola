@@ -38,8 +38,10 @@ final class QuoteOrder
 
     /**
      * @param  list<string>  $courseIds
+     * @param  bool  $private  Bought by someone else: the student's ownership and coupon history are not used
+     *                         (an owned course is then refunded after payment), so nothing about them leaks.
      */
-    public function handle(User $beneficiary, array $courseIds, ?string $bundleId = null, ?string $couponCode = null): Quote
+    public function handle(User $beneficiary, array $courseIds, ?string $bundleId = null, ?string $couponCode = null, bool $private = false): Quote
     {
         $bundle = null;
         if ($bundleId !== null) {
@@ -58,7 +60,7 @@ final class QuoteOrder
         }
 
         $currency = $this->currency($courses, $bundle);
-        $owned = Enrollment::query()->active()->where('user_id', $beneficiary->id)->whereIn('course_id', $courseIds)->pluck('course_id')->all();
+        $owned = $private ? [] : Enrollment::query()->active()->where('user_id', $beneficiary->id)->whereIn('course_id', $courseIds)->pluck('course_id')->all();
 
         $lines = [];
         foreach ($courseIds as $id) {
@@ -89,7 +91,7 @@ final class QuoteOrder
         $coupon = null;
         if ($couponCode !== null) {
             $coupon = $this->coupons->find($couponCode, $beneficiary->id);
-            $lines = $this->coupons->apply($coupon, $lines, $currency, $beneficiary->id);
+            $lines = $this->coupons->apply($coupon, $lines, $currency, $private ? null : $beneficiary->id);
             $lines = $this->keepAboveMinimum($lines, $currency);
         }
 
