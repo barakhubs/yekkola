@@ -179,6 +179,8 @@ Cannot be defaulted:
 - [x] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02); `promotions.manage` permission — #11
 - [~] c: Parent payer (FR-14) — signed-in buyer for another student, and guest checkout with a one-time order token
 - [ ] Receipt SMS to the payer number as well as the student (PRD-10, on `OrderPaid`)
+- [ ] Confirm buy-for-others limits (`config/yekkola.php` → `checkout`) and how long payer numbers are kept (counsel)
+- [ ] Receipt SMS count against the global SMS budget (no SMS pumping through gift orders)
 - [ ] d: Receipts PDF (FR-15)
 - [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
 - [ ] d: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
