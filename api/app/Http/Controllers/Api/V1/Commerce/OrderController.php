@@ -8,6 +8,7 @@ use App\Domain\Commerce\Actions\BuyForStudent;
 use App\Domain\Commerce\Actions\CreateOrder;
 use App\Domain\Commerce\Actions\RefreshOrderStatus;
 use App\Domain\Commerce\Actions\StartPayment;
+use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\NewOrder;
 use App\Domain\Identity\Models\User;
@@ -47,7 +48,7 @@ final class OrderController extends Controller
         $student = $request->beneficiaryPhone();
 
         $order = $student === null
-            ? $create->handle(NewOrder::forSelf($this->user($request), $key, $request->courseIds(), $request->bundleId(), $request->couponCode()))
+            ? $create->handle(NewOrder::forSelf($this->user($request), $key, $request->courseIds(), $request->bundleId(), $request->couponCode(), $request->payerPhone()))
             : $buyFor->handle($this->user($request), $student, $key, app()->getLocale(), $request->courseIds(), $request->bundleId(), $request->couponCode(), $request->payerPhone())['order'];
 
         return (new OrderResource($order->load('items.course', 'payments')))->response()->setStatusCode(201);
@@ -84,7 +85,10 @@ final class OrderController extends Controller
     {
         $id = $this->user($request)->id;
 
-        return Order::query()->where(fn (Builder $q) => $q->where('buyer_id', $id)->orWhere('beneficiary_id', $id));
+        // A student sees orders others bought for them only once paid: unpaid ones are the buyer's business.
+        return Order::query()->where(fn (Builder $q) => $q->where('buyer_id', $id)->orWhere(fn (Builder $b) => $b
+            ->where('beneficiary_id', $id)
+            ->whereIn('status', [OrderStatus::Paid, OrderStatus::Reversed, OrderStatus::Refunded, OrderStatus::PartiallyRefunded])));
     }
 
     private function user(Request $request): User

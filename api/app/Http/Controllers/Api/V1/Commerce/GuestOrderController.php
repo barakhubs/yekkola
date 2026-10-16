@@ -21,7 +21,8 @@ use Illuminate\Http\Request;
 
 /**
  * A parent with no account pays for a student (PRD-05 FR-14). Creating the order returns a one-time
- * `access_token`; following and paying it require that token in the `X-Order-Token` header.
+ * `access_token` (the same on any retry with the same `Idempotency-Key`); following and paying it require that
+ * token in the `X-Order-Token` header, for 30 days.
  */
 final class GuestOrderController extends Controller
 {
@@ -68,6 +69,8 @@ final class GuestOrderController extends Controller
         $token = (string) $request->header(self::TOKEN_HEADER);
         abort_if($token === '', 404);
 
-        return Order::query()->whereNull('buyer_id')->where('guest_token_hash', hash('sha256', $token))->findOrFail($id);
+        return Order::query()->whereNull('buyer_id')->where('guest_token_hash', hash('sha256', $token))
+            ->where('created_at', '>', now()->subDays((int) config('yekkola.checkout.guest_token_days')))
+            ->findOrFail($id);
     }
 }

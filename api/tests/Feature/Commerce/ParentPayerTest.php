@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
@@ -113,21 +112,58 @@ it('refuses banned students, other countries, and too many orders for one number
     $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => '+256772123456'], ['Idempotency-Key' => 'o-2'])
         ->assertUnprocessable()->assertJsonPath('code', 'phone.country_not_supported');
 
-    for ($i = 0; $i < App\Domain\Commerce\Actions\BuyForStudent::DAILY_ORDERS_PER_STUDENT; $i++) {
+    for ($i = 0; $i < (int) config('yekkola.checkout.orders_per_student_number_per_day'); $i++) {
         app(Illuminate\Cache\RateLimiter::class)->hit('orders-for-student:'.CHILD_PHONE, 86_400);
     }
     $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-3'])
         ->assertUnprocessable()->assertJsonPath('code', 'order.beneficiary_unavailable');
 });
 
-it('never reveals another buyer\'s open order', function () {
+it('never lets someone else\'s unpaid order block the student, or show in their history', function () {
     $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-1'])->assertCreated();
 
-    Sanctum::actingAs(User::factory()->create());
-    $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-2'])
-        ->assertConflict()
-        ->assertJsonPath('code', 'order.open_order_exists')
-        ->assertJsonMissingPath('order_id');
+    $child = User::query()->where('phone_e164', CHILD_PHONE)->sole();
+    Sanctum::actingAs($child);
+    $this->getJson('/api/v1/me/orders')->assertJsonCount(0, 'data');
+    $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id]], ['Idempotency-Key' => 'o-2'])->assertCreated();
 
-    expect(Order::query()->where('status', OrderStatus::Pending)->count())->toBe(1);
+    Sanctum::actingAs(User::factory()->create());
+    $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-3'])->assertCreated();
+});
+
+it('reveals nothing about what a number owns, and refunds an owned course instead', function () {
+    $child = User::factory()->create(['phone_e164' => CHILD_PHONE]);
+    Enrollment::query()->create(['user_id' => $child->id, 'course_id' => $this->maths->id, 'source' => 'admin', 'status' => 'active', 'enrolled_at' => now()]);
+
+    $orderId = $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-1'])
+        ->assertCreated()->assertJsonPath('data.total.amount_minor', 1_500)->json('data.id');
+    sendPaymentWebhook($this->postJson("/api/v1/orders/{$orderId}/payments", ['rail' => 'orange', 'msisdn' => PARENT_PAYS], ['Idempotency-Key' => 'p-1'])->json('data.id'));
+
+    expect(Order::query()->sole()->flag->value)->toBe('duplicate_payment')
+        ->and(ledgerBalance(App\Domain\Finance\Enums\LedgerAccountType::RefundsPayable))->toBe(-1_500);
+});
+
+it('creates no account when the order fails', function () {
+    $this->postJson('/api/v1/orders', ['course_ids' => ['01JZZZZZZZZZZZZZZZZZZZZZZZ'], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-1'])
+        ->assertUnprocessable()->assertJsonPath('code', 'order.course_unavailable');
+
+    expect(User::query()->where('phone_e164', CHILD_PHONE)->exists())->toBeFalse();
+});
+
+it('gives a guest the same token when they retry from another network', function () {
+    $this->app['auth']->forgetGuards();
+    $first = guestOrder([])->assertCreated();
+    $retry = $this->withServerVariables(['REMOTE_ADDR' => '10.9.8.7'])->postJson('/api/v1/guest/orders', [
+        'course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE, 'bot_token' => 'ok',
+    ], ['Idempotency-Key' => 'guest-1'])->assertCreated();
+
+    expect($retry->json('access_token'))->toBe($first->json('access_token'))
+        ->and($retry->json('data.id'))->toBe($first->json('data.id'));
+});
+
+it('onboards a student registered by a parent at their first sign-in', function () {
+    $this->postJson('/api/v1/orders', ['course_ids' => [$this->maths->id], 'beneficiary_phone' => CHILD_PHONE], ['Idempotency-Key' => 'o-1'])->assertCreated();
+    $this->app['auth']->forgetGuards();
+
+    signInWeb(CHILD_PHONE)->assertOk()->assertJsonPath('data.is_new_user', true);
 });
