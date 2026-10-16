@@ -6073,7 +6073,8 @@
                                                     "type": [
                                                         "string",
                                                         "null"
-                                                    ]
+                                                    ],
+                                                    "description": "A guest typed a phone number: they never learn whose account it is."
                                                 },
                                                 "currency": {
                                                     "type": "string"
@@ -6232,6 +6233,25 @@
                                                         "formatted"
                                                     ]
                                                 },
+                                                "refund_pending": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "amount_minor": {
+                                                            "type": "integer"
+                                                        },
+                                                        "currency": {
+                                                            "type": "string"
+                                                        },
+                                                        "formatted": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "amount_minor",
+                                                        "currency",
+                                                        "formatted"
+                                                    ]
+                                                },
                                                 "payment": {
                                                     "type": [
                                                         "object",
@@ -6280,6 +6300,7 @@
                                                 "discount",
                                                 "total",
                                                 "refunded",
+                                                "refund_pending",
                                                 "payment"
                                             ]
                                         }
@@ -6855,6 +6876,16 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffNoteRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "`RefundResource`",
@@ -6879,6 +6910,9 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -10301,6 +10335,12 @@
                         ]
                     },
                     "failure_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "flag": {
                         "type": [
                             "string",
                             "null"
