@@ -254,7 +254,7 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `orders` | id, number (`YK-XXXXXXXX`, unique), buyer_id, beneficiary_id (student who gets access), status (`pending`/`awaiting_payment`/`paid`/`expired`/`cancelled`/`reversed`/`refunded`/`partially_refunded`), currency, subtotal_minor, discount_minor, total_minor, coupon_id, bundle_id, idempotency_key (unique per buyer), expires_at, paid_at, paid_payment_id, flag (`late_success`/`amount_mismatch`/`reversed`/`duplicate_payment`/`already_enrolled` — needs staff attention; a later event never replaces a more serious flag) | Single currency per order. Payer columns arrive with 1.7c. A 100%-discount order is `paid` at creation (no payment, no ledger). |
+| `orders` | id, number (`YK-XXXXXXXX`, unique), buyer_id (null = parent without an account), beneficiary_id (student who gets access), payer_msisdn (encrypted, optional), guest_token_hash (sha256 of the one-time guest token), status (`pending`/`awaiting_payment`/`paid`/`expired`/`cancelled`/`reversed`/`refunded`/`partially_refunded`), currency, subtotal_minor, discount_minor, total_minor, coupon_id, bundle_id, idempotency_key (unique per buyer; per student for guests), expires_at, paid_at, paid_payment_id, flag (`late_success`/`amount_mismatch`/`reversed`/`duplicate_payment`/`already_enrolled` — needs staff attention; a later event never replaces a more serious flag) | Single currency per order. Bought for another student (FR-14, setting `separate_payer_enabled`): the student is found or registered by phone (never revealing which), max 10 such orders per student number per day. A 100%-discount order is `paid` at creation (no payment, no ledger). |
 | `order_items` | id, order_id, course_id, bundle_id, professor_profile_id, title_snapshot, list_price_minor, discount_minor, price_minor, discount_funded_by (`platform`/`professor`/`shared`), revenue_share_bps (snapshot: course → professor → platform default), currency | Snapshot = what the ledger uses. Sale split by `discount_funded_by` (provisional): platform (staff coupons only) → professor earns their share of the list price capped at the price paid, `discounts_platform` pays the platform's shortfall; professor → platform keeps its share of the list price; shared (bundles) → both shares on the price paid. A line discounted to 0 earns nobody anything (enrollment source `coupon`). |
 | `payments` | id (our reference at the gateway), order_id, idempotency_key (unique per order), gateway, rail (`orange`/`airtel`/`mpesa`), msisdn (encrypted), amount_minor, currency, confirmed_amount_minor, fee_minor, status (`initiated`/`pending`/`succeeded`/`failed`/`expired`/`reversed`), gateway_reference (unique per gateway), operator_reference, failure_code, failure_message, flag, last_result (encrypted), checks, last_checked_at, succeeded_at | Several attempts per order, one in flight at a time. |
 | `payment_events` | id, gateway, event_id (unique per gateway), kind (`collection`/`disbursement`), reference (our payment/payout/refund id), payload (encrypted — can carry payer numbers), received_at, processed_at, error, attempts | Webhook inbox (only signature-valid events are stored); processed by `ProcessPaymentEvent` on the `payments` queue, unknown references retried. |
@@ -390,11 +390,14 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /checkout/rails?currency= | Operators and whether each can take a payment now (public) |
 | POST | /checkout/quote | Price quote `{course_ids | bundle_id, coupon_code?}` (20/min per user) |
 | GET | /bundles/{slug} | Active bundle whose courses are all listed |
-| POST | /orders | Create order `{course_ids | bundle_id, coupon_code?}` (`Idempotency-Key`) |
+| POST | /orders | Create order `{course_ids | bundle_id, coupon_code?, beneficiary_phone?, payer_msisdn?}` (`Idempotency-Key`) |
+| POST | /guest/orders | Parent without an account: `{…, beneficiary_phone, payer_msisdn?, bot_token}` → order + one-time `access_token` (10/h per IP) |
+| GET | /guest/orders/{id} | Guest order status (`X-Order-Token`) |
+| POST | /guest/orders/{id}/payments | Guest payment (`X-Order-Token`, `Idempotency-Key`) |
 | POST | /orders/{id}/payments | Start payment `{rail, msisdn?}` (`Idempotency-Key`; 10/h per user; msisdn defaults to the account's) |
 | GET | /orders/{id} | Order + payments (polling; re-checks an in-flight payment at most every 10 s) |
 | POST | /orders/{id}/cancel | Cancel unpaid order |
-| GET | /me/orders | Order history |
+| GET | /me/orders | Order history: orders I bought and orders bought for me (only the buyer can pay) |
 | GET | /me/orders/{id}/receipt | Receipt (JSON + PDF link) |
 | POST | /orders/{id}/refund-requests | Request refund |
 
