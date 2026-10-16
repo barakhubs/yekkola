@@ -13,10 +13,12 @@ use App\Domain\Finance\Enums\LedgerTransactionType;
 use App\Domain\Finance\Models\LedgerTransaction;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
+use Illuminate\Support\Collection;
 
 /**
- * Sale posting on payment success (PRD-08 FR-02): debit gateway clearing with the total collected;
- * credit each professor's held earnings with their snapshot share; credit platform revenue with the rest.
+ * Sale posting on payment success (PRD-08 FR-02) for the items that granted access: debit gateway clearing
+ * with their price; credit each professor's held earnings with their snapshot share; credit platform revenue
+ * with the rest (items already owned are posted as unapplied money instead).
  * A gateway fee moves from clearing to gateway fees (borne by the platform). Idempotent per order.
  *
  * TODO(1.7b): discount lines per funder once coupons exist.
@@ -27,14 +29,17 @@ final class PostSale
 
     public function __construct(private readonly PostLedgerTransaction $post) {}
 
-    public function handle(Order $order, Payment $payment): LedgerTransaction
+    /**
+     * @param  Collection<int, OrderItem>  $items
+     */
+    public function handle(Order $order, Payment $payment, Collection $items): LedgerTransaction
     {
         $currency = Currency::from($order->currency);
         $platform = Money::zero($currency);
-        $lines = [EntryLine::debit(LedgerAccountType::GatewayClearing, $order->total())];
+        $sold = $items->reduce(fn (Money $sum, OrderItem $i) => $sum->plus($i->price()), Money::zero($currency));
+        $lines = [EntryLine::debit(LedgerAccountType::GatewayClearing, $sold)];
 
-        /** @var OrderItem $item */
-        foreach ($order->items as $item) {
+        foreach ($items as $item) {
             $share = $item->price()->shareBps($item->revenue_share_bps);
             $lines[] = EntryLine::credit(LedgerAccountType::ProfessorHeld, $share, $item->professor_profile_id);
             $platform = $platform->plus($item->price()->minus($share));

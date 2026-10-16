@@ -45,6 +45,9 @@ final class PostLedgerTransaction
                 return $transaction; // already posted
             }
 
+            // Accounts in a fixed order, so concurrent first postings can't deadlock on account creation.
+            usort($lines, fn (EntryLine $a, EntryLine $b) => [$a->account->value, (string) $a->ownerId] <=> [$b->account->value, (string) $b->ownerId]);
+
             foreach ($lines as $line) {
                 $transaction->entries()->create([
                     'ledger_account_id' => $this->account($line)->id,

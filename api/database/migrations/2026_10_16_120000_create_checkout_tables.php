@@ -39,7 +39,7 @@ return new class extends Migration
 
         Schema::create('order_items', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('order_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('order_id')->constrained()->restrictOnDelete(); // snapshots the ledger relies on
             $table->foreignUlid('course_id')->constrained()->restrictOnDelete();
             $table->foreignUlid('professor_profile_id')->constrained()->restrictOnDelete();
             $table->string('title_snapshot', 200);
@@ -73,6 +73,7 @@ return new class extends Migration
             $table->string('failure_code', 64)->nullable();
             $table->string('failure_message', 255)->nullable();
             $table->string('flag', 32)->nullable()->index();
+            $table->text('last_result')->nullable(); // encrypted: last gateway answer, for support
             $table->unsignedInteger('checks')->default(0);
             $table->timestamp('last_checked_at')->nullable();
             $table->timestamp('succeeded_at')->nullable();
@@ -81,6 +82,7 @@ return new class extends Migration
             $table->unique(['order_id', 'idempotency_key']);
             $table->unique(['gateway', 'gateway_reference']);
             $table->index(['status', 'last_checked_at']);
+            $table->index(['status', 'created_at']);
         });
 
         Schema::create('payment_events', function (Blueprint $table) {
@@ -89,7 +91,7 @@ return new class extends Migration
             $table->string('event_id', 191);
             $table->string('kind', 16); // collection | disbursement
             $table->string('reference', 64)->index();
-            $table->jsonb('payload');
+            $table->text('payload'); // encrypted: raw bodies can carry payer numbers and names
             $table->timestamp('received_at');
             $table->timestamp('processed_at')->nullable();
             $table->string('error', 255)->nullable();
@@ -104,7 +106,7 @@ return new class extends Migration
             $table->foreignUlid('user_id')->constrained()->restrictOnDelete();
             $table->foreignUlid('course_id')->constrained()->restrictOnDelete();
             $table->string('source', 16); // purchase | free | coupon | bundle | admin
-            $table->foreignUlid('order_item_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUlid('order_item_id')->nullable()->constrained()->restrictOnDelete();
             $table->string('status', 16); // active | revoked
             $table->string('revoked_reason', 64)->nullable();
             $table->timestamp('revoked_at')->nullable();
@@ -158,6 +160,9 @@ return new class extends Migration
             $table->index(['ledger_account_id', 'created_at']);
         });
 
+        // Snapshot sanity: a bad snapshot must fail at order creation, not after the money is collected.
+        DB::statement('ALTER TABLE orders ADD CONSTRAINT orders_amounts CHECK (subtotal_minor >= 0 AND discount_minor >= 0 AND total_minor = subtotal_minor - discount_minor AND total_minor >= 0)');
+        DB::statement('ALTER TABLE order_items ADD CONSTRAINT order_items_amounts CHECK (list_price_minor >= 0 AND discount_minor >= 0 AND price_minor = list_price_minor - discount_minor AND price_minor >= 0 AND revenue_share_bps BETWEEN 0 AND 10000)');
         DB::statement("ALTER TABLE ledger_entries ADD CONSTRAINT ledger_entries_positive CHECK (amount_minor > 0 AND direction IN ('debit', 'credit'))");
 
         // Append-only (PRD-08 BR-02): corrections are new transactions, never edits.
@@ -172,12 +177,32 @@ return new class extends Migration
                 FOR EACH ROW EXECUTE FUNCTION ledger_append_only();
             CREATE TRIGGER ledger_entries_append_only BEFORE UPDATE OR DELETE ON ledger_entries
                 FOR EACH ROW EXECUTE FUNCTION ledger_append_only();
+            CREATE TRIGGER ledger_transactions_no_truncate BEFORE TRUNCATE ON ledger_transactions
+                FOR EACH STATEMENT EXECUTE FUNCTION ledger_append_only();
+            CREATE TRIGGER ledger_entries_no_truncate BEFORE TRUNCATE ON ledger_entries
+                FOR EACH STATEMENT EXECUTE FUNCTION ledger_append_only();
+
+            -- An account's identity never changes (entries would silently move with it).
+            CREATE OR REPLACE FUNCTION ledger_account_immutable() RETURNS trigger AS $$
+            BEGIN
+                IF NEW.type IS DISTINCT FROM OLD.type OR NEW.owner_type IS DISTINCT FROM OLD.owner_type
+                    OR NEW.owner_id IS DISTINCT FROM OLD.owner_id OR NEW.currency IS DISTINCT FROM OLD.currency THEN
+                    RAISE EXCEPTION 'Ledger account identity is immutable';
+                END IF;
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER ledger_accounts_immutable BEFORE UPDATE ON ledger_accounts
+                FOR EACH ROW EXECUTE FUNCTION ledger_account_immutable();
+            CREATE TRIGGER ledger_accounts_no_delete BEFORE DELETE OR TRUNCATE ON ledger_accounts
+                FOR EACH STATEMENT EXECUTE FUNCTION ledger_append_only();
             SQL);
     }
 
     public function down(): void
     {
-        DB::unprepared('DROP TRIGGER IF EXISTS ledger_entries_append_only ON ledger_entries; DROP TRIGGER IF EXISTS ledger_transactions_append_only ON ledger_transactions; DROP FUNCTION IF EXISTS ledger_append_only();');
+        DB::unprepared('DROP TABLE IF EXISTS ledger_entries, ledger_transactions, ledger_accounts; DROP FUNCTION IF EXISTS ledger_append_only(); DROP FUNCTION IF EXISTS ledger_account_immutable();');
 
         Schema::dropIfExists('ledger_entries');
         Schema::dropIfExists('ledger_transactions');
