@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Identity\Jobs;
 
+use App\Domain\Authoring\Models\Course;
 use App\Domain\Identity\Enums\DataExportStatus;
 use App\Domain\Identity\Models\DataExport;
 use Illuminate\Bus\Queueable;
@@ -50,6 +51,8 @@ final class BuildDataExport implements ShouldQueue
                 'last_active_at' => $d->last_active_at?->toIso8601String(),
                 'revoked_at' => $d->revoked_at?->toIso8601String(),
             ])->all(),
+            'wishlist' => Course::query()->join('wishlist_items as w', 'w.course_id', '=', 'courses.id')
+                ->where('w.user_id', $user->id)->orderBy('w.created_at')->pluck('courses.slug')->all(),
         ];
 
         $path = "exports/{$user->id}/{$export->id}.json";

@@ -84,4 +84,15 @@ return [
         'watermark_url' => env('MUX_WATERMARK_URL'),
     ],
 
+    'catalogue' => [
+        // Estimated download size at the lowest offline tier (PRD-04 FR-05): duration × bitrate.
+        // Provisional — confirm against real Mux renditions in the Mux spike (TODO 1.6).
+        'download_kbps' => [
+            'video' => (int) env('DOWNLOAD_ESTIMATE_VIDEO_KBPS', 1_000),
+            'audio' => (int) env('DOWNLOAD_ESTIMATE_AUDIO_KBPS', 96),
+        ],
+        'rail_size' => 12, // courses per home rail
+        'max_featured' => 24,
+    ],
+
 ];

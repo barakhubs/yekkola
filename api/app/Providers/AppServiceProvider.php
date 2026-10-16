@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Catalog\Jobs\MakeListedSearchable;
+use App\Domain\Catalog\Listeners\SyncCourseIndex;
+use App\Domain\Catalog\Models\Category;
 use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\PersonalAccessToken;
+use App\Domain\Identity\Models\User;
 use App\Domain\Identity\Support\OtpCodeHasher;
+use App\Domain\Learning\Listeners\EraseLearningData;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Listeners\EraseProfessorData;
+use App\Domain\Professors\Models\ProfessorProfile;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,6 +24,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
+use Laravel\Scout\Scout;
 use LogicException;
 use Spatie\LaravelSettings\Events\SavingSettings;
 
@@ -49,6 +56,9 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(600)->by($request->ip()));
         // File uploads (credentials, avatar, KYC).
         RateLimiter::for('uploads', fn (Request $request) => Limit::perHour(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Catalogue and search: a coarse abuse cap only. Server-side rendering (apps/web) and carrier NAT put
+        // many visitors behind one IP. TODO(2.x): key on the forwarded client IP once trusted proxies are set.
+        RateLimiter::for('catalogue', fn (Request $request) => Limit::perMinute(1_200)->by((string) $request->ip()));
         // Profile updates (limits probing which emails are taken).
         RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
@@ -57,6 +67,14 @@ final class AppServiceProvider extends ServiceProvider
 
         // Account deletion: each domain erases its own personal data (PRD-01 FR-11).
         Event::listen(UserAnonymizing::class, EraseProfessorData::class);
+        Event::listen(UserAnonymizing::class, EraseLearningData::class);
+
+        // Search index: rows the course index depends on (PRD-04 FR-11).
+        Scout::makeSearchableUsing(MakeListedSearchable::class);
+        Event::listen('eloquent.saved: '.ProfessorProfile::class, [SyncCourseIndex::class, 'professorSaved']);
+        Event::listen('eloquent.saved: '.User::class, [SyncCourseIndex::class, 'userSaved']);
+        Event::listen('eloquent.deleted: '.User::class, [SyncCourseIndex::class, 'userDeleted']);
+        Event::listen('eloquent.saved: '.Category::class, [SyncCourseIndex::class, 'categorySaved']);
 
         // Catch lazy loading, silently discarded attributes, and missing attributes outside production.
         Model::shouldBeStrict(! $this->app->isProduction());

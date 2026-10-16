@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Authoring;
 
+use App\Domain\Authoring\Enums\Audience;
 use App\Domain\Authoring\Enums\CourseLevel;
 use App\Domain\Shared\Enums\Currency;
 use Illuminate\Foundation\Http\FormRequest;
@@ -24,7 +25,7 @@ final class UpdateCourseSettingsRequest extends FormRequest
             'language' => ['sometimes', Rule::in(['fr', 'en'])],
             'level' => ['sometimes', Rule::enum(CourseLevel::class)],
             'audience' => ['sometimes', 'array', 'max:4'],
-            'audience.*' => ['string', Rule::in(['exetat', 'secondaire', 'universite', 'professionnel']), 'distinct'],
+            'audience.*' => ['string', Rule::enum(Audience::class), 'distinct'],
             'is_free' => ['sometimes', 'boolean'],
             'price_minor' => ['sometimes', 'nullable', 'integer', 'min:1'],
             'currency' => ['sometimes', 'nullable', Rule::enum(Currency::class)],

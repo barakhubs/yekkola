@@ -241,7 +241,7 @@ PostgreSQL. Conventions:
 | Table | Columns (key) | Notes |
 |---|---|---|
 | `categories` | id, parent_id (null), slug, name (jsonb fr/en), description (jsonb), icon, position, is_visible | Two levels max. Seeded by `CategorySeeder` from docs/catalogue-categories.md. |
-| `courses` | id, professor_profile_id, slug (unique), status (`draft`/`in_review`/`published`/`unpublished`/`archived`), live_version_id, draft_version_id, category_id, language, level, audience (jsonb), is_free, price_minor, currency, revenue_share_bps, is_featured, published_at, rating_avg, rating_count, enrollment_count, total_duration_seconds, deleted_at | Settings (price, category…) apply immediately; content lives in versions. |
+| `courses` | id, professor_profile_id, slug (unique), status (`draft`/`in_review`/`published`/`unpublished`/`archived`), live_version_id, draft_version_id, category_id, language, level, audience (jsonb), is_free, price_minor, currency, revenue_share_bps, featured_position (null = not featured), published_at, rating_avg, rating_count, enrollment_count, total_duration_seconds, deleted_at | Settings (price, category…) apply immediately; content lives in versions. *Listed* (public) = published + live version + active professor and account. Indexed in Meilisearch (`Searchable`: title, subtitle, description, outcomes, professor name, category names, audience). |
 | `course_versions` | id, course_id, number, state (`draft`/`in_review`/`rejected`/`approved`/`superseded`), title, subtitle, description, outcomes, requirements, changelog, cover (media, public disk), submitted_at, reviewed_by, reviewed_at, review_notes | Partial unique index: one draft/in-review/rejected version per course. Approved versions are never edited. |
 | `sections` | id, course_version_id, title, position | |
 | `lessons` | id, course_version_id, section_id, uid (stable across versions), type (`video`/`audio`/`document`/`quiz`), title, description, position, is_preview, duration_seconds, media_asset_id | Unique `(course_version_id, uid)`. Document PDF in `media` (collection `document`, private disk). |
@@ -275,7 +275,7 @@ PostgreSQL. Conventions:
 | `reviews` | id, user_id, course_id, rating (1–5), body, status (`visible`/`hidden`/`flagged`), professor_reply, replied_at | Unique `(user_id, course_id)`; requires enrollment. |
 | `lesson_threads` | id, course_id, lesson_uid, author_id, title, body, status (`open`/`answered`/`closed`/`hidden`), reply_count, last_reply_at | |
 | `thread_replies` | id, lesson_thread_id, author_id, body, is_professor, status | |
-| `wishlist_items` | user_id, course_id, created_at | PK `(user_id, course_id)`. |
+| `wishlist_items` | user_id, course_id, created_at | PK `(user_id, course_id)`. Cleared on account deletion; included in the data export. |
 
 ### 3.6 Protection
 
@@ -351,9 +351,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 |---|---|---|
 | GET | /config | Public settings: currencies, locales, feature flags, min app version |
 | GET | /provinces | The 26 provinces (profile form) |
-| GET | /categories | Category tree |
-| GET | /courses | Catalogue + search (`q`, category, price `free`/`paid`, language, level, audience, sort) |
-| GET | /courses/{slug} | Course detail (live version, curriculum outline, preview lessons) |
+| GET | /categories | Visible category tree (request locale) with listed-course counts |
+| GET | /courses | Catalogue + search (`q`, category slug incl. subcategories, price `free`/`paid`, currency, language, level, audience, sort `relevance`/`popular`/`newest`/`rating`/`price_asc`/`price_desc`). Meilisearch ranks `q`; filters and sorts run in Postgres; database match if search is down |
+| GET | /courses/{slug} | Course detail (live version, curriculum outline with preview flags and per-lesson download size, professor block) |
 | GET | /courses/{slug}/reviews | Reviews (paginated) |
 | GET | /professors/{slug} | Professor profile + courses |
 | GET | /certificates/{serial} | Certificate verification |
@@ -379,7 +379,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET / POST | /lessons/{uid}/threads | Lesson Q&A |
 | POST | /threads/{id}/replies | Reply |
 | POST | /reports | Report content |
-| GET / POST / DELETE | /me/wishlist[/{courseId}] | Wishlist |
+| GET / POST / DELETE | /me/wishlist[/{courseId}] | Wishlist (`POST {course_id}`, idempotent, listed courses only) |
 | GET | /me/notifications | In-app feed; `POST /me/notifications/read` |
 | GET / PUT | /me/notification-preferences | Preferences |
 
@@ -448,7 +448,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/professors/{id}/(suspend\|reinstate) | With reason |
 | GET | /admin/course-versions[/{id}] | Review queue (`?filter[state]=in_review`); detail with curriculum + changes since live |
 | POST | /admin/course-versions/{id}/(approve\|reject) | Decide (note required to reject) |
-| GET / PATCH | /admin/courses[/{id}] | Unpublish, feature, takedown |
+| GET / PUT | /admin/featured-courses | Featured rail: full ordered list of listed course ids (`catalog.manage`, audited) |
+| GET / PATCH | /admin/courses[/{id}] | Unpublish, takedown |
 | CRUD | /admin/categories (+ `PUT /admin/categories/order`) | Categories |
 | GET | /admin/reports; POST /admin/reports/{id}/resolve | Moderation |
 | PATCH | /admin/reviews/{id}, /admin/threads/{id} | Hide/restore |
