@@ -31,6 +31,16 @@ final class CommerceException extends DomainException
         return new self('order.nothing_to_buy', 422);
     }
 
+    public static function currencyUnavailable(): self
+    {
+        return new self('order.currency_unavailable', 422);
+    }
+
+    public static function openOrderExists(string $orderId): self
+    {
+        return new self('order.open_order_exists', 409, ['order_id' => $orderId]);
+    }
+
     public static function orderExpired(): self
     {
         return new self('order.expired', 409);

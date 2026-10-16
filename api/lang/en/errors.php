@@ -116,6 +116,8 @@ return [
         'free_course' => 'This course is free: enroll directly.',
         'mixed_currency' => 'Courses in one order must use the same currency.',
         'nothing_to_buy' => 'You are already enrolled in these courses.',
+        'currency_unavailable' => 'This currency is not accepted right now.',
+        'open_order_exists' => 'An order waiting for payment already exists for this course.',
         'expired' => 'This order has expired. Please create a new one.',
         'not_payable' => 'This order can no longer be paid.',
         'not_found' => 'Order not found.',

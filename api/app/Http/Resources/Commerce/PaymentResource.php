@@ -28,6 +28,7 @@ final class PaymentResource extends JsonResource
             'amount' => $this->amount()->toArray(),
             'status' => $this->status->value,
             'failure_code' => $this->failure_code,
+            'failure_reason' => $this->failure_code === null ? null : (trans()->has('payments.failure.'.$this->failure_code) ? __('payments.failure.'.$this->failure_code) : __('payments.failure.failed')),
             'operator_reference' => $this->operator_reference,
             'created_at' => $this->created_at->toIso8601String(),
         ];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Commerce\Actions;
 
 use App\Domain\Commerce\Enums\OrderStatus;
+use App\Domain\Commerce\Exceptions\CommerceException;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\QuoteLine;
 use App\Domain\Identity\Models\User;
@@ -38,6 +39,17 @@ final class CreateOrder
         }
 
         $quote = $this->quote->handle($buyer, $courseIds);
+
+        // One open order per course: a second one could be paid too and charge the student twice.
+        $open = Order::query()
+            ->where('beneficiary_id', $buyer->id)
+            ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
+            ->where('expires_at', '>', now())
+            ->whereHas('items', fn ($q) => $q->whereIn('course_id', array_map(fn (QuoteLine $l) => $l->course->id, $quote->lines)))
+            ->first();
+        if ($open !== null) {
+            throw CommerceException::openOrderExists($open->id);
+        }
 
         return $this->db->transaction(function () use ($buyer, $quote, $idempotencyKey): Order {
             $order = Order::query()->createOrFirst(

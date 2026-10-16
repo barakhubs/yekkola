@@ -10,9 +10,12 @@ use App\Domain\Commerce\Enums\PaymentStatus;
 use App\Domain\Commerce\Events\OrderPaid;
 use App\Domain\Commerce\Events\PaymentReversed;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Finance\Actions\PostSale;
-use App\Domain\Finance\Actions\PostSaleReversal;
+use App\Domain\Finance\Actions\PostUnappliedReceipt;
+use App\Domain\Finance\Actions\ReversePosting;
+use App\Domain\Finance\Enums\LedgerTransactionType;
 use App\Domain\Learning\Actions\GrantEnrollment;
 use App\Domain\Learning\Actions\RevokeEnrollments;
 use App\Domain\Learning\Enums\EnrollmentSource;
@@ -28,7 +31,9 @@ use Psr\Log\LoggerInterface;
  * The payment state machine (PRD-05 FR-07–10, BR-01, BR-04). Every gateway result — start, webhook re-query,
  * poll, reconciliation — goes through apply(), which locks the payment and its order and is safe to run any
  * number of times. Success is the only path to purchase enrollments and the sale posting, all in one
- * transaction. Nothing here trusts a webhook body: results come from the gateway's status API.
+ * transaction. Money collected that can't be applied (amount mismatch, second success) is posted as owed
+ * back to the payer, so the ledger always matches what the gateway holds. Nothing here trusts a webhook
+ * body: results come from the gateway's status API.
  *
  *   initiated → pending → succeeded → reversed
  *                       ↘ failed / expired → succeeded (late success, flagged)
@@ -40,7 +45,8 @@ final class PaymentLifecycle
         private readonly GrantEnrollment $grant,
         private readonly RevokeEnrollments $revoke,
         private readonly PostSale $postSale,
-        private readonly PostSaleReversal $postReversal,
+        private readonly PostUnappliedReceipt $postUnapplied,
+        private readonly ReversePosting $reverse,
         private readonly Dispatcher $events,
         private readonly LoggerInterface $log,
     ) {}
@@ -48,11 +54,20 @@ final class PaymentLifecycle
     public function apply(Payment $payment, GatewayResult $result): Payment
     {
         return $this->locked($payment, function (Payment $payment, Order $order) use ($result): void {
+            if ($result->reference !== $payment->id) {
+                // A driver bug answering for another transaction must never move this one.
+                $this->log->critical('Gateway result for another reference ignored', ['payment_id' => $payment->id, 'reference' => $result->reference]);
+                $payment->forceFill(['checks' => $payment->checks + 1, 'last_checked_at' => now()])->save();
+
+                return;
+            }
+
             $payment->forceFill([
                 'checks' => $payment->checks + 1,
                 'last_checked_at' => now(),
                 'gateway_reference' => $payment->gateway_reference ?? ($result->gatewayReference !== '' ? $result->gatewayReference : null),
                 'operator_reference' => $payment->operator_reference ?? $result->operatorReference,
+                'last_result' => ['status' => $result->status->value, 'failure_code' => $result->failureCode, 'raw' => $result->raw],
             ]);
 
             match ($result->status) {
@@ -135,24 +150,32 @@ final class PaymentLifecycle
         }
 
         $currency = Currency::from($payment->currency);
+        $fee = $result->fee !== null && $result->fee->currency === $currency ? $result->fee : null;
+        if ($result->fee !== null && $fee === null) {
+            $this->log->critical('Gateway fee in another currency ignored', ['payment_id' => $payment->id]);
+        }
+
         $payment->forceFill([
             'status' => PaymentStatus::Succeeded,
             'succeeded_at' => $result->completedAt ?? now(),
             'confirmed_amount_minor' => $result->amount?->amountMinor,
-            'fee_minor' => $result->fee?->amountMinor,
+            'fee_minor' => $fee?->amountMinor,
             'failure_code' => null,
             'failure_message' => null,
         ]);
 
         if ($result->amount === null || ! $result->amount->equals($payment->amount())) {
-            // Money moved but not what we asked for: no access, staff decide (refund the difference or the payment).
-            $payment->flag = OrderFlag::AmountMismatch;
-            $order->flag = OrderFlag::AmountMismatch;
+            // Money moved but not what we asked for: no access; it is owed back until staff settle it, and the
+            // order takes no new attempt meanwhile (StartPayment).
+            $this->flag($payment, $order, OrderFlag::AmountMismatch);
+            if ($result->amount !== null && $result->amount->isPositive()) {
+                $this->postUnapplied->handle($payment, $result->amount, OrderFlag::AmountMismatch->value);
+            }
             $this->log->critical('Payment confirmed with a different amount', [
                 'payment_id' => $payment->id,
                 'expected_minor' => $payment->amount_minor,
                 'confirmed_minor' => $result->amount?->amountMinor,
-                'currency' => $currency->value,
+                'currency' => $result->amount->currency->value ?? $currency->value,
             ]);
 
             return;
@@ -164,31 +187,55 @@ final class PaymentLifecycle
     private function completeOrder(Order $order, Payment $payment): void
     {
         if (! in_array($order->status, [OrderStatus::Pending, OrderStatus::AwaitingPayment, OrderStatus::Expired, OrderStatus::Cancelled], true)) {
-            // Already paid by another attempt (or reversed/refunded): this money must go back to the payer.
-            $payment->flag = OrderFlag::DuplicatePayment;
-            $order->flag = OrderFlag::DuplicatePayment;
-            $this->log->critical('Second successful payment on an order', ['order_id' => $order->id, 'payment_id' => $payment->id]);
+            $this->duplicate($order, $payment); // already paid by another attempt (or reversed/refunded)
 
             return;
         }
 
-        $late = $order->status === OrderStatus::Expired || $order->status === OrderStatus::Cancelled;
+        // Per item, in a fixed order (no deadlocks between overlapping orders): only access newly granted is sold.
+        [$granted, $owned] = $order->items->sortBy('course_id')->values()->partition(
+            fn (OrderItem $item) => $this->grant->handle($order->beneficiary_id, $item->course_id, EnrollmentSource::Purchase, $item->id),
+        );
+
+        if ($granted->isEmpty()) {
+            // Everything was already owned, e.g. bought again after this order expired: a second charge.
+            $this->duplicate($order, $payment);
+
+            return;
+        }
 
         $order->forceFill([
             'status' => OrderStatus::Paid,
             'paid_at' => $payment->succeeded_at ?? now(),
             'paid_payment_id' => $payment->id,
-            'flag' => $late ? OrderFlag::LateSuccess : $order->flag,
         ]);
-
-        foreach ($order->items as $item) {
-            if (! $this->grant->handle($order->beneficiary_id, $item->course_id, EnrollmentSource::Purchase, $item->id) && ! $late) {
-                $order->flag = OrderFlag::AlreadyEnrolled; // e.g. enrolled meanwhile by an admin grant
-            }
+        if (in_array($order->getOriginal('status'), [OrderStatus::Expired, OrderStatus::Cancelled], true)) {
+            $this->flag($payment, $order, OrderFlag::LateSuccess);
         }
 
-        $this->postSale->handle($order, $payment);
+        $this->postSale->handle($order, $payment, $granted);
+
+        if ($owned->isNotEmpty()) {
+            // Some courses were already owned: their price is owed back (staff refund those items).
+            $this->flag($payment, $order, OrderFlag::AlreadyEnrolled);
+            $this->postUnapplied->handle($payment, $owned->reduce(fn (Money $sum, OrderItem $i) => $sum->plus($i->price()), Money::zero(Currency::from($order->currency))), OrderFlag::AlreadyEnrolled->value);
+        }
+
         $this->events->dispatch(new OrderPaid($order->id));
+    }
+
+    /** A success that buys nothing new: the money is owed back to the payer, no sale, no access change. */
+    private function duplicate(Order $order, Payment $payment): void
+    {
+        $this->flag($payment, $order, OrderFlag::DuplicatePayment);
+        $this->postUnapplied->handle($payment, $payment->amount(), OrderFlag::DuplicatePayment->value);
+        $this->log->critical('Successful payment that buys nothing new', ['order_id' => $order->id, 'payment_id' => $payment->id]);
+    }
+
+    private function flag(Payment $payment, Order $order, OrderFlag $flag): void
+    {
+        $payment->flag = OrderFlag::raise($payment->flag, $flag);
+        $order->flag = OrderFlag::raise($order->flag, $flag);
     }
 
     private function reversed(Payment $payment, Order $order): void
@@ -198,16 +245,21 @@ final class PaymentLifecycle
             return;
         }
 
-        $payment->forceFill(['status' => PaymentStatus::Reversed, 'flag' => OrderFlag::Reversed]);
+        $payment->status = PaymentStatus::Reversed;
+        $payment->flag = OrderFlag::raise($payment->flag, OrderFlag::Reversed);
+
+        // Money we held as owed back (mismatch, duplicate) went back to the payer.
+        $this->reverse->handle(LedgerTransactionType::UnappliedReceipt, LedgerTransactionType::UnappliedReceiptReversal, PostUnappliedReceipt::REFERENCE, $payment->id, "Reversal of payment {$payment->id}");
 
         if (! $wasPaidByThis) {
-            return; // never granted anything (or a duplicate): nothing to undo
+            return; // never granted anything: nothing else to undo
         }
 
         // BR-04: access removed, sale reversed, staff alerted.
-        $order->forceFill(['status' => OrderStatus::Reversed, 'flag' => OrderFlag::Reversed]);
+        $order->status = OrderStatus::Reversed;
+        $order->flag = OrderFlag::raise($order->flag, OrderFlag::Reversed);
         $this->revoke->handle($order->items->pluck('id')->all(), 'payment_reversed');
-        $this->postReversal->handle($order);
+        $this->reverse->handle(LedgerTransactionType::Sale, LedgerTransactionType::SaleReversal, PostSale::REFERENCE, $order->id, "Reversal of order {$order->number}");
         $this->log->critical('Payment reversed after success', ['order_id' => $order->id, 'payment_id' => $payment->id]);
         $this->events->dispatch(new PaymentReversed($order->id, $payment->id));
     }

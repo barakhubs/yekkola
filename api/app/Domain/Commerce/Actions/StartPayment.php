@@ -10,6 +10,7 @@ use App\Domain\Commerce\Enums\PaymentStatus;
 use App\Domain\Commerce\Exceptions\CommerceException;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\Payment;
+use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\PhoneNumber;
 use App\Integrations\Payments\CollectionRequest;
@@ -49,7 +50,12 @@ final class StartPayment
         }
 
         $payment = $this->db->transaction(function () use ($order, $rail, $payer, $idempotencyKey): Payment {
-            $order = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
+            $order = Order::query()->whereKey($order->id)->lockForUpdate()->with('items')->firstOrFail();
+
+            $replay = Payment::query()->where('order_id', $order->id)->where('idempotency_key', $idempotencyKey)->first();
+            if ($replay !== null) {
+                return $replay; // a concurrent request with the same key got here first
+            }
 
             if (! $order->status->acceptsPayment()) {
                 throw CommerceException::notPayable();
@@ -59,6 +65,15 @@ final class StartPayment
             }
             if (Payment::query()->where('order_id', $order->id)->whereIn('status', [PaymentStatus::Initiated, PaymentStatus::Pending])->exists()) {
                 throw CommerceException::paymentInProgress();
+            }
+            // Money already collected on this order (e.g. a different amount was confirmed): staff settle it first.
+            if (Payment::query()->where('order_id', $order->id)->where('status', PaymentStatus::Succeeded)->exists()) {
+                throw CommerceException::notPayable();
+            }
+            // Bought meanwhile through another order: don't charge twice.
+            $owned = Enrollment::query()->active()->where('user_id', $order->beneficiary_id)->whereIn('course_id', $order->items->pluck('course_id'))->count();
+            if ($owned === $order->items->count()) {
+                throw CommerceException::nothingToBuy();
             }
 
             $payment = Payment::query()->create([
@@ -75,6 +90,10 @@ final class StartPayment
 
             return $payment;
         });
+
+        if (! $payment->wasRecentlyCreated) {
+            return $payment;
+        }
 
         try {
             $result = $this->gateway->collect(new CollectionRequest(

@@ -56,6 +56,7 @@ final class Payment extends Model
             'status' => PaymentStatus::class,
             'flag' => OrderFlag::class,
             'msisdn' => 'encrypted',
+            'last_result' => 'encrypted:array',
             'amount_minor' => 'integer',
             'confirmed_amount_minor' => 'integer',
             'fee_minor' => 'integer',

@@ -12,6 +12,7 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\Payment;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Throwable;
 
 /**
  * Reconciliation (PRD-05 FR-10), every 5 minutes: expires orders past their payment timeout, re-queries
@@ -30,7 +31,7 @@ final class ReconcilePayments extends Command
     /** Failed/expired payments: look for a late success this long, this often. */
     private const LATE_WINDOW_HOURS = 24;
 
-    private const LATE_EVERY_MINUTES = 15;
+    private const LATE_EVERY_MINUTES = 60;
 
     public function handle(PaymentLifecycle $lifecycle, SyncPayment $sync): int
     {
@@ -40,14 +41,22 @@ final class ReconcilePayments extends Command
             ->where('expires_at', '<', now())
             ->lazyById(100)
             ->each(function (Order $order) use ($lifecycle, &$expired): void {
-                $lifecycle->expire($order);
-                $expired++;
+                try {
+                    $lifecycle->expire($order);
+                    $expired++;
+                } catch (Throwable $e) {
+                    report($e); // one bad row never stops the run
+                }
             });
 
         $checked = 0;
         $this->due()->lazyById(100)->each(function (Payment $payment) use ($sync, &$checked): void {
-            $sync->handle($payment);
-            $checked++;
+            try {
+                $sync->handle($payment);
+                $checked++;
+            } catch (Throwable $e) {
+                report($e);
+            }
         });
 
         $this->info("Expired {$expired} orders, checked {$checked} payments.");

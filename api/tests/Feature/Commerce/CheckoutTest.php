@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Commerce\Actions\PaymentLifecycle;
 use App\Domain\Commerce\Enums\OrderFlag;
 use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Enums\PaymentStatus;
@@ -15,6 +16,10 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Enums\EnrollmentStatus;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Platform\Settings\CommerceSettings;
+use App\Domain\Shared\Enums\Currency;
+use App\Domain\Shared\ValueObjects\Money;
+use App\Integrations\Payments\GatewayResult;
+use App\Integrations\Payments\GatewayStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -28,6 +33,7 @@ const REVERSAL = '+243812340004';
 const UNAVAILABLE = '+243812340006';
 const OUTCOME_UNKNOWN = '+243812340007';
 const AMOUNT_MISMATCH = '+243812340008';
+const FAIL_THEN_SUCCEED = '+243812340005';
 
 beforeEach(function () {
     Storage::fake('local');
@@ -147,7 +153,8 @@ it('lets the student retry after a failure, one attempt at a time', function () 
 
     pay($orderId, INSUFFICIENT_FUNDS)->assertCreated()
         ->assertJsonPath('data.status', 'failed')
-        ->assertJsonPath('data.failure_code', 'insufficient_funds');
+        ->assertJsonPath('data.failure_code', 'insufficient_funds')
+        ->assertJsonPath('data.failure_reason', 'Insufficient balance on this mobile-money account.');
 
     pay($orderId, PENDING_FOREVER, 'airtel', 'pay-key-2')->assertCreated()->assertJsonPath('data.status', 'pending');
     pay($orderId, PAYS, 'mpesa', 'pay-key-3')->assertConflict()->assertJsonPath('code', 'payment.in_progress');
@@ -169,8 +176,10 @@ it('expires unpaid orders, and a late success still grants access, flagged', fun
         ->and(Payment::query()->where('order_id', $stuck)->sole()->status)->toBe(PaymentStatus::Expired);
     pay($stuck, PAYS, key: 'pay-key-9')->assertConflict()->assertJsonPath('code', 'order.not_payable');
 
-    $this->travel(16)->minutes();
-    reconcile(); // second check: succeeded
+    $this->travel(61)->minutes();
+    reconcile(); // hourly late check: still pending
+    $this->travel(61)->minutes();
+    reconcile(); // next one: succeeded
 
     $order = Order::query()->find($late);
     expect($order->status)->toBe(OrderStatus::Paid)
@@ -200,7 +209,7 @@ it('revokes access and reverses the sale when the operator reverses a payment', 
     assertLedgerBalanced();
 });
 
-it('grants nothing when the confirmed amount differs', function () {
+it('grants nothing when the confirmed amount differs, but records the money as owed back', function () {
     $orderId = order([$this->maths->id])->json('data.id');
     $paymentId = pay($orderId, AMOUNT_MISMATCH)->json('data.id');
     sendPaymentWebhook($paymentId);
@@ -208,7 +217,84 @@ it('grants nothing when the confirmed amount differs', function () {
     expect(Order::query()->sole()->flag)->toBe(OrderFlag::AmountMismatch)
         ->and(Order::query()->sole()->status)->toBe(OrderStatus::AwaitingPayment)
         ->and(Enrollment::query()->count())->toBe(0)
-        ->and(LedgerTransaction::query()->count())->toBe(0);
+        ->and(LedgerTransaction::query()->where('type', LedgerTransactionType::Sale)->count())->toBe(0)
+        ->and(ledgerBalance(LedgerAccountType::GatewayClearing))->toBe(1_499) // what the gateway really holds
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1_499);
+    assertLedgerBalanced();
+
+    pay($orderId, PAYS, key: 'pay-key-2')->assertConflict()->assertJsonPath('code', 'order.not_payable');
+});
+
+it('never charges twice when an expired order succeeds after the course was bought again', function () {
+    $first = order([$this->maths->id])->json('data.id');
+    pay($first, LATE_SUCCESS)->assertCreated();
+
+    $this->travel(16)->minutes();
+    reconcile(); // first order expires; its payment is still pending at the gateway
+
+    $second = order([$this->maths->id], 'order-key-2')->assertCreated()->json('data.id');
+    sendPaymentWebhook(pay($second, PAYS, key: 'pay-key-2')->json('data.id'));
+
+    $this->travel(61)->minutes();
+    reconcile(); // hourly late check: still pending
+    $this->travel(61)->minutes();
+    reconcile(); // the first prompt is approved at last
+
+    $enrollment = Enrollment::query()->sole();
+    expect(Order::query()->find($first)->status)->toBe(OrderStatus::Expired)
+        ->and(Order::query()->find($first)->flag)->toBe(OrderFlag::DuplicatePayment)
+        ->and(Order::query()->find($second)->status)->toBe(OrderStatus::Paid)
+        ->and($enrollment->isActive())->toBeTrue()
+        ->and($enrollment->order_item_id)->toBe(Order::query()->find($second)->items->sole()->id)
+        ->and(LedgerTransaction::query()->where('type', LedgerTransactionType::Sale)->count())->toBe(1)
+        ->and(ledgerBalance(LedgerAccountType::GatewayClearing))->toBe(3_000)
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1_500);
+    assertLedgerBalanced();
+});
+
+it('flags a second success on a paid order and owes it back', function () {
+    $orderId = order([$this->maths->id])->json('data.id');
+    sendPaymentWebhook(pay($orderId, FAIL_THEN_SUCCEED)->json('data.id'), 'evt-a'); // check 1: failed
+
+    sendPaymentWebhook(pay($orderId, PAYS, 'airtel', 'pay-key-2')->json('data.id'), 'evt-b');
+    expect(Order::query()->sole()->status)->toBe(OrderStatus::Paid);
+
+    $this->travel(61)->minutes();
+    reconcile(); // the failed attempt succeeds late
+
+    expect(Order::query()->sole()->flag)->toBe(OrderFlag::DuplicatePayment)
+        ->and(Payment::query()->where('flag', OrderFlag::DuplicatePayment)->count())->toBe(1)
+        ->and(LedgerTransaction::query()->where('type', LedgerTransactionType::Sale)->count())->toBe(1)
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1_500)
+        ->and(Enrollment::query()->count())->toBe(1);
+    assertLedgerBalanced();
+});
+
+it('allows one open order per course', function () {
+    $open = order([$this->maths->id])->json('data.id');
+
+    order([$this->maths->id, $this->physics->id], 'order-key-2')
+        ->assertConflict()
+        ->assertJsonPath('code', 'order.open_order_exists')
+        ->assertJsonPath('order_id', $open);
+});
+
+it('posts the gateway fee and ignores results for another reference', function () {
+    $orderId = order([$this->maths->id])->json('data.id');
+    $payment = Payment::query()->findOrFail(pay($orderId, PENDING_FOREVER)->json('data.id'));
+    $lifecycle = app(PaymentLifecycle::class);
+    $usd = Currency::USD;
+
+    $lifecycle->apply($payment, new GatewayResult('someone-else', 'g-1', GatewayStatus::Succeeded, Money::of(1_500, $usd), Money::zero($usd)));
+    expect(Order::query()->sole()->status)->toBe(OrderStatus::AwaitingPayment);
+
+    $lifecycle->apply($payment, new GatewayResult($payment->id, 'g-1', GatewayStatus::Succeeded, Money::of(1_500, $usd), Money::of(45, $usd)));
+
+    expect(Order::query()->sole()->status)->toBe(OrderStatus::Paid)
+        ->and(ledgerBalance(LedgerAccountType::GatewayFees))->toBe(45)
+        ->and(ledgerBalance(LedgerAccountType::GatewayClearing))->toBe(1_455)
+        ->and(ledgerBalance(LedgerAccountType::ProfessorHeld, $this->professor->id))->toBe(-1_050);
+    assertLedgerBalanced();
 });
 
 it('handles gateway outages without charging twice', function () {

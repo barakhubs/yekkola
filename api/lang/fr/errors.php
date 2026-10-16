@@ -116,6 +116,8 @@ return [
         'free_course' => 'Ce cours est gratuit : inscrivez-vous directement.',
         'mixed_currency' => 'Les cours d’une même commande doivent être dans la même devise.',
         'nothing_to_buy' => 'Vous êtes déjà inscrit à ces cours.',
+        'currency_unavailable' => 'Cette devise n’est pas acceptée pour le moment.',
+        'open_order_exists' => 'Une commande en attente de paiement existe déjà pour ce cours.',
         'expired' => 'Cette commande a expiré. Créez-en une nouvelle.',
         'not_payable' => 'Cette commande ne peut plus être payée.',
         'not_found' => 'Commande introuvable.',

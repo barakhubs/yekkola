@@ -35,7 +35,7 @@ final class PaymentEvent extends Model
     protected function casts(): array
     {
         return [
-            'payload' => 'array',
+            'payload' => 'encrypted:array',
             'received_at' => 'datetime',
             'processed_at' => 'datetime',
             'attempts' => 'integer',

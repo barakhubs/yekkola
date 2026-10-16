@@ -39,8 +39,11 @@ final class QuoteOrder
         }
 
         $currencies = $courses->map(fn (Course $c) => (string) $c->currency)->unique();
-        if ($currencies->count() !== 1 || ! in_array($currencies->first(), $this->settings->enabled_currencies, true)) {
+        if ($currencies->count() !== 1) {
             throw CommerceException::mixedCurrency();
+        }
+        if (! in_array($currencies->first(), $this->settings->enabled_currencies, true)) {
+            throw CommerceException::currencyUnavailable();
         }
 
         $owned = Enrollment::query()->active()->where('user_id', $beneficiary->id)->whereIn('course_id', $courses->keys())->pluck('course_id')->all();

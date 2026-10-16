@@ -45,8 +45,8 @@ final class ProcessPaymentEvent implements ShouldQueue
         $event->forceFill(['attempts' => $event->attempts + 1])->save();
 
         if ($event->kind !== TransactionKind::Collection->value) {
-            // Disbursements (refunds, payouts) are handled with 1.7c / 1.10.
-            $event->forceFill(['processed_at' => now(), 'error' => 'kind_not_handled'])->save();
+            // Disbursements (refunds, payouts) get their handler with 1.7c / 1.10; kept unprocessed until then.
+            $event->forceFill(['error' => 'kind_not_handled'])->save();
 
             return;
         }
