@@ -15,6 +15,9 @@ use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApp
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
+use App\Http\Controllers\Api\V1\Commerce\CheckoutController;
+use App\Http\Controllers\Api\V1\Commerce\EnrollmentController;
+use App\Http\Controllers\Api\V1\Commerce\OrderController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\CourseController;
 use App\Http\Controllers\Api\V1\Professor\DraftController;
@@ -27,6 +30,7 @@ use App\Http\Controllers\Api\V1\Public\CourseController as PublicCourseControlle
 use App\Http\Controllers\Api\V1\Public\ProfessorController;
 use App\Http\Controllers\Api\V1\Public\ProvinceController;
 use App\Http\Controllers\Api\V1\Webhooks\FakeVideoUploadController;
+use App\Http\Controllers\Api\V1\Webhooks\PaymentWebhookController;
 use App\Http\Controllers\Api\V1\Webhooks\VideoWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +44,17 @@ Route::get('/ping', fn () => ['status' => 'ok'])->name('ping');
 
 // Public
 Route::get('/provinces', [ProvinceController::class, 'index'])->name('provinces.index');
+
+// Checkout (PRD-05)
+Route::get('/checkout/rails', [CheckoutController::class, 'rails'])->name('checkout.rails');
+Route::middleware('signed-in')->group(function () {
+    Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
+    Route::post('/checkout/quote', [CheckoutController::class, 'quote'])->name('checkout.quote');
+    Route::post('/orders', [OrderController::class, 'store'])->middleware('idempotent')->name('orders.store');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->middleware('throttle:order-status')->name('orders.show');
+    Route::post('/orders/{order}/payments', [OrderController::class, 'pay'])->middleware(['throttle:payments', 'idempotent'])->name('orders.pay');
+    Route::get('/me/orders', [OrderController::class, 'index'])->name('me.orders.index');
+});
 
 // Public catalogue (PRD-04)
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -176,6 +191,7 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
 
 // Webhooks: no auth; each provider verifies its signature.
 Route::post('/webhooks/video', VideoWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.video');
+Route::post('/webhooks/payments/{gateway}', PaymentWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.payments');
 
 // Fake video driver only (local, staging): stands in for the provider's upload URL.
 Route::put('/_fake/video-uploads/{upload}', FakeVideoUploadController::class)->name('fake.video-upload');
