@@ -223,7 +223,7 @@
         "/bundles/{slug}": {
             "get": {
                 "operationId": "bundles.show",
-                "summary": "An active bundle whose courses are all listed (PRD-05 FR-13); otherwise not found",
+                "summary": "A bundle on sale: active, with every course published (PRD-05 FR-13); otherwise not found",
                 "tags": [
                     "Bundle"
                 ],
@@ -255,9 +255,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
                     }
                 }
             }
@@ -1253,6 +1250,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -6822,7 +6822,7 @@
                     "code": {
                         "type": "string",
                         "pattern": "^[A-Za-z0-9_-]+$",
-                        "minLength": 4,
+                        "minLength": 6,
                         "maxLength": 40
                     },
                     "scope": {
@@ -6857,7 +6857,11 @@
                         "maxLength": 3
                     },
                     "funded_by": {
-                        "$ref": "#/components/schemas/DiscountFunder"
+                        "type": "string",
+                        "description": "Staff never commit a professor's earnings: their coupons are platform-funded (professors fund their own).",
+                        "enum": [
+                            "platform"
+                        ]
                     },
                     "starts_at": {
                         "type": [
@@ -7686,16 +7690,6 @@
                     "is_current"
                 ],
                 "title": "DeviceResource"
-            },
-            "DiscountFunder": {
-                "type": "string",
-                "description": "Who pays for a discount (PRD-05 FR-11, PRD-08 FR-02). Provisional definitions (TODO 0.5): - platform:  the professor earns their share of the list price; the platform's discounts account pays. - professor: the platform keeps its share of the list price; the professor gets the rest (never below 0). - shared:    both shares apply to the discounted price (bundles use this).\n",
-                "enum": [
-                    "platform",
-                    "professor",
-                    "shared"
-                ],
-                "title": "DiscountFunder"
             },
             "DiscountType": {
                 "type": "string",
@@ -10174,8 +10168,8 @@
                     }
                 }
             },
-            "ModelNotFoundException": {
-                "description": "Not found",
+            "AuthenticationException": {
+                "description": "Unauthenticated",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -10193,8 +10187,8 @@
                     }
                 }
             },
-            "AuthenticationException": {
-                "description": "Unauthenticated",
+            "ModelNotFoundException": {
+                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {
