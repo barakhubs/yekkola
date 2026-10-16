@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Commerce\Actions;
 
+use App\Domain\Commerce\Enums\AttemptStatus;
 use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Enums\PaymentStatus;
 use App\Domain\Commerce\Enums\RefundKind;
@@ -15,13 +16,13 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Commerce\Models\Refund;
+use App\Domain\Commerce\Models\RefundAttempt;
 use App\Domain\Finance\Enums\LedgerAccountType;
 use App\Domain\Finance\Enums\LedgerTransactionType;
 use App\Domain\Finance\Models\LedgerEntry;
 use App\Domain\Finance\RefundPostings;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Actions\RevokeEnrollments;
-use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Platform\Actions\RecordAudit;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
@@ -40,21 +41,21 @@ use Throwable;
  * The refund state machine (PRD-05 FR-16, PRD-09 FR-12). Staff approve or reject a request; approval
  * removes access, takes the sale back into `refunds_payable`, and queues the payout to the original payer.
  * Money collected but never applied is sent back the same way. Every transition locks order → payment →
- * refund (the payment state machine's order) and re-checks that the payment still stands: a reversal
- * calls off what has not been paid out (SettleRefundsOnReversal).
+ * refund (→ attempt), the payment state machine's order, and re-checks that the payment still stands; a
+ * reversal calls off what has not gone out (SettleRefundsOnReversal).
  *
- * Each payout attempt has its own gateway reference (`R-{id}-{n}`); results are always re-queried and
- * applied idempotently. An attempt the gateway never registered is sent again under the same reference,
- * then given up after a day. A late success of an earlier attempt, or of a payout after the operator
- * already repaid the payer, is recorded as owed by the payer and flagged.
+ * Each payout attempt is a RefundAttempt with its own reference and postings. Whatever an attempt reports,
+ * whenever it reports it, is accounted for: the first success pays the refund; any other success — a late
+ * one, or one after the operator already repaid the payer — is recorded as owed by the payer and flagged.
+ * An attempt the gateway never registered is re-sent under the same reference, and given up after a day.
  *
  *   requested → approved → processing → completed
- *            ↘ rejected   ↘ cancelled ↘ failed → (retry) processing
+ *            ↘ rejected   ↘ cancelled ↘ failed → (retry) approved
  */
 final class RefundLifecycle
 {
     /** An attempt the gateway still doesn't know after this long is given up (staff can retry). */
-    private const GIVE_UP_HOURS = 24;
+    public const GIVE_UP_HOURS = 24;
 
     public function __construct(
         private readonly ConnectionInterface $db,
@@ -153,22 +154,25 @@ final class RefundLifecycle
     }
 
     /**
-     * A failed payout tried again, under a new gateway reference — after checking the failed attempt
-     * didn't go through after all.
+     * A failed payout tried again under a new reference — after checking the last attempt didn't go
+     * through after all, and never while one is still in flight.
      */
     public function retry(Refund $refund, User $staff, string $note): Refund
     {
-        $refund = $this->sync($refund); // a "failed" attempt can still succeed late
+        $last = RefundAttempt::query()->where('refund_id', $refund->id)->orderByDesc('number')->first();
+        if ($last !== null) {
+            $this->syncAttempt($last);
+        }
 
         $refund = $this->locked($refund, function (Refund $refund, Order $order, Payment $payment) use ($staff, $note): void {
-            if ($refund->status !== RefundStatus::Failed) {
-                throw $refund->status === RefundStatus::Processing ? CommerceException::payoutInFlight() : CommerceException::refundInvalidTransition();
+            if (RefundAttempt::query()->where('refund_id', $refund->id)->where('status', AttemptStatus::Processing)->exists()) {
+                throw CommerceException::payoutInFlight();
             }
-            if ($payment->status === PaymentStatus::Reversed) {
-                throw CommerceException::notRefundable();
+            if ($refund->status !== RefundStatus::Failed || $payment->status === PaymentStatus::Reversed) {
+                throw CommerceException::refundInvalidTransition();
             }
 
-            $refund->forceFill(['status' => RefundStatus::Approved, 'failure_code' => null, 'failure_message' => null])->save();
+            $refund->forceFill(['status' => RefundStatus::Approved, 'failure_code' => null])->save();
             $this->recordAudit->handle('refund.retried', $refund, ['note' => $note], causer: $staff);
         });
 
@@ -177,11 +181,11 @@ final class RefundLifecycle
         return $refund;
     }
 
-    /** Starts the payout of an approved refund to the original payer (left approved while the rail is paused). */
+    /** Starts a payout attempt for an approved refund (left approved while the rail is paused). */
     public function execute(Refund $refund): Refund
     {
-        $started = false;
-        $refund = $this->locked($refund, function (Refund $refund, Order $order, Payment $payment) use (&$started): void {
+        $attempt = null;
+        $refund = $this->locked($refund, function (Refund $refund, Order $order, Payment $payment) use (&$attempt): void {
             if ($refund->status !== RefundStatus::Approved || $payment->status === PaymentStatus::Reversed) {
                 return; // already started, done, or called off
             }
@@ -189,182 +193,204 @@ final class RefundLifecycle
                 return; // paused: reconciliation tries again
             }
 
-            $refund->forceFill([
-                'status' => RefundStatus::Processing,
-                'attempt' => $refund->attempt + 1,
-                'attempted_at' => now(),
+            $number = $refund->attempts + 1;
+            $refund->forceFill(['status' => RefundStatus::Processing, 'attempts' => $number])->save();
+            $attempt = RefundAttempt::query()->create([
+                'refund_id' => $refund->id,
+                'number' => $number,
+                'reference' => $refund->referenceFor($number),
                 'gateway' => $this->gateway->name(),
-            ])->save();
-            $started = true;
+                'status' => AttemptStatus::Processing,
+            ]);
         });
 
-        return $started ? $this->send($refund) : $refund;
-    }
-
-    /** Re-queries the current attempt (webhook, reconciliation); a "failed" one may still succeed late. */
-    public function sync(Refund $refund): Refund
-    {
-        if (! in_array($refund->status, [RefundStatus::Processing, RefundStatus::Failed, RefundStatus::Completed], true) || $refund->attempt === 0) {
-            return $refund;
+        if ($attempt !== null) {
+            $this->send($refund, $attempt);
         }
 
-        try {
-            return $this->apply($refund, $this->gateway->disbursementStatus($refund->reference()));
-        } catch (UnknownTransaction) {
-            return $refund->status === RefundStatus::Processing ? $this->unknownAtGateway($refund) : $refund;
-        } catch (GatewayUnavailable) {
-            return $this->touch($refund);
+        return $refund->refresh();
+    }
+
+    /** A webhook or poll about one attempt, by its gateway reference. */
+    public function syncReference(string $reference): void
+    {
+        $attempt = RefundAttempt::query()->where('reference', $reference)->first();
+        if ($attempt !== null) {
+            $this->syncAttempt($attempt);
         }
     }
 
     /**
-     * A webhook about a specific attempt. An earlier attempt reporting success means the payer was paid
-     * twice: recorded as owed by the payer and flagged.
+     * Re-queries an attempt: in flight, recently failed (it may still succeed), or succeeded (it may be
+     * reversed). The gateway's status API is the only source of truth.
      */
-    public function syncReference(Refund $refund, string $reference): Refund
-    {
-        if ($reference === $refund->reference()) {
-            return $this->sync($refund);
-        }
-
-        try {
-            $result = $this->gateway->disbursementStatus($reference);
-        } catch (UnknownTransaction|GatewayUnavailable) {
-            return $refund;
-        }
-
-        if ($result->status !== GatewayStatus::Succeeded) {
-            return $refund;
-        }
-
-        return $this->locked($refund, function (Refund $refund) use ($result, $reference): void {
-            $this->postings->overpaid($refund, $result->amount ?? $refund->amount());
-            $refund->forceFill(['flag' => 'old_attempt_paid'])->save();
-            $this->log->critical('An earlier refund payout attempt also went through', ['refund_id' => $refund->id, 'reference' => $reference]);
-        });
-    }
-
-    private function send(Refund $refund): Refund
+    public function syncAttempt(RefundAttempt $attempt): void
     {
         try {
-            return $this->apply($refund, $this->gateway->disburse($this->request($refund)));
+            $this->apply($attempt, $this->gateway->disbursementStatus($attempt->reference));
+        } catch (UnknownTransaction) {
+            if ($attempt->status === AttemptStatus::Processing) {
+                $this->unknownAtGateway($attempt);
+            }
         } catch (GatewayUnavailable) {
-            return $this->apply($refund, new GatewayResult($refund->reference(), '', GatewayStatus::Failed, failureCode: 'gateway_unavailable'));
+            $this->touch($attempt);
+        }
+    }
+
+    private function send(Refund $refund, RefundAttempt $attempt): void
+    {
+        try {
+            $this->apply($attempt, $this->gateway->disburse($this->request($refund, $attempt)));
+        } catch (GatewayUnavailable) {
+            $this->apply($attempt, new GatewayResult($attempt->reference, '', GatewayStatus::Failed, failureCode: 'gateway_unavailable'));
         } catch (Throwable $e) {
-            // Unknown outcome (timeout, driver error): stay in progress; sync looks it up and re-sends safely.
-            $this->log->warning('Refund payout outcome unknown', ['refund_id' => $refund->id, 'exception' => $e::class]);
-
-            return $this->touch($refund);
+            // Unknown outcome (timeout, driver error): stays in flight; sync looks it up and re-sends safely.
+            $this->log->warning('Refund payout outcome unknown', ['attempt_id' => $attempt->id, 'exception' => $e::class]);
+            $this->touch($attempt);
         }
     }
 
-    /** Same reference again: the gateway creates the transfer only once. After a day, give up (staff retry). */
-    private function unknownAtGateway(Refund $refund): Refund
+    /** Same reference again (the gateway creates the transfer only once); after a day, given up. */
+    private function unknownAtGateway(RefundAttempt $attempt): void
     {
-        if ($refund->attempted_at !== null && $refund->attempted_at->lt(now()->subHours(self::GIVE_UP_HOURS))) {
-            return $this->locked($refund, function (Refund $refund): void {
-                if ($refund->status === RefundStatus::Processing) {
-                    $refund->forceFill(['status' => RefundStatus::Failed, 'failure_code' => 'not_found_at_gateway', 'flag' => 'stuck'])->save();
-                    $this->log->critical('Refund payout never reached the gateway', ['refund_id' => $refund->id]);
-                }
-            });
+        if ($attempt->created_at->lt(now()->subHours(self::GIVE_UP_HOURS))) {
+            $this->apply($attempt, new GatewayResult($attempt->reference, '', GatewayStatus::Failed, failureCode: 'not_found_at_gateway'), giveUp: true);
+
+            return;
         }
 
-        return $this->send($refund);
+        $refund = Refund::query()->with('payment', 'order')->findOrFail($attempt->refund_id);
+        $this->send($refund, $attempt);
     }
 
-    private function apply(Refund $refund, GatewayResult $result): Refund
+    private function apply(RefundAttempt $attempt, GatewayResult $result, bool $giveUp = false): void
     {
-        return $this->locked($refund, function (Refund $refund, Order $order, Payment $payment) use ($result): void {
-            $refund->forceFill(['checks' => $refund->checks + 1, 'last_checked_at' => now()]);
+        $this->lockedAttempt($attempt, function (RefundAttempt $attempt, Refund $refund, Payment $payment) use ($result, $giveUp): void {
+            $attempt->forceFill(['checks' => $attempt->checks + 1, 'last_checked_at' => now()]);
 
-            if ($result->reference !== $refund->reference()) {
-                $this->log->warning('Refund result for another reference ignored', ['refund_id' => $refund->id, 'reference' => $result->reference]);
-                $refund->save();
+            if ($result->reference !== $attempt->reference) {
+                $this->log->warning('Refund payout result for another reference ignored', ['attempt_id' => $attempt->id, 'reference' => $result->reference]);
+                $attempt->save();
 
                 return;
             }
 
-            $refund->forceFill([
-                'gateway_reference' => $refund->gateway_reference ?? ($result->gatewayReference !== '' ? $result->gatewayReference : null),
-                'operator_reference' => $refund->operator_reference ?? $result->operatorReference,
+            $attempt->forceFill([
+                'gateway_reference' => $attempt->gateway_reference ?? ($result->gatewayReference !== '' ? $result->gatewayReference : null),
+                'operator_reference' => $attempt->operator_reference ?? $result->operatorReference,
             ]);
 
             match (true) {
-                $result->status === GatewayStatus::Succeeded && in_array($refund->status, [RefundStatus::Processing, RefundStatus::Failed], true) => $this->completed($refund, $payment, $result),
-                $result->status === GatewayStatus::Reversed && $refund->status === RefundStatus::Completed => $this->payoutReversed($refund),
-                in_array($result->status, [GatewayStatus::Failed, GatewayStatus::Reversed], true) && $refund->status === RefundStatus::Processing => $this->failed($refund, $payment, $result),
+                $result->status === GatewayStatus::Succeeded && in_array($attempt->status, [AttemptStatus::Processing, AttemptStatus::Failed], true) => $this->succeeded($attempt, $refund, $payment, $result),
+                $result->status === GatewayStatus::Reversed && $attempt->status === AttemptStatus::Succeeded => $this->reversed($attempt, $refund, $payment),
+                in_array($result->status, [GatewayStatus::Failed, GatewayStatus::Reversed], true) && $attempt->status === AttemptStatus::Processing => $this->failed($attempt, $refund, $payment, $result, $giveUp),
                 default => null, // pending, or nothing new
             };
 
+            $attempt->save();
             $refund->save();
         });
     }
 
-    private function completed(Refund $refund, Payment $payment, GatewayResult $result): void
+    private function succeeded(RefundAttempt $attempt, Refund $refund, Payment $payment, GatewayResult $result): void
     {
         $confirmed = $result->amount ?? $refund->amount();
+        $attempt->forceFill(['status' => AttemptStatus::Succeeded, 'finished_at' => $result->completedAt ?? now(), 'confirmed_amount_minor' => $confirmed->amountMinor]);
+
         if ($confirmed->currency !== $refund->amount()->currency) {
-            $refund->flag = 'amount_mismatch'; // staff settle it; nothing posted in a foreign currency
-            $this->log->critical('Refund paid out in another currency', ['refund_id' => $refund->id]);
+            $refund->flag = 'amount_mismatch'; // nothing posted in a foreign currency: staff settle it
+            $this->log->critical('Refund paid out in another currency', ['attempt_id' => $attempt->id]);
 
             return;
-        }
-        if (! $confirmed->equals($refund->amount())) {
-            $refund->flag = 'amount_mismatch'; // the difference stays visible in refunds_payable
-            $this->log->critical('Refund paid out with a different amount', ['refund_id' => $refund->id, 'confirmed_minor' => $confirmed->amountMinor]);
         }
 
         $fee = $result->fee !== null && $result->fee->currency === $confirmed->currency ? $result->fee : null;
         if ($result->fee !== null && $fee === null) {
-            $this->log->critical('Refund payout fee in another currency ignored', ['refund_id' => $refund->id]);
+            $this->log->critical('Refund payout fee in another currency ignored', ['attempt_id' => $attempt->id]);
         }
+        $attempt->fee_minor = $fee?->amountMinor;
 
-        $refund->forceFill(['status' => RefundStatus::Completed, 'completed_at' => $result->completedAt ?? now(), 'fee_minor' => $fee?->amountMinor, 'failure_code' => null]);
-        $this->postings->paid($refund, $confirmed, $fee);
-
-        if ($payment->status === PaymentStatus::Reversed) {
-            $refund->flag = 'paid_after_reversal'; // the reversal already recorded the payer's debt
-        }
-    }
-
-    private function failed(Refund $refund, Payment $payment, GatewayResult $result): void
-    {
-        if ($payment->status === PaymentStatus::Reversed) {
-            // The operator already gave the payer their money back: nothing is owed any more.
-            $refund->forceFill(['status' => RefundStatus::Cancelled, 'decision_note' => 'payment_reversed']);
-            if ($refund->kind === RefundKind::Item) {
-                $this->postings->settled($refund);
+        // The first success pays the refund; any other means the payer now has the money twice.
+        if (in_array($refund->status, [RefundStatus::Approved, RefundStatus::Processing, RefundStatus::Failed], true)) {
+            $attempt->outcome = RefundAttempt::OUTCOME_COMPLETED;
+            $this->postings->paid($attempt, $confirmed, $fee);
+            $refund->forceFill(['status' => RefundStatus::Completed, 'completed_at' => $attempt->finished_at, 'failure_code' => null]);
+            if (! $confirmed->equals($refund->amount())) {
+                $refund->flag = 'amount_mismatch'; // the difference stays visible in refunds_payable
+                $this->log->critical('Refund paid out with a different amount', ['attempt_id' => $attempt->id, 'confirmed_minor' => $confirmed->amountMinor]);
+            }
+            if ($payment->status === PaymentStatus::Reversed) {
+                $refund->flag = 'paid_after_reversal'; // the reversal recorded the payer's debt
             }
 
             return;
         }
 
-        $refund->forceFill([
-            'status' => RefundStatus::Failed,
+        $attempt->outcome = RefundAttempt::OUTCOME_OVERPAID;
+        $this->postings->overpaid($attempt, $confirmed, $fee);
+        $refund->flag = 'paid_twice';
+        $this->log->critical('Refund paid out when nothing was owed any more', ['attempt_id' => $attempt->id, 'refund_status' => $refund->status->value]);
+    }
+
+    private function failed(RefundAttempt $attempt, Refund $refund, Payment $payment, GatewayResult $result, bool $giveUp): void
+    {
+        $attempt->forceFill([
+            'status' => AttemptStatus::Failed,
+            'finished_at' => now(),
             'failure_code' => $result->failureCode ?? 'failed',
             'failure_message' => $result->failureMessage === null ? null : mb_substr($result->failureMessage, 0, 255),
         ]);
+
+        if ($refund->status !== RefundStatus::Processing || $attempt->number !== $refund->attempts) {
+            return; // an older attempt: the refund follows its latest one
+        }
+
+        if ($payment->status === PaymentStatus::Reversed) {
+            // The operator already gave the payer their money back: the debt and what we owed cancel out.
+            $refund->forceFill(['status' => RefundStatus::Cancelled, 'decision_note' => 'payment_reversed']);
+            $this->postings->settled($refund);
+
+            return;
+        }
+
+        $refund->forceFill(['status' => RefundStatus::Failed, 'failure_code' => $attempt->failure_code]);
+        if ($giveUp) {
+            $refund->flag = 'stuck';
+            $this->log->critical('Refund payout never reached the gateway', ['attempt_id' => $attempt->id]);
+        }
     }
 
-    private function payoutReversed(Refund $refund): void
+    private function reversed(RefundAttempt $attempt, Refund $refund, Payment $payment): void
     {
-        $this->postings->payoutReversed($refund);
-        $refund->forceFill(['status' => RefundStatus::Failed, 'failure_code' => 'payout_reversed', 'flag' => 'payout_reversed']);
-        $this->log->critical('Refund payout reversed by the operator', ['refund_id' => $refund->id]);
+        $this->postings->attemptReversed($attempt);
+        $attempt->status = AttemptStatus::Reversed;
+        $this->log->critical('Refund payout reversed by the operator', ['attempt_id' => $attempt->id]);
+
+        if ($attempt->outcome !== RefundAttempt::OUTCOME_COMPLETED || $refund->status !== RefundStatus::Completed) {
+            return; // an overpayment came back: nothing more owed either way
+        }
+
+        if ($payment->status === PaymentStatus::Reversed) {
+            $refund->forceFill(['status' => RefundStatus::Cancelled, 'decision_note' => 'payment_reversed']);
+            $this->postings->settled($refund);
+
+            return;
+        }
+
+        $refund->forceFill(['status' => RefundStatus::Failed, 'failure_code' => 'payout_reversed', 'flag' => 'payout_reversed', 'completed_at' => null]);
     }
 
-    private function touch(Refund $refund): Refund
+    private function touch(RefundAttempt $attempt): void
     {
-        return $this->locked($refund, fn (Refund $r) => $r->forceFill(['checks' => $r->checks + 1, 'last_checked_at' => now()])->save());
+        $this->lockedAttempt($attempt, fn (RefundAttempt $a) => $a->forceFill(['checks' => $a->checks + 1, 'last_checked_at' => now()])->save());
     }
 
-    private function request(Refund $refund): DisbursementRequest
+    private function request(Refund $refund, RefundAttempt $attempt): DisbursementRequest
     {
         $payment = $refund->payment;
 
         return new DisbursementRequest(
-            reference: $refund->reference(),
+            reference: $attempt->reference,
             amount: $refund->amount(),
             rail: $payment->rail,
             recipient: $payment->payer(),
@@ -412,10 +438,10 @@ final class RefundLifecycle
         return Money::of((int) $credit, $payment->amount()->currency);
     }
 
-    /** Every course this order sold (granted access for) has a refund approved or further. */
+    /** Every course this order sold has a refund approved or further. */
     private function allSoldItemsRefunded(Order $order): bool
     {
-        $sold = $order->items->filter(fn (OrderItem $i) => $i->price_minor > 0 && Enrollment::query()->where('order_item_id', $i->id)->exists())->pluck('id');
+        $sold = $order->items->filter(fn (OrderItem $i) => $i->price_minor > 0 && $i->granted_at !== null)->pluck('id');
         $refunded = Refund::query()->where('order_id', $order->id)->where('kind', RefundKind::Item)
             ->whereNotIn('status', [RefundStatus::Requested, RefundStatus::Rejected, RefundStatus::Cancelled])->pluck('order_item_id');
 
@@ -436,6 +462,21 @@ final class RefundLifecycle
             $apply($locked, $order, $payment);
 
             return $locked;
+        });
+    }
+
+    /**
+     * Locks order → payment → refund → attempt, then applies.
+     *
+     * @param  callable(RefundAttempt, Refund, Payment): mixed  $apply
+     */
+    private function lockedAttempt(RefundAttempt $attempt, callable $apply): void
+    {
+        $refund = Refund::query()->findOrFail($attempt->refund_id);
+
+        $this->locked($refund, function (Refund $refund, Order $order, Payment $payment) use ($attempt, $apply): void {
+            $locked = RefundAttempt::query()->whereKey($attempt->id)->lockForUpdate()->firstOrFail();
+            $apply($locked, $refund, $payment);
         });
     }
 }

@@ -19,7 +19,6 @@ use App\Domain\Finance\Actions\PostUnappliedReceipt;
 use App\Domain\Finance\Actions\ReversePosting;
 use App\Domain\Finance\Enums\LedgerTransactionType;
 use App\Domain\Learning\Actions\RevokeEnrollments;
-use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
 use App\Integrations\Payments\GatewayResult;
@@ -261,7 +260,7 @@ final class PaymentLifecycle
         }
 
         // BR-04: access removed, sale reversed (courses already refunded become a payer debt), staff alerted.
-        $sold = $order->items->filter(fn (OrderItem $item) => Enrollment::query()->where('order_item_id', $item->id)->exists())->values();
+        $sold = $order->items->filter(fn (OrderItem $item) => $item->granted_at !== null)->values();
         $order->status = OrderStatus::Reversed;
         $order->flag = OrderFlag::raise($order->flag, OrderFlag::Reversed);
         $this->revoke->handle($order->items->pluck('id')->all(), 'payment_reversed');

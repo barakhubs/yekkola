@@ -14,8 +14,9 @@ use Psr\Log\LoggerInterface;
 /**
  * When the operator reverses a payment, the payer already has all their money back: refunds on it whose
  * money has not gone out are called off — requests rejected, approved or failed ones cancelled (their
- * posting mirrored). Refunds being or already paid out mean the payer was paid twice: they are flagged for
- * staff and their courses are returned so the reversal records the debt (PostOrderReversal).
+ * posting mirrored; a failed attempt that still succeeds later is then recorded as an overpayment).
+ * Refunds being or already paid out mean the payer was paid twice: flagged for staff, and the debt recorded
+ * — for courses by the order reversal (PostOrderReversal), for unapplied money here.
  * Call inside the payment state machine's transaction, with the order and payment locked.
  */
 final class SettleRefundsOnReversal
@@ -62,6 +63,12 @@ final class SettleRefundsOnReversal
         $refund->forceFill(['flag' => 'paid_after_reversal'])->save();
         $this->log->critical('Payment reversed after its refund was paid out (or is being paid)', ['refund_id' => $refund->id, 'payment_id' => $refund->payment_id]);
 
-        return $refund->kind === RefundKind::Item ? $refund->order_item_id : null;
+        if ($refund->kind === RefundKind::Unapplied) {
+            $this->postings->debt($refund); // the unapplied reversal emptied refunds_payable: the payout is now a debt
+
+            return null;
+        }
+
+        return $refund->order_item_id;
     }
 }

@@ -8,7 +8,7 @@ use App\Domain\Commerce\Actions\RefundLifecycle;
 use App\Domain\Commerce\Actions\SyncPayment;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Commerce\Models\PaymentEvent;
-use App\Domain\Commerce\Models\Refund;
+use App\Domain\Commerce\Models\RefundAttempt;
 use App\Integrations\Payments\TransactionKind;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -47,23 +47,21 @@ final class ProcessPaymentEvent implements ShouldQueue
         $event->forceFill(['attempts' => $event->attempts + 1])->save();
 
         if ($event->kind === TransactionKind::Disbursement->value) {
-            $refundId = Refund::idFromReference($event->reference);
-            if ($refundId === null) {
+            if (! str_starts_with($event->reference, 'R-')) {
                 // Payouts (1.10) get their handler later; kept unprocessed until then.
                 $event->forceFill(['error' => 'kind_not_handled'])->save();
 
                 return;
             }
 
-            $refund = Refund::query()->find($refundId);
-            if ($refund === null) {
+            if (! RefundAttempt::query()->where('reference', $event->reference)->exists()) {
                 $event->forceFill(['error' => 'unknown_reference'])->save();
                 $this->release($this->backoff[min($this->attempts() - 1, count($this->backoff) - 1)]);
 
                 return;
             }
 
-            $refunds->syncReference($refund, $event->reference); // the attempt this event is about
+            $refunds->syncReference($event->reference); // the attempt this event is about
             $event->forceFill(['processed_at' => now(), 'error' => null])->save();
 
             return;
