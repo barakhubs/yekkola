@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-receipts-refunds` — Phase 1.7d (PR open)
+- **Waiting:** PR #13 (receipts & refunds, Phase 1.7d) to be merged
 - **Next up:** Phase 1.8 (learning — PRD-06)
 
 ## Legend
@@ -181,9 +181,9 @@ Cannot be defaulted:
 - [ ] Receipt SMS to the payer number as well as the student (PRD-10, on `OrderPaid`)
 - [ ] Confirm buy-for-others limits (`config/yekkola.php` → `checkout`) and how long payer numbers are kept (counsel)
 - [ ] Receipt SMS count against the global SMS budget (no SMS pumping through gift orders)
-- [~] d: Receipts JSON + PDF, fr/en (FR-15)
-- [~] d: Refund request + approval flow + payout to the original payer (FR-16) — sale parts from `SaleSplit`
-- [~] d: Staff send back `unapplied_receipt` money — amount mismatch, duplicate payment, already owned
+- [x] d: Receipts JSON + PDF, fr/en (FR-15) — #13
+- [x] d: Refund request + approval flow + payout to the original payer (FR-16) — sale parts from `SaleSplit` — #13
+- [x] d: Staff send back `unapplied_receipt` money — amount mismatch, duplicate payment, already owned — #13
 - [ ] Reconciliation: one queued job per due payment once volume needs it
 - [ ] VAT lines on receipts once tax treatment is decided (0.5)
 - [ ] Confirm refund payout fees are always borne by the platform (payouts follow `platform_pays_disbursement_fees`)
