@@ -35,8 +35,10 @@ return new class extends Migration
 
             $table->index('professor_profile_id');
             $table->index('course_id');
+            $table->index('created_by');
         });
 
+        DB::statement("ALTER TABLE coupons ADD CONSTRAINT coupons_scope CHECK ((scope <> 'course' OR course_id IS NOT NULL) AND (scope <> 'professor' OR professor_profile_id IS NOT NULL))");
         DB::statement("ALTER TABLE coupons ADD CONSTRAINT coupons_value CHECK ((discount_type = 'percent' AND value BETWEEN 1 AND 100 AND currency IS NULL) OR (discount_type = 'fixed' AND value > 0 AND currency IS NOT NULL))");
 
         Schema::create('coupon_redemptions', function (Blueprint $table) {
@@ -47,6 +49,7 @@ return new class extends Migration
             $table->timestamp('created_at');
 
             $table->index(['coupon_id', 'user_id']);
+            $table->index('user_id');
         });
 
         Schema::create('bundles', function (Blueprint $table) {
@@ -63,6 +66,8 @@ return new class extends Migration
             $table->index('professor_profile_id');
         });
 
+        DB::statement('ALTER TABLE bundles ADD CONSTRAINT bundles_price CHECK (price_minor > 0)');
+
         Schema::create('bundle_courses', function (Blueprint $table) {
             $table->foreignUlid('bundle_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('course_id')->constrained()->restrictOnDelete();
@@ -76,20 +81,24 @@ return new class extends Migration
             $table->foreignUlid('coupon_id')->nullable()->after('total_minor')->constrained()->restrictOnDelete();
             $table->foreignUlid('bundle_id')->nullable()->after('coupon_id')->constrained()->restrictOnDelete();
             $table->index(['coupon_id', 'status']);
+            $table->index('bundle_id');
         });
 
         Schema::table('order_items', function (Blueprint $table) {
             $table->foreignUlid('bundle_id')->nullable()->after('course_id')->constrained()->restrictOnDelete();
+            $table->index('bundle_id');
         });
     }
 
     public function down(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
+            $table->dropIndex(['bundle_id']);
             $table->dropConstrainedForeignId('bundle_id');
         });
         Schema::table('orders', function (Blueprint $table) {
             $table->dropIndex(['coupon_id', 'status']);
+            $table->dropIndex(['bundle_id']);
             $table->dropConstrainedForeignId('bundle_id');
             $table->dropConstrainedForeignId('coupon_id');
         });

@@ -21,6 +21,8 @@ enum Permission: string
     case FinanceRefunds = 'finance.refunds';
     case FinancePayouts = 'finance.payouts';
     case FinanceAdjustments = 'finance.adjustments';
+    /** Coupons and bundles: they spend platform money and change what professors earn (PRD-09 FR-13). */
+    case PromotionsManage = 'promotions.manage';
     case SettingsManage = 'settings.manage';
     case StaffManage = 'staff.manage';
     /** Assign or change staff roles — super admin only (PRD-09 §3). */

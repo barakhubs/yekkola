@@ -32,7 +32,7 @@ final class PostSale
     /**
      * @param  Collection<int, OrderItem>  $items
      */
-    public function handle(Order $order, Payment $payment, Collection $items): LedgerTransaction
+    public function handle(Order $order, Payment $payment, Collection $items): ?LedgerTransaction
     {
         $currency = Currency::from($order->currency);
         $sold = Money::zero($currency);
@@ -72,14 +72,22 @@ final class PostSale
         $price = $item->price();
         $list = Money::of($item->list_price_minor, $price->currency);
         $zero = Money::zero($price->currency);
+
+        if ($price->isZero()) {
+            return [$zero, $zero, $zero]; // discounted to nothing: nobody earns, whatever else is in the order
+        }
         $funder = $item->discount_minor === 0 ? null : DiscountFunder::tryFrom((string) $item->discount_funded_by);
 
         switch ($funder) {
             case DiscountFunder::Platform:
-                // The professor earns their share of the list price; the platform's discount account pays.
-                $professor = $list->shareBps($item->revenue_share_bps);
+                // The professor earns their share of the list price, but never more than was paid for the item
+                // (so nobody profits from buying a discounted course); the platform's discounts account pays
+                // the difference to its usual share.
+                $share = $list->shareBps($item->revenue_share_bps);
+                $professor = $price->greaterThanOrEqual($share) ? $share : $price;
+                $platform = $list->minus($share);
 
-                return [$professor, $list->minus($professor), $list->minus($price)];
+                return [$professor, $platform, $professor->plus($platform)->minus($price)];
 
             case DiscountFunder::Professor:
                 // The platform keeps its share of the list price; the professor gets the rest, never below 0.
