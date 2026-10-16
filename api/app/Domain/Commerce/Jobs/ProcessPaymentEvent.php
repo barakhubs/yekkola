@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Commerce\Jobs;
 
+use App\Domain\Commerce\Actions\RefundLifecycle;
 use App\Domain\Commerce\Actions\SyncPayment;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Commerce\Models\PaymentEvent;
+use App\Domain\Commerce\Models\RefundAttempt;
 use App\Integrations\Payments\TransactionKind;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,7 +37,7 @@ final class ProcessPaymentEvent implements ShouldQueue
         $this->onQueue('payments');
     }
 
-    public function handle(SyncPayment $sync): void
+    public function handle(SyncPayment $sync, RefundLifecycle $refunds): void
     {
         $event = PaymentEvent::query()->find($this->paymentEventId);
         if ($event === null || $event->processed_at !== null) {
@@ -44,9 +46,30 @@ final class ProcessPaymentEvent implements ShouldQueue
 
         $event->forceFill(['attempts' => $event->attempts + 1])->save();
 
-        if ($event->kind !== TransactionKind::Collection->value) {
-            // Disbursements (refunds, payouts) get their handler with 1.7c / 1.10; kept unprocessed until then.
-            $event->forceFill(['error' => 'kind_not_handled'])->save();
+        if ($event->kind === TransactionKind::Disbursement->value) {
+            if (! str_starts_with($event->reference, 'R-')) {
+                // Payouts (1.10) get their handler later; kept unprocessed until then.
+                $event->forceFill(['error' => 'kind_not_handled'])->save();
+
+                return;
+            }
+
+            if (! RefundAttempt::query()->where('reference', $event->reference)->exists()) {
+                $event->forceFill(['error' => 'unknown_reference'])->save();
+                $this->release($this->backoff[min($this->attempts() - 1, count($this->backoff) - 1)]);
+
+                return;
+            }
+
+            // The attempt this event is about. If the gateway can't answer now, the event is kept for later:
+            // it may be the only news of a reversed payout.
+            if (! $refunds->syncReference($event->reference)) {
+                $event->forceFill(['error' => 'gateway_unavailable'])->save();
+                $this->release($this->backoff[min($this->attempts() - 1, count($this->backoff) - 1)]);
+
+                return;
+            }
+            $event->forceFill(['processed_at' => now(), 'error' => null])->save();
 
             return;
         }
