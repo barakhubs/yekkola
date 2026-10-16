@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-coupons-bundles` — Phase 1.7b
+- **Waiting:** PR #11 (coupons & bundles, Phase 1.7b) to be merged
 - **Next up:** 1.7c parent payer; then 1.7d receipts + refunds
 
 ## Legend
@@ -176,7 +176,7 @@ Cannot be defaulted:
 - [x] a: Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs) — #10
 - [x] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry — #10
 - [x] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17) — #10
-- [~] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02); `promotions.manage` permission
+- [x] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02); `promotions.manage` permission — #11
 - [ ] c: Parent payer (FR-14)
 - [ ] d: Receipts PDF (FR-15)
 - [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
