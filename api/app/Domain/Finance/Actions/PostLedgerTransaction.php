@@ -15,7 +15,8 @@ use LogicException;
 /**
  * The only way money is written (PRD-08 FR-01, BR-02): one balanced, single-currency transaction per
  * (type, reference). Posting the same type for the same reference again returns the existing transaction,
- * so replayed handlers never double-post. Zero lines are dropped.
+ * so replayed handlers never double-post. Zero lines are dropped; a posting with nothing left is skipped
+ * (returns null) — e.g. a sale of courses discounted to zero.
  */
 final class PostLedgerTransaction
 {
@@ -31,8 +32,11 @@ final class PostLedgerTransaction
         array $lines,
         ?string $memo = null,
         ?string $createdBy = null,
-    ): LedgerTransaction {
+    ): ?LedgerTransaction {
         $lines = array_values(array_filter($lines, fn (EntryLine $l) => ! $l->amount->isZero()));
+        if ($lines === []) {
+            return null;
+        }
         $this->assertBalanced($lines);
 
         return $this->db->transaction(function () use ($type, $referenceType, $referenceId, $lines, $memo, $createdBy): LedgerTransaction {
@@ -67,10 +71,6 @@ final class PostLedgerTransaction
      */
     private function assertBalanced(array $lines): void
     {
-        if ($lines === []) {
-            throw new LogicException('A ledger transaction needs at least one entry.');
-        }
-
         $currency = $lines[0]->amount->currency;
         $balance = 0;
 

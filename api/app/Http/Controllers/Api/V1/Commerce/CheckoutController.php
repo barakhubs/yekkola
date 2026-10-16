@@ -28,7 +28,7 @@ final class CheckoutController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        return ['data' => $quote->handle($user, $request->courseIds())->toArray()];
+        return ['data' => $quote->handle($user, $request->courseIds(), $request->bundleId(), $request->couponCode())->toArray()];
     }
 
     /**

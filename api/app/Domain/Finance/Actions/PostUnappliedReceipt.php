@@ -23,7 +23,7 @@ final class PostUnappliedReceipt
 
     public function __construct(private readonly PostLedgerTransaction $post) {}
 
-    public function handle(Payment $payment, Money $collected, string $reason): LedgerTransaction
+    public function handle(Payment $payment, Money $collected, string $reason): ?LedgerTransaction
     {
         return $this->post->handle(
             LedgerTransactionType::UnappliedReceipt,

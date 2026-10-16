@@ -59,6 +59,8 @@ final class AppServiceProvider extends ServiceProvider
         // Payment starts: 10 per hour per user (architecture §4.1); waiting-screen polls.
         RateLimiter::for('payments', fn (Request $request) => Limit::perHour(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('order-status', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Quotes and orders with a coupon code: limits code guessing.
+        RateLimiter::for('coupons', fn (Request $request) => Limit::perMinute(20)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Catalogue and search: a coarse abuse cap only. Server-side rendering (apps/web) and carrier NAT put
         // many visitors behind one IP. TODO(2.x): key on the forwarded client IP once trusted proxies are set.
         RateLimiter::for('catalogue', fn (Request $request) => Limit::perMinute(1_200)->by((string) $request->ip()));

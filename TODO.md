@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #10 (checkout core, Phase 1.7a) to be merged
-- **Next up:** 1.7b coupons, bundles, parent payer; then 1.7c receipts + refunds
+- **Waiting:** PR #11 (coupons & bundles, Phase 1.7b) to be merged
+- **Next up:** 1.7c parent payer; then 1.7d receipts + refunds
 
 ## Legend
 
@@ -63,6 +63,8 @@ Provisional defaults recorded in `project-context.md` → *Platform settings* (c
 - [x] Launch categories — academic + professional tree (`docs/catalogue-categories.md`) *(provisional)*
 - [x] Disbursement fees — platform pays *(provisional)*
 - [x] Bundle with an owned course — exclude + pro-rata price *(provisional)*
+- [x] Coupon funding — platform-funded keeps the professor's list-price share (capped at the price paid); professor-funded keeps the platform's; zero-priced lines earn nothing *(provisional)*
+- [x] No coupon on top of a bundle *(provisional)*
 - [x] Review SLAs — courses 48 h, applications 72 h *(provisional)*
 - [x] WhatsApp channel — post-launch backlog *(provisional)*
 
@@ -167,18 +169,18 @@ Cannot be defaulted:
 - [ ] Accent-insensitive database fallback (`unaccent`); push filters into Meilisearch for very broad searches (> 1,000 hits)
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
-*Three PRs: a) checkout core, b) coupons + bundles + parent payer, c) receipts + refunds.*
+*Four PRs: a) checkout core, b) coupons + bundles, c) parent payer, d) receipts + refunds.*
 - [x] a: Orders, items, payments, payment events, enrollments schema (arch §3.4, §3.5 enrollments) — #10
 - [x] a: Ledger core pulled forward from 1.10 — accounts, append-only transactions/entries, sale + reversal postings (PRD-08 FR-01, FR-02) — #10
 - [x] a: Free enroll (FR-01) — #10
 - [x] a: Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs) — #10
 - [x] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry — #10
 - [x] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17) — #10
-- [ ] b: Coupons (FR-11, FR-12) and bundles (FR-13)
-- [ ] b: Parent payer (FR-14)
-- [ ] c: Receipts PDF (FR-15)
-- [ ] c: Refund request + approval flow (FR-16)
-- [ ] c: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
+- [x] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02); `promotions.manage` permission — #11
+- [ ] c: Parent payer (FR-14)
+- [ ] d: Receipts PDF (FR-15)
+- [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
+- [ ] d: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
 - [ ] Reconciliation: one queued job per due payment once volume needs it
 
 ### 1.8 Learning — PRD-06

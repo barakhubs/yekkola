@@ -9,6 +9,7 @@ use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Enums\PaymentStatus;
 use App\Domain\Commerce\Events\OrderPaid;
 use App\Domain\Commerce\Events\PaymentReversed;
+use App\Domain\Commerce\Models\CouponRedemption;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Payment;
@@ -16,9 +17,7 @@ use App\Domain\Finance\Actions\PostSale;
 use App\Domain\Finance\Actions\PostUnappliedReceipt;
 use App\Domain\Finance\Actions\ReversePosting;
 use App\Domain\Finance\Enums\LedgerTransactionType;
-use App\Domain\Learning\Actions\GrantEnrollment;
 use App\Domain\Learning\Actions\RevokeEnrollments;
-use App\Domain\Learning\Enums\EnrollmentSource;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
 use App\Integrations\Payments\GatewayResult;
@@ -42,7 +41,7 @@ final class PaymentLifecycle
 {
     public function __construct(
         private readonly ConnectionInterface $db,
-        private readonly GrantEnrollment $grant,
+        private readonly FulfilOrder $fulfil,
         private readonly RevokeEnrollments $revoke,
         private readonly PostSale $postSale,
         private readonly PostUnappliedReceipt $postUnapplied,
@@ -192,10 +191,8 @@ final class PaymentLifecycle
             return;
         }
 
-        // Per item, in a fixed order (no deadlocks between overlapping orders): only access newly granted is sold.
-        [$granted, $owned] = $order->items->sortBy('course_id')->values()->partition(
-            fn (OrderItem $item) => $this->grant->handle($order->beneficiary_id, $item->course_id, EnrollmentSource::Purchase, $item->id),
-        );
+        // Per item: only access newly granted is sold (and uses the coupon).
+        [$granted, $owned] = $this->fulfil->handle($order);
 
         if ($granted->isEmpty()) {
             // Everything was already owned, e.g. bought again after this order expired: a second charge.
@@ -259,6 +256,7 @@ final class PaymentLifecycle
         $order->status = OrderStatus::Reversed;
         $order->flag = OrderFlag::raise($order->flag, OrderFlag::Reversed);
         $this->revoke->handle($order->items->pluck('id')->all(), 'payment_reversed');
+        CouponRedemption::query()->where('order_id', $order->id)->delete(); // the coupon use is given back
         $this->reverse->handle(LedgerTransactionType::Sale, LedgerTransactionType::SaleReversal, PostSale::REFERENCE, $order->id, "Reversal of order {$order->number}");
         $this->log->critical('Payment reversed after success', ['order_id' => $order->id, 'payment_id' => $payment->id]);
         $this->events->dispatch(new PaymentReversed($order->id, $payment->id));

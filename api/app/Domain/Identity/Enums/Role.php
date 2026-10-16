@@ -16,7 +16,7 @@ enum Role: string
     case SuperAdmin = 'super-admin';
 
     /**
-     * Permissions held by this role. Finance permissions are granted to staff individually
+     * Permissions held by this role. Finance and promotions permissions are granted to staff individually
      * (PRD-09: "Finance (permission set, combinable)"), so no role gets them by default except super admin.
      *
      * @return list<Permission>

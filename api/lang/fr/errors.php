@@ -122,6 +122,12 @@ return [
         'not_payable' => 'Cette commande ne peut plus être payée.',
         'not_found' => 'Commande introuvable.',
     ],
+    'coupon' => [
+        'invalid' => 'Ce code promo n’est pas valide.',
+        'not_applicable' => 'Ce code promo ne s’applique pas à cet achat.',
+        'exhausted' => 'Ce code promo a déjà été utilisé le nombre maximal de fois.',
+        'already_used' => 'Vous avez déjà utilisé ce code promo.',
+    ],
     'payment' => [
         'in_progress' => 'Un paiement est déjà en attente de validation sur votre téléphone.',
         'rail_unavailable' => 'Cet opérateur n’est pas disponible pour le moment. Essayez-en un autre.',

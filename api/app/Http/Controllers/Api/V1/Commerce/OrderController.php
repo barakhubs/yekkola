@@ -42,7 +42,7 @@ final class OrderController extends Controller
      */
     public function store(CourseSelectionRequest $request, CreateOrder $create): JsonResponse
     {
-        $order = $create->handle($this->user($request), $request->courseIds(), (string) $request->header('Idempotency-Key'));
+        $order = $create->handle($this->user($request), $request->courseIds(), (string) $request->header('Idempotency-Key'), $request->bundleId(), $request->couponCode());
 
         return (new OrderResource($order->load('items.course', 'payments')))->response()->setStatusCode(201);
     }

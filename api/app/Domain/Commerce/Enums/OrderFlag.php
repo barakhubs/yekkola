@@ -12,6 +12,7 @@ enum OrderFlag: string
     case Reversed = 'reversed';
     case DuplicatePayment = 'duplicate_payment';
     case AlreadyEnrolled = 'already_enrolled';
+    case CouponOverLimit = 'coupon_over_limit';
 
     /** Keeps the more serious of two flags, so a later event never hides an earlier problem. */
     public static function raise(?self $current, self $new): self
@@ -26,7 +27,7 @@ enum OrderFlag: string
             self::DuplicatePayment => 4,
             self::AlreadyEnrolled => 3,
             self::Reversed => 2,
-            self::LateSuccess => 1,
+            self::CouponOverLimit, self::LateSuccess => 1,
         };
     }
 }
