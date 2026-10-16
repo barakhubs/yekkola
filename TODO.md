@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #9 (catalogue & search, Phase 1.6) to be merged
-- **Next up:** Phase 1.7 (checkout & payments — PRD-05)
+- **Current branch:** `feature/prd-05-checkout` — Phase 1.7a (checkout core)
+- **Next up:** 1.7b coupons, bundles, parent payer; then 1.7c receipts + refunds
 
 ## Legend
 
@@ -167,15 +167,17 @@ Cannot be defaulted:
 - [ ] Accent-insensitive database fallback (`unaccent`); push filters into Meilisearch for very broad searches (> 1,000 hits)
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
-- [ ] Orders, items, payments, events, refunds, coupons, bundles schema (arch §3.4)
-- [ ] Free enroll (FR-01)
-- [ ] Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs)
-- [ ] Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry
-- [ ] Reconciliation + expiry job (FR-10)
-- [ ] Coupons (FR-11, FR-12) and bundles (FR-13)
-- [ ] Parent payer (FR-14)
-- [ ] Receipts PDF (FR-15)
-- [ ] Refund request + approval flow (FR-16)
+*Three PRs: a) checkout core, b) coupons + bundles + parent payer, c) receipts + refunds.*
+- [~] a: Orders, items, payments, payment events, enrollments schema (arch §3.4, §3.5 enrollments)
+- [~] a: Ledger core pulled forward from 1.10 — accounts, append-only transactions/entries, sale + reversal postings (PRD-08 FR-01, FR-02)
+- [~] a: Free enroll (FR-01)
+- [~] a: Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs)
+- [~] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry
+- [~] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17)
+- [ ] b: Coupons (FR-11, FR-12) and bundles (FR-13)
+- [ ] b: Parent payer (FR-14)
+- [ ] c: Receipts PDF (FR-15)
+- [ ] c: Refund request + approval flow (FR-16)
 
 ### 1.8 Learning — PRD-06
 - [ ] Enrollments, progress, quiz attempts, certificates, reviews, threads schema (arch §3.5)
@@ -196,7 +198,7 @@ Cannot be defaulted:
 - [ ] Takedown/revocation effects (FR-15)
 
 ### 1.10 Finance — PRD-08
-- [ ] Ledger accounts/transactions/entries + posting service (FR-01)
+- [ ] Ledger accounts/transactions/entries + posting service (FR-01) — core lands in 1.7a
 - [ ] Sale, release, refund postings (FR-02–05)
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
 - [ ] Earnings + statement endpoints (FR-09)
