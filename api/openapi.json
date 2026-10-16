@@ -6613,6 +6613,22 @@
                                                 "null"
                                             ]
                                         },
+                                        "failure_reason": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "null"
+                                                },
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Le paiement a \u00e9chou\u00e9. R\u00e9essayez ou choisissez un autre op\u00e9rateur."
+                                                    ]
+                                                }
+                                            ]
+                                        },
                                         "operator_reference": {
                                             "type": [
                                                 "string",
@@ -6631,6 +6647,7 @@
                                         "amount",
                                         "status",
                                         "failure_code",
+                                        "failure_reason",
                                         "operator_reference",
                                         "created_at"
                                     ]
@@ -6677,6 +6694,22 @@
                                                 "null"
                                             ]
                                         },
+                                        "failure_reason": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "null"
+                                                },
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Le paiement a \u00e9chou\u00e9. R\u00e9essayez ou choisissez un autre op\u00e9rateur."
+                                                    ]
+                                                }
+                                            ]
+                                        },
                                         "operator_reference": {
                                             "type": [
                                                 "string",
@@ -6695,6 +6728,7 @@
                                         "amount",
                                         "status",
                                         "failure_code",
+                                        "failure_reason",
                                         "operator_reference",
                                         "created_at"
                                     ]
@@ -6758,6 +6792,22 @@
                             "null"
                         ]
                     },
+                    "failure_reason": {
+                        "anyOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "Le paiement a \u00e9chou\u00e9. R\u00e9essayez ou choisissez un autre op\u00e9rateur."
+                                ]
+                            }
+                        ]
+                    },
                     "operator_reference": {
                         "type": [
                             "string",
@@ -6776,6 +6826,7 @@
                     "amount",
                     "status",
                     "failure_code",
+                    "failure_reason",
                     "operator_reference",
                     "created_at"
                 ],
