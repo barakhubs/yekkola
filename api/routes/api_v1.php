@@ -15,12 +15,15 @@ use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
+use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
 use App\Http\Controllers\Api\V1\Commerce\CheckoutController;
 use App\Http\Controllers\Api\V1\Commerce\EnrollmentController;
 use App\Http\Controllers\Api\V1\Commerce\GuestOrderController;
 use App\Http\Controllers\Api\V1\Commerce\OrderController;
+use App\Http\Controllers\Api\V1\Commerce\ReceiptController;
+use App\Http\Controllers\Api\V1\Commerce\RefundController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
 use App\Http\Controllers\Api\V1\Professor\CouponController as StudioCouponController;
@@ -57,6 +60,7 @@ Route::get('/checkout/rails', [CheckoutController::class, 'rails'])->name('check
 Route::post('/guest/orders', [GuestOrderController::class, 'store'])->middleware(['throttle:guest-orders', 'idempotent'])->name('guest.orders.store');
 Route::get('/guest/orders/{order}', [GuestOrderController::class, 'show'])->middleware('throttle:order-status')->name('guest.orders.show');
 Route::post('/guest/orders/{order}/payments', [GuestOrderController::class, 'pay'])->middleware(['throttle:payments', 'idempotent'])->name('guest.orders.pay');
+Route::get('/guest/orders/{order}/receipt.pdf', [GuestOrderController::class, 'receipt'])->middleware('throttle:order-status')->name('guest.orders.receipt');
 Route::get('/bundles/{slug}', [BundleController::class, 'show'])->middleware('throttle:catalogue')->name('bundles.show');
 Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
@@ -65,6 +69,10 @@ Route::middleware('signed-in')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->middleware('throttle:order-status')->name('orders.show');
     Route::post('/orders/{order}/payments', [OrderController::class, 'pay'])->middleware(['throttle:payments', 'idempotent'])->name('orders.pay');
     Route::get('/me/orders', [OrderController::class, 'index'])->name('me.orders.index');
+    Route::get('/orders/{order}/receipt', [ReceiptController::class, 'show'])->name('orders.receipt');
+    Route::get('/orders/{order}/receipt.pdf', [ReceiptController::class, 'pdf'])->middleware('throttle:order-status')->name('orders.receipt.pdf');
+    Route::post('/orders/{order}/refund-requests', [RefundController::class, 'store'])->name('orders.refund-requests.store');
+    Route::get('/me/refunds', [RefundController::class, 'index'])->name('me.refunds.index');
 });
 
 // Public catalogue (PRD-04)
@@ -198,6 +206,16 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/featured-courses', [FeaturedCourseController::class, 'index'])->name('featured-courses.index');
         Route::put('/featured-courses', [FeaturedCourseController::class, 'update'])->name('featured-courses.update');
 
+    });
+
+    // Refunds (PRD-09 FR-12)
+    Route::middleware('can:'.Permission::FinanceRefunds->value)->group(function () {
+        Route::get('/refunds', [AdminRefundController::class, 'index'])->name('refunds.index');
+        Route::get('/refunds/{refund}', [AdminRefundController::class, 'show'])->name('refunds.show');
+        Route::post('/refunds/{refund}/approve', [AdminRefundController::class, 'approve'])->name('refunds.approve');
+        Route::post('/refunds/{refund}/reject', [AdminRefundController::class, 'reject'])->name('refunds.reject');
+        Route::post('/refunds/{refund}/retry', [AdminRefundController::class, 'retry'])->name('refunds.retry');
+        Route::post('/payments/{payment}/refund', [AdminRefundController::class, 'refundUnapplied'])->name('payments.refund');
     });
 
     // Coupons and bundles (PRD-09 FR-13): a combinable permission, like finance

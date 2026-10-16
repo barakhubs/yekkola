@@ -18,6 +18,7 @@ use App\Http\Resources\Commerce\PaymentResource;
 use App\Integrations\BotChallenge\BotChallenge;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * A parent with no account pays for a student (PRD-05 FR-14). Creating the order returns a one-time
@@ -61,6 +62,14 @@ final class GuestOrderController extends Controller
         $payment = $start->handle($model, $request->rail(), $request->payer($model->payer()), (string) $request->header('Idempotency-Key'));
 
         return (new PaymentResource($payment))->response()->setStatusCode(201);
+    }
+
+    public function receipt(Request $request, string $order): Response
+    {
+        $model = $this->order($request, $order);
+        abort_unless(in_array($model->status, ReceiptController::RECEIPT_STATUSES, true), 404);
+
+        return ReceiptController::download($model->load('items', 'payments', 'beneficiary'));
     }
 
     /** Only a guest order, and only with its token (compared by hash). */
