@@ -13,6 +13,7 @@ enum LedgerTransactionType: string
     case UnappliedReceiptReversal = 'unapplied_receipt_reversal';
     case Release = 'release';
     case Refund = 'refund';
+    case RefundPaid = 'refund_paid';
     case Payout = 'payout';
     case PayoutFailed = 'payout_failed';
     case Adjustment = 'adjustment';
