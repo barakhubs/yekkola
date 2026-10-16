@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\V1\Account\DeviceController;
 use App\Http\Controllers\Api\V1\Account\PhoneController;
 use App\Http\Controllers\Api\V1\Account\ProfileController;
 use App\Http\Controllers\Api\V1\Account\WishlistController;
+use App\Http\Controllers\Api\V1\Admin\BundleController as AdminBundleController;
+use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
 use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
@@ -19,12 +21,15 @@ use App\Http\Controllers\Api\V1\Commerce\CheckoutController;
 use App\Http\Controllers\Api\V1\Commerce\EnrollmentController;
 use App\Http\Controllers\Api\V1\Commerce\OrderController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
+use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
+use App\Http\Controllers\Api\V1\Professor\CouponController as StudioCouponController;
 use App\Http\Controllers\Api\V1\Professor\CourseController;
 use App\Http\Controllers\Api\V1\Professor\DraftController;
 use App\Http\Controllers\Api\V1\Professor\KycController;
 use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
+use App\Http\Controllers\Api\V1\Public\BundleController;
 use App\Http\Controllers\Api\V1\Public\CategoryController;
 use App\Http\Controllers\Api\V1\Public\CourseController as PublicCourseController;
 use App\Http\Controllers\Api\V1\Public\ProfessorController;
@@ -47,10 +52,11 @@ Route::get('/provinces', [ProvinceController::class, 'index'])->name('provinces.
 
 // Checkout (PRD-05)
 Route::get('/checkout/rails', [CheckoutController::class, 'rails'])->name('checkout.rails');
+Route::get('/bundles/{slug}', [BundleController::class, 'show'])->name('bundles.show');
 Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
-    Route::post('/checkout/quote', [CheckoutController::class, 'quote'])->name('checkout.quote');
-    Route::post('/orders', [OrderController::class, 'store'])->middleware('idempotent')->name('orders.store');
+    Route::post('/checkout/quote', [CheckoutController::class, 'quote'])->middleware('throttle:coupons')->name('checkout.quote');
+    Route::post('/orders', [OrderController::class, 'store'])->middleware(['throttle:coupons', 'idempotent'])->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->middleware('throttle:order-status')->name('orders.show');
     Route::post('/orders/{order}/payments', [OrderController::class, 'pay'])->middleware(['throttle:payments', 'idempotent'])->name('orders.pay');
     Route::get('/me/orders', [OrderController::class, 'index'])->name('me.orders.index');
@@ -105,6 +111,14 @@ Route::middleware('signed-in')->prefix('professor/application')->name('professor
 
 // Professor studio (PRD-02 FR-07-10)
 Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('professor.')->group(function () {
+    // Coupons and bundles (PRD-05 FR-12, FR-13)
+    Route::get('/coupons', [StudioCouponController::class, 'index'])->name('coupons.index');
+    Route::post('/coupons', [StudioCouponController::class, 'store'])->name('coupons.store');
+    Route::patch('/coupons/{coupon}', [StudioCouponController::class, 'update'])->name('coupons.update');
+    Route::get('/bundles', [StudioBundleController::class, 'index'])->name('bundles.index');
+    Route::post('/bundles', [StudioBundleController::class, 'store'])->name('bundles.store');
+    Route::patch('/bundles/{bundle}', [StudioBundleController::class, 'update'])->name('bundles.update');
+
     Route::get('/profile', [StudioProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [StudioProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/avatar', [StudioProfileController::class, 'avatar'])->middleware('throttle:uploads')->name('profile.avatar');
@@ -178,6 +192,15 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
     Route::middleware('can:'.Permission::CatalogManage->value)->group(function () {
         Route::get('/featured-courses', [FeaturedCourseController::class, 'index'])->name('featured-courses.index');
         Route::put('/featured-courses', [FeaturedCourseController::class, 'update'])->name('featured-courses.update');
+
+        // Coupons and bundles (PRD-09 FR-13)
+        Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+        Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
+        Route::get('/coupons/{coupon}', [AdminCouponController::class, 'show'])->name('coupons.show');
+        Route::patch('/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');
+        Route::get('/bundles', [AdminBundleController::class, 'index'])->name('bundles.index');
+        Route::post('/bundles', [AdminBundleController::class, 'store'])->name('bundles.store');
+        Route::patch('/bundles/{bundle}', [AdminBundleController::class, 'update'])->name('bundles.update');
     });
 
     Route::middleware('can:'.Permission::ProfessorsManage->value)->group(function () {
