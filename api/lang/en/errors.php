@@ -130,6 +130,14 @@ return [
         'exhausted' => 'This promo code has reached its maximum number of uses.',
         'already_used' => 'You have already used this promo code.',
     ],
+    'refund' => [
+        'not_refundable' => 'This course cannot be refunded.',
+        'window_closed' => 'The :days-day refund period has passed.',
+        'progress_too_high' => 'You have completed more than :max_progress_pct% of the course, so it can no longer be refunded.',
+        'already_requested' => 'A refund is already in progress for this course.',
+        'invalid_transition' => 'This action is no longer possible for this refund.',
+        'nothing_unapplied' => 'This payment has nothing to refund.',
+    ],
     'payment' => [
         'payer_required' => 'Enter the number that will pay.',
         'in_progress' => 'A payment is already waiting for approval on your phone.',

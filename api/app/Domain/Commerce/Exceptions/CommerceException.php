@@ -100,4 +100,34 @@ final class CommerceException extends DomainException
     {
         return new self('coupon.already_used', 422);
     }
+
+    public static function notRefundable(): self
+    {
+        return new self('refund.not_refundable', 422);
+    }
+
+    public static function refundWindowClosed(int $days): self
+    {
+        return new self('refund.window_closed', 422, ['days' => $days]);
+    }
+
+    public static function refundProgressTooHigh(int $maxPct): self
+    {
+        return new self('refund.progress_too_high', 422, ['max_progress_pct' => $maxPct]);
+    }
+
+    public static function refundAlreadyRequested(): self
+    {
+        return new self('refund.already_requested', 409);
+    }
+
+    public static function refundInvalidTransition(): self
+    {
+        return new self('refund.invalid_transition', 409);
+    }
+
+    public static function nothingUnapplied(): self
+    {
+        return new self('refund.nothing_unapplied', 422);
+    }
 }

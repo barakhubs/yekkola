@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\Commerce\Console;
 
 use App\Domain\Commerce\Actions\PaymentLifecycle;
+use App\Domain\Commerce\Actions\RefundLifecycle;
 use App\Domain\Commerce\Actions\SyncPayment;
 use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Enums\PaymentStatus;
+use App\Domain\Commerce\Enums\RefundStatus;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\Payment;
+use App\Domain\Commerce\Models\Refund;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Throwable;
@@ -17,7 +20,7 @@ use Throwable;
 /**
  * Reconciliation (PRD-05 FR-10), every 5 minutes: expires orders past their payment timeout, re-queries
  * payments still in flight after 2 minutes, and keeps checking recently failed or expired ones for a late
- * success (which still grants access, flagged for review).
+ * success (which still grants access, flagged for review), and re-queries refund payouts in progress.
  */
 final class ReconcilePayments extends Command
 {
@@ -33,7 +36,7 @@ final class ReconcilePayments extends Command
 
     private const LATE_EVERY_MINUTES = 60;
 
-    public function handle(PaymentLifecycle $lifecycle, SyncPayment $sync): int
+    public function handle(PaymentLifecycle $lifecycle, SyncPayment $sync, RefundLifecycle $refundLifecycle): int
     {
         $expired = 0;
         Order::query()
@@ -59,7 +62,21 @@ final class ReconcilePayments extends Command
             }
         });
 
-        $this->info("Expired {$expired} orders, checked {$checked} payments.");
+        $refunds = 0;
+        Refund::query()
+            ->where('status', RefundStatus::Processing)
+            ->where(fn (Builder $q) => $q->whereNull('last_checked_at')->orWhere('last_checked_at', '<', now()->subMinutes(self::IN_FLIGHT_AFTER_MINUTES)))
+            ->lazyById(100)
+            ->each(function (Refund $refund) use ($refundLifecycle, &$refunds): void {
+                try {
+                    $refundLifecycle->sync($refund);
+                    $refunds++;
+                } catch (Throwable $e) {
+                    report($e);
+                }
+            });
+
+        $this->info("Expired {$expired} orders, checked {$checked} payments and {$refunds} refunds.");
 
         return self::SUCCESS;
     }

@@ -130,6 +130,14 @@ return [
         'exhausted' => 'Ce code promo a déjà été utilisé le nombre maximal de fois.',
         'already_used' => 'Vous avez déjà utilisé ce code promo.',
     ],
+    'refund' => [
+        'not_refundable' => 'Ce cours ne peut pas être remboursé.',
+        'window_closed' => 'Le délai de remboursement de :days jours est dépassé.',
+        'progress_too_high' => 'Vous avez suivi plus de :max_progress_pct % du cours : il ne peut plus être remboursé.',
+        'already_requested' => 'Un remboursement est déjà en cours pour ce cours.',
+        'invalid_transition' => 'Cette action n’est plus possible pour ce remboursement.',
+        'nothing_unapplied' => 'Ce paiement n’a aucun montant à rembourser.',
+    ],
     'payment' => [
         'payer_required' => 'Indiquez le numéro qui va payer.',
         'in_progress' => 'Un paiement est déjà en attente de validation sur votre téléphone.',
