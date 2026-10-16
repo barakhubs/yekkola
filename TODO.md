@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-checkout` — Phase 1.7a (checkout core)
+- **Waiting:** PR #10 (checkout core, Phase 1.7a) to be merged
 - **Next up:** 1.7b coupons, bundles, parent payer; then 1.7c receipts + refunds
 
 ## Legend
@@ -168,12 +168,12 @@ Cannot be defaulted:
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
 *Three PRs: a) checkout core, b) coupons + bundles + parent payer, c) receipts + refunds.*
-- [~] a: Orders, items, payments, payment events, enrollments schema (arch §3.4, §3.5 enrollments)
-- [~] a: Ledger core pulled forward from 1.10 — accounts, append-only transactions/entries, sale + reversal postings (PRD-08 FR-01, FR-02)
-- [~] a: Free enroll (FR-01)
-- [~] a: Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs)
-- [~] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry
-- [~] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17)
+- [x] a: Orders, items, payments, payment events, enrollments schema (arch §3.4, §3.5 enrollments) — #10
+- [x] a: Ledger core pulled forward from 1.10 — accounts, append-only transactions/entries, sale + reversal postings (PRD-08 FR-01, FR-02) — #10
+- [x] a: Free enroll (FR-01) — #10
+- [x] a: Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs) — #10
+- [x] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry — #10
+- [x] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17) — #10
 - [ ] b: Coupons (FR-11, FR-12) and bundles (FR-13)
 - [ ] b: Parent payer (FR-14)
 - [ ] c: Receipts PDF (FR-15)
@@ -200,7 +200,7 @@ Cannot be defaulted:
 - [ ] Takedown/revocation effects (FR-15)
 
 ### 1.10 Finance — PRD-08
-- [ ] Ledger accounts/transactions/entries + posting service (FR-01) — core lands in 1.7a
+- [x] Ledger accounts/transactions/entries + posting service (FR-01) — core in 1.7a, #10
 - [ ] Sale, release, refund postings (FR-02–05)
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
 - [ ] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward (shares can hold centimes)
