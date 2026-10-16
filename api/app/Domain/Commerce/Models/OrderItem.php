@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $discount_funded_by
  * @property int $revenue_share_bps
  * @property string $currency
+ * @property \Illuminate\Support\Carbon|null $granted_at
  */
 final class OrderItem extends Model
 {
@@ -44,6 +45,7 @@ final class OrderItem extends Model
             'discount_minor' => 'integer',
             'price_minor' => 'integer',
             'revenue_share_bps' => 'integer',
+            'granted_at' => 'datetime',
         ];
     }
 

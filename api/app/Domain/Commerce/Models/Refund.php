@@ -11,10 +11,11 @@ use App\Domain\Shared\ValueObjects\Money;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Money sent back to the payer of a collection (PRD-05 FR-16). Each disbursement attempt has its own
- * gateway reference, so a failed one can be retried without the gateway treating it as the same transfer.
+ * Money sent back to the payer of a collection (PRD-05 FR-16). Each payout attempt is a RefundAttempt
+ * with its own gateway reference, so a failed one can be retried and a late success is never lost.
  *
  * @property string $id
  * @property RefundKind $kind
@@ -24,22 +25,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $amount_minor
  * @property string $currency
  * @property RefundStatus $status
+ * @property string|null $flag
  * @property string|null $reason
  * @property string|null $requested_by
  * @property string|null $decided_by
  * @property \Illuminate\Support\Carbon|null $decided_at
  * @property string|null $decision_note
- * @property int $attempt
- * @property \Illuminate\Support\Carbon|null $attempted_at
- * @property string|null $flag
- * @property string|null $gateway
- * @property string|null $gateway_reference
- * @property string|null $operator_reference
- * @property int|null $fee_minor
+ * @property int $attempts
  * @property string|null $failure_code
- * @property string|null $failure_message
- * @property int $checks
- * @property \Illuminate\Support\Carbon|null $last_checked_at
  * @property \Illuminate\Support\Carbon|null $completed_at
  * @property \Illuminate\Support\Carbon $created_at
  */
@@ -47,11 +40,9 @@ final class Refund extends Model
 {
     use HasUlids;
 
-    public const REFERENCE_PREFIX = 'R-';
-
     protected $guarded = [];
 
-    protected $attributes = ['attempt' => 0, 'checks' => 0];
+    protected $attributes = ['attempts' => 0];
 
     /**
      * @return array<string, string>
@@ -62,12 +53,8 @@ final class Refund extends Model
             'kind' => RefundKind::class,
             'status' => RefundStatus::class,
             'amount_minor' => 'integer',
-            'fee_minor' => 'integer',
-            'attempt' => 'integer',
-            'checks' => 'integer',
+            'attempts' => 'integer',
             'decided_at' => 'datetime',
-            'attempted_at' => 'datetime',
-            'last_checked_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
     }
@@ -96,20 +83,22 @@ final class Refund extends Model
         return $this->belongsTo(Payment::class);
     }
 
+    /**
+     * @return HasMany<RefundAttempt, $this>
+     */
+    public function payoutAttempts(): HasMany
+    {
+        return $this->hasMany(RefundAttempt::class)->orderBy('number');
+    }
+
     public function amount(): Money
     {
         return Money::of($this->amount_minor, Currency::from($this->currency));
     }
 
-    /** The gateway reference of the current attempt. */
-    public function reference(): string
+    /** Gateway reference for payout attempt number n. */
+    public function referenceFor(int $number): string
     {
-        return self::REFERENCE_PREFIX.$this->id.'-'.$this->attempt;
-    }
-
-    /** The refund id inside a gateway reference, or null if it isn't one of ours. */
-    public static function idFromReference(string $reference): ?string
-    {
-        return preg_match('/^R-([0-9A-Za-z]{26})-\d+$/', $reference, $m) === 1 ? strtolower($m[1]) : null;
+        return 'R-'.$this->id.'-'.$number;
     }
 }

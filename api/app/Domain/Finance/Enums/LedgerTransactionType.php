@@ -18,8 +18,10 @@ enum LedgerTransactionType: string
     case RefundReversal = 'refund_reversal';
     /** A payout that failed after the operator had already given the payer the money back. */
     case RefundSettled = 'refund_settled';
-    /** An earlier payout attempt also went through: the payer was paid twice. */
+    /** A payout attempt that went through when nothing was owed any more: the payer was paid twice. */
     case RefundOverpaid = 'refund_overpaid';
+    /** The operator gave the payer their money back while our payout was out (or in flight): a payer debt. */
+    case RefundDebt = 'refund_debt';
     /** A completed payout the operator reversed: the money came back. */
     case RefundPaidReversal = 'refund_paid_reversal';
     case Payout = 'payout';
