@@ -118,6 +118,8 @@ return [
         'nothing_to_buy' => 'Vous êtes déjà inscrit à ces cours.',
         'currency_unavailable' => 'Cette devise n’est pas acceptée pour le moment.',
         'open_order_exists' => 'Une commande en attente de paiement existe déjà pour ce cours.',
+        'separate_payer_disabled' => 'Le paiement pour un autre élève n’est pas disponible pour le moment.',
+        'beneficiary_unavailable' => 'Impossible d’acheter un cours pour ce numéro.',
         'expired' => 'Cette commande a expiré. Créez-en une nouvelle.',
         'not_payable' => 'Cette commande ne peut plus être payée.',
         'not_found' => 'Commande introuvable.',
@@ -129,6 +131,7 @@ return [
         'already_used' => 'Vous avez déjà utilisé ce code promo.',
     ],
     'payment' => [
+        'payer_required' => 'Indiquez le numéro qui va payer.',
         'in_progress' => 'Un paiement est déjà en attente de validation sur votre téléphone.',
         'rail_unavailable' => 'Cet opérateur n’est pas disponible pour le moment. Essayez-en un autre.',
         'amount_out_of_range' => 'Ce montant n’est pas accepté par cet opérateur.',

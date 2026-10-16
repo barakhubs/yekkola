@@ -36,9 +36,24 @@ final class CommerceException extends DomainException
         return new self('order.currency_unavailable', 422);
     }
 
-    public static function openOrderExists(string $orderId): self
+    public static function openOrderExists(?string $orderId): self
     {
-        return new self('order.open_order_exists', 409, ['order_id' => $orderId]);
+        return new self('order.open_order_exists', 409, $orderId === null ? [] : ['order_id' => $orderId]);
+    }
+
+    public static function separatePayerDisabled(): self
+    {
+        return new self('order.separate_payer_disabled', 403);
+    }
+
+    public static function beneficiaryUnavailable(): self
+    {
+        return new self('order.beneficiary_unavailable', 422);
+    }
+
+    public static function payerRequired(): self
+    {
+        return new self('payment.payer_required', 422);
     }
 
     public static function orderExpired(): self

@@ -118,6 +118,8 @@ return [
         'nothing_to_buy' => 'You are already enrolled in these courses.',
         'currency_unavailable' => 'This currency is not accepted right now.',
         'open_order_exists' => 'An order waiting for payment already exists for this course.',
+        'separate_payer_disabled' => 'Paying for another student is not available right now.',
+        'beneficiary_unavailable' => 'Courses cannot be bought for this number.',
         'expired' => 'This order has expired. Please create a new one.',
         'not_payable' => 'This order can no longer be paid.',
         'not_found' => 'Order not found.',
@@ -129,6 +131,7 @@ return [
         'already_used' => 'You have already used this promo code.',
     ],
     'payment' => [
+        'payer_required' => 'Enter the number that will pay.',
         'in_progress' => 'A payment is already waiting for approval on your phone.',
         'rail_unavailable' => 'This operator is not available right now. Try another one.',
         'amount_out_of_range' => 'This amount is not accepted by this operator.',

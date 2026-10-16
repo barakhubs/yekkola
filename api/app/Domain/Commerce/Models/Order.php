@@ -9,17 +9,21 @@ use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Identity\Models\User;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
+use App\Domain\Shared\ValueObjects\PhoneNumber;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * What a student buys (PRD-05). Single currency; items snapshot prices and revenue shares at creation.
+ * What a student buys (PRD-05) — or what someone buys for them (FR-14): `buyer` is null for a parent
+ * without an account, who follows the order with a one-time token (only its hash is stored). Single currency; items snapshot prices and revenue shares at creation.
  *
  * @property string $id
  * @property string $number
- * @property string $buyer_id
+ * @property string|null $buyer_id
+ * @property string|null $payer_msisdn
+ * @property string|null $guest_token_hash
  * @property string $beneficiary_id
  * @property OrderStatus $status
  * @property string $currency
@@ -39,6 +43,8 @@ final class Order extends Model
 
     protected $guarded = [];
 
+    protected $hidden = ['guest_token_hash', 'payer_msisdn'];
+
     protected $attributes = ['discount_minor' => 0];
 
     /**
@@ -48,6 +54,7 @@ final class Order extends Model
     {
         return [
             'status' => OrderStatus::class,
+            'payer_msisdn' => 'encrypted',
             'flag' => OrderFlag::class,
             'subtotal_minor' => 'integer',
             'discount_minor' => 'integer',
@@ -92,6 +99,11 @@ final class Order extends Model
     public function total(): Money
     {
         return Money::of($this->total_minor, Currency::from($this->currency));
+    }
+
+    public function payer(): ?PhoneNumber
+    {
+        return $this->payer_msisdn === null ? null : PhoneNumber::fromString($this->payer_msisdn);
     }
 
     public function isExpired(): bool
