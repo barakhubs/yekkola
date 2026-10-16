@@ -178,6 +178,8 @@ Cannot be defaulted:
 - [ ] b: Parent payer (FR-14)
 - [ ] c: Receipts PDF (FR-15)
 - [ ] c: Refund request + approval flow (FR-16)
+- [ ] c: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
+- [ ] Reconciliation: one queued job per due payment once volume needs it
 
 ### 1.8 Learning — PRD-06
 - [ ] Enrollments, progress, quiz attempts, certificates, reviews, threads schema (arch §3.5)
@@ -201,6 +203,8 @@ Cannot be defaulted:
 - [ ] Ledger accounts/transactions/entries + posting service (FR-01) — core lands in 1.7a
 - [ ] Sale, release, refund postings (FR-02–05)
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
+- [ ] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward (shares can hold centimes)
+- [ ] Sale reversal after release: take the professor part from available (see `ReversePosting` TODO)
 - [ ] Earnings + statement endpoints (FR-09)
 - [ ] Manual adjustments (FR-11)
 - [ ] Ledger integrity job (FR-12)
