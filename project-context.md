@@ -357,7 +357,8 @@ Business — provisional defaults are in *Platform settings*; confirm before lau
 
 - Revenue split, payout schedule/minimum, active currencies, launch categories, disbursement fees, review SLAs
 - Bundle containing an already-owned course: provisional — owned courses are excluded and the bundle price is reduced pro-rata (PRD-05)
-- Who bears a coupon discount: provisional — platform-funded: the professor still earns their share of the list price; professor-funded: the platform keeps its share of the list price; shared (bundles): both shares on the price paid (PRD-05, PRD-08)
+- Who bears a coupon discount: provisional — platform-funded (staff coupons only): the professor earns their share of the list price, never more than was paid for the course; professor-funded: the platform keeps its share of the list price; shared (bundles): both shares on the price paid; a course discounted to 0 earns nobody anything (PRD-05, PRD-08)
+- Coupons on bundles: provisional — not combined (a bundle is already discounted) (PRD-05)
 - WhatsApp channel: provisional — post-launch backlog (PRD-10)
 
 Legal/tax — cannot be defaulted; needs professionals, required before launch:

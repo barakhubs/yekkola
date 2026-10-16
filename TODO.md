@@ -63,7 +63,8 @@ Provisional defaults recorded in `project-context.md` → *Platform settings* (c
 - [x] Launch categories — academic + professional tree (`docs/catalogue-categories.md`) *(provisional)*
 - [x] Disbursement fees — platform pays *(provisional)*
 - [x] Bundle with an owned course — exclude + pro-rata price *(provisional)*
-- [x] Coupon funding — platform-funded keeps the professor's list-price share; professor-funded keeps the platform's *(provisional)*
+- [x] Coupon funding — platform-funded keeps the professor's list-price share (capped at the price paid); professor-funded keeps the platform's; zero-priced lines earn nothing *(provisional)*
+- [x] No coupon on top of a bundle *(provisional)*
 - [x] Review SLAs — courses 48 h, applications 72 h *(provisional)*
 - [x] WhatsApp channel — post-launch backlog *(provisional)*
 
@@ -175,10 +176,10 @@ Cannot be defaulted:
 - [x] a: Quote + order creation with idempotency + snapshots (FR-02–04) — round totals to `Currency::collectionStepMinor()` (CDF whole francs) — #10
 - [x] a: Payment start, webhook inbox, re-query, state machine (FR-05–09) — log invalid webhook signatures at warning level; store events for unknown references and retry — #10
 - [x] a: Reconciliation + expiry job (FR-10); rails availability (FR-19); order history (FR-17) — #10
-- [~] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02)
+- [~] b: Coupons (FR-11, FR-12) and bundles (FR-13), discount postings per funder (PRD-08 FR-02); `promotions.manage` permission
 - [ ] c: Parent payer (FR-14)
 - [ ] d: Receipts PDF (FR-15)
-- [ ] d: Refund request + approval flow (FR-16)
+- [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
 - [ ] d: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
 - [ ] Reconciliation: one queued job per due payment once volume needs it
 
