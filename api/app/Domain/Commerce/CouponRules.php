@@ -13,6 +13,7 @@ use App\Domain\Commerce\Models\CouponRedemption;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
+use Illuminate\Cache\RateLimiter;
 
 /**
  * Coupon rules (PRD-05 FR-11): active and within its window, in scope for at least one line, currency of a
@@ -23,11 +24,23 @@ use App\Domain\Shared\ValueObjects\Money;
  */
 final class CouponRules
 {
-    public function find(string $code): Coupon
+    /** Wrong codes a user may try per day before every code is refused (stops guessing). */
+    public const DAILY_FAILED_LOOKUPS = 30;
+
+    public function __construct(private readonly RateLimiter $limiter) {}
+
+    public function find(string $code, string $userId): Coupon
     {
+        $key = 'coupon-failures:'.$userId;
+        if ($this->limiter->tooManyAttempts($key, self::DAILY_FAILED_LOOKUPS)) {
+            throw CommerceException::couponInvalid();
+        }
+
         $coupon = Coupon::query()->where('code', Coupon::normalize($code))->first();
 
         if ($coupon === null || ! $coupon->isRedeemableNow()) {
+            $this->limiter->hit($key, 86_400);
+
             throw CommerceException::couponInvalid();
         }
 
@@ -98,6 +111,8 @@ final class CouponRules
             ->when($userId !== null, fn ($q) => $q->where('user_id', $userId))
             ->count();
 
+        // An order that expires with a payment still unanswered can succeed late; that rare overrun is
+        // recorded and flagged (FulfilOrder) rather than holding the slot for a day.
         $reserved = Order::query()->where('coupon_id', $coupon->id)
             ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
             ->where('expires_at', '>', now())

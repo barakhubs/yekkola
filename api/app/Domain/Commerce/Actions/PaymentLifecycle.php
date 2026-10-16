@@ -9,6 +9,7 @@ use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Enums\PaymentStatus;
 use App\Domain\Commerce\Events\OrderPaid;
 use App\Domain\Commerce\Events\PaymentReversed;
+use App\Domain\Commerce\Models\CouponRedemption;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Payment;
@@ -191,7 +192,7 @@ final class PaymentLifecycle
         }
 
         // Per item: only access newly granted is sold (and uses the coupon).
-        [$granted, $owned] = $this->fulfil->grant($order);
+        [$granted, $owned] = $this->fulfil->handle($order);
 
         if ($granted->isEmpty()) {
             // Everything was already owned, e.g. bought again after this order expired: a second charge.
@@ -255,6 +256,7 @@ final class PaymentLifecycle
         $order->status = OrderStatus::Reversed;
         $order->flag = OrderFlag::raise($order->flag, OrderFlag::Reversed);
         $this->revoke->handle($order->items->pluck('id')->all(), 'payment_reversed');
+        CouponRedemption::query()->where('order_id', $order->id)->delete(); // the coupon use is given back
         $this->reverse->handle(LedgerTransactionType::Sale, LedgerTransactionType::SaleReversal, PostSale::REFERENCE, $order->id, "Reversal of order {$order->number}");
         $this->log->critical('Payment reversed after success', ['order_id' => $order->id, 'payment_id' => $payment->id]);
         $this->events->dispatch(new PaymentReversed($order->id, $payment->id));

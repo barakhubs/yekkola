@@ -44,7 +44,11 @@ final class SaveBundle
         /** @var list<string> $courseIds */
         $courseIds = array_values($data['course_ids'] ?? $bundle?->courses()->pluck('courses.id')->all() ?? []);
 
-        $this->assertConsistent($merged, $courseIds, $professor);
+        // Taking a bundle off sale must always work, even if its courses changed price since.
+        $onlyUnpublishing = $bundle !== null && array_keys($data) === ['status'] && $data['status'] !== BundleStatus::Active->value;
+        if (! $onlyUnpublishing) {
+            $this->assertConsistent($merged, $courseIds, $professor);
+        }
 
         return $this->db->transaction(function () use ($merged, $courseIds, $bundle, $professor, $actor): Bundle {
             $created = $bundle === null;
@@ -73,9 +77,10 @@ final class SaveBundle
         }
 
         $courses = Course::query()->whereIn('id', $courseIds)->get();
+        $listed = Course::query()->listed()->whereIn('id', $courseIds)->count();
         $valid = count($courseIds) >= 2 && $courses->count() === count($courseIds) && $courses->every(
             fn (Course $c) => ! $c->is_free && $c->currency === $currency->value && ($professor === null || $c->professor_profile_id === $professor->id)
-        );
+        ) && ($data['status'] !== BundleStatus::Active->value || $listed === count($courseIds)); // on sale = all published
         if (! $valid) {
             throw ValidationException::withMessages(['course_ids' => __('commerce.bundle.invalid_courses')]);
         }

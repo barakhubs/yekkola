@@ -7,7 +7,6 @@ namespace App\Domain\Commerce\Actions;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Commerce\CouponRules;
 use App\Domain\Commerce\Discounts;
-use App\Domain\Commerce\Enums\BundleStatus;
 use App\Domain\Commerce\Enums\DiscountFunder;
 use App\Domain\Commerce\Enums\MobileMoneyRail;
 use App\Domain\Commerce\Exceptions\CommerceException;
@@ -44,7 +43,7 @@ final class QuoteOrder
     {
         $bundle = null;
         if ($bundleId !== null) {
-            $bundle = Bundle::query()->where('status', BundleStatus::Active)->findOrFail($bundleId);
+            $bundle = Bundle::query()->onSale()->findOrFail($bundleId);
             $courseIds = $bundle->courses()->pluck('courses.id')->all();
         }
 
@@ -84,17 +83,22 @@ final class QuoteOrder
             if ($couponCode !== null) {
                 throw CommerceException::couponNotApplicable(); // bundles are already discounted
             }
-            $lines = $this->priceBundle($bundle, $lines, $courses, $currency);
+            $lines = $this->keepAboveMinimum($this->priceBundle($bundle, $lines, $courses, $currency), $currency);
         }
 
         $coupon = null;
         if ($couponCode !== null) {
-            $coupon = $this->coupons->find($couponCode);
+            $coupon = $this->coupons->find($couponCode, $beneficiary->id);
             $lines = $this->coupons->apply($coupon, $lines, $currency, $beneficiary->id);
             $lines = $this->keepAboveMinimum($lines, $currency);
         }
 
-        return new Quote($currency, $lines, excludedCourseIds: array_values($owned), coupon: $coupon, bundle: $bundle);
+        $quote = new Quote($currency, $lines, excludedCourseIds: array_values($owned), coupon: $coupon, bundle: $bundle);
+        if ($bundle !== null && $quote->isFree()) {
+            throw CommerceException::nothingToBuy(); // a bundle never turns into a free order
+        }
+
+        return $quote;
     }
 
     /**
@@ -138,7 +142,7 @@ final class QuoteOrder
 
     /**
      * BR-05: a paid total below what any enabled operator can collect is raised to that minimum by
-     * shrinking the discounts; a total of zero stays zero (free order).
+     * shrinking the discounts (coupons and bundles); a total of zero stays zero (free order).
      *
      * @param  list<QuoteLine>  $lines
      * @return list<QuoteLine>

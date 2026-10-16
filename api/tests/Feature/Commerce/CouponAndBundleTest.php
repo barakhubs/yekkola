@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Domain\Authoring\Enums\CourseStatus;
+use App\Domain\Commerce\CouponRules;
 use App\Domain\Commerce\Enums\OrderStatus;
+use App\Domain\Commerce\Exceptions\CommerceException;
 use App\Domain\Commerce\Models\Coupon;
 use App\Domain\Commerce\Models\CouponRedemption;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Finance\Enums\LedgerAccountType;
 use App\Domain\Finance\Models\LedgerTransaction;
+use App\Domain\Identity\Enums\Permission;
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Enrollment;
@@ -24,7 +28,7 @@ beforeEach(function () {
     $this->other = actingAsProfessor('Jean Mukendi');
     $this->chemistry = publishedCourse($this->other, 'Chimie organique', ['price_minor' => 1_000]);
 
-    $this->admin = actingAsStaff(Role::Admin);
+    $this->admin = actingAsStaff(Role::Admin, [Permission::PromotionsManage]);
     $this->student = User::factory()->create();
 });
 
@@ -73,16 +77,16 @@ it('applies a platform-funded percent coupon: the professor still earns their sh
 
 it('lets professors fund coupons on their own courses only', function () {
     Sanctum::actingAs($this->professor->user);
-    $this->postJson('/api/v1/professor/coupons', ['code' => 'MAMAN', 'course_id' => $this->chemistry->id, 'discount_type' => 'percent', 'value' => 50])
+    $this->postJson('/api/v1/professor/coupons', ['code' => 'MAMAN25', 'course_id' => $this->chemistry->id, 'discount_type' => 'percent', 'value' => 50])
         ->assertUnprocessable()->assertJsonValidationErrors('course_id');
-    $this->postJson('/api/v1/professor/coupons', ['code' => 'MAMAN', 'course_id' => $this->maths->id, 'discount_type' => 'percent', 'value' => 50, 'funded_by' => 'platform'])
+    $this->postJson('/api/v1/professor/coupons', ['code' => 'MAMAN25', 'course_id' => $this->maths->id, 'discount_type' => 'percent', 'value' => 50, 'funded_by' => 'platform'])
         ->assertUnprocessable()->assertJsonValidationErrors('funded_by');
-    $this->postJson('/api/v1/professor/coupons', ['code' => 'MAMAN', 'course_id' => $this->maths->id, 'discount_type' => 'percent', 'value' => 50])
+    $this->postJson('/api/v1/professor/coupons', ['code' => 'MAMAN25', 'course_id' => $this->maths->id, 'discount_type' => 'percent', 'value' => 50])
         ->assertCreated()->assertJsonPath('data.funded_by', 'professor')->assertJsonPath('data.scope', 'course');
 
     Sanctum::actingAs($this->student);
-    buy(['course_ids' => [$this->physics->id], 'coupon_code' => 'MAMAN'])->assertUnprocessable()->assertJsonPath('code', 'coupon.not_applicable');
-    $orderId = buy(['course_ids' => [$this->maths->id], 'coupon_code' => 'MAMAN'], 'order-2')->assertCreated()->json('data.id');
+    buy(['course_ids' => [$this->physics->id], 'coupon_code' => 'MAMAN25'])->assertUnprocessable()->assertJsonPath('code', 'coupon.not_applicable');
+    $orderId = buy(['course_ids' => [$this->maths->id], 'coupon_code' => 'MAMAN25'], 'order-2')->assertCreated()->json('data.id');
     payAndConfirm($orderId);
 
     // The platform keeps its 30% of the list price (4.50); the professor gets the rest of the 7.50 paid.
@@ -188,4 +192,124 @@ it('lets professors bundle only their own courses', function () {
         ->assertUnprocessable()->assertJsonValidationErrors('course_ids');
     $this->postJson('/api/v1/professor/bundles', ['title' => 'Mon pack', 'price_minor' => 3_000, 'currency' => 'USD', 'course_ids' => [$this->maths->id, $this->physics->id]])
         ->assertCreated()->assertJsonPath('data.status', 'draft');
+});
+
+it('never lets a professor earn more than was paid on a platform-funded coupon', function () {
+    coupon(['code' => 'MOITIE50', 'value' => 50]);
+    Sanctum::actingAs($this->student);
+    payAndConfirm(buy(['course_ids' => [$this->maths->id], 'coupon_code' => 'MOITIE50'])->json('data.id'));
+
+    // Paid 7.50: the professor gets 7.50 (not 70% of 15.00); the platform's discounts account covers its usual 4.50.
+    expect(ledgerBalance(LedgerAccountType::ProfessorHeld, $this->professor->id))->toBe(-750)
+        ->and(ledgerBalance(LedgerAccountType::PlatformRevenue))->toBe(-450)
+        ->and(ledgerBalance(LedgerAccountType::DiscountsPlatform))->toBe(450)
+        ->and(ledgerBalance(LedgerAccountType::GatewayClearing))->toBe(750);
+    assertLedgerBalanced();
+});
+
+it('earns nothing on a course discounted to zero, and completes even when the paid course was owned meanwhile', function () {
+    coupon(['code' => 'PHYSIQUE', 'scope' => 'course', 'course_id' => $this->physics->id, 'value' => 100]);
+    Sanctum::actingAs($this->student);
+    $orderId = buy(['course_ids' => [$this->maths->id, $this->physics->id], 'coupon_code' => 'PHYSIQUE'])
+        ->assertCreated()->assertJsonPath('data.total.amount_minor', 1_500)->json('data.id');
+
+    Enrollment::query()->create(['user_id' => $this->student->id, 'course_id' => $this->maths->id, 'source' => 'admin', 'status' => 'active', 'enrolled_at' => now()]);
+    payAndConfirm($orderId);
+
+    expect(Order::query()->sole()->status)->toBe(OrderStatus::Paid)
+        ->and(Enrollment::query()->where('course_id', $this->physics->id)->sole()->source->value)->toBe('coupon')
+        ->and(LedgerTransaction::query()->where('type', 'sale')->count())->toBe(0) // nothing sold: the paid course was already owned
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1_500)
+        ->and(ledgerBalance(LedgerAccountType::ProfessorHeld, $this->professor->id))->toBe(0);
+    assertLedgerBalanced();
+});
+
+it('flags a late success that takes a coupon past its limit', function () {
+    coupon(['code' => 'UNIQUE', 'max_redemptions' => 1]);
+
+    Sanctum::actingAs($this->student);
+    $late = buy(['course_ids' => [$this->maths->id], 'coupon_code' => 'UNIQUE'])->json('data.id');
+    $this->postJson("/api/v1/orders/{$late}/payments", ['rail' => 'orange', 'msisdn' => '+243812340003'], ['Idempotency-Key' => 'p-late'])->assertCreated();
+    $this->travel(16)->minutes();
+    $this->artisan('commerce:reconcile');
+
+    Sanctum::actingAs(User::factory()->create());
+    payAndConfirm(buy(['course_ids' => [$this->maths->id], 'coupon_code' => 'UNIQUE'], 'order-2')->json('data.id'));
+
+    $this->travel(61)->minutes();
+    $this->artisan('commerce:reconcile');
+    $this->travel(61)->minutes();
+    $this->artisan('commerce:reconcile');
+
+    expect(CouponRedemption::query()->count())->toBe(2)
+        ->and(Order::query()->find($late)->flag->value)->toBe('coupon_over_limit');
+});
+
+it('gives the coupon use back when the payment is reversed', function () {
+    coupon(['code' => 'RENTREE']);
+    Sanctum::actingAs($this->student);
+    $orderId = buy(['course_ids' => [$this->maths->id], 'coupon_code' => 'RENTREE'])->json('data.id');
+    $paymentId = $this->postJson("/api/v1/orders/{$orderId}/payments", ['rail' => 'orange', 'msisdn' => '+243812340004'], ['Idempotency-Key' => 'p-1'])->json('data.id');
+    sendPaymentWebhook($paymentId, 'evt-1');
+    expect(CouponRedemption::query()->count())->toBe(1);
+
+    sendPaymentWebhook($paymentId, 'evt-2'); // reversed
+
+    expect(CouponRedemption::query()->count())->toBe(0)
+        ->and(ledgerBalance(LedgerAccountType::DiscountsPlatform))->toBe(0);
+    assertLedgerBalanced();
+});
+
+it('keeps promotions to staff with the permission, and platform-funded', function () {
+    actingAsStaff(Role::Admin);
+    $this->getJson('/api/v1/admin/coupons')->assertForbidden();
+    $this->getJson('/api/v1/admin/bundles')->assertForbidden();
+
+    Sanctum::actingAs($this->admin);
+    $this->postJson('/api/v1/admin/coupons', ['code' => 'PROFPAIE', 'scope' => 'platform', 'discount_type' => 'percent', 'value' => 90, 'funded_by' => 'professor'])
+        ->assertUnprocessable()->assertJsonValidationErrors('funded_by');
+    $staffCoupon = $this->postJson('/api/v1/admin/coupons', [
+        'code' => 'POURMARIE', 'scope' => 'professor', 'professor_profile_id' => $this->professor->id, 'discount_type' => 'percent', 'value' => 40, 'funded_by' => 'platform', 'max_redemptions' => 50,
+    ])->assertCreated()->json('data.id');
+
+    // The professor can neither see nor change a coupon the platform pays for.
+    Sanctum::actingAs($this->professor->user);
+    $this->getJson('/api/v1/professor/coupons')->assertJsonCount(0, 'data');
+    $this->patchJson("/api/v1/professor/coupons/{$staffCoupon}", ['max_redemptions' => 1_000_000])->assertNotFound();
+    expect(Coupon::query()->find($staffCoupon)->max_redemptions)->toBe(50);
+});
+
+it('refuses every code after too many wrong guesses in a day', function () {
+    coupon(['code' => 'RENTREE']);
+    $rules = app(CouponRules::class);
+
+    for ($i = 0; $i < CouponRules::DAILY_FAILED_LOOKUPS; $i++) {
+        expect(fn () => $rules->find('GUESS'.$i, $this->student->id))->toThrow(CommerceException::class);
+    }
+
+    expect(fn () => $rules->find('RENTREE', $this->student->id))->toThrow(CommerceException::class)
+        ->and($rules->find('RENTREE', User::factory()->create()->id)->code)->toBe('RENTREE');
+});
+
+it('splits a platform bundle between professors and always lets a bundle be archived', function () {
+    $bundle = $this->postJson('/api/v1/admin/bundles', [
+        'title' => 'Pack Sciences', 'price_minor' => 2_000, 'currency' => 'USD', 'status' => 'active',
+        'course_ids' => [$this->maths->id, $this->chemistry->id],
+    ])->assertCreated()->json('data');
+
+    Sanctum::actingAs($this->student);
+    payAndConfirm(buy(['bundle_id' => $bundle['id']])->assertJsonPath('data.total.amount_minor', 2_000)->json('data.id'));
+
+    // 20.00 split 15:10 → 12.00 and 8.00; 70% each.
+    expect(ledgerBalance(LedgerAccountType::ProfessorHeld, $this->professor->id))->toBe(-840)
+        ->and(ledgerBalance(LedgerAccountType::ProfessorHeld, $this->other->id))->toBe(-560);
+    assertLedgerBalanced();
+
+    $this->chemistry->update(['status' => CourseStatus::Unpublished]);
+    $this->getJson("/api/v1/bundles/{$bundle['slug']}")->assertNotFound();
+
+    $this->maths->update(['price_minor' => 900]); // the courses now cost less than the bundle
+    Sanctum::actingAs($this->admin);
+    $this->patchJson("/api/v1/admin/bundles/{$bundle['id']}", ['status' => 'archived'])->assertOk()->assertJsonPath('data.status', 'archived');
+    $this->patchJson("/api/v1/admin/bundles/{$bundle['id']}", ['status' => 'active'])->assertUnprocessable();
 });

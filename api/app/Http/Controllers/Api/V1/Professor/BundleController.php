@@ -15,14 +15,22 @@ use App\Http\Resources\Commerce\BundleResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 /** A professor's bundles of their own courses (PRD-05 FR-13). */
 final class BundleController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        return BundleResource::collection(Bundle::query()->where('professor_profile_id', $this->professor($request)->id)
-            ->with(['courses' => fn ($q) => $q->with(BrowseCourses::cardRelations())])->latest()->paginate($this->perPage($request)));
+        $bundles = QueryBuilder::for(Bundle::query()->where('professor_profile_id', $this->professor($request)->id)->with(['courses' => fn ($q) => $q->with(BrowseCourses::cardRelations())]))
+            ->allowedFilters(AllowedFilter::exact('status'), AllowedFilter::exact('currency'), AllowedFilter::partial('title'))
+            ->allowedSorts('created_at', 'title', 'price_minor')
+            ->defaultSort('-created_at')
+            ->paginate($this->perPage($request))
+            ->appends($request->query());
+
+        return BundleResource::collection($bundles);
     }
 
     public function store(BundleRequest $request, SaveBundle $save): JsonResponse

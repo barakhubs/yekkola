@@ -52,7 +52,7 @@ Route::get('/provinces', [ProvinceController::class, 'index'])->name('provinces.
 
 // Checkout (PRD-05)
 Route::get('/checkout/rails', [CheckoutController::class, 'rails'])->name('checkout.rails');
-Route::get('/bundles/{slug}', [BundleController::class, 'show'])->name('bundles.show');
+Route::get('/bundles/{slug}', [BundleController::class, 'show'])->middleware('throttle:catalogue')->name('bundles.show');
 Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
     Route::post('/checkout/quote', [CheckoutController::class, 'quote'])->middleware('throttle:coupons')->name('checkout.quote');
@@ -193,7 +193,10 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/featured-courses', [FeaturedCourseController::class, 'index'])->name('featured-courses.index');
         Route::put('/featured-courses', [FeaturedCourseController::class, 'update'])->name('featured-courses.update');
 
-        // Coupons and bundles (PRD-09 FR-13)
+    });
+
+    // Coupons and bundles (PRD-09 FR-13): a combinable permission, like finance
+    Route::middleware('can:'.Permission::PromotionsManage->value)->group(function () {
         Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
         Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
         Route::get('/coupons/{coupon}', [AdminCouponController::class, 'show'])->name('coupons.show');

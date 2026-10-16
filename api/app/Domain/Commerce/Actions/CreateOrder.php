@@ -29,7 +29,7 @@ final class CreateOrder
         private readonly QuoteOrder $quote,
         private readonly CommerceSettings $settings,
         private readonly CouponRules $coupons,
-        private readonly FulfilOrder $fulfil,
+        private readonly CompleteFreeOrder $completeFree,
     ) {}
 
     /**
@@ -96,7 +96,7 @@ final class CreateOrder
             ], $quote->lines));
 
             if ($quote->isFree()) {
-                $this->fulfil->free($order); // BR-05: a 100% discount is a free enrollment, no payment
+                $this->completeFree->handle($order); // BR-05: a 100% discount is a free enrollment, no payment
             }
 
             return $order;

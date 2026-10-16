@@ -44,7 +44,7 @@ final class CouponRequest extends FormRequest
 
         return [
             ...$operational,
-            'code' => ['required', 'string', 'min:4', 'max:40', 'regex:/^[A-Za-z0-9_-]+$/', function (string $attribute, mixed $value, Closure $fail): void {
+            'code' => ['required', 'string', 'min:6', 'max:40', 'regex:/^[A-Za-z0-9_-]+$/', function (string $attribute, mixed $value, Closure $fail): void {
                 if (Coupon::query()->where('code', Coupon::normalize((string) $value))->exists()) {
                     $fail(__('validation.unique', ['attribute' => $attribute]));
                 }
@@ -55,7 +55,8 @@ final class CouponRequest extends FormRequest
             'discount_type' => ['required', Rule::enum(DiscountType::class)],
             'value' => ['required', 'integer', 'min:1', Rule::when($this->input('discount_type') === 'percent', ['max:100'])],
             'currency' => ['required_if:discount_type,fixed', 'nullable', 'string', 'size:3'],
-            'funded_by' => $byProfessor ? ['prohibited'] : ['required', Rule::enum(DiscountFunder::class)],
+            // Staff never commit a professor's earnings: their coupons are platform-funded (professors fund their own).
+            'funded_by' => $byProfessor ? ['prohibited'] : ['required', Rule::in([DiscountFunder::Platform->value])],
             'starts_at' => ['sometimes', 'nullable', 'date'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ];

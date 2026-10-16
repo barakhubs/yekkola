@@ -9,6 +9,7 @@ use App\Domain\Commerce\Enums\BundleStatus;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,6 +56,17 @@ final class Bundle extends Model
     public function professor(): BelongsTo
     {
         return $this->belongsTo(ProfessorProfile::class, 'professor_profile_id');
+    }
+
+    /**
+     * On sale: active, and every course in it is listed (PRD-05 FR-13).
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeOnSale(Builder $query): void
+    {
+        $query->where('status', BundleStatus::Active)
+            ->whereDoesntHave('courses', fn (Builder $c) => $c->whereNotIn('courses.id', Course::query()->listed()->select('courses.id')));
     }
 
     public function price(): Money

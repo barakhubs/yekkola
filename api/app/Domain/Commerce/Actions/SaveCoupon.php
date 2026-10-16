@@ -53,6 +53,13 @@ final class SaveCoupon
 
         $this->assertConsistent($data, $professor);
 
+        if ($professor === null && $data['scope'] !== CouponScope::Professor->value) {
+            $data['professor_profile_id'] = null;
+        }
+        if ($data['scope'] !== CouponScope::Course->value) {
+            $data['course_id'] = null;
+        }
+
         $coupon = Coupon::query()->create([
             ...$data,
             'code' => Coupon::normalize((string) $data['code']),
