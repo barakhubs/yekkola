@@ -84,6 +84,14 @@ return [
         'watermark_url' => env('MUX_WATERMARK_URL'),
     ],
 
+    'checkout' => [
+        // Buying for another student (PRD-05 FR-14). Provisional — confirm (TODO 1.7c).
+        'orders_per_student_number_per_day' => 10, // by anyone other than the student
+        'students_per_buyer_per_day' => 20,        // distinct numbers one account may buy for
+        'guest_orders_per_ip_per_hour' => 10,
+        'guest_token_days' => 30,                  // how long a guest can follow their order
+    ],
+
     'catalogue' => [
         // Estimated download size at the lowest offline tier (PRD-04 FR-05): duration × bitrate.
         // Provisional — confirm against real Mux renditions in the Mux spike (TODO 1.6).

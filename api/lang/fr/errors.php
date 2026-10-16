@@ -118,7 +118,7 @@ return [
         'nothing_to_buy' => 'Vous êtes déjà inscrit à ces cours.',
         'currency_unavailable' => 'Cette devise n’est pas acceptée pour le moment.',
         'open_order_exists' => 'Une commande en attente de paiement existe déjà pour ce cours.',
-        'separate_payer_disabled' => 'Le paiement pour un autre élève n’est pas disponible pour le moment.',
+        'separate_payer_disabled' => 'Le paiement pour un autre étudiant n’est pas disponible pour le moment.',
         'beneficiary_unavailable' => 'Impossible d’acheter un cours pour ce numéro.',
         'expired' => 'Cette commande a expiré. Créez-en une nouvelle.',
         'not_payable' => 'Cette commande ne peut plus être payée.',

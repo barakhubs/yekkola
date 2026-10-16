@@ -41,31 +41,41 @@ final class CreateOrder
         }
 
         $beneficiary = $new->beneficiary;
-        $quote = $this->quote->handle($beneficiary, $new->courseIds, $new->bundleId, $new->couponCode);
+        $quote = $this->quote->handle($beneficiary, $new->courseIds, $new->bundleId, $new->couponCode, private: $new->forAnother());
 
-        // One open order per course: a second one could be paid too and charge the student twice.
-        $open = Order::query()
-            ->where('beneficiary_id', $beneficiary->id)
-            ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
-            ->where('expires_at', '>', now())
-            ->whereHas('items', fn ($q) => $q->whereIn('course_id', array_map(fn (QuoteLine $l) => $l->course->id, $quote->lines)))
-            ->first();
-        if ($open !== null) {
-            // Only the buyer of that order learns its id (someone paying for this student does not).
-            throw CommerceException::openOrderExists($new->buyer !== null && $open->buyer_id === $new->buyer->id ? $open->id : null);
+        // One open order per course and buyer: a second one could be paid too and charge twice. Only the
+        // buyer's own orders count — someone else's unpaid order never blocks the student (a double purchase is
+        // then refunded, see PaymentLifecycle). Guests are covered by their idempotency key.
+        if ($new->buyer !== null) {
+            $open = Order::query()
+                ->where('buyer_id', $new->buyer->id)
+                ->where('beneficiary_id', $beneficiary->id)
+                ->whereIn('status', [OrderStatus::Pending, OrderStatus::AwaitingPayment])
+                ->where('expires_at', '>', now())
+                ->whereHas('items', fn ($q) => $q->whereIn('course_id', array_map(fn (QuoteLine $l) => $l->course->id, $quote->lines)))
+                ->first();
+            if ($open !== null) {
+                throw CommerceException::openOrderExists($open->id);
+            }
         }
 
         return $this->db->transaction(function () use ($new, $beneficiary, $quote): Order {
             if ($quote->coupon !== null) {
                 // Serialise checkouts on the same coupon: limits are re-checked under the lock.
                 $coupon = Coupon::query()->whereKey($quote->coupon->id)->lockForUpdate()->firstOrFail();
-                $this->coupons->assertWithinLimits($coupon, $beneficiary->id);
+                $this->coupons->assertWithinLimits($coupon, $new->forAnother() ? null : $beneficiary->id);
             }
 
+            // The lookup keys match the unique index exactly, so a concurrent duplicate finds the winner.
+            $keys = $new->buyer !== null
+                ? ['buyer_id' => $new->buyer->id, 'idempotency_key' => $new->idempotencyKey]
+                : ['buyer_id' => null, 'beneficiary_id' => $beneficiary->id, 'idempotency_key' => $new->idempotencyKey];
+
             $order = Order::query()->createOrFirst(
-                ['buyer_id' => $new->buyer?->id, 'beneficiary_id' => $beneficiary->id, 'idempotency_key' => $new->idempotencyKey],
+                $keys,
                 [
                     'number' => $this->number(),
+                    'beneficiary_id' => $beneficiary->id,
                     'payer_msisdn' => $new->payer?->e164,
                     'guest_token_hash' => $new->guestTokenHash,
                     'status' => OrderStatus::Pending,

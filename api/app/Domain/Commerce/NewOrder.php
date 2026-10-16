@@ -31,8 +31,17 @@ final readonly class NewOrder
     /**
      * @param  list<string>  $courseIds
      */
-    public static function forSelf(User $buyer, string $idempotencyKey, array $courseIds = [], ?string $bundleId = null, ?string $couponCode = null): self
+    public static function forSelf(User $buyer, string $idempotencyKey, array $courseIds = [], ?string $bundleId = null, ?string $couponCode = null, ?PhoneNumber $payer = null): self
     {
-        return new self($buyer, $buyer, $idempotencyKey, $courseIds, $bundleId, $couponCode);
+        return new self($buyer, $buyer, $idempotencyKey, $courseIds, $bundleId, $couponCode, $payer);
+    }
+
+    /**
+     * Bought by someone other than the student: nothing about the student (what they own, their coupon use,
+     * their other orders) may show in the outcome.
+     */
+    public function forAnother(): bool
+    {
+        return $this->buyer?->id !== $this->beneficiary->id;
     }
 }
