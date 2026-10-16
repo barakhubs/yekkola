@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Requests\Commerce;
 
 use App\Domain\Commerce\Enums\MobileMoneyRail;
-use App\Domain\Identity\Models\User;
+use App\Domain\Commerce\Exceptions\CommerceException;
 use App\Domain\Shared\Exceptions\InvalidPhoneNumber;
 use App\Domain\Shared\ValueObjects\PhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
-/** Operator and payer number for a payment (PRD-05 FR-05). The number defaults to the buyer's own. */
+/** Operator and payer number for a payment (PRD-05 FR-05, FR-14). */
 final class StartPaymentRequest extends FormRequest
 {
     public function authorize(): bool
@@ -48,16 +48,16 @@ final class StartPaymentRequest extends FormRequest
         return MobileMoneyRail::from((string) $this->validated('rail'));
     }
 
-    public function payer(): PhoneNumber
+    /**
+     * The number given, else the fallback (the payer named on the order, or the buyer's own number).
+     */
+    public function payer(?PhoneNumber $fallback): PhoneNumber
     {
         if (filled($this->input('msisdn'))) {
             return $this->payerOrNull() ?? throw InvalidPhoneNumber::make();
         }
 
-        /** @var User $user */
-        $user = $this->user();
-
-        return $user->phone;
+        return $fallback ?? throw CommerceException::payerRequired();
     }
 
     private function payerOrNull(): ?PhoneNumber

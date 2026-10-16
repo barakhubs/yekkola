@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
 use App\Http\Controllers\Api\V1\Commerce\CheckoutController;
 use App\Http\Controllers\Api\V1\Commerce\EnrollmentController;
+use App\Http\Controllers\Api\V1\Commerce\GuestOrderController;
 use App\Http\Controllers\Api\V1\Commerce\OrderController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
@@ -52,6 +53,10 @@ Route::get('/provinces', [ProvinceController::class, 'index'])->name('provinces.
 
 // Checkout (PRD-05)
 Route::get('/checkout/rails', [CheckoutController::class, 'rails'])->name('checkout.rails');
+// A parent with no account (PRD-05 FR-14): the order token stands in for sign-in
+Route::post('/guest/orders', [GuestOrderController::class, 'store'])->middleware(['throttle:guest-orders', 'idempotent'])->name('guest.orders.store');
+Route::get('/guest/orders/{order}', [GuestOrderController::class, 'show'])->middleware('throttle:order-status')->name('guest.orders.show');
+Route::post('/guest/orders/{order}/payments', [GuestOrderController::class, 'pay'])->middleware(['throttle:payments', 'idempotent'])->name('guest.orders.pay');
 Route::get('/bundles/{slug}', [BundleController::class, 'show'])->middleware('throttle:catalogue')->name('bundles.show');
 Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
