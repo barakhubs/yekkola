@@ -365,3 +365,51 @@ it('undoes exactly what a reversed order sold, even after the course was bought 
         ->and(ledgerBalance(LedgerAccountType::PayerReceivable))->toBe(1_500); // refund + reversal: paid twice
     assertLedgerBalanced();
 });
+
+it('clears the payer debt when a payout in flight fails after the payment was reversed', function () {
+    Sanctum::actingAs($this->student);
+    $order = boughtOrder([$geo = publishedCourse($this->professor, 'Géographie')->id], '+243812340004');
+    $id = askRefund($order, $geo)->json('data.id');
+
+    fakeGateway()->queue(Scenario::Fail);
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk();
+    // The gateway still shows the payout in flight when the operator reverses the payment.
+    $refund = Refund::query()->findOrFail($id);
+    $refund->forceFill(['status' => RefundStatus::Processing])->save();
+    $refund->payoutAttempts()->sole()->forceFill(['status' => 'processing', 'finished_at' => null])->save();
+
+    sendPaymentWebhook($order->paid_payment_id, 'evt-reverse');
+    expect(ledgerBalance(LedgerAccountType::PayerReceivable))->toBe(1_500);
+
+    app(App\Domain\Commerce\Actions\RefundLifecycle::class)->syncAttempt($refund->payoutAttempts()->sole()); // it failed
+
+    expect($refund->refresh()->status)->toBe(RefundStatus::Cancelled)
+        ->and(ledgerBalance(LedgerAccountType::PayerReceivable))->toBe(0)
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(0)
+        ->and(ledgerBalance(LedgerAccountType::GatewayClearing))->toBe(3_500); // the first order only
+    assertLedgerBalanced();
+});
+
+it('records the payer debt when unapplied money being paid back is also reversed', function () {
+    Sanctum::actingAs($this->student);
+    $course = publishedCourse($this->professor, 'Biologie');
+    $orderId = $this->postJson('/api/v1/orders', ['course_ids' => [$course->id]], ['Idempotency-Key' => 'o-dup'])->json('data.id');
+    // Two attempts: the first fails then succeeds late (unapplied), the second pays the order.
+    $first = $this->postJson("/api/v1/orders/{$orderId}/payments", ['rail' => 'orange', 'msisdn' => '+243812340005'], ['Idempotency-Key' => 'p-1'])->json('data.id');
+    sendPaymentWebhook($first, 'evt-a1');
+    sendPaymentWebhook($this->postJson("/api/v1/orders/{$orderId}/payments", ['rail' => 'airtel', 'msisdn' => '+243812345678'], ['Idempotency-Key' => 'p-2'])->json('data.id'), 'evt-b1');
+    sendPaymentWebhook($first, 'evt-a2'); // duplicate payment → unapplied 1,500
+
+    fakeGateway()->queue(Scenario::PendingForever);
+    Sanctum::actingAs($this->finance);
+    $refund = $this->postJson("/api/v1/admin/payments/{$first}/refund")->assertCreated()->json('data');
+    // FailThenSucceed never reverses, so mark the collection reversed through the state machine directly.
+    $payment = Payment::query()->findOrFail($first);
+    app(App\Domain\Commerce\Actions\PaymentLifecycle::class)->apply($payment, new App\Integrations\Payments\GatewayResult($first, 'g', App\Integrations\Payments\GatewayStatus::Reversed));
+
+    expect(Refund::query()->findOrFail($refund['id'])->flag)->toBe('paid_after_reversal')
+        ->and(ledgerBalance(LedgerAccountType::PayerReceivable))->toBe(1_500)
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1_500);
+    assertLedgerBalanced();
+});
