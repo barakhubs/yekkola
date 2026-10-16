@@ -122,6 +122,12 @@ return [
         'not_payable' => 'This order can no longer be paid.',
         'not_found' => 'Order not found.',
     ],
+    'coupon' => [
+        'invalid' => 'This promo code is not valid.',
+        'not_applicable' => 'This promo code does not apply to this purchase.',
+        'exhausted' => 'This promo code has reached its maximum number of uses.',
+        'already_used' => 'You have already used this promo code.',
+    ],
     'payment' => [
         'in_progress' => 'A payment is already waiting for approval on your phone.',
         'rail_unavailable' => 'This operator is not available right now. Try another one.',

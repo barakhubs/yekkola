@@ -162,6 +162,8 @@ return [
         'address' => 'adresse',
         'affiliate_url' => 'URL d\'affiliation',
         'age' => 'âge',
+        'course' => 'cours',
+        'professor' => 'professeur',
         'amount' => 'montant',
         'announcement' => 'annonce',
         'area' => 'zone',

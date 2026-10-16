@@ -16,9 +16,7 @@ use App\Domain\Finance\Actions\PostSale;
 use App\Domain\Finance\Actions\PostUnappliedReceipt;
 use App\Domain\Finance\Actions\ReversePosting;
 use App\Domain\Finance\Enums\LedgerTransactionType;
-use App\Domain\Learning\Actions\GrantEnrollment;
 use App\Domain\Learning\Actions\RevokeEnrollments;
-use App\Domain\Learning\Enums\EnrollmentSource;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
 use App\Integrations\Payments\GatewayResult;
@@ -42,7 +40,7 @@ final class PaymentLifecycle
 {
     public function __construct(
         private readonly ConnectionInterface $db,
-        private readonly GrantEnrollment $grant,
+        private readonly FulfilOrder $fulfil,
         private readonly RevokeEnrollments $revoke,
         private readonly PostSale $postSale,
         private readonly PostUnappliedReceipt $postUnapplied,
@@ -192,10 +190,8 @@ final class PaymentLifecycle
             return;
         }
 
-        // Per item, in a fixed order (no deadlocks between overlapping orders): only access newly granted is sold.
-        [$granted, $owned] = $order->items->sortBy('course_id')->values()->partition(
-            fn (OrderItem $item) => $this->grant->handle($order->beneficiary_id, $item->course_id, EnrollmentSource::Purchase, $item->id),
-        );
+        // Per item: only access newly granted is sold (and uses the coupon).
+        [$granted, $owned] = $this->fulfil->grant($order);
 
         if ($granted->isEmpty()) {
             // Everything was already owned, e.g. bought again after this order expired: a second charge.

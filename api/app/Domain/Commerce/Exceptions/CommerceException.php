@@ -65,4 +65,24 @@ final class CommerceException extends DomainException
     {
         return new self('payment.amount_out_of_range', 422);
     }
+
+    public static function couponInvalid(): self
+    {
+        return new self('coupon.invalid', 422);
+    }
+
+    public static function couponNotApplicable(): self
+    {
+        return new self('coupon.not_applicable', 422);
+    }
+
+    public static function couponExhausted(): self
+    {
+        return new self('coupon.exhausted', 422);
+    }
+
+    public static function couponAlreadyUsed(): self
+    {
+        return new self('coupon.already_used', 422);
+    }
 }
