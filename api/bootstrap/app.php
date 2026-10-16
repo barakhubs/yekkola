@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Commerce\Console\ReconcilePayments;
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
 use App\Domain\Professors\Console\ExpireStaleApplications;
 use App\Domain\Shared\Exceptions\DomainException;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         PurgeDeletedAccounts::class,
         ExpireStaleApplications::class,
+        ReconcilePayments::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.

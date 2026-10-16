@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Identity\Jobs;
 
 use App\Domain\Authoring\Models\Course;
+use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Enums\DataExportStatus;
 use App\Domain\Identity\Models\DataExport;
+use App\Domain\Learning\Models\Enrollment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -51,6 +53,23 @@ final class BuildDataExport implements ShouldQueue
                 'last_active_at' => $d->last_active_at?->toIso8601String(),
                 'revoked_at' => $d->revoked_at?->toIso8601String(),
             ])->all(),
+            'orders' => Order::query()->where('buyer_id', $user->id)->orWhere('beneficiary_id', $user->id)->with('items')->orderBy('created_at')->get()
+                ->map(fn (Order $o) => [
+                    'number' => $o->number,
+                    'status' => $o->status->value,
+                    'total_minor' => $o->total_minor,
+                    'currency' => $o->currency,
+                    'courses' => $o->items->pluck('title_snapshot')->all(),
+                    'created_at' => $o->created_at->toIso8601String(),
+                    'paid_at' => $o->paid_at?->toIso8601String(),
+                ])->all(),
+            'enrollments' => Enrollment::query()->where('user_id', $user->id)->with('course')->get()
+                ->map(fn (Enrollment $e) => [
+                    'course' => $e->course?->slug,
+                    'source' => $e->source->value,
+                    'status' => $e->status->value,
+                    'enrolled_at' => $e->enrolled_at->toIso8601String(),
+                ])->all(),
             'wishlist' => Course::query()->join('wishlist_items as w', 'w.course_id', '=', 'courses.id')
                 ->where('w.user_id', $user->id)->orderBy('w.created_at')->pluck('courses.slug')->all(),
         ];
