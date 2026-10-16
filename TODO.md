@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-receipts-refunds` — Phase 1.7d
+- **Current branch:** `feature/prd-05-receipts-refunds` — Phase 1.7d (PR open)
 - **Next up:** Phase 1.8 (learning — PRD-06)
 
 ## Legend
@@ -188,6 +188,7 @@ Cannot be defaulted:
 - [ ] VAT lines on receipts once tax treatment is decided (0.5)
 - [ ] Confirm refund payout fees are always borne by the platform (payouts follow `platform_pays_disbursement_fees`)
 - [ ] Staff tooling to recover `payer_receivable` debts (refund paid twice) — with the back office (2.x)
+- [ ] Payment webhooks: release the job (don't mark processed) when the status API is down, as refunds now do
 - [ ] Revoke certificates when a course is refunded (with 1.8)
 
 ### 1.8 Learning — PRD-06
