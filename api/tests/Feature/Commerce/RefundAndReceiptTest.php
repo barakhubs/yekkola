@@ -132,7 +132,7 @@ it('retries a failed payout under a new reference, and reconciliation finishes i
 
     Sanctum::actingAs($this->finance);
     $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk()->assertJsonPath('data.status', 'failed');
-    $this->postJson("/api/v1/admin/refunds/{$id}/retry")->assertOk()->assertJsonPath('data.status', 'processing');
+    $this->postJson("/api/v1/admin/refunds/{$id}/retry", ['note' => 'Numéro corrigé'])->assertOk()->assertJsonPath('data.status', 'processing');
 
     $refund = Refund::query()->findOrFail($id);
     expect($refund->attempt)->toBe(2)->and($refund->reference())->toEndWith('-2');
@@ -160,11 +160,129 @@ it('sends back money a payment collected but never applied', function () {
 
     confirmRefundPayout(Refund::query()->findOrFail($refund['id']));
 
-    expect(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(0);
+    // This payer number (…0008) also makes the fake gateway pay out one unit less: the ledger posts what was
+    // really sent, keeps the unit still owed, and flags it.
+    expect(Refund::query()->findOrFail($refund['id'])->flag)->toBe('amount_mismatch')
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1)
+        ->and(ledgerBalance(LedgerAccountType::GatewayClearing))->toBe(3_500 + 1);
     assertLedgerBalanced();
 });
 
 it('keeps the refund queue to staff with the finance permission', function () {
     actingAsStaff(Role::Admin);
     $this->getJson('/api/v1/admin/refunds')->assertForbidden();
+});
+
+it('calls off a refund request when the operator reverses the payment first', function () {
+    Sanctum::actingAs($this->student);
+    $reversible = boughtOrder([publishedCourse($this->professor, 'Géographie')->id], '+243812340004'); // reversed at check 2
+    $id = askRefund($reversible, $reversible->items->sole()->course_id)->json('data.id');
+
+    sendPaymentWebhook($reversible->paid_payment_id, 'evt-reverse');
+
+    expect(Refund::query()->findOrFail($id)->status)->toBe(RefundStatus::Rejected)
+        ->and($reversible->refresh()->status)->toBe(OrderStatus::Reversed);
+
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertConflict();
+    assertLedgerBalanced();
+});
+
+it('records the payer\'s debt when a payment is reversed after a refund was paid out', function () {
+    Sanctum::actingAs($this->student);
+    $order = boughtOrder([$geo = publishedCourse($this->professor, 'Géographie')->id, $hist = publishedCourse($this->professor, 'Histoire', ['price_minor' => 2_000])->id], '+243812340004');
+    $id = askRefund($order, $geo)->json('data.id');
+
+    fakeGateway()->queue(Scenario::Succeed);
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk();
+    confirmRefundPayout(Refund::query()->findOrFail($id));
+    expect($order->refresh()->status)->toBe(OrderStatus::PartiallyRefunded);
+
+    sendPaymentWebhook($order->paid_payment_id, 'evt-reverse'); // the operator takes the whole payment back
+
+    expect($order->refresh()->status)->toBe(OrderStatus::Reversed)
+        ->and(Enrollment::query()->where('course_id', $hist)->sole()->status)->toBe(EnrollmentStatus::Revoked)
+        ->and(Refund::query()->findOrFail($id)->flag)->toBe('paid_after_reversal')
+        ->and(ledgerBalance(LedgerAccountType::PayerReceivable))->toBe(1_500) // paid twice for that course
+        ->and(ledgerBalance(LedgerAccountType::ProfessorHeld, $this->professor->id))->toBe(-(1_050 + 1_400)) // only the first order's earnings remain
+        ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(0);
+    assertLedgerBalanced();
+});
+
+it('cancels an approved refund whose payout failed when the payment is reversed', function () {
+    Sanctum::actingAs($this->student);
+    $order = boughtOrder([$geo = publishedCourse($this->professor, 'Géographie')->id], '+243812340004');
+    $id = askRefund($order, $geo)->json('data.id');
+
+    fakeGateway()->queue(Scenario::Fail);
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk()->assertJsonPath('data.status', 'failed');
+
+    sendPaymentWebhook($order->paid_payment_id, 'evt-reverse');
+
+    expect(Refund::query()->findOrFail($id)->status)->toBe(RefundStatus::Cancelled);
+    $this->postJson("/api/v1/admin/refunds/{$id}/retry", ['note' => 'Réessayer'])->assertConflict();
+    assertLedgerBalanced();
+});
+
+it('records an earlier payout attempt that went through after all', function () {
+    $id = askRefund($this->order, $this->maths->id)->json('data.id');
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk();
+    $refund = Refund::query()->findOrFail($id);
+    confirmRefundPayout($refund); // attempt 1 completes
+
+    // Pretend attempt 1 had been written off and a second attempt paid: attempt 1 reporting success is a double payout.
+    $refund->forceFill(['attempt' => 2])->save();
+    app(App\Domain\Commerce\Actions\RefundLifecycle::class)->syncReference($refund->refresh(), 'R-'.$refund->id.'-1');
+
+    expect($refund->refresh()->flag)->toBe('old_attempt_paid')
+        ->and(ledgerBalance(LedgerAccountType::PayerReceivable))->toBe(1_500);
+    assertLedgerBalanced();
+});
+
+it('needs a reason to retry, and never lets staff decide on their own order', function () {
+    $id = askRefund($this->order, $this->maths->id)->json('data.id');
+    $this->order->forceFill(['beneficiary_id' => $this->finance->id])->save();
+
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertForbidden()->assertJsonPath('code', 'refund.own_order');
+    $this->postJson("/api/v1/admin/refunds/{$id}/retry")->assertUnprocessable();
+});
+
+it('shows only money paid back as refunded on the receipt, and hides the student from guests', function () {
+    $id = askRefund($this->order, $this->maths->id)->json('data.id');
+    fakeGateway()->queue(Scenario::PendingForever);
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk();
+
+    Sanctum::actingAs($this->student);
+    $this->getJson("/api/v1/orders/{$this->order->id}/receipt")
+        ->assertJsonPath('data.refunded.amount_minor', 0)
+        ->assertJsonPath('data.refund_pending.amount_minor', 1_500);
+
+    expect(App\Domain\Commerce\Receipt::of($this->order->refresh()->load('items', 'payments', 'beneficiary'), 'fr', forGuest: true)['student'])->toBeNull();
+});
+
+it('sends a payout again if the gateway never registered it, and gives up after a day', function () {
+    $id = askRefund($this->order, $this->maths->id)->json('data.id');
+    fakeGateway()->queue(Scenario::Unavailable);
+    Sanctum::actingAs($this->finance);
+    $this->postJson("/api/v1/admin/refunds/{$id}/approve")->assertOk()->assertJsonPath('data.status', 'failed');
+
+    // A payout stuck in progress with nothing at the gateway: re-sent under the same reference.
+    $refund = Refund::query()->findOrFail($id);
+    $refund->forceFill(['status' => RefundStatus::Processing, 'attempt' => 7, 'attempted_at' => now()])->save();
+    app(App\Domain\Commerce\Actions\RefundLifecycle::class)->sync($refund->refresh());
+    confirmRefundPayout($refund);
+    expect($refund->refresh()->status)->toBe(RefundStatus::Completed);
+
+    // Another one, still unknown a day later: failed, flagged, retryable.
+    $stuck = Refund::query()->create([
+        'kind' => 'unapplied', 'order_id' => $this->order->id, 'payment_id' => $this->order->paid_payment_id, 'amount_minor' => 100, 'currency' => 'USD',
+        'status' => RefundStatus::Processing, 'attempt' => 1, 'attempted_at' => now()->subHours(25),
+    ]);
+    app(App\Domain\Commerce\Actions\RefundLifecycle::class)->sync($stuck);
+    expect($stuck->refresh()->status)->toBe(RefundStatus::Failed)->and($stuck->flag)->toBe('stuck');
 });
