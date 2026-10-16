@@ -86,8 +86,8 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 2. `POST /orders` with `Idempotency-Key` → `Order(pending)` + items with **snapshotted** price and revenue split.
 3. `POST /orders/{id}/payments {rail, msisdn}` → `PaymentGateway::collect()` → `Payment(pending)`; student approves the USSD prompt on their phone.
 4. Gateway webhook → `/webhooks/payments/{gateway}` → verify signature → dedupe by event id → re-query the gateway **by our payment reference** (never trust the webhook body alone) → compare the confirmed amount/currency with the payment → `Payment(succeeded)`. A start call that times out (`GatewayOutcomeUnknown`) stays pending and is reconciled the same way — never retried under a new reference.
-5. `PaymentSucceeded` event → `Order(paid)` → `Enrollment` per item → ledger transaction (gateway clearing ↔ professor earnings (held) + platform revenue) → receipt notification.
-6. Client polls `GET /orders/{id}` until terminal state. A scheduled reconciliation job re-queries all payments stuck in `pending` past the timeout.
+5. `PaymentLifecycle::apply()` (one transaction, order + payment locked, safe to replay) → `Order(paid)` → `Enrollment` per item → ledger `sale` transaction (gateway clearing ↔ professor held + platform revenue) → `OrderPaid` event (receipt notification, PRD-10). Access and the sale are per item: only courses newly granted are sold. Money collected that buys nothing (a confirmed amount that differs, a second success, items already owned) is posted as `unapplied_receipt` (gateway clearing ↔ refunds payable) and flagged for staff; an amount mismatch blocks further attempts on the order. A reversal revokes the access that payment granted and mirrors its postings. One open order per course and buyer.
+6. Client polls `GET /orders/{id}` until terminal state; an in-flight payment is re-checked with the gateway at most every 10 s. `commerce:reconcile` (every 5 min) expires orders past the payment timeout, re-queries payments in flight > 2 min, and checks failed/expired ones hourly for 24 h (late success → access granted, order flagged `late_success`). Each row is isolated: one failure never stops the run.
 
 **D. Playback (streaming)**
 1. Player requests `POST /lessons/{uid}/playback`.
@@ -254,10 +254,10 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `orders` | id, number (human-readable, unique), buyer_id, beneficiary_id (student who gets access), payer_msisdn, status (`pending`/`awaiting_payment`/`paid`/`failed`/`expired`/`cancelled`/`refunded`/`partially_refunded`), currency, subtotal_minor, discount_minor, total_minor, coupon_id (null), idempotency_key (unique per buyer), expires_at, paid_at | Single currency per order. |
-| `order_items` | id, order_id, course_id, bundle_id (null), professor_id, list_price_minor, discount_minor, price_minor, discount_funded_by (`platform`/`professor`/`shared`), revenue_share_bps (snapshot), currency | Snapshot = what the ledger uses. |
-| `payments` | id, order_id, gateway, rail (`orange`/`airtel`/`mpesa`), msisdn (encrypted), amount_minor, currency, status (`initiated`/`pending`/`succeeded`/`failed`/`expired`/`reversed`), gateway_reference (unique), failure_code, failure_message, last_checked_at, attempts | Multiple attempts per order allowed. |
-| `payment_events` | id, payment_id (null), gateway, event_id (unique per gateway), type, payload (jsonb), signature_valid, received_at, processed_at, error | Inbox for webhooks + polls. |
+| `orders` | id, number (`YK-XXXXXXXX`, unique), buyer_id, beneficiary_id (student who gets access), status (`pending`/`awaiting_payment`/`paid`/`expired`/`cancelled`/`reversed`/`refunded`/`partially_refunded`), currency, subtotal_minor, discount_minor, total_minor, idempotency_key (unique per buyer), expires_at, paid_at, paid_payment_id, flag (`late_success`/`amount_mismatch`/`reversed`/`duplicate_payment`/`already_enrolled` — needs staff attention; a later event never replaces a more serious flag) | Single currency per order. Coupon and payer columns arrive with 1.7b. |
+| `order_items` | id, order_id, course_id, professor_profile_id, title_snapshot, list_price_minor, discount_minor, price_minor, discount_funded_by (`platform`/`professor`/`shared`), revenue_share_bps (snapshot: course → professor → platform default), currency | Snapshot = what the ledger uses. `bundle_id` arrives with 1.7b. |
+| `payments` | id (our reference at the gateway), order_id, idempotency_key (unique per order), gateway, rail (`orange`/`airtel`/`mpesa`), msisdn (encrypted), amount_minor, currency, confirmed_amount_minor, fee_minor, status (`initiated`/`pending`/`succeeded`/`failed`/`expired`/`reversed`), gateway_reference (unique per gateway), operator_reference, failure_code, failure_message, flag, last_result (encrypted), checks, last_checked_at, succeeded_at | Several attempts per order, one in flight at a time. |
+| `payment_events` | id, gateway, event_id (unique per gateway), kind (`collection`/`disbursement`), reference (our payment/payout/refund id), payload (encrypted — can carry payer numbers), received_at, processed_at, error, attempts | Webhook inbox (only signature-valid events are stored); processed by `ProcessPaymentEvent` on the `payments` queue, unknown references retried. |
 | `refunds` | id, order_id, order_item_id, amount_minor, currency, reason, status (`requested`/`approved`/`rejected`/`processing`/`completed`/`failed`), requested_by, decided_by, decided_at, gateway_reference | |
 | `coupons` | id, code (unique, case-insensitive), scope (`platform`/`professor`/`course`), professor_id (null), course_id (null), discount_type (`percent`/`fixed`), value, currency (null for percent), funded_by, max_redemptions, per_user_limit, starts_at, ends_at, is_active, created_by | |
 | `coupon_redemptions` | id, coupon_id, user_id, order_id | Counted on payment success, not order creation. |
@@ -288,9 +288,9 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `ledger_accounts` | id, type, owner_type, owner_id (null), currency, unique `(type, owner_type, owner_id, currency)` | Types: `gateway_clearing`, `gateway_fees` (aggregator collection/disbursement fees), `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`. |
-| `ledger_transactions` | id, type (`sale`/`release`/`refund`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Immutable. |
-| `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor, currency, created_at | Sum of debits = sum of credits per transaction (enforced in code + DB check via trigger or test). |
+| `ledger_accounts` | id, type, owner_type (`platform`/`professor`), owner_id (null for platform), currency, unique `(type, owner_type, owner_id, currency)` NULLS NOT DISTINCT | Types: `gateway_clearing`, `gateway_fees` (aggregator collection/disbursement fees), `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`. |
+| `ledger_transactions` | id, type (`sale`/`sale_reversal`/`unapplied_receipt`/`unapplied_receipt_reversal`/`release`/`refund`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Unique `(type, reference_type, reference_id)`: a replay can never post twice. Append-only (DB triggers, incl. TRUNCATE). Written only by `PostLedgerTransaction`. |
+| `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor (> 0, CHECK), currency, created_at | Sum of debits = sum of credits per transaction (enforced in `PostLedgerTransaction`, checked in tests and by the integrity job). Append-only (DB trigger). |
 | `payout_batches` | id, status (`draft`/`approved`/`processing`/`completed`/`partially_failed`), currency, period_end, created_by, approved_by, approved_at | |
 | `payouts` | id, payout_batch_id, professor_id, amount_minor, currency, rail, msisdn (encrypted), status (`pending`/`processing`/`paid`/`failed`), gateway_reference, failure_reason, paid_at | |
 
@@ -387,10 +387,11 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path | Purpose |
 |---|---|---|
-| POST | /checkout/quote | Price quote (courses or bundle, coupon, currency) |
-| POST | /orders | Create order (`Idempotency-Key`) |
-| POST | /orders/{id}/payments | Start payment `{rail, msisdn}` |
-| GET | /orders/{id} | Order + latest payment status (polling) |
+| GET | /checkout/rails?currency= | Operators and whether each can take a payment now (public) |
+| POST | /checkout/quote | Price quote `{course_ids}` (bundle and coupon with 1.7b) |
+| POST | /orders | Create order `{course_ids}` (`Idempotency-Key`) |
+| POST | /orders/{id}/payments | Start payment `{rail, msisdn?}` (`Idempotency-Key`; 10/h per user; msisdn defaults to the account's) |
+| GET | /orders/{id} | Order + payments (polling; re-checks an in-flight payment at most every 10 s) |
 | POST | /orders/{id}/cancel | Cancel unpaid order |
 | GET | /me/orders | Order history |
 | GET | /me/orders/{id}/receipt | Receipt (JSON + PDF link) |
@@ -471,7 +472,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 |---|---|
 | POST | /webhooks/video | Video provider (Mux) |
 | PUT | /_fake/video-uploads/{upload} | Fake video driver only: stands in for the upload URL (local, staging) |
-| POST | /webhooks/payments/{gateway} |
+| POST | /webhooks/payments/{gateway} | Payment gateway (`fake` until the aggregator is integrated) |
 | POST | /webhooks/sms/{provider} (delivery reports) |
 
 The OpenAPI spec generated from code is authoritative; this table is the design intent.

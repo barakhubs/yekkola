@@ -71,6 +71,7 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | Video/audio host | `App\Integrations\Video\VideoProvider`: `MuxVideoProvider` (HTTP + RS256 JWTs) or `FakeVideoProvider` (uploads complete via `PUT /api/v1/_fake/video-uploads/{id}`) |
 | Public catalogue | `Course::query()->listed()` is the only public filter (published, live version, active professor); cards eager-load `BrowseCourses::cardRelations()` |
 | Search index | `Course` is Scout-searchable (queued, after commit); `SyncCourseIndex` reindexes (after commit) on professor/user/category changes; `MakeListedSearchable` re-checks listing when the job runs. Production refuses any driver but `meilisearch`. Run `php artisan scout:sync-index-settings` on deploy |
+| Payments | Every gateway result goes through `PaymentLifecycle::apply()` (locks order then payment); start with `StartPayment`, re-query with `SyncPayment`. Ledger writes only via `PostLedgerTransaction` (balanced, one per type + reference) |
 | Course drafts | `EditDraft::withDraft($course, fn ($draft) => …)` locks the draft and refuses unless editable; review transitions in `CourseReview` |
 | Mobile money | `App\Integrations\Payments\PaymentGateway` (fake driver until the aggregator is chosen) |
 | SMS | `App\Integrations\Sms\SmsSender` (`log` driver until the provider is chosen) |
@@ -82,6 +83,8 @@ Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_
 **FakeGateway outcomes** by the last 4 digits of the payer/recipient number (full list in `Scenario`): `0001` insufficient funds, `0002` pending forever, `0003` late success, `0004` reversal, `0005` fail then succeed, `0006` unavailable, `0007` timeout-but-succeeds, `0008` amount mismatch, `0009` rejected by payer, `0010` invalid recipient; anything else pending → succeeded on re-check. Tests can force outcomes with `queue(Scenario::...)` and outages with `makeUnavailable($rail)`; `webhookFor($reference)` builds a signed webhook.
 
 **Auth tests:** helpers in `tests/Pest.php` — `signInMobile()`, `signInWeb()`, `lastSmsCode($e164)`, `bearer($token)`, `WEB_APP` / `MOBILE_APP` headers (OTP requests need one or a `bot_token`), `freshAuth()` (call between requests: the test client reuses cached guards and models).
+
+**Checkout tests:** payer numbers pick the FakeGateway scenario (`…0001` insufficient funds, `…0002` pending forever, …); `sendPaymentWebhook($paymentId)`, `ledgerBalance()`, `assertLedgerBalanced()`, `publishedCourse()`.
 
 **Authoring tests:** `courseReadyForReview($professor)` builds a submittable course; `completeFakeVideo($course, $lessonId)`; `rsaKeyPair()` loads the test-only signing key in `tests/Fixtures`.
 

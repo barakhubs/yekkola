@@ -111,6 +111,26 @@ return [
         'preview_limit_reached' => 'Maximum number of preview lessons reached.',
         'type_mismatch' => 'This content does not match the lesson type.',
     ],
+    'order' => [
+        'course_unavailable' => 'One of the courses is not available for purchase.',
+        'free_course' => 'This course is free: enroll directly.',
+        'mixed_currency' => 'Courses in one order must use the same currency.',
+        'nothing_to_buy' => 'You are already enrolled in these courses.',
+        'currency_unavailable' => 'This currency is not accepted right now.',
+        'open_order_exists' => 'An order waiting for payment already exists for this course.',
+        'expired' => 'This order has expired. Please create a new one.',
+        'not_payable' => 'This order can no longer be paid.',
+        'not_found' => 'Order not found.',
+    ],
+    'payment' => [
+        'in_progress' => 'A payment is already waiting for approval on your phone.',
+        'rail_unavailable' => 'This operator is not available right now. Try another one.',
+        'amount_out_of_range' => 'This amount is not accepted by this operator.',
+    ],
+    'enrollment' => [
+        'not_free' => 'This course is not free.',
+        'revoked' => 'Your access to this course was removed. Please contact support.',
+    ],
     'phone' => [
         'invalid' => 'Invalid phone number.',
         'taken' => 'This number is already used by another account.',

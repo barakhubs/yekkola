@@ -111,6 +111,26 @@ return [
         'preview_limit_reached' => 'Nombre maximal de leçons d’aperçu atteint.',
         'type_mismatch' => 'Ce contenu ne correspond pas au type de leçon.',
     ],
+    'order' => [
+        'course_unavailable' => 'Un des cours n’est pas disponible à l’achat.',
+        'free_course' => 'Ce cours est gratuit : inscrivez-vous directement.',
+        'mixed_currency' => 'Les cours d’une même commande doivent être dans la même devise.',
+        'nothing_to_buy' => 'Vous êtes déjà inscrit à ces cours.',
+        'currency_unavailable' => 'Cette devise n’est pas acceptée pour le moment.',
+        'open_order_exists' => 'Une commande en attente de paiement existe déjà pour ce cours.',
+        'expired' => 'Cette commande a expiré. Créez-en une nouvelle.',
+        'not_payable' => 'Cette commande ne peut plus être payée.',
+        'not_found' => 'Commande introuvable.',
+    ],
+    'payment' => [
+        'in_progress' => 'Un paiement est déjà en attente de validation sur votre téléphone.',
+        'rail_unavailable' => 'Cet opérateur n’est pas disponible pour le moment. Essayez-en un autre.',
+        'amount_out_of_range' => 'Ce montant n’est pas accepté par cet opérateur.',
+    ],
+    'enrollment' => [
+        'not_free' => 'Ce cours est payant.',
+        'revoked' => 'Votre accès à ce cours a été retiré. Contactez le support.',
+    ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',
         'taken' => 'Ce numéro est déjà utilisé par un autre compte.',
