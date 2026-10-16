@@ -24,13 +24,15 @@ return new class extends Migration
             $table->foreignUlid('payment_id')->constrained()->restrictOnDelete(); // the collection refunded
             $table->bigInteger('amount_minor');
             $table->char('currency', 3);
-            $table->string('status', 16)->index(); // requested | approved | rejected | processing | completed | failed
+            $table->string('status', 16)->index(); // requested | approved | rejected | processing | completed | failed | cancelled
+            $table->string('flag', 32)->nullable()->index(); // needs staff attention: amount_mismatch, old_attempt_paid, paid_after_reversal, payout_reversed, stuck
             $table->text('reason')->nullable();
             $table->foreignUlid('requested_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignUlid('decided_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('decided_at')->nullable();
             $table->text('decision_note')->nullable();
             $table->unsignedSmallInteger('attempt')->default(0); // gateway reference = R-{id}-{attempt}
+            $table->timestamp('attempted_at')->nullable();
             $table->string('gateway', 32)->nullable();
             $table->string('gateway_reference', 128)->nullable();
             $table->string('operator_reference', 128)->nullable();
@@ -51,9 +53,9 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE refunds ADD CONSTRAINT refunds_amount CHECK (amount_minor > 0 AND (kind = 'unapplied' OR order_item_id IS NOT NULL))");
-        // One live refund per course bought, and per unapplied payment (a rejected one can be asked again).
-        DB::statement("CREATE UNIQUE INDEX refunds_one_per_item ON refunds (order_item_id) WHERE kind = 'item' AND status <> 'rejected'");
-        DB::statement("CREATE UNIQUE INDEX refunds_one_per_unapplied ON refunds (payment_id) WHERE kind = 'unapplied' AND status <> 'rejected'");
+        // One live refund per course bought, and per unapplied payment (a rejected or cancelled one can be asked again).
+        DB::statement("CREATE UNIQUE INDEX refunds_one_per_item ON refunds (order_item_id) WHERE kind = 'item' AND status NOT IN ('rejected', 'cancelled')");
+        DB::statement("CREATE UNIQUE INDEX refunds_one_per_unapplied ON refunds (payment_id) WHERE kind = 'unapplied' AND status NOT IN ('rejected', 'cancelled')");
     }
 
     public function down(): void

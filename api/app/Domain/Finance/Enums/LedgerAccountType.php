@@ -15,6 +15,8 @@ enum LedgerAccountType: string
     case ProfessorPaidOut = 'professor_paid_out';
     case RefundsPayable = 'refunds_payable';
     case DiscountsPlatform = 'discounts_platform';
+    /** Money paid out twice to a payer (a refund plus an operator reversal, two payout attempts): they owe it back. */
+    case PayerReceivable = 'payer_receivable';
 
     public function ownedByProfessor(): bool
     {

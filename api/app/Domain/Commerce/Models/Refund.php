@@ -30,6 +30,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $decided_at
  * @property string|null $decision_note
  * @property int $attempt
+ * @property \Illuminate\Support\Carbon|null $attempted_at
+ * @property string|null $flag
  * @property string|null $gateway
  * @property string|null $gateway_reference
  * @property string|null $operator_reference
@@ -64,6 +66,7 @@ final class Refund extends Model
             'attempt' => 'integer',
             'checks' => 'integer',
             'decided_at' => 'datetime',
+            'attempted_at' => 'datetime',
             'last_checked_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
