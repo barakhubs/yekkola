@@ -254,14 +254,14 @@ PostgreSQL. Conventions:
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `orders` | id, number (`YK-XXXXXXXX`, unique), buyer_id, beneficiary_id (student who gets access), status (`pending`/`awaiting_payment`/`paid`/`expired`/`cancelled`/`reversed`/`refunded`/`partially_refunded`), currency, subtotal_minor, discount_minor, total_minor, idempotency_key (unique per buyer), expires_at, paid_at, paid_payment_id, flag (`late_success`/`amount_mismatch`/`reversed`/`duplicate_payment`/`already_enrolled` — needs staff attention; a later event never replaces a more serious flag) | Single currency per order. Coupon and payer columns arrive with 1.7b. |
-| `order_items` | id, order_id, course_id, professor_profile_id, title_snapshot, list_price_minor, discount_minor, price_minor, discount_funded_by (`platform`/`professor`/`shared`), revenue_share_bps (snapshot: course → professor → platform default), currency | Snapshot = what the ledger uses. `bundle_id` arrives with 1.7b. |
+| `orders` | id, number (`YK-XXXXXXXX`, unique), buyer_id, beneficiary_id (student who gets access), status (`pending`/`awaiting_payment`/`paid`/`expired`/`cancelled`/`reversed`/`refunded`/`partially_refunded`), currency, subtotal_minor, discount_minor, total_minor, coupon_id, bundle_id, idempotency_key (unique per buyer), expires_at, paid_at, paid_payment_id, flag (`late_success`/`amount_mismatch`/`reversed`/`duplicate_payment`/`already_enrolled` — needs staff attention; a later event never replaces a more serious flag) | Single currency per order. Payer columns arrive with 1.7c. A 100%-discount order is `paid` at creation (no payment, no ledger). |
+| `order_items` | id, order_id, course_id, bundle_id, professor_profile_id, title_snapshot, list_price_minor, discount_minor, price_minor, discount_funded_by (`platform`/`professor`/`shared`), revenue_share_bps (snapshot: course → professor → platform default), currency | Snapshot = what the ledger uses. Sale split by `discount_funded_by` (provisional): platform → professor earns their share of the list price, `discounts_platform` pays; professor → platform keeps its share of the list price; shared (bundles) → both shares on the price paid. |
 | `payments` | id (our reference at the gateway), order_id, idempotency_key (unique per order), gateway, rail (`orange`/`airtel`/`mpesa`), msisdn (encrypted), amount_minor, currency, confirmed_amount_minor, fee_minor, status (`initiated`/`pending`/`succeeded`/`failed`/`expired`/`reversed`), gateway_reference (unique per gateway), operator_reference, failure_code, failure_message, flag, last_result (encrypted), checks, last_checked_at, succeeded_at | Several attempts per order, one in flight at a time. |
 | `payment_events` | id, gateway, event_id (unique per gateway), kind (`collection`/`disbursement`), reference (our payment/payout/refund id), payload (encrypted — can carry payer numbers), received_at, processed_at, error, attempts | Webhook inbox (only signature-valid events are stored); processed by `ProcessPaymentEvent` on the `payments` queue, unknown references retried. |
 | `refunds` | id, order_id, order_item_id, amount_minor, currency, reason, status (`requested`/`approved`/`rejected`/`processing`/`completed`/`failed`), requested_by, decided_by, decided_at, gateway_reference | |
-| `coupons` | id, code (unique, case-insensitive), scope (`platform`/`professor`/`course`), professor_id (null), course_id (null), discount_type (`percent`/`fixed`), value, currency (null for percent), funded_by, max_redemptions, per_user_limit, starts_at, ends_at, is_active, created_by | |
-| `coupon_redemptions` | id, coupon_id, user_id, order_id | Counted on payment success, not order creation. |
-| `bundles` | id, professor_id (null = platform bundle), slug, title (jsonb or text), price_minor, currency, status | |
+| `coupons` | id, code (unique, stored upper-case), scope (`platform`/`professor`/`course`), professor_profile_id (null), course_id (null), discount_type (`percent`/`fixed`), value (percent 1–100, or minor units), currency (fixed only), funded_by, max_redemptions, per_user_limit, starts_at, ends_at, is_active, created_by | Only active/end date/limits change after creation. Open orders using a coupon count as reservations; limits re-checked under a row lock at order creation. |
+| `coupon_redemptions` | id, coupon_id, user_id (beneficiary), order_id (unique), created_at | Recorded when the order grants access (payment success or free order). |
+| `bundles` | id, professor_profile_id (null = platform bundle), slug, title, description, price_minor, currency, status (`draft`/`active`/`archived`) | ≥ 2 paid courses in its currency, priced below their total. Owned courses lower the price pro-rata (provisional); revenue split pro-rata to list prices. No coupon on top. |
 | `bundle_courses` | bundle_id, course_id, position | |
 
 ### 3.5 Learning
@@ -388,8 +388,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | Method | Path | Purpose |
 |---|---|---|
 | GET | /checkout/rails?currency= | Operators and whether each can take a payment now (public) |
-| POST | /checkout/quote | Price quote `{course_ids}` (bundle and coupon with 1.7b) |
-| POST | /orders | Create order `{course_ids}` (`Idempotency-Key`) |
+| POST | /checkout/quote | Price quote `{course_ids | bundle_id, coupon_code?}` (20/min per user) |
+| GET | /bundles/{slug} | Active bundle whose courses are all listed |
+| POST | /orders | Create order `{course_ids | bundle_id, coupon_code?}` (`Idempotency-Key`) |
 | POST | /orders/{id}/payments | Start payment `{rail, msisdn?}` (`Idempotency-Key`; 10/h per user; msisdn defaults to the account's) |
 | GET | /orders/{id} | Order + payments (polling; re-checks an in-flight payment at most every 10 s) |
 | POST | /orders/{id}/cancel | Cancel unpaid order |
@@ -409,6 +410,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /professor/terms/accept | Accept the current professor agreement |
 | GET / POST | /professor/kyc | Latest identity check / submit (multipart front, back, selfie) |
 | POST / PUT | /professor/payout-method[/otp] | Code to own number / set rail + number (48 h hold on change) |
+| GET / POST / PATCH {id} | /professor/coupons | Own coupons (own courses, professor-funded) |
+| GET / POST / PATCH {id} | /professor/bundles | Own bundles (own courses) |
 | GET / POST | /professor/courses | List / create (creates draft v1) |
 | GET / PATCH / DELETE | /professor/courses/{id} | Settings (category, language, level, audience, price/free — immediate) / delete if never published |
 | POST | /professor/courses/{id}/draft | Start a draft from the live version |
@@ -457,7 +460,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/orders[/{id}], /admin/payments[/{id}] | Commerce views |
 | POST | /admin/payments/{id}/recheck | Force status re-query |
 | GET | /admin/refunds; POST /admin/refunds/{id}/(approve\|reject) | Refunds |
-| CRUD | /admin/coupons, /admin/bundles | Promotions |
+| GET / POST / GET {id} / PATCH {id} | /admin/coupons | Coupons with usage (`catalog.manage`, audited) |
+| GET / POST / PATCH {id} | /admin/bundles | Bundles (`catalog.manage`, audited) |
 | GET | /admin/ledger/accounts, /admin/ledger/transactions | Finance views |
 | POST | /admin/ledger/adjustments | Manual adjustment (finance, audited) |
 | GET / POST | /admin/payout-batches | List / build |
