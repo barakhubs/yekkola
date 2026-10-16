@@ -20,6 +20,8 @@ return new class extends Migration
         Schema::table('order_items', function (Blueprint $table) {
             $table->timestamp('granted_at')->nullable(); // this order gave access to the course (and posted its sale)
         });
+        // Orders paid before this column existed: the enrollment still points at the item that granted it.
+        DB::statement('UPDATE order_items SET granted_at = o.paid_at FROM orders o, enrollments e WHERE o.id = order_items.order_id AND e.order_item_id = order_items.id AND o.paid_at IS NOT NULL');
 
         Schema::create('refunds', function (Blueprint $table) {
             $table->ulid('id')->primary();

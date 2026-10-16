@@ -61,7 +61,14 @@ final class ProcessPaymentEvent implements ShouldQueue
                 return;
             }
 
-            $refunds->syncReference($event->reference); // the attempt this event is about
+            // The attempt this event is about. If the gateway can't answer now, the event is kept for later:
+            // it may be the only news of a reversed payout.
+            if (! $refunds->syncReference($event->reference)) {
+                $event->forceFill(['error' => 'gateway_unavailable'])->save();
+                $this->release($this->backoff[min($this->attempts() - 1, count($this->backoff) - 1)]);
+
+                return;
+            }
             $event->forceFill(['processed_at' => now(), 'error' => null])->save();
 
             return;

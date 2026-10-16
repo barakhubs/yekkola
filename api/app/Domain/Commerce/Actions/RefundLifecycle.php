@@ -168,7 +168,8 @@ final class RefundLifecycle
             if (RefundAttempt::query()->where('refund_id', $refund->id)->where('status', AttemptStatus::Processing)->exists()) {
                 throw CommerceException::payoutInFlight();
             }
-            if ($refund->status !== RefundStatus::Failed || $payment->status === PaymentStatus::Reversed) {
+            // Paid twice already (an older attempt went through): the payer has the money — no third payout.
+            if ($refund->status !== RefundStatus::Failed || $payment->status === PaymentStatus::Reversed || $refund->flag === 'paid_twice') {
                 throw CommerceException::refundInvalidTransition();
             }
 
@@ -211,20 +212,25 @@ final class RefundLifecycle
         return $refund->refresh();
     }
 
-    /** A webhook or poll about one attempt, by its gateway reference. */
-    public function syncReference(string $reference): void
+    /**
+     * A webhook or poll about one attempt, by its gateway reference.
+     *
+     * @return bool Whether the gateway answered (false: try again later).
+     */
+    public function syncReference(string $reference): bool
     {
         $attempt = RefundAttempt::query()->where('reference', $reference)->first();
-        if ($attempt !== null) {
-            $this->syncAttempt($attempt);
-        }
+
+        return $attempt === null || $this->syncAttempt($attempt);
     }
 
     /**
      * Re-queries an attempt: in flight, recently failed (it may still succeed), or succeeded (it may be
      * reversed). The gateway's status API is the only source of truth.
+     *
+     * @return bool Whether the gateway answered (false: try again later).
      */
-    public function syncAttempt(RefundAttempt $attempt): void
+    public function syncAttempt(RefundAttempt $attempt): bool
     {
         try {
             $this->apply($attempt, $this->gateway->disbursementStatus($attempt->reference));
@@ -234,14 +240,23 @@ final class RefundLifecycle
             }
         } catch (GatewayUnavailable) {
             $this->touch($attempt);
+
+            return false;
         }
+
+        return true;
     }
 
-    private function send(Refund $refund, RefundAttempt $attempt): void
+    private function send(Refund $refund, RefundAttempt $attempt, bool $resend = false): void
     {
         try {
             $this->apply($attempt, $this->gateway->disburse($this->request($refund, $attempt)));
         } catch (GatewayUnavailable) {
+            if ($resend) {
+                $this->touch($attempt); // the first send may still surface: keep looking
+
+                return;
+            }
             $this->apply($attempt, new GatewayResult($attempt->reference, '', GatewayStatus::Failed, failureCode: 'gateway_unavailable'));
         } catch (Throwable $e) {
             // Unknown outcome (timeout, driver error): stays in flight; sync looks it up and re-sends safely.
@@ -260,7 +275,7 @@ final class RefundLifecycle
         }
 
         $refund = Refund::query()->with('payment', 'order')->findOrFail($attempt->refund_id);
-        $this->send($refund, $attempt);
+        $this->send($refund, $attempt, resend: true);
     }
 
     private function apply(RefundAttempt $attempt, GatewayResult $result, bool $giveUp = false): void
@@ -377,7 +392,8 @@ final class RefundLifecycle
             return;
         }
 
-        $refund->forceFill(['status' => RefundStatus::Failed, 'failure_code' => 'payout_reversed', 'flag' => 'payout_reversed', 'completed_at' => null]);
+        $refund->forceFill(['status' => RefundStatus::Failed, 'failure_code' => 'payout_reversed', 'completed_at' => null]);
+        $refund->flag = $refund->flag === 'paid_twice' ? 'paid_twice' : 'payout_reversed'; // never hide a double payment
     }
 
     private function touch(RefundAttempt $attempt): void
