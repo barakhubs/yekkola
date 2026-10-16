@@ -186,6 +186,8 @@ Cannot be defaulted:
 - [~] d: Staff send back `unapplied_receipt` money — amount mismatch, duplicate payment, already owned
 - [ ] Reconciliation: one queued job per due payment once volume needs it
 - [ ] VAT lines on receipts once tax treatment is decided (0.5)
+- [ ] Confirm refund payout fees are always borne by the platform (payouts follow `platform_pays_disbursement_fees`)
+- [ ] Staff tooling to recover `payer_receivable` debts (refund paid twice) — with the back office (2.x)
 - [ ] Revoke certificates when a course is refunded (with 1.8)
 
 ### 1.8 Learning — PRD-06
@@ -211,7 +213,7 @@ Cannot be defaulted:
 - [ ] Sale, release, refund postings (FR-02–05)
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
 - [ ] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward (shares can hold centimes)
-- [ ] Sale reversal after release: take the professor part from available (see `ReversePosting` TODO)
+- [ ] Sale reversal and refunds after release: take the professor part from available (`PostOrderReversal`, `RefundPostings` TODOs) — required before payouts
 - [ ] Earnings + statement endpoints (FR-09)
 - [ ] Manual adjustments (FR-11)
 - [ ] Ledger integrity job (FR-12)
