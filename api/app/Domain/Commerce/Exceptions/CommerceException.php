@@ -130,4 +130,14 @@ final class CommerceException extends DomainException
     {
         return new self('refund.nothing_unapplied', 422);
     }
+
+    public static function refundOwnOrder(): self
+    {
+        return new self('refund.own_order', 403);
+    }
+
+    public static function payoutInFlight(): self
+    {
+        return new self('refund.payout_in_flight', 409);
+    }
 }

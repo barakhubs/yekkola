@@ -64,12 +64,19 @@ final class ReconcilePayments extends Command
 
         $refunds = 0;
         Refund::query()
-            ->where('status', RefundStatus::Processing)
-            ->where(fn (Builder $q) => $q->whereNull('last_checked_at')->orWhere('last_checked_at', '<', now()->subMinutes(self::IN_FLIGHT_AFTER_MINUTES)))
+            ->where(fn (Builder $q) => $q
+                // payouts in progress
+                ->where(fn (Builder $p) => $p->where('status', RefundStatus::Processing)
+                    ->where(fn (Builder $c) => $c->whereNull('last_checked_at')->orWhere('last_checked_at', '<', now()->subMinutes(self::IN_FLIGHT_AFTER_MINUTES))))
+                // approved but not started (rail paused, job lost)
+                ->orWhere(fn (Builder $a) => $a->where('status', RefundStatus::Approved)->where('updated_at', '<', now()->subMinutes(self::IN_FLIGHT_AFTER_MINUTES)))
+                // failed recently: look for a late success
+                ->orWhere(fn (Builder $f) => $f->where('status', RefundStatus::Failed)->where('attempted_at', '>', now()->subHours(self::LATE_WINDOW_HOURS))
+                    ->where(fn (Builder $c) => $c->whereNull('last_checked_at')->orWhere('last_checked_at', '<', now()->subMinutes(self::LATE_EVERY_MINUTES)))))
             ->lazyById(100)
             ->each(function (Refund $refund) use ($refundLifecycle, &$refunds): void {
                 try {
-                    $refundLifecycle->sync($refund);
+                    $refund->status === RefundStatus::Approved ? $refundLifecycle->execute($refund) : $refundLifecycle->sync($refund);
                     $refunds++;
                 } catch (Throwable $e) {
                     report($e);

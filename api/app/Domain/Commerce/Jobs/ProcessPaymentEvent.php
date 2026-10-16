@@ -63,7 +63,7 @@ final class ProcessPaymentEvent implements ShouldQueue
                 return;
             }
 
-            $refunds->sync($refund);
+            $refunds->syncReference($refund, $event->reference); // the attempt this event is about
             $event->forceFill(['processed_at' => now(), 'error' => null])->save();
 
             return;

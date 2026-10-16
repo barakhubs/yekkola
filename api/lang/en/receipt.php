@@ -15,6 +15,7 @@ return [
     'total' => 'Total paid',
     'refunded' => 'refunded',
     'refunded_total' => 'Refunded',
+    'refund_pending' => 'Refund in progress',
     'footer' => 'Thank you for learning with Yekkola. Keep this receipt for any refund request.',
     'filename' => 'receipt',
     'rails' => ['orange' => 'Orange Money', 'airtel' => 'Airtel Money', 'mpesa' => 'M-Pesa'],

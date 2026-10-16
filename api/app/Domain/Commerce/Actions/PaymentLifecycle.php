@@ -13,11 +13,13 @@ use App\Domain\Commerce\Models\CouponRedemption;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Payment;
+use App\Domain\Finance\Actions\PostOrderReversal;
 use App\Domain\Finance\Actions\PostSale;
 use App\Domain\Finance\Actions\PostUnappliedReceipt;
 use App\Domain\Finance\Actions\ReversePosting;
 use App\Domain\Finance\Enums\LedgerTransactionType;
 use App\Domain\Learning\Actions\RevokeEnrollments;
+use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
 use App\Integrations\Payments\GatewayResult;
@@ -46,6 +48,8 @@ final class PaymentLifecycle
         private readonly PostSale $postSale,
         private readonly PostUnappliedReceipt $postUnapplied,
         private readonly ReversePosting $reverse,
+        private readonly PostOrderReversal $postReversal,
+        private readonly SettleRefundsOnReversal $settleRefunds,
         private readonly Dispatcher $events,
         private readonly LoggerInterface $log,
     ) {}
@@ -237,13 +241,17 @@ final class PaymentLifecycle
 
     private function reversed(Payment $payment, Order $order): void
     {
-        $wasPaidByThis = $payment->status === PaymentStatus::Succeeded && $order->paid_payment_id === $payment->id && $order->status === OrderStatus::Paid;
         if ($payment->status === PaymentStatus::Reversed) {
             return;
         }
+        $wasPaidByThis = $payment->status === PaymentStatus::Succeeded && $order->paid_payment_id === $payment->id
+            && in_array($order->status, [OrderStatus::Paid, OrderStatus::PartiallyRefunded, OrderStatus::Refunded], true);
 
         $payment->status = PaymentStatus::Reversed;
         $payment->flag = OrderFlag::raise($payment->flag, OrderFlag::Reversed);
+
+        // The payer has all their money back: refunds not paid out yet are called off.
+        $paidOut = $this->settleRefunds->handle($payment);
 
         // Money we held as owed back (mismatch, duplicate) went back to the payer.
         $this->reverse->handle(LedgerTransactionType::UnappliedReceipt, LedgerTransactionType::UnappliedReceiptReversal, PostUnappliedReceipt::REFERENCE, $payment->id, "Reversal of payment {$payment->id}");
@@ -252,12 +260,13 @@ final class PaymentLifecycle
             return; // never granted anything: nothing else to undo
         }
 
-        // BR-04: access removed, sale reversed, staff alerted.
+        // BR-04: access removed, sale reversed (courses already refunded become a payer debt), staff alerted.
+        $sold = $order->items->filter(fn (OrderItem $item) => Enrollment::query()->where('order_item_id', $item->id)->exists())->values();
         $order->status = OrderStatus::Reversed;
         $order->flag = OrderFlag::raise($order->flag, OrderFlag::Reversed);
         $this->revoke->handle($order->items->pluck('id')->all(), 'payment_reversed');
         CouponRedemption::query()->where('order_id', $order->id)->delete(); // the coupon use is given back
-        $this->reverse->handle(LedgerTransactionType::Sale, LedgerTransactionType::SaleReversal, PostSale::REFERENCE, $order->id, "Reversal of order {$order->number}");
+        $this->postReversal->handle($order, $payment, $sold, $paidOut);
         $this->log->critical('Payment reversed after success', ['order_id' => $order->id, 'payment_id' => $payment->id]);
         $this->events->dispatch(new PaymentReversed($order->id, $payment->id));
     }

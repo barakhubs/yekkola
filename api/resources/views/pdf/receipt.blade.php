@@ -42,6 +42,9 @@
             @if ($receipt['refunded']['amount_minor'] > 0)
                 <tr><td colspan="3">{{ __('receipt.refunded_total', [], $locale) }}</td><td class="num">−{{ $receipt['refunded']['formatted'] }}</td></tr>
             @endif
+            @if ($receipt['refund_pending']['amount_minor'] > 0)
+                <tr><td colspan="3">{{ __('receipt.refund_pending', [], $locale) }}</td><td class="num">{{ $receipt['refund_pending']['formatted'] }}</td></tr>
+            @endif
         </tbody>
     </table>
     <p class="muted">{{ __('receipt.footer', [], $locale) }}</p>

@@ -52,9 +52,9 @@ final class RefundController extends Controller
         return $this->present($refunds->reject($refund, $this->staff($request), (string) $request->note()), $settings);
     }
 
-    public function retry(Request $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): RefundResource
+    public function retry(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): RefundResource
     {
-        return $this->present($refunds->retry($refund, $this->staff($request)), $settings);
+        return $this->present($refunds->retry($refund, $this->staff($request), (string) $request->note()), $settings);
     }
 
     /** Sends back what a payment collected but never applied (flagged orders). */

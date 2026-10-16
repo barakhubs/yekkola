@@ -36,10 +36,10 @@ final class ReceiptController extends Controller
         return self::download($this->order($request, $order));
     }
 
-    public static function download(Order $order): Response
+    public static function download(Order $order, bool $forGuest = false): Response
     {
         $locale = app()->getLocale();
-        $receipt = Receipt::of($order, $locale);
+        $receipt = Receipt::of($order, $locale, $forGuest);
 
         return Pdf::loadView('pdf.receipt', ['receipt' => $receipt, 'locale' => $locale])
             ->setPaper('a4')

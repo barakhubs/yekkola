@@ -69,7 +69,7 @@ final class GuestOrderController extends Controller
         $model = $this->order($request, $order);
         abort_unless(in_array($model->status, ReceiptController::RECEIPT_STATUSES, true), 404);
 
-        return ReceiptController::download($model->load('items', 'payments', 'beneficiary'));
+        return ReceiptController::download($model->load('items', 'payments'), forGuest: true);
     }
 
     /** Only a guest order, and only with its token (compared by hash). */

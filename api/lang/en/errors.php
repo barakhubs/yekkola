@@ -136,6 +136,8 @@ return [
         'progress_too_high' => 'You have completed more than :max_progress_pct% of the course, so it can no longer be refunded.',
         'already_requested' => 'A refund is already in progress for this course.',
         'invalid_transition' => 'This action is no longer possible for this refund.',
+        'own_order' => 'You cannot decide a refund on your own order.',
+        'payout_in_flight' => 'The last payout is still in progress with the operator.',
         'nothing_unapplied' => 'This payment has nothing to refund.',
     ],
     'payment' => [

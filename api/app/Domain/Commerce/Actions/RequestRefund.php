@@ -51,7 +51,7 @@ final class RequestRefund
                 throw CommerceException::refundProgressTooHigh($this->settings->refund_max_progress_pct);
             }
 
-            $existing = Refund::query()->where('order_item_id', $item->id)->where('status', '!=', RefundStatus::Rejected)->exists();
+            $existing = Refund::query()->where('order_item_id', $item->id)->whereNotIn('status', [RefundStatus::Rejected, RefundStatus::Cancelled])->exists();
             if ($existing) {
                 throw CommerceException::refundAlreadyRequested();
             }

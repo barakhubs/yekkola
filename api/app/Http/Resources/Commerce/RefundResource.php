@@ -48,6 +48,7 @@ final class RefundResource extends JsonResource
             'decided_at' => $this->decided_at?->toIso8601String(),
             'completed_at' => $this->completed_at?->toIso8601String(),
             'failure_code' => $this->failure_code,
+            'flag' => $this->when($this->policy !== null, fn () => $this->flag),
             'created_at' => $this->created_at->toIso8601String(),
             'policy' => $this->when($this->policy !== null, fn () => $this->policy),
         ];

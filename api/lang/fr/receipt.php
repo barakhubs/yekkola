@@ -15,6 +15,7 @@ return [
     'total' => 'Total payé',
     'refunded' => 'remboursé',
     'refunded_total' => 'Remboursé',
+    'refund_pending' => 'Remboursement en cours',
     'footer' => 'Merci d’apprendre avec Yekkola. Conservez ce reçu pour toute demande de remboursement.',
     'filename' => 'recu',
     'rails' => ['orange' => 'Orange Money', 'airtel' => 'Airtel Money', 'mpesa' => 'M-Pesa'],
