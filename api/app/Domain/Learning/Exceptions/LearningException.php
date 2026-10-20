@@ -40,9 +40,4 @@ final class LearningException extends DomainException
     {
         return new self('quiz.max_attempts_reached', 409, ['max_attempts' => $max]);
     }
-
-    public static function alreadySubmitted(): self
-    {
-        return new self('quiz.already_submitted', 409);
-    }
 }

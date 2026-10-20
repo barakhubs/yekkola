@@ -9,6 +9,8 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Enums\DataExportStatus;
 use App\Domain\Identity\Models\DataExport;
 use App\Domain\Learning\Models\Enrollment;
+use App\Domain\Learning\Models\LessonProgress;
+use App\Domain\Learning\Models\QuizAttempt;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -72,6 +74,10 @@ final class BuildDataExport implements ShouldQueue
                     'completed_at' => $e->completed_at?->toIso8601String(),
                     'enrolled_at' => $e->enrolled_at->toIso8601String(),
                 ])->all(),
+            'lesson_progress' => LessonProgress::query()->where('user_id', $user->id)->get()
+                ->map(fn (LessonProgress $p) => ['lesson_uid' => $p->lesson_uid, 'status' => $p->status->value, 'position_seconds' => $p->position_seconds, 'completed_at' => $p->completed_at?->toIso8601String()])->all(),
+            'quiz_attempts' => QuizAttempt::query()->where('user_id', $user->id)->get()
+                ->map(fn (QuizAttempt $a) => ['lesson_uid' => $a->lesson_uid, 'started_at' => $a->started_at->toIso8601String(), 'submitted_at' => $a->submitted_at?->toIso8601String(), 'score_pct' => $a->score_pct, 'passed' => $a->passed])->all(),
             'wishlist' => Course::query()->join('wishlist_items as w', 'w.course_id', '=', 'courses.id')
                 ->where('w.user_id', $user->id)->orderBy('w.created_at')->pluck('courses.slug')->all(),
         ];

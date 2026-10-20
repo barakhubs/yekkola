@@ -41,7 +41,8 @@ final class StartQuizAttempt
             $user->newQuery()->whereKey($user->id)->lockForUpdate()->first();
 
             $attempts = QuizAttempt::query()->where('user_id', $user->id)->where('lesson_uid', $lessonUid)->get();
-            $open = $attempts->first(fn (QuizAttempt $a) => $a->quiz_id === $quiz->id && $a->isOpen());
+            // Resume an open attempt, even one started before a new version went live (graded on its own version).
+            $open = $attempts->first(fn (QuizAttempt $a) => $a->isOpen());
             if ($open !== null) {
                 return $open;
             }

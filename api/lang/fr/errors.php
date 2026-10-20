@@ -115,7 +115,6 @@ return [
     'quiz' => [
         'not_a_quiz' => 'Cette leçon n’est pas un quiz.',
         'max_attempts_reached' => 'Vous avez utilisé vos :max_attempts tentatives pour ce quiz.',
-        'already_submitted' => 'Cette tentative a déjà été envoyée.',
     ],
     'order' => [
         'course_unavailable' => 'Un des cours n’est pas disponible à l’achat.',

@@ -36,7 +36,7 @@ final class SyncProgress
      */
     public function handle(User $user, array $items, ?string $deviceId = null): array
     {
-        usort($items, fn (array $a, array $b) => strcmp((string) ($a['client_updated_at'] ?? ''), (string) ($b['client_updated_at'] ?? '')));
+        usort($items, fn (array $a, array $b) => $this->clientTime($a)?->getTimestamp() <=> $this->clientTime($b)?->getTimestamp());
 
         $lessons = $this->liveLessons($user, array_column($items, 'lesson_uid'));
         $accepted = [];
@@ -58,11 +58,14 @@ final class SyncProgress
 
         $courses = [];
         foreach ($touched as $courseId => $lastUid) {
-            $courses[$courseId] = $this->db->transaction(function () use ($user, $courseId, $lastUid): int {
-                $enrollment = Enrollment::query()->active()->where('user_id', $user->id)->where('course_id', $courseId)->lockForUpdate()->firstOrFail();
+            $pct = $this->db->transaction(function () use ($user, $courseId, $lastUid): ?int {
+                $enrollment = Enrollment::query()->active()->where('user_id', $user->id)->where('course_id', $courseId)->lockForUpdate()->first();
 
-                return $this->courseProgress->handle($enrollment, $lastUid)->progress_pct;
+                return $enrollment === null ? null : $this->courseProgress->handle($enrollment, $lastUid)->progress_pct; // revoked meanwhile
             });
+            if ($pct !== null) {
+                $courses[$courseId] = $pct;
+            }
         }
 
         return ['accepted' => $accepted, 'skipped' => array_values(array_unique($skipped)), 'courses' => $courses];
@@ -86,7 +89,7 @@ final class SyncProgress
             LessonType::Document => (bool) ($item['completed'] ?? false),
             LessonType::Quiz => false, // only a passed attempt completes a quiz
         };
-        $clientTime = isset($item['client_updated_at']) ? Carbon::parse($item['client_updated_at']) : null;
+        $clientTime = $this->clientTime($item);
 
         $this->upsert($user, $lesson, $courseId, $position, $completed, $clientTime, $deviceId);
     }
@@ -119,6 +122,14 @@ final class SyncProgress
             $now,
             $now,
         ]);
+    }
+
+    /**
+     * @param  array{client_updated_at?: string|null}  $item
+     */
+    private function clientTime(array $item): ?Carbon
+    {
+        return isset($item['client_updated_at']) ? Carbon::parse($item['client_updated_at'])->utc() : null;
     }
 
     /**

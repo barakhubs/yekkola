@@ -8,17 +8,18 @@ use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\QuizOption;
 use App\Domain\Authoring\Models\QuizQuestion;
 use App\Domain\Identity\Models\User;
-use App\Domain\Learning\Exceptions\LearningException;
+use App\Domain\Learning\CourseAccess;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Learning\Models\QuizAttempt;
 use Illuminate\Database\ConnectionInterface;
 
 /**
  * Grades a quiz attempt against the quiz version it started on (PRD-06 FR-07, §7): a question scores its
- * points when the chosen options are exactly the correct ones. Past the deadline (time limit + grace) the
- * attempt is closed with what had been answered — nothing after the deadline counts. A passed quiz
- * completes its lesson (progress is keyed by lesson uid, so it counts in any later version too).
- * Submitting again returns the stored result.
+ * points when the chosen options are exactly the correct ones. Answers arriving after the time limit plus
+ * a grace period don't count (the attempt closes with a score of 0). A passed quiz completes its lesson
+ * (progress is keyed by lesson uid, so it counts in any later version too). Access is checked again at
+ * submission (a refund or ban since starting ends it). Submitting again returns the stored result, so a
+ * retry after a lost response is safe.
  */
 final class SubmitQuizAttempt
 {
@@ -26,6 +27,7 @@ final class SubmitQuizAttempt
         private readonly ConnectionInterface $db,
         private readonly SyncProgress $progress,
         private readonly RecordCourseProgress $courseProgress,
+        private readonly CourseAccess $access,
     ) {}
 
     /**
@@ -37,12 +39,9 @@ final class SubmitQuizAttempt
             $attempt = QuizAttempt::query()->where('user_id', $user->id)->whereKey($attempt->id)->lockForUpdate()->firstOrFail();
 
             if ($attempt->submitted_at !== null) {
-                if ($attempt->answers !== $this->normalise($answers, $attempt)) {
-                    throw LearningException::alreadySubmitted();
-                }
-
-                return $attempt; // same submission replayed
+                return $attempt; // already graded: the stored result, whatever is sent again
             }
+            $this->access->lesson($user, $attempt->lesson_uid, allowPreview: true);
 
             $timedOut = $attempt->deadline_at !== null && $attempt->deadline_at->isPast();
             $answers = $timedOut ? [] : $this->normalise($answers, $attempt);
