@@ -108,8 +108,13 @@ return [
         'invalid_order' => 'The order sent does not match the course content.',
     ],
     'lesson' => [
+        'not_found' => 'Lesson not found.',
         'preview_limit_reached' => 'Maximum number of preview lessons reached.',
         'type_mismatch' => 'This content does not match the lesson type.',
+    ],
+    'quiz' => [
+        'not_a_quiz' => 'This lesson is not a quiz.',
+        'max_attempts_reached' => 'You have used your :max_attempts attempts for this quiz.',
     ],
     'order' => [
         'course_unavailable' => 'One of the courses is not available for purchase.',
@@ -147,6 +152,7 @@ return [
         'amount_out_of_range' => 'This amount is not accepted by this operator.',
     ],
     'enrollment' => [
+        'required' => 'Enroll in this course to access it.',
         'not_free' => 'This course is not free.',
         'revoked' => 'Your access to this course was removed. Please contact support.',
     ],

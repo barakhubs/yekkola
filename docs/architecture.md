@@ -270,8 +270,8 @@ PostgreSQL. Conventions:
 | Table | Columns (key) | Notes |
 |---|---|---|
 | `enrollments` | id, user_id, course_id, source (`purchase`/`free`/`coupon`/`bundle`/`admin`), order_item_id (null), status (`active`/`revoked`), revoked_reason, revoked_at, enrolled_at, completed_at, progress_pct, last_lesson_uid, last_activity_at | Unique `(user_id, course_id)`. The only access check. |
-| `lesson_progress` | id, user_id, course_id, lesson_uid, status (`not_started`/`in_progress`/`completed`), position_seconds, completed_at, client_updated_at, device_id | Unique `(user_id, lesson_uid)`. Largest table — see §7. |
-| `quiz_attempts` | id, user_id, quiz_id, lesson_uid, started_at, submitted_at, score_pct, passed, answers (jsonb), device_id | Offline attempts allowed (submitted on sync). |
+| `lesson_progress` | id, user_id, course_id, lesson_uid, status (`in_progress`/`completed`), position_seconds, completed_at (server time), client_updated_at, device_id | Unique `(user_id, lesson_uid)`. Largest table — see §7 (no FKs or cascades). Written only by `SyncProgress`'s atomic upsert: furthest position wins, completion never regresses. Video/audio complete at 90% watched, documents when marked done, quizzes only by passing. Every recompute fires `ProgressRecorded` (certificates apply the admin rule); a new live version recomputes all enrollments; a new grant clears `completed_at`. |
+| `quiz_attempts` | id, user_id, quiz_id (the version it started on), course_id, lesson_uid, question_order (jsonb), answers (jsonb), started_at, deadline_at (time limit + 30 s grace, server-side; clients get `ends_at`), submitted_at, score_pct, passed, timed_out, device_id | An open attempt is resumed (even across versions) rather than duplicated; `max_attempts` counts every attempt on the lesson uid. Answers after the grace don't count; access is re-checked at submission; a submitted attempt always returns its stored result. Offline attempts (FR-08) with the mobile app. |
 | `certificates` | id, serial (unique, public), user_id, course_id, course_version_id, student_name_snapshot, course_title_snapshot, professor_name_snapshot, issued_at, pdf (media), revoked_at | |
 | `reviews` | id, user_id, course_id, rating (1–5), body, status (`visible`/`hidden`/`flagged`), professor_reply, replied_at | Unique `(user_id, course_id)`; requires enrollment. |
 | `lesson_threads` | id, course_id, lesson_uid, author_id, title, body, status (`open`/`answered`/`closed`/`hidden`), reply_count, last_reply_at | |
@@ -364,17 +364,17 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | /me/enrollments | My courses with progress |
+| GET | /me/enrollments | My courses with progress, `filter[state]=in_progress\|completed` |
 | POST | /courses/{id}/enroll | Enroll in a free course |
-| GET | /me/courses/{id} | Learning view: curriculum + my progress |
+| GET | /me/courses/{id} | Learning view: live curriculum, my status per lesson, continue/next lesson, quiz facts (never answers) |
 | POST | /lessons/{uid}/playback | Playback + DRM tokens + watermark text (stream) |
 | POST | /lessons/{uid}/playback/heartbeat | Keep stream session alive (concurrency) |
 | POST | /lessons/{uid}/offline-license | Persistent license for a registered device |
 | GET | /lessons/{uid}/document | Short-lived signed URL to the stamped PDF |
 | GET | /me/entitlements | Mobile sync: active enrollments, revoked items, license states |
-| PUT | /me/progress | Batch progress sync |
-| POST | /quizzes/{id}/attempts | Start attempt (questions without answers) |
-| PUT | /quiz-attempts/{id} | Submit answers → score, explanations |
+| PUT | /me/progress | Batch progress sync `{items: [{lesson_uid, position_seconds?, completed?, client_updated_at?}]}` (≤ 100; monotonic) |
+| GET / POST | /lessons/{uid}/quiz-attempts | My attempts / start (or resume) one: questions without answers |
+| PUT | /quiz-attempts/{id} | Submit `{answers: {question_id: [option ids]}}` → score, corrections, explanations |
 | GET | /me/certificates | My certificates |
 | POST / PATCH / DELETE | /courses/{id}/review | My review |
 | GET / POST | /lessons/{uid}/threads | Lesson Q&A |

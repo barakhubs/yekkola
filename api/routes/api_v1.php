@@ -24,6 +24,8 @@ use App\Http\Controllers\Api\V1\Commerce\GuestOrderController;
 use App\Http\Controllers\Api\V1\Commerce\OrderController;
 use App\Http\Controllers\Api\V1\Commerce\ReceiptController;
 use App\Http\Controllers\Api\V1\Commerce\RefundController;
+use App\Http\Controllers\Api\V1\Learning\LearningController;
+use App\Http\Controllers\Api\V1\Learning\QuizAttemptController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
 use App\Http\Controllers\Api\V1\Professor\CouponController as StudioCouponController;
@@ -73,6 +75,14 @@ Route::middleware('signed-in')->group(function () {
     Route::get('/orders/{order}/receipt.pdf', [ReceiptController::class, 'pdf'])->middleware('throttle:order-status')->name('orders.receipt.pdf');
     Route::post('/orders/{order}/refund-requests', [RefundController::class, 'store'])->name('orders.refund-requests.store');
     Route::get('/me/refunds', [RefundController::class, 'index'])->name('me.refunds.index');
+
+    // Learning (PRD-06)
+    Route::get('/me/enrollments', [LearningController::class, 'index'])->name('me.enrollments.index');
+    Route::get('/me/courses/{course}', [LearningController::class, 'show'])->name('me.courses.show');
+    Route::put('/me/progress', [LearningController::class, 'sync'])->middleware('throttle:progress')->name('me.progress.sync');
+    Route::get('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'index'])->name('lessons.quiz-attempts.index');
+    Route::post('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'store'])->middleware('throttle:quiz')->name('lessons.quiz-attempts.store');
+    Route::put('/quiz-attempts/{attempt}', [QuizAttemptController::class, 'submit'])->middleware('throttle:quiz')->name('quiz-attempts.submit');
 });
 
 // Public catalogue (PRD-04)

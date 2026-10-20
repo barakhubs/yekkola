@@ -15,6 +15,8 @@ use App\Domain\Learning\Models\Enrollment;
  */
 final class GrantEnrollment
 {
+    public function __construct(private readonly RecordCourseProgress $progress) {}
+
     /**
      * @return bool Whether access was newly granted.
      */
@@ -41,11 +43,16 @@ final class GrantEnrollment
 
         if ($enrollment === null) {
             $created = Enrollment::query()->createOrFirst(['user_id' => $userId, 'course_id' => $courseId], $attributes);
+            if ($created->wasRecentlyCreated) {
+                $this->progress->handle($created); // progress from an earlier enrollment still counts
+            }
 
             return $created->wasRecentlyCreated;
         }
 
-        $enrollment->forceFill($attributes)->save();
+        // A new grant starts a new completion: the student completes (and is certified) again.
+        $enrollment->forceFill([...$attributes, 'completed_at' => null])->save();
+        $this->progress->handle($enrollment);
 
         return true;
     }

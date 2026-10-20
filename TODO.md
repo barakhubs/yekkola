@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #13 (receipts & refunds, Phase 1.7d) to be merged
-- **Next up:** Phase 1.8 (learning — PRD-06)
+- **Waiting:** PR #14 (learning: progress + quizzes, Phase 1.8a) to be merged
+- **Next up:** 1.8b certificates + reviews
 
 ## Legend
 
@@ -189,17 +189,19 @@ Cannot be defaulted:
 - [ ] Confirm refund payout fees are always borne by the platform (payouts follow `platform_pays_disbursement_fees`)
 - [ ] Staff tooling to recover `payer_receivable` debts (refund paid twice) — with the back office (2.x)
 - [ ] Payment webhooks: release the job (don't mark processed) when the status API is down, as refunds now do
-- [ ] Revoke certificates when a course is refunded (with 1.8)
 
 ### 1.8 Learning — PRD-06
-- [ ] Enrollments, progress, quiz attempts, certificates, reviews, threads schema (arch §3.5)
-- [ ] My courses + learning view endpoints (FR-01, FR-02)
-- [ ] Progress batch sync with monotonic merge (FR-05)
-- [ ] Quiz attempts: start/submit, server timing, attempts limit (FR-07)
-- [ ] Certificates: rule, PDF, serial, revocation (FR-10, FR-11)
-- [ ] Reviews + professor reply (FR-12)
-- [ ] Lesson Q&A threads (FR-13)
-- [ ] Reports (FR-14)
+*Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports.*
+- [x] a: Progress and quiz-attempt schema (arch §3.5; enrollments landed in 1.7a) — #14
+- [x] a: My courses + learning view endpoints (FR-01, FR-02, FR-09) — #14
+- [x] a: Progress batch sync with monotonic merge; server-side completion rules (FR-04, FR-05) — #14
+- [x] a: Quiz attempts: start/resume, submit, server timing with grace, attempts limit, corrections (FR-07) — #14
+- [ ] Offline quiz attempts submitted on sync (FR-08) — with the mobile app
+- [ ] b: Certificates: rule, PDF, serial, verification page endpoint, revocation on refund (FR-10, FR-11, PRD-04 FR-09)
+- [ ] b: Reviews + professor reply (FR-12)
+- [ ] c: Lesson Q&A threads (FR-13)
+- [ ] c: Reports (FR-14)
+- [ ] Course updated notice with changelog (FR-15)
 
 ### 1.9 Content protection — PRD-07
 - [ ] Playback + DRM token endpoint with checks (FR-01, FR-02)

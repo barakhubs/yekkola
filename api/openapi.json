@@ -4288,6 +4288,256 @@
                 }
             }
         },
+        "/me/enrollments": {
+            "get": {
+                "operationId": "me.enrollments.index",
+                "summary": "My courses, most recently active first. `filter[state]=in_progress|completed`",
+                "tags": [
+                    "Learning"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `MyCourseResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/MyCourseResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/me/courses/{course}": {
+            "get": {
+                "operationId": "me.courses.show",
+                "tags": [
+                    "Learning"
+                ],
+                "parameters": [
+                    {
+                        "name": "course",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`LearningViewResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LearningViewResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/me/progress": {
+            "put": {
+                "operationId": "me.progress.sync",
+                "summary": "Batch progress sync (web every 15 s and on pause/leave; mobile when back online). Monotonic: an older\nsync never undoes newer progress",
+                "tags": [
+                    "Learning"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SyncProgressRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "accepted": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "skipped": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "courses": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "accepted",
+                                                "skipped",
+                                                "courses"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/auth/logout": {
             "post": {
                 "operationId": "auth.logout",
@@ -6029,6 +6279,247 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/quiz-attempts": {
+            "get": {
+                "operationId": "lessons.quiz-attempts.index",
+                "summary": "My attempts on a quiz lesson, newest first",
+                "tags": [
+                    "QuizAttempt"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `QuizAttemptResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/QuizAttemptResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "lessons.quiz-attempts.store",
+                "summary": "Starts an attempt (or resumes the open one): questions without answers",
+                "tags": [
+                    "QuizAttempt"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/quiz-attempts/{attempt}": {
+            "put": {
+                "operationId": "quiz-attempts.submit",
+                "summary": "Submits answers: score, pass/fail, and the corrections with explanations",
+                "tags": [
+                    "QuizAttempt"
+                ],
+                "parameters": [
+                    {
+                        "name": "attempt",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SubmitQuizRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`QuizAttemptResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/QuizAttemptResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -8991,6 +9482,192 @@
                 ],
                 "title": "KycSubmissionResource"
             },
+            "LearningViewResource": {
+                "type": "object",
+                "properties": {
+                    "course": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "slug": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "cover_url": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "professor": {
+                                "type": "object",
+                                "properties": {
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "display_name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "slug",
+                                    "display_name"
+                                ]
+                            },
+                            "updated_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "slug",
+                            "title",
+                            "cover_url",
+                            "professor",
+                            "updated_at"
+                        ]
+                    },
+                    "progress_pct": {
+                        "type": "integer"
+                    },
+                    "completed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "continue_lesson_uid": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "next_lesson_uid": {
+                        "type": "null"
+                    },
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "lessons": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "uid": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "duration_seconds": {
+                                                "type": [
+                                                    "integer",
+                                                    "null"
+                                                ]
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "position_seconds": {
+                                                "type": "integer"
+                                            },
+                                            "quiz": {
+                                                "type": [
+                                                    "object",
+                                                    "null"
+                                                ],
+                                                "properties": {
+                                                    "question_count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "pass_mark_pct": {
+                                                        "type": "integer"
+                                                    },
+                                                    "time_limit_seconds": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "max_attempts": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "attempts_used": {
+                                                        "type": "integer",
+                                                        "minimum": 0
+                                                    },
+                                                    "best_score_pct": {
+                                                        "type": "string"
+                                                    },
+                                                    "passed": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "question_count",
+                                                    "pass_mark_pct",
+                                                    "time_limit_seconds",
+                                                    "max_attempts",
+                                                    "attempts_used",
+                                                    "best_score_pct",
+                                                    "passed"
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "uid",
+                                            "type",
+                                            "title",
+                                            "duration_seconds",
+                                            "status",
+                                            "position_seconds",
+                                            "quiz"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "title",
+                                "lessons"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "course",
+                    "progress_pct",
+                    "completed_at",
+                    "continue_lesson_uid",
+                    "next_lesson_uid",
+                    "sections"
+                ],
+                "title": "LearningViewResource"
+            },
             "LessonType": {
                 "type": "string",
                 "description": "Lesson kinds (PRD-03).\n",
@@ -9045,6 +9722,55 @@
                     "mpesa"
                 ],
                 "title": "MobileMoneyRail"
+            },
+            "MyCourseResource": {
+                "type": "object",
+                "properties": {
+                    "enrollment_id": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "progress_pct": {
+                        "type": "integer"
+                    },
+                    "continue_lesson_uid": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "enrolled_at": {
+                        "type": "string"
+                    },
+                    "last_activity_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "completed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "course": {
+                        "$ref": "#/components/schemas/CourseCardResource"
+                    }
+                },
+                "required": [
+                    "enrollment_id",
+                    "source",
+                    "progress_pct",
+                    "continue_lesson_uid",
+                    "enrolled_at",
+                    "last_activity_at",
+                    "completed_at",
+                    "course"
+                ],
+                "title": "MyCourseResource"
             },
             "OrderResource": {
                 "type": "object",
@@ -10160,6 +10886,132 @@
                 ],
                 "title": "QuestionType"
             },
+            "QuizAttemptResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "lesson_uid": {
+                        "type": "string"
+                    },
+                    "started_at": {
+                        "type": "string"
+                    },
+                    "ends_at": {
+                        "type": "null",
+                        "description": "Count down to this; the server accepts answers for a short grace period after it (network slack)."
+                    },
+                    "submitted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "pass_mark_pct": {
+                        "type": "integer"
+                    },
+                    "score_pct": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "passed": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "timed_out": {
+                        "type": "boolean"
+                    },
+                    "questions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "anyOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {}
+                                    ]
+                                },
+                                "type": {
+                                    "anyOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {}
+                                    ]
+                                },
+                                "prompt": {
+                                    "anyOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {}
+                                    ]
+                                },
+                                "points": {
+                                    "anyOf": [
+                                        {
+                                            "type": "integer"
+                                        },
+                                        {}
+                                    ]
+                                },
+                                "options": {
+                                    "anyOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "text": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "text"
+                                                ]
+                                            }
+                                        },
+                                        {}
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type",
+                                "prompt",
+                                "points",
+                                "options"
+                            ],
+                            "additionalProperties": {}
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "lesson_uid",
+                    "started_at",
+                    "ends_at",
+                    "submitted_at",
+                    "pass_mark_pct",
+                    "score_pct",
+                    "passed",
+                    "timed_out",
+                    "questions"
+                ],
+                "title": "QuizAttemptResource"
+            },
             "QuizRequest": {
                 "type": "object",
                 "description": "Full quiz definition, replaced atomically (PRD-03 FR-07).",
@@ -10985,6 +11837,77 @@
                     "selfie"
                 ],
                 "title": "SubmitKycRequest"
+            },
+            "SubmitQuizRequest": {
+                "type": "object",
+                "description": "Answers to a quiz attempt: question id => chosen option ids (PRD-06 FR-07).",
+                "properties": {
+                    "answers": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "minLength": 26,
+                                "maxLength": 26
+                            },
+                            "maxItems": 20
+                        },
+                        "maxItems": 200
+                    }
+                },
+                "required": [
+                    "answers"
+                ],
+                "title": "SubmitQuizRequest"
+            },
+            "SyncProgressRequest": {
+                "type": "object",
+                "description": "A batch of progress updates (PRD-06 FR-05).",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "lesson_uid": {
+                                    "type": "string",
+                                    "minLength": 26,
+                                    "maxLength": 26
+                                },
+                                "position_seconds": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ],
+                                    "minimum": 0,
+                                    "maximum": 86400
+                                },
+                                "completed": {
+                                    "type": [
+                                        "boolean",
+                                        "null"
+                                    ]
+                                },
+                                "client_updated_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "lesson_uid"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "SyncProgressRequest"
             },
             "TeachingLevel": {
                 "type": "string",

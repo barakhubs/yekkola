@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Authoring\Events\CourseVersionDecided;
 use App\Domain\Catalog\Jobs\MakeListedSearchable;
 use App\Domain\Catalog\Listeners\SyncCourseIndex;
 use App\Domain\Catalog\Models\Category;
@@ -12,6 +13,7 @@ use App\Domain\Identity\Models\PersonalAccessToken;
 use App\Domain\Identity\Models\User;
 use App\Domain\Identity\Support\OtpCodeHasher;
 use App\Domain\Learning\Listeners\EraseLearningData;
+use App\Domain\Learning\Listeners\RecomputeProgressOnNewVersion;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Listeners\EraseProfessorData;
 use App\Domain\Professors\Models\ProfessorProfile;
@@ -63,6 +65,10 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('coupons', fn (Request $request) => Limit::perMinute(20)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Guest checkout (parent without an account): per IP, on top of the bot challenge.
         RateLimiter::for('guest-orders', fn (Request $request) => Limit::perHour((int) config('yekkola.checkout.guest_orders_per_ip_per_hour'))->by((string) $request->ip()));
+        // Progress sync: web saves every 15 s, mobile in batches.
+        RateLimiter::for('progress', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Quiz starts and submissions: grading a whole quiz per call.
+        RateLimiter::for('quiz', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Catalogue and search: a coarse abuse cap only. Server-side rendering (apps/web) and carrier NAT put
         // many visitors behind one IP. TODO(2.x): key on the forwarded client IP once trusted proxies are set.
         RateLimiter::for('catalogue', fn (Request $request) => Limit::perMinute(1_200)->by((string) $request->ip()));
@@ -75,6 +81,9 @@ final class AppServiceProvider extends ServiceProvider
         // Account deletion: each domain erases its own personal data (PRD-01 FR-11).
         Event::listen(UserAnonymizing::class, EraseProfessorData::class);
         Event::listen(UserAnonymizing::class, EraseLearningData::class);
+
+        // Learning: a new live version changes what counts toward progress (PRD-06 BR-02).
+        Event::listen(CourseVersionDecided::class, RecomputeProgressOnNewVersion::class);
 
         // Search index: rows the course index depends on (PRD-04 FR-11).
         Scout::makeSearchableUsing(MakeListedSearchable::class);
