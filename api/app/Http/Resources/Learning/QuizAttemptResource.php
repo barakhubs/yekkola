@@ -30,7 +30,8 @@ final class QuizAttemptResource extends JsonResource
             'id' => $this->id,
             'lesson_uid' => $this->lesson_uid,
             'started_at' => $this->started_at->toIso8601String(),
-            'deadline_at' => $this->deadline_at?->toIso8601String(),
+            // Count down to this; the server accepts answers for a short grace period after it (network slack).
+            'ends_at' => $this->quiz->time_limit_seconds === null ? null : $this->started_at->copy()->addSeconds($this->quiz->time_limit_seconds)->toIso8601String(),
             'submitted_at' => $this->submitted_at?->toIso8601String(),
             'pass_mark_pct' => $this->quiz->pass_mark_pct,
             'score_pct' => $this->score_pct,

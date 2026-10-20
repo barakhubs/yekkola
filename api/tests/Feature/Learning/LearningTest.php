@@ -34,7 +34,7 @@ function syncProgress(array $items): Illuminate\Testing\TestResponse
 function quizAnswer(string $optionText): array
 {
     $quiz = Quiz::query()->where('lesson_id', test()->quiz->id)->with('questions.options')->sole();
-    $question = $quiz->questions->sole();
+    $question = $quiz->questions->firstWhere('prompt', '2 + 2 ?');
 
     return [$question->id => [$question->options->firstWhere('text', $optionText)->id]];
 }
@@ -95,7 +95,7 @@ it('grades quizzes against the key, explains answers, and completes the course o
     $second = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->assertCreated()->json('data.id');
     $this->putJson("/api/v1/quiz-attempts/{$second}", ['answers' => quizAnswer('4')])->assertOk()->assertJsonPath('data.passed', true);
     $this->putJson("/api/v1/quiz-attempts/{$second}", ['answers' => quizAnswer('4')])->assertOk(); // replay
-    $this->putJson("/api/v1/quiz-attempts/{$second}", ['answers' => quizAnswer('5')])->assertConflict();
+    $this->putJson("/api/v1/quiz-attempts/{$second}", ['answers' => quizAnswer('5')])->assertOk()->assertJsonPath('data.passed', true); // stored result
 
     expect(Enrollment::query()->sole()->progress_pct)->toBe(100)
         ->and(Enrollment::query()->sole()->completed_at)->not->toBeNull();
@@ -106,7 +106,7 @@ it('enforces the attempt limit and the time limit on the server', function () {
     Quiz::query()->where('lesson_id', $this->quiz->id)->update(['max_attempts' => 1, 'time_limit_seconds' => 60]);
 
     $attempt = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->assertCreated()->json('data');
-    expect($attempt['deadline_at'])->not->toBeNull();
+    expect($attempt['ends_at'])->not->toBeNull();
 
     $this->travel(2)->minutes();
     $this->putJson("/api/v1/quiz-attempts/{$attempt['id']}", ['answers' => quizAnswer('4')])->assertOk()
@@ -123,4 +123,61 @@ it('lets anyone signed in try a preview quiz, but nothing else without enrolling
     $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->assertCreated();
     $this->postJson("/api/v1/lessons/{$this->video->uid}/quiz-attempts")->assertForbidden();
     syncProgress([['lesson_uid' => $this->video->uid, 'position_seconds' => 100]])->assertJsonPath('data.skipped', [$this->video->uid]);
+});
+
+it('returns the stored result when a submission is retried, even on a shuffled quiz', function () {
+    $quiz = Quiz::query()->where('lesson_id', $this->quiz->id)->sole();
+    $quiz->update(['shuffle_questions' => true]);
+    $second = $quiz->questions()->create(['type' => 'true_false', 'prompt' => 'Kinshasa est la capitale ?', 'points' => 1, 'position' => 2]);
+    $true = $second->options()->create(['text' => 'Vrai', 'is_correct' => true, 'position' => 1]);
+    $second->options()->create(['text' => 'Faux', 'is_correct' => false, 'position' => 2]);
+
+    $id = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->json('data.id');
+    $answers = [...quizAnswer('4'), $second->id => [$true->id]];
+
+    $first = $this->putJson("/api/v1/quiz-attempts/{$id}", ['answers' => $answers])->assertOk()->assertJsonPath('data.score_pct', 100)->json('data');
+    $this->putJson("/api/v1/quiz-attempts/{$id}", ['answers' => array_reverse($answers, true)])->assertOk()->assertJsonPath('data.score_pct', $first['score_pct']);
+});
+
+it('grades a submission arriving in the grace period after the time limit', function () {
+    Quiz::query()->where('lesson_id', $this->quiz->id)->update(['time_limit_seconds' => 60]);
+    $attempt = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->json('data');
+    expect($attempt)->not->toHaveKey('deadline_at')->and($attempt['ends_at'])->not->toBeNull();
+
+    $this->travel(75)->seconds(); // past the time limit, inside the grace
+    $this->putJson("/api/v1/quiz-attempts/{$attempt['id']}", ['answers' => quizAnswer('4')])
+        ->assertJsonPath('data.timed_out', false)
+        ->assertJsonPath('data.passed', true);
+});
+
+it('ends an attempt when access is revoked, and keeps attempts private', function () {
+    $id = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->json('data.id');
+
+    Sanctum::actingAs(User::factory()->create());
+    $this->putJson("/api/v1/quiz-attempts/{$id}", ['answers' => quizAnswer('4')])->assertNotFound();
+
+    Sanctum::actingAs($this->student);
+    Enrollment::query()->update(['status' => 'revoked']);
+    $this->putJson("/api/v1/quiz-attempts/{$id}", ['answers' => quizAnswer('4')])->assertForbidden();
+});
+
+it('completes the course again after a new grant, and recomputes progress when a version goes live', function () {
+    Event::fake([CourseCompleted::class]);
+    syncProgress([['lesson_uid' => $this->document->uid, 'completed' => true], ['lesson_uid' => $this->video->uid, 'position_seconds' => 1_200]]);
+    expect(Enrollment::query()->sole()->progress_pct)->toBe(66);
+
+    // A new version without the quiz goes live: everything left is done.
+    $draft = app(App\Domain\Authoring\Actions\StartDraftFromLive::class)->handle($this->course);
+    Lesson::query()->where('course_version_id', $draft->id)->where('uid', $this->quiz->uid)->delete();
+    $draft->forceFill(['state' => App\Domain\Authoring\Enums\VersionState::Approved])->save();
+    $this->course->refresh()->forceFill(['live_version_id' => $draft->id, 'draft_version_id' => null])->save();
+    event(new App\Domain\Authoring\Events\CourseVersionDecided($draft->refresh()));
+
+    expect(Enrollment::query()->sole()->progress_pct)->toBe(100);
+    Event::assertDispatchedTimes(CourseCompleted::class, 1);
+
+    // Revoked, then granted again: a new completion.
+    Enrollment::query()->update(['status' => 'revoked']);
+    app(App\Domain\Learning\Actions\GrantEnrollment::class)->handle($this->student->id, $this->course->id, App\Domain\Learning\Enums\EnrollmentSource::Admin);
+    Event::assertDispatchedTimes(CourseCompleted::class, 2);
 });

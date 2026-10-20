@@ -26,7 +26,7 @@ final class SyncProgressRequest extends FormRequest
             'items.*.lesson_uid' => ['required', 'string', 'size:26'],
             'items.*.position_seconds' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:86400'],
             'items.*.completed' => ['sometimes', 'nullable', 'boolean'],
-            'items.*.client_updated_at' => ['sometimes', 'nullable', 'date'],
+            'items.*.client_updated_at' => ['sometimes', 'nullable', 'date_format:Y-m-d\\TH:i:sP,Y-m-d\\TH:i:s\\Z,Y-m-d\\TH:i:s.vP,Y-m-d\\TH:i:s.v\\Z'],
         ];
     }
 

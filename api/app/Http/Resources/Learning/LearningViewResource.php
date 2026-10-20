@@ -74,10 +74,15 @@ final class LearningViewResource extends JsonResource
             ],
             'progress_pct' => $this->enrollment->progress_pct,
             'completed_at' => $this->enrollment->completed_at?->toIso8601String(),
-            'continue_lesson_uid' => $this->enrollment->last_lesson_uid ?? $next,
+            'continue_lesson_uid' => $this->progress->has((string) $this->enrollment->last_lesson_uid) || $this->isLive($this->enrollment->last_lesson_uid) ? $this->enrollment->last_lesson_uid : $next,
             'next_lesson_uid' => $next,
             'sections' => $sections,
         ];
+    }
+
+    private function isLive(?string $uid): bool
+    {
+        return $uid !== null && $this->liveVersion->sections->contains(fn (Section $s) => $s->lessons->contains('uid', $uid));
     }
 
     /**
@@ -90,7 +95,7 @@ final class LearningViewResource extends JsonResource
         $submitted = $attempts->whereNotNull('submitted_at');
 
         return [
-            'question_count' => $quiz->questions->count(),
+            'question_count' => (int) $quiz->questions_count,
             'pass_mark_pct' => $quiz->pass_mark_pct,
             'time_limit_seconds' => $quiz->time_limit_seconds,
             'max_attempts' => $quiz->max_attempts,

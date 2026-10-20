@@ -81,8 +81,8 @@ Route::middleware('signed-in')->group(function () {
     Route::get('/me/courses/{course}', [LearningController::class, 'show'])->name('me.courses.show');
     Route::put('/me/progress', [LearningController::class, 'sync'])->middleware('throttle:progress')->name('me.progress.sync');
     Route::get('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'index'])->name('lessons.quiz-attempts.index');
-    Route::post('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'store'])->name('lessons.quiz-attempts.store');
-    Route::put('/quiz-attempts/{attempt}', [QuizAttemptController::class, 'submit'])->name('quiz-attempts.submit');
+    Route::post('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'store'])->middleware('throttle:quiz')->name('lessons.quiz-attempts.store');
+    Route::put('/quiz-attempts/{attempt}', [QuizAttemptController::class, 'submit'])->middleware('throttle:quiz')->name('quiz-attempts.submit');
 });
 
 // Public catalogue (PRD-04)

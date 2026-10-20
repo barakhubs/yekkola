@@ -26,7 +26,7 @@ final class QuizAttemptController extends Controller
         $access->lesson($user, $lesson, allowPreview: true);
 
         return QuizAttemptResource::collection(QuizAttempt::query()->where('user_id', $user->id)->where('lesson_uid', $lesson)
-            ->with('quiz.questions.options')->latest('started_at')->get());
+            ->with('quiz.questions.options')->latest('started_at')->paginate($this->perPage($request)));
     }
 
     /** Starts an attempt (or resumes the open one): questions without answers. */
