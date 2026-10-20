@@ -17,7 +17,7 @@ final class StaffNoteRequest extends FormRequest
      */
     public function rules(): array
     {
-        $optional = in_array($this->route()?->getName(), ['admin.professor-applications.approve', 'admin.course-versions.approve'], true);
+        $optional = in_array($this->route()?->getName(), ['admin.professor-applications.approve', 'admin.course-versions.approve', 'admin.refunds.approve', 'admin.payments.refund'], true);
 
         return [
             'note' => [$optional ? 'nullable' : 'required', 'string', 'min:3', 'max:2000'],

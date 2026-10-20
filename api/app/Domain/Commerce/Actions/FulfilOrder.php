@@ -35,6 +35,9 @@ final class FulfilOrder
             fn (OrderItem $item) => $this->grant->handle($order->beneficiary_id, $item->course_id, $this->source($order, $item), $item->id),
         );
 
+        // What this order sold: a reversal undoes exactly these, whatever happens to the enrollments later.
+        OrderItem::query()->whereIn('id', $granted->modelKeys())->update(['granted_at' => now()]);
+
         if ($granted->isNotEmpty() && $order->coupon_id !== null) {
             $coupon = Coupon::query()->whereKey($order->coupon_id)->lockForUpdate()->firstOrFail();
             $redemption = CouponRedemption::query()->createOrFirst(

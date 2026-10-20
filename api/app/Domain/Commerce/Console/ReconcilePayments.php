@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Domain\Commerce\Console;
 
 use App\Domain\Commerce\Actions\PaymentLifecycle;
+use App\Domain\Commerce\Actions\RefundLifecycle;
 use App\Domain\Commerce\Actions\SyncPayment;
+use App\Domain\Commerce\Enums\AttemptStatus;
 use App\Domain\Commerce\Enums\OrderStatus;
 use App\Domain\Commerce\Enums\PaymentStatus;
+use App\Domain\Commerce\Enums\RefundStatus;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\Payment;
+use App\Domain\Commerce\Models\Refund;
+use App\Domain\Commerce\Models\RefundAttempt;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Throwable;
@@ -17,7 +22,7 @@ use Throwable;
 /**
  * Reconciliation (PRD-05 FR-10), every 5 minutes: expires orders past their payment timeout, re-queries
  * payments still in flight after 2 minutes, and keeps checking recently failed or expired ones for a late
- * success (which still grants access, flagged for review).
+ * success (which still grants access, flagged for review), and re-queries refund payouts in progress.
  */
 final class ReconcilePayments extends Command
 {
@@ -33,7 +38,7 @@ final class ReconcilePayments extends Command
 
     private const LATE_EVERY_MINUTES = 60;
 
-    public function handle(PaymentLifecycle $lifecycle, SyncPayment $sync): int
+    public function handle(PaymentLifecycle $lifecycle, SyncPayment $sync, RefundLifecycle $refundLifecycle): int
     {
         $expired = 0;
         Order::query()
@@ -59,9 +64,39 @@ final class ReconcilePayments extends Command
             }
         });
 
-        $this->info("Expired {$expired} orders, checked {$checked} payments.");
+        $refunds = 0;
+        // Approved but not started (rail paused, job lost)
+        Refund::query()->where('status', RefundStatus::Approved)->where('updated_at', '<', now()->subMinutes(self::IN_FLIGHT_AFTER_MINUTES))
+            ->lazyById(100)->each(function (Refund $refund) use ($refundLifecycle, &$refunds): void {
+                $this->isolated(fn () => $refundLifecycle->execute($refund));
+                $refunds++;
+            });
+        // Payout attempts in flight, and recently failed ones (they can still succeed late)
+        RefundAttempt::query()
+            ->where(fn (Builder $q) => $q
+                ->where(fn (Builder $p) => $p->where('status', AttemptStatus::Processing)
+                    ->where(fn (Builder $c) => $c->whereNull('last_checked_at')->orWhere('last_checked_at', '<', now()->subMinutes(self::IN_FLIGHT_AFTER_MINUTES))))
+                ->orWhere(fn (Builder $f) => $f->where('status', AttemptStatus::Failed)->where('finished_at', '>', now()->subHours(self::LATE_WINDOW_HOURS))
+                    ->where('failure_code', '!=', 'gateway_unavailable')
+                    ->where(fn (Builder $c) => $c->whereNull('last_checked_at')->orWhere('last_checked_at', '<', now()->subMinutes(self::LATE_EVERY_MINUTES)))))
+            ->lazyById(100)->each(function (RefundAttempt $attempt) use ($refundLifecycle, &$refunds): void {
+                $this->isolated(fn () => $refundLifecycle->syncAttempt($attempt));
+                $refunds++;
+            });
+
+        $this->info("Expired {$expired} orders, checked {$checked} payments and {$refunds} refunds.");
 
         return self::SUCCESS;
+    }
+
+    /** One bad row never stops the run. */
+    private function isolated(callable $work): void
+    {
+        try {
+            $work();
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 
     /**

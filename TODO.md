@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #12 (parent payer, Phase 1.7c) to be merged
-- **Next up:** 1.7d receipts + refunds
+- **Waiting:** PR #13 (receipts & refunds, Phase 1.7d) to be merged
+- **Next up:** Phase 1.8 (learning — PRD-06)
 
 ## Legend
 
@@ -181,10 +181,15 @@ Cannot be defaulted:
 - [ ] Receipt SMS to the payer number as well as the student (PRD-10, on `OrderPaid`)
 - [ ] Confirm buy-for-others limits (`config/yekkola.php` → `checkout`) and how long payer numbers are kept (counsel)
 - [ ] Receipt SMS count against the global SMS budget (no SMS pumping through gift orders)
-- [ ] d: Receipts PDF (FR-15)
-- [ ] d: Refund request + approval flow (FR-16) — partial refunds take each item's parts from `PostSale::split()`, not price × share
-- [ ] d: Staff settle `unapplied_receipt` money (refund to payer) — amount mismatch, duplicate payment, already owned
+- [x] d: Receipts JSON + PDF, fr/en (FR-15) — #13
+- [x] d: Refund request + approval flow + payout to the original payer (FR-16) — sale parts from `SaleSplit` — #13
+- [x] d: Staff send back `unapplied_receipt` money — amount mismatch, duplicate payment, already owned — #13
 - [ ] Reconciliation: one queued job per due payment once volume needs it
+- [ ] VAT lines on receipts once tax treatment is decided (0.5)
+- [ ] Confirm refund payout fees are always borne by the platform (payouts follow `platform_pays_disbursement_fees`)
+- [ ] Staff tooling to recover `payer_receivable` debts (refund paid twice) — with the back office (2.x)
+- [ ] Payment webhooks: release the job (don't mark processed) when the status API is down, as refunds now do
+- [ ] Revoke certificates when a course is refunded (with 1.8)
 
 ### 1.8 Learning — PRD-06
 - [ ] Enrollments, progress, quiz attempts, certificates, reviews, threads schema (arch §3.5)
@@ -209,7 +214,7 @@ Cannot be defaulted:
 - [ ] Sale, release, refund postings (FR-02–05)
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
 - [ ] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward (shares can hold centimes)
-- [ ] Sale reversal after release: take the professor part from available (see `ReversePosting` TODO)
+- [ ] Sale reversal and refunds after release: take the professor part from available (`PostOrderReversal`, `RefundPostings` TODOs) — required before payouts
 - [ ] Earnings + statement endpoints (FR-09)
 - [ ] Manual adjustments (FR-11)
 - [ ] Ledger integrity job (FR-12)
