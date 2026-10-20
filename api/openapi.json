@@ -6302,7 +6302,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Array of `QuizAttemptResource`",
+                        "description": "Paginated set of `QuizAttemptResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6313,10 +6313,128 @@
                                             "items": {
                                                 "$ref": "#/components/schemas/QuizAttemptResource"
                                             }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
                                         }
                                     },
                                     "required": [
-                                        "data"
+                                        "data",
+                                        "links",
+                                        "meta"
                                     ]
                                 }
                             }
@@ -9481,8 +9599,7 @@
                                                 ],
                                                 "properties": {
                                                     "question_count": {
-                                                        "type": "integer",
-                                                        "minimum": 0
+                                                        "type": "integer"
                                                     },
                                                     "pass_mark_pct": {
                                                         "type": "integer"
@@ -10781,11 +10898,9 @@
                     "started_at": {
                         "type": "string"
                     },
-                    "deadline_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
+                    "ends_at": {
+                        "type": "null",
+                        "description": "Count down to this; the server accepts answers for a short grace period after it (network slack)."
                     },
                     "submitted_at": {
                         "type": [
@@ -10887,7 +11002,7 @@
                     "id",
                     "lesson_uid",
                     "started_at",
-                    "deadline_at",
+                    "ends_at",
                     "submitted_at",
                     "pass_mark_pct",
                     "score_pct",
@@ -11778,8 +11893,7 @@
                                     "type": [
                                         "string",
                                         "null"
-                                    ],
-                                    "format": "date-time"
+                                    ]
                                 }
                             },
                             "required": [
