@@ -68,6 +68,8 @@ final class BuildDataExport implements ShouldQueue
                     'course' => $e->course?->slug,
                     'source' => $e->source->value,
                     'status' => $e->status->value,
+                    'progress_pct' => $e->progress_pct,
+                    'completed_at' => $e->completed_at?->toIso8601String(),
                     'enrolled_at' => $e->enrolled_at->toIso8601String(),
                 ])->all(),
             'wishlist' => Course::query()->join('wishlist_items as w', 'w.course_id', '=', 'courses.id')

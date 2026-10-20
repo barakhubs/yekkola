@@ -108,8 +108,14 @@ return [
         'invalid_order' => 'L’ordre envoyé ne correspond pas au contenu du cours.',
     ],
     'lesson' => [
+        'not_found' => 'Leçon introuvable.',
         'preview_limit_reached' => 'Nombre maximal de leçons d’aperçu atteint.',
         'type_mismatch' => 'Ce contenu ne correspond pas au type de leçon.',
+    ],
+    'quiz' => [
+        'not_a_quiz' => 'Cette leçon n’est pas un quiz.',
+        'max_attempts_reached' => 'Vous avez utilisé vos :max_attempts tentatives pour ce quiz.',
+        'already_submitted' => 'Cette tentative a déjà été envoyée.',
     ],
     'order' => [
         'course_unavailable' => 'Un des cours n’est pas disponible à l’achat.',
@@ -147,6 +153,7 @@ return [
         'amount_out_of_range' => 'Ce montant n’est pas accepté par cet opérateur.',
     ],
     'enrollment' => [
+        'required' => 'Inscrivez-vous à ce cours pour y accéder.',
         'not_free' => 'Ce cours est payant.',
         'revoked' => 'Votre accès à ce cours a été retiré. Contactez le support.',
     ],

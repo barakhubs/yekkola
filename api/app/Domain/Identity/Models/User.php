@@ -149,6 +149,14 @@ final class User extends Authenticatable
         return str_starts_with($this->phone_e164, 'deleted:');
     }
 
+    /** The registered device behind the current mobile token, if any (web sessions have none). */
+    public function currentDeviceId(): ?string
+    {
+        $token = $this->currentAccessToken();
+
+        return $token instanceof PersonalAccessToken && is_string($token->device_id) ? $token->device_id : null;
+    }
+
     public function isActive(): bool
     {
         return $this->status === UserStatus::Active;
