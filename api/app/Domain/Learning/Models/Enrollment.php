@@ -25,6 +25,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $revoked_at
  * @property \Illuminate\Support\Carbon $enrolled_at
  * @property int $progress_pct
+ * @property string|null $last_lesson_uid
+ * @property \Illuminate\Support\Carbon|null $last_activity_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
  */
 final class Enrollment extends Model
 {
