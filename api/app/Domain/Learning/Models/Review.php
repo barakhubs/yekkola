@@ -7,6 +7,7 @@ namespace App\Domain\Learning\Models;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
+use App\Domain\Learning\Enums\EnrollmentStatus;
 use App\Domain\Learning\Enums\ReviewStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -65,13 +66,18 @@ final class Review extends Model
     }
 
     /**
-     * What the public sees and what the rating counts: visible reviews of authors who aren't banned (BR-03).
+     * What the public sees and what the rating counts: visible reviews of authors who aren't banned (BR-03)
+     * and still have access (FR-12: a refunded or reversed purchase takes the review out until access returns).
      *
      * @param  Builder<self>  $query
      */
     public function scopePublished(Builder $query): void
     {
         $query->where('reviews.status', ReviewStatus::Visible)
-            ->whereIn('reviews.user_id', User::query()->where('status', '!=', UserStatus::Banned)->select('id'));
+            ->whereIn('reviews.user_id', User::query()->where('status', '!=', UserStatus::Banned)->select('id'))
+            ->whereExists(fn ($q) => $q->selectRaw('1')->from('enrollments')
+                ->whereColumn('enrollments.user_id', 'reviews.user_id')
+                ->whereColumn('enrollments.course_id', 'reviews.course_id')
+                ->where('enrollments.status', EnrollmentStatus::Active->value));
     }
 }

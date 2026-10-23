@@ -6,7 +6,9 @@ namespace App\Domain\Learning\Actions;
 
 use App\Domain\Learning\Enums\EnrollmentSource;
 use App\Domain\Learning\Enums\EnrollmentStatus;
+use App\Domain\Learning\Jobs\RefreshCourseRatings;
 use App\Domain\Learning\Models\Enrollment;
+use App\Domain\Learning\Models\Review;
 
 /**
  * Gives a user access to a course (PRD-06). One enrollment per user and course: an active one is left as
@@ -53,6 +55,9 @@ final class GrantEnrollment
         // A new grant starts a new completion: the student completes (and is certified) again.
         $enrollment->forceFill([...$attributes, 'completed_at' => null])->save();
         $this->progress->handle($enrollment);
+        if (Review::query()->where('user_id', $userId)->where('course_id', $courseId)->exists()) {
+            RefreshCourseRatings::dispatch($courseId)->afterCommit(); // their review counts again
+        }
 
         return true;
     }
