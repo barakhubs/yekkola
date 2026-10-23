@@ -22,9 +22,11 @@ describe("formatPhone", () => {
 });
 
 describe("formatDuration", () => {
-  it("uses minutes, then hours", () => {
-    expect(formatDuration(720, "fr")).toBe("12 min");
-    expect(formatDuration(3900, "fr")).toBe("1 h 05");
-    expect(formatDuration(3900, "en")).toBe("1h 05m");
+  const plain = (text: string) => text.replace(/\s/g, " ");
+
+  it("uses minutes, then hours and minutes", () => {
+    expect(plain(formatDuration(720, "fr"))).toBe("12 min");
+    expect(plain(formatDuration(3900, "fr"))).toBe("1 h 5 min");
+    expect(plain(formatDuration(3600, "en"))).toBe("1 hr");
   });
 });

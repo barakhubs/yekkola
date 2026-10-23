@@ -44,13 +44,16 @@ export function formatPhone(e164: string): string {
   return match ? `+243 ${match[1]} ${match[2]} ${match[3]}` : e164;
 }
 
-/** Lesson and course lengths: "1 h 05", "12 min". */
+/** Lesson and course lengths, e.g. "12 min", "1 h 5 min" (unit names from Intl, per locale). */
 export function formatDuration(seconds: number, locale: Locale): string {
+  const unit = (value: number, name: "hour" | "minute") =>
+    new Intl.NumberFormat(intlTag(locale), { style: "unit", unit: name, unitDisplay: "short" }).format(value);
   const minutes = Math.round(seconds / 60);
   if (minutes < 60) {
-    return `${minutes} min`;
+    return unit(minutes, "minute");
   }
   const hours = Math.floor(minutes / 60);
-  const rest = String(minutes % 60).padStart(2, "0");
-  return locale === "fr" ? `${hours} h ${rest}` : `${hours}h ${rest}m`;
+  const rest = minutes % 60;
+
+  return rest === 0 ? unit(hours, "hour") : `${unit(hours, "hour")} ${unit(rest, "minute")}`;
 }

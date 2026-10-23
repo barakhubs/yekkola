@@ -50,6 +50,6 @@
 
 - Local services: `docker compose up -d` (Postgres 55432, Valkey 6379, Meilisearch 7700)
 - API: see `api/CLAUDE.md` → Commands (`composer setup`, `composer check`)
-- Web (repo root, pnpm + Turborepo, Node ≥ 22.12): `pnpm install`, `pnpm dev` (web :3000, admin :3001), `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm format`
+- Web (repo root, pnpm + Turborepo, Node ≥ 20.19, 22.12+ recommended): `pnpm install`, `pnpm dev` (web :3000, admin :3001), `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm format`
 - API client: `pnpm api-client:generate` after `composer openapi` in `api/` (CI `contract.yml` fails if stale)
 - Mobile: added when scaffolded (Phase 3)

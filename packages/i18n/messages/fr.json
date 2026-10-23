@@ -10,13 +10,17 @@
     "free": "Gratuit",
     "new": "Nouveau",
     "language": "Langue",
-    "skipToContent": "Aller au contenu"
+    "skipToContent": "Aller au contenu",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    }
   },
   "errors": {
-    "generic": "Une erreur est survenue. Réessayez dans un instant.",
-    "network": "Pas de connexion. Vérifiez votre réseau et réessayez.",
+    "generic": "Une erreur est survenue. Réessaie dans un instant.",
+    "network": "Pas de connexion. Vérifie ton réseau et réessaie.",
     "notFound": "Cette page n’existe pas.",
-    "forbidden": "Vous n’avez pas accès à cette page."
+    "forbidden": "Tu n’as pas accès à cette page."
   },
   "web": {
     "nav": {
@@ -26,8 +30,8 @@
       "myCourses": "Mes cours"
     },
     "home": {
-      "title": "Apprenez avec les meilleurs profs du Congo",
-      "subtitle": "Cours en vidéo, audio et documents, quiz pour préparer vos examens. Téléchargez et apprenez même sans connexion.",
+      "title": "Apprends avec les meilleurs profs du Congo",
+      "subtitle": "Cours en vidéo, audio et documents, quiz pour préparer tes examens. Télécharge et apprends même sans connexion.",
       "browse": "Voir les cours"
     },
     "footer": {
