@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #15 (certificates + reviews, Phase 1.8b) to be merged
-- **Next up:** 1.8c lesson Q&A + reports
+- **Current branch:** `feature/web-foundations` (Phase 2.1, web milestone 1)
+- **Next up:** minimal playback + document URLs (1.9 slice), then the public site (2.3)
 
 ## Legend
 
@@ -252,13 +252,28 @@ Cannot be defaulted:
 
 ## Phase 2 — Web
 
+### Web milestone 1 — client demo (in this order; the rest of Phase 2 comes after)
+1. Foundations (2.1)
+2. Minimal playback token + document URL endpoints (1.9 FR-01, FR-02, FR-12 slice) so lessons can be watched/read
+3. Public site: layout, home rails, catalogue + search, course page, professor page (2.3)
+4. Sign-in (phone + OTP), free enroll, My courses (2.4)
+5. Learning view: curriculum, progress, player, documents, quizzes (2.4)
+6. Paid checkout on the fake gateway: quote, rail picker, waiting screen, receipt (2.4)
+7. Studio: course editor, curriculum, pricing, quiz builder, submit for review (2.5)
+8. Back office, minimal: sign-in, professor applications, course version approval (2.2)
+
+Needs from the owner for a hosted demo: Mux account (real playback) and Laravel Cloud account (staging) — 0.3.
+
 ### 2.1 Front-end foundations
-- [ ] pnpm workspace + Turborepo at repo root
-- [ ] `packages/config` (tsconfig, ESLint, Tailwind preset, Prettier)
-- [ ] `packages/ui`: shadcn/ui setup, brand tokens (light/dark), blocks (DataTable, KpiCard, ChartCard, PageHeader, EmptyState, FileUpload, ConfirmDialog, StatusBadge, MoneyText)
-- [ ] `packages/i18n`: fr/en catalogues + money/date/phone formatters
-- [ ] `packages/api-client`: Orval config + generation script
-- [ ] CI: `web.yml` (lint, typecheck, tests) + `contract.yml` (client drift check)
+- [x] pnpm workspace + Turborepo at repo root
+- [x] `packages/config` (tsconfig, ESLint, Prettier; Tailwind v4 theme lives in `packages/ui` CSS instead of a preset)
+- [x] `packages/ui`: shadcn/ui setup, brand tokens (light/dark), primitives, blocks (KpiCard, PageHeader, EmptyState, ConfirmDialog, StatusBadge, MoneyText)
+- [ ] `packages/ui`: DataTable (TanStack Table + nuqs), ChartCard, FileUpload — with the first screen that needs each (2.2 / 2.5)
+- [x] `packages/i18n`: fr/en catalogues + money/date/phone/duration formatters
+- [x] `packages/api-client`: Orval config + generation script, fetcher (Sanctum cookies + XSRF, locale, error envelope)
+- [x] CI: `web.yml` (lint, typecheck, tests, build, audit) + `contract.yml` (client drift check)
+- [x] `apps/web` and `apps/admin` shells: locale routing (fr default at `/`), Nunito, providers, static home pages
+- [ ] Local Node is 22.11; Vite 8 / Rolldown need ≥ 22.12 (tests pin Vite 7) — upgrade Node, then drop the pin
 - [ ] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys
 
 ### 2.2 Back office (apps/admin) — PRD-09 (before the student web app)
