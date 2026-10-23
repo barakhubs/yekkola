@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Learning\Actions;
 
-use App\Domain\Authoring\Models\Course;
 use App\Domain\Learning\Models\Review;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +15,7 @@ final class DeleteReview
     public function handle(Review $review): void
     {
         DB::transaction(function () use ($review): void {
-            Course::query()->withTrashed()->whereKey($review->course_id)->lockForUpdate()->first();
+            $this->ratings->lock($review->course_id);
             Review::query()->whereKey($review->id)->delete();
             $this->ratings->handle($review->course_id);
         });

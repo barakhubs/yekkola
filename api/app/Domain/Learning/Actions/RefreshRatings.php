@@ -9,12 +9,21 @@ use App\Domain\Learning\Models\Review;
 use App\Domain\Professors\Models\ProfessorProfile;
 
 /**
- * Recomputes a course's rating and its professor's from published reviews (visible, author not banned —
- * PRD-06 BR-03). Derived from the reviews table every time, so it never drifts. Call inside the caller's
- * transaction with the course locked, so concurrent reviews of one course apply one after the other.
+ * Recomputes a course's rating and its professor's from published reviews (visible, author not banned and
+ * still enrolled — PRD-06 FR-12, BR-03). Derived from the reviews table every time. Call inside the
+ * caller's transaction after lock(), so concurrent reviews of one professor's courses apply in turn.
  */
 final class RefreshRatings
 {
+    /** Locks the professor, then the course (always in this order), and returns the course. */
+    public function lock(string $courseId): Course
+    {
+        $professorId = Course::query()->withTrashed()->whereKey($courseId)->value('professor_profile_id');
+        ProfessorProfile::query()->whereKey($professorId)->lockForUpdate()->first();
+
+        return Course::query()->withTrashed()->with('professor')->lockForUpdate()->findOrFail($courseId);
+    }
+
     public function handle(string $courseId): void
     {
         $course = Course::query()->withTrashed()->findOrFail($courseId);

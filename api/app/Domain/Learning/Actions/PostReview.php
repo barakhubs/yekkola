@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Learning\Actions;
 
-use App\Domain\Authoring\Models\Course;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\CourseAccess;
 use App\Domain\Learning\Exceptions\LearningException;
@@ -30,7 +29,7 @@ final class PostReview
     public function handle(User $user, string $courseId, int $rating, ?string $body, bool $creating): Review
     {
         return DB::transaction(function () use ($user, $courseId, $rating, $body, $creating): Review {
-            $course = Course::query()->with('professor')->lockForUpdate()->findOrFail($courseId);
+            $course = $this->ratings->lock($courseId);
             if ($course->professor->user_id === $user->id) {
                 throw LearningException::ownCourseReview();
             }
