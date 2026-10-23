@@ -52,13 +52,22 @@ function ConfirmDialog({
       await onConfirm(text.trim());
       setOpen(false);
       setText("");
+    } catch {
+      // Stay open: the caller shows the error (e.g. a toast or field message).
     } finally {
       setPending(false);
     }
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={(next) => !pending && setOpen(next)}>
+    <AlertDialog
+      open={open}
+      onOpenChange={(next) => {
+        if (pending) return;
+        setOpen(next);
+        if (!next) setText("");
+      }}
+    >
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
