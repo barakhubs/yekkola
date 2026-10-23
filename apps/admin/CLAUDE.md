@@ -14,4 +14,11 @@ For admins, moderators, and finance staff. Requirements: `docs/prd/09-back-offic
 
 ## Commands
 
-Not scaffolded yet.
+- `pnpm --filter @yekkola/admin dev` → http://localhost:3001 (copy `.env.example` to `.env.local`; the API runs on :8000)
+- `pnpm --filter @yekkola/admin build` · `lint` · `typecheck` (runs `next typegen` first)
+
+## Setup notes
+
+- Locale routing: next-intl with `localePrefix: "as-needed"` — French at `/`, English at `/en`; `src/proxy.ts` (Next 16 middleware) negotiates it. Use `Link`/`redirect`/`useRouter` from `@/i18n/navigation`.
+- Every layout and page that renders text calls `setRequestLocale(locale)` so pages stay static.
+- Providers (`src/lib/providers.tsx`): TanStack Query (no retries on 4xx), nuqs, API client locale.
