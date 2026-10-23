@@ -20,6 +20,7 @@ import type {
 import type { CertificatesVerify200, MeCertificatesIndex200, MeCertificatesPdf200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -70,7 +71,7 @@ export const getMeCertificatesIndexQueryKey = () => {
 
 export const getMeCertificatesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -90,11 +91,11 @@ export const getMeCertificatesIndexQueryOptions = <
 };
 
 export type MeCertificatesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof meCertificatesIndex>>>;
-export type MeCertificatesIndexQueryError = unknown;
+export type MeCertificatesIndexQueryError = ErrorType<unknown>;
 
 export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>> &
@@ -112,7 +113,7 @@ export function useMeCertificatesIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>> &
@@ -130,7 +131,7 @@ export function useMeCertificatesIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
@@ -144,7 +145,7 @@ export function useMeCertificatesIndex<
 
 export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
@@ -194,7 +195,7 @@ export const getMeCertificatesPdfQueryKey = (certificate: string) => {
 
 export const getMeCertificatesPdfQueryOptions = <
   TData = Awaited<ReturnType<typeof meCertificatesPdf>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   certificate: string,
   options?: {
@@ -220,9 +221,12 @@ export const getMeCertificatesPdfQueryOptions = <
 };
 
 export type MeCertificatesPdfQueryResult = NonNullable<Awaited<ReturnType<typeof meCertificatesPdf>>>;
-export type MeCertificatesPdfQueryError = unknown;
+export type MeCertificatesPdfQueryError = ErrorType<unknown>;
 
-export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertificatesPdf>>, TError = unknown>(
+export function useMeCertificatesPdf<
+  TData = Awaited<ReturnType<typeof meCertificatesPdf>>,
+  TError = ErrorType<unknown>,
+>(
   certificate: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesPdf>>, TError, TData>> &
@@ -238,7 +242,10 @@ export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertifi
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertificatesPdf>>, TError = unknown>(
+export function useMeCertificatesPdf<
+  TData = Awaited<ReturnType<typeof meCertificatesPdf>>,
+  TError = ErrorType<unknown>,
+>(
   certificate: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesPdf>>, TError, TData>> &
@@ -254,7 +261,10 @@ export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertifi
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertificatesPdf>>, TError = unknown>(
+export function useMeCertificatesPdf<
+  TData = Awaited<ReturnType<typeof meCertificatesPdf>>,
+  TError = ErrorType<unknown>,
+>(
   certificate: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesPdf>>, TError, TData>>;
@@ -266,7 +276,10 @@ export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertifi
  * @summary The certificate as a PDF in my language, with a QR code to its verification page. Valid ones only
  */
 
-export function useMeCertificatesPdf<TData = Awaited<ReturnType<typeof meCertificatesPdf>>, TError = unknown>(
+export function useMeCertificatesPdf<
+  TData = Awaited<ReturnType<typeof meCertificatesPdf>>,
+  TError = ErrorType<unknown>,
+>(
   certificate: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesPdf>>, TError, TData>>;
@@ -316,7 +329,7 @@ export const getCertificatesVerifyQueryKey = (serial: string) => {
 
 export const getCertificatesVerifyQueryOptions = <
   TData = Awaited<ReturnType<typeof certificatesVerify>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   serial: string,
   options?: {
@@ -342,11 +355,11 @@ export const getCertificatesVerifyQueryOptions = <
 };
 
 export type CertificatesVerifyQueryResult = NonNullable<Awaited<ReturnType<typeof certificatesVerify>>>;
-export type CertificatesVerifyQueryError = unknown;
+export type CertificatesVerifyQueryError = ErrorType<unknown>;
 
 export function useCertificatesVerify<
   TData = Awaited<ReturnType<typeof certificatesVerify>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   serial: string,
   options: {
@@ -365,7 +378,7 @@ export function useCertificatesVerify<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCertificatesVerify<
   TData = Awaited<ReturnType<typeof certificatesVerify>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   serial: string,
   options?: {
@@ -384,7 +397,7 @@ export function useCertificatesVerify<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCertificatesVerify<
   TData = Awaited<ReturnType<typeof certificatesVerify>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   serial: string,
   options?: {
@@ -399,7 +412,7 @@ export function useCertificatesVerify<
 
 export function useCertificatesVerify<
   TData = Awaited<ReturnType<typeof certificatesVerify>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   serial: string,
   options?: {

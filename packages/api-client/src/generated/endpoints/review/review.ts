@@ -31,6 +31,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -79,7 +80,7 @@ export const getCoursesReviewShowQueryKey = (course: string) => {
 
 export const getCoursesReviewShowQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesReviewShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -105,9 +106,12 @@ export const getCoursesReviewShowQueryOptions = <
 };
 
 export type CoursesReviewShowQueryResult = NonNullable<Awaited<ReturnType<typeof coursesReviewShow>>>;
-export type CoursesReviewShowQueryError = unknown;
+export type CoursesReviewShowQueryError = ErrorType<unknown>;
 
-export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesReviewShow>>, TError = unknown>(
+export function useCoursesReviewShow<
+  TData = Awaited<ReturnType<typeof coursesReviewShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewShow>>, TError, TData>> &
@@ -123,7 +127,10 @@ export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesRe
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesReviewShow>>, TError = unknown>(
+export function useCoursesReviewShow<
+  TData = Awaited<ReturnType<typeof coursesReviewShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewShow>>, TError, TData>> &
@@ -139,7 +146,10 @@ export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesRe
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesReviewShow>>, TError = unknown>(
+export function useCoursesReviewShow<
+  TData = Awaited<ReturnType<typeof coursesReviewShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewShow>>, TError, TData>>;
@@ -148,7 +158,10 @@ export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesRe
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useCoursesReviewShow<TData = Awaited<ReturnType<typeof coursesReviewShow>>, TError = unknown>(
+export function useCoursesReviewShow<
+  TData = Awaited<ReturnType<typeof coursesReviewShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewShow>>, TError, TData>>;
@@ -220,16 +233,16 @@ export const coursesReviewStore = async (
   });
 };
 
-export const getCoursesReviewStoreQueryKey = (course: string, reviewRequest?: ReviewRequest) => {
+export const getCoursesReviewStoreQueryKey = (course: string, reviewRequest?: BodyType<ReviewRequest>) => {
   return ["POST", `/courses/${course}/review`, reviewRequest] as const;
 };
 
 export const getCoursesReviewStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesReviewStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -253,14 +266,14 @@ export const getCoursesReviewStoreQueryOptions = <
 };
 
 export type CoursesReviewStoreQueryResult = NonNullable<Awaited<ReturnType<typeof coursesReviewStore>>>;
-export type CoursesReviewStoreQueryError = ValidationExceptionResponse;
+export type CoursesReviewStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useCoursesReviewStore<
   TData = Awaited<ReturnType<typeof coursesReviewStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewStore>>, TError, TData>> &
       Pick<
@@ -277,10 +290,10 @@ export function useCoursesReviewStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewStore<
   TData = Awaited<ReturnType<typeof coursesReviewStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewStore>>, TError, TData>> &
       Pick<
@@ -297,10 +310,10 @@ export function useCoursesReviewStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewStore<
   TData = Awaited<ReturnType<typeof coursesReviewStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -313,10 +326,10 @@ export function useCoursesReviewStore<
 
 export function useCoursesReviewStore<
   TData = Awaited<ReturnType<typeof coursesReviewStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -385,16 +398,16 @@ export const coursesReviewUpdate = async (
   });
 };
 
-export const getCoursesReviewUpdateQueryKey = (course: string, reviewRequest?: ReviewRequest) => {
+export const getCoursesReviewUpdateQueryKey = (course: string, reviewRequest?: BodyType<ReviewRequest>) => {
   return ["PATCH", `/courses/${course}/review`, reviewRequest] as const;
 };
 
 export const getCoursesReviewUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesReviewUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -418,14 +431,14 @@ export const getCoursesReviewUpdateQueryOptions = <
 };
 
 export type CoursesReviewUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof coursesReviewUpdate>>>;
-export type CoursesReviewUpdateQueryError = ValidationExceptionResponse;
+export type CoursesReviewUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useCoursesReviewUpdate<
   TData = Awaited<ReturnType<typeof coursesReviewUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewUpdate>>, TError, TData>> &
       Pick<
@@ -442,10 +455,10 @@ export function useCoursesReviewUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewUpdate<
   TData = Awaited<ReturnType<typeof coursesReviewUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewUpdate>>, TError, TData>> &
       Pick<
@@ -462,10 +475,10 @@ export function useCoursesReviewUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewUpdate<
   TData = Awaited<ReturnType<typeof coursesReviewUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -475,10 +488,10 @@ export function useCoursesReviewUpdate<
 
 export function useCoursesReviewUpdate<
   TData = Awaited<ReturnType<typeof coursesReviewUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reviewRequest: ReviewRequest,
+  reviewRequest: BodyType<ReviewRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -534,7 +547,7 @@ export const getCoursesReviewDestroyQueryKey = (course: string) => {
 
 export const getCoursesReviewDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesReviewDestroy>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   course: string,
   options?: {
@@ -560,11 +573,11 @@ export const getCoursesReviewDestroyQueryOptions = <
 };
 
 export type CoursesReviewDestroyQueryResult = NonNullable<Awaited<ReturnType<typeof coursesReviewDestroy>>>;
-export type CoursesReviewDestroyQueryError = ModelNotFoundExceptionResponse;
+export type CoursesReviewDestroyQueryError = ErrorType<ModelNotFoundExceptionResponse>;
 
 export function useCoursesReviewDestroy<
   TData = Awaited<ReturnType<typeof coursesReviewDestroy>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   course: string,
   options: {
@@ -583,7 +596,7 @@ export function useCoursesReviewDestroy<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewDestroy<
   TData = Awaited<ReturnType<typeof coursesReviewDestroy>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   course: string,
   options?: {
@@ -602,7 +615,7 @@ export function useCoursesReviewDestroy<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewDestroy<
   TData = Awaited<ReturnType<typeof coursesReviewDestroy>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   course: string,
   options?: {
@@ -614,7 +627,7 @@ export function useCoursesReviewDestroy<
 
 export function useCoursesReviewDestroy<
   TData = Awaited<ReturnType<typeof coursesReviewDestroy>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   course: string,
   options?: {
@@ -665,7 +678,7 @@ export const getCoursesReviewsIndexQueryKey = (slug: string) => {
 
 export const getCoursesReviewsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   slug: string,
   options?: {
@@ -691,11 +704,11 @@ export const getCoursesReviewsIndexQueryOptions = <
 };
 
 export type CoursesReviewsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof coursesReviewsIndex>>>;
-export type CoursesReviewsIndexQueryError = unknown;
+export type CoursesReviewsIndexQueryError = ErrorType<unknown>;
 
 export function useCoursesReviewsIndex<
   TData = Awaited<ReturnType<typeof coursesReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   slug: string,
   options: {
@@ -714,7 +727,7 @@ export function useCoursesReviewsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewsIndex<
   TData = Awaited<ReturnType<typeof coursesReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   slug: string,
   options?: {
@@ -733,7 +746,7 @@ export function useCoursesReviewsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesReviewsIndex<
   TData = Awaited<ReturnType<typeof coursesReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   slug: string,
   options?: {
@@ -748,7 +761,7 @@ export function useCoursesReviewsIndex<
 
 export function useCoursesReviewsIndex<
   TData = Awaited<ReturnType<typeof coursesReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   slug: string,
   options?: {
@@ -798,7 +811,7 @@ export const getProfessorReviewsIndexQueryKey = () => {
 
 export const getProfessorReviewsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -818,11 +831,11 @@ export const getProfessorReviewsIndexQueryOptions = <
 };
 
 export type ProfessorReviewsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof professorReviewsIndex>>>;
-export type ProfessorReviewsIndexQueryError = unknown;
+export type ProfessorReviewsIndexQueryError = ErrorType<unknown>;
 
 export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>> &
@@ -840,7 +853,7 @@ export function useProfessorReviewsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>> &
@@ -858,7 +871,7 @@ export function useProfessorReviewsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
@@ -872,7 +885,7 @@ export function useProfessorReviewsIndex<
 
 export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
@@ -945,16 +958,19 @@ export const professorReviewsReply = async (
   });
 };
 
-export const getProfessorReviewsReplyQueryKey = (review: string, reviewReplyRequest?: ReviewReplyRequest) => {
+export const getProfessorReviewsReplyQueryKey = (
+  review: string,
+  reviewReplyRequest?: BodyType<ReviewReplyRequest>,
+) => {
   return ["POST", `/professor/reviews/${review}/reply`, reviewReplyRequest] as const;
 };
 
 export const getProfessorReviewsReplyQueryOptions = <
   TData = Awaited<ReturnType<typeof professorReviewsReply>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   review: string,
-  reviewReplyRequest: ReviewReplyRequest,
+  reviewReplyRequest: BodyType<ReviewReplyRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsReply>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -978,14 +994,14 @@ export const getProfessorReviewsReplyQueryOptions = <
 };
 
 export type ProfessorReviewsReplyQueryResult = NonNullable<Awaited<ReturnType<typeof professorReviewsReply>>>;
-export type ProfessorReviewsReplyQueryError = ValidationExceptionResponse;
+export type ProfessorReviewsReplyQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorReviewsReply<
   TData = Awaited<ReturnType<typeof professorReviewsReply>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   review: string,
-  reviewReplyRequest: ReviewReplyRequest,
+  reviewReplyRequest: BodyType<ReviewReplyRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsReply>>, TError, TData>> &
       Pick<
@@ -1002,10 +1018,10 @@ export function useProfessorReviewsReply<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorReviewsReply<
   TData = Awaited<ReturnType<typeof professorReviewsReply>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   review: string,
-  reviewReplyRequest: ReviewReplyRequest,
+  reviewReplyRequest: BodyType<ReviewReplyRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsReply>>, TError, TData>> &
       Pick<
@@ -1022,10 +1038,10 @@ export function useProfessorReviewsReply<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorReviewsReply<
   TData = Awaited<ReturnType<typeof professorReviewsReply>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   review: string,
-  reviewReplyRequest: ReviewReplyRequest,
+  reviewReplyRequest: BodyType<ReviewReplyRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsReply>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1038,10 +1054,10 @@ export function useProfessorReviewsReply<
 
 export function useProfessorReviewsReply<
   TData = Awaited<ReturnType<typeof professorReviewsReply>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   review: string,
-  reviewReplyRequest: ReviewReplyRequest,
+  reviewReplyRequest: BodyType<ReviewReplyRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsReply>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

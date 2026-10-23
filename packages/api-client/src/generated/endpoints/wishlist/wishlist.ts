@@ -20,6 +20,7 @@ import type {
 import type { MeWishlistIndex200, ValidationExceptionResponse, WishlistRequest } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -67,7 +68,7 @@ export const getMeWishlistIndexQueryKey = () => {
 
 export const getMeWishlistIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meWishlistIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -87,9 +88,12 @@ export const getMeWishlistIndexQueryOptions = <
 };
 
 export type MeWishlistIndexQueryResult = NonNullable<Awaited<ReturnType<typeof meWishlistIndex>>>;
-export type MeWishlistIndexQueryError = unknown;
+export type MeWishlistIndexQueryError = ErrorType<unknown>;
 
-export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistIndex>>, TError = unknown>(
+export function useMeWishlistIndex<
+  TData = Awaited<ReturnType<typeof meWishlistIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>> &
       Pick<
@@ -104,7 +108,10 @@ export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistI
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistIndex>>, TError = unknown>(
+export function useMeWishlistIndex<
+  TData = Awaited<ReturnType<typeof meWishlistIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>> &
       Pick<
@@ -119,7 +126,10 @@ export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistI
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistIndex>>, TError = unknown>(
+export function useMeWishlistIndex<
+  TData = Awaited<ReturnType<typeof meWishlistIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -127,7 +137,10 @@ export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistI
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useMeWishlistIndex<TData = Awaited<ReturnType<typeof meWishlistIndex>>, TError = unknown>(
+export function useMeWishlistIndex<
+  TData = Awaited<ReturnType<typeof meWishlistIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -197,15 +210,15 @@ export const meWishlistStore = async (
   });
 };
 
-export const getMeWishlistStoreQueryKey = (wishlistRequest?: WishlistRequest) => {
+export const getMeWishlistStoreQueryKey = (wishlistRequest?: BodyType<WishlistRequest>) => {
   return ["POST", `/me/wishlist`, wishlistRequest] as const;
 };
 
 export const getMeWishlistStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof meWishlistStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  wishlistRequest: WishlistRequest,
+  wishlistRequest: BodyType<WishlistRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -226,13 +239,13 @@ export const getMeWishlistStoreQueryOptions = <
 };
 
 export type MeWishlistStoreQueryResult = NonNullable<Awaited<ReturnType<typeof meWishlistStore>>>;
-export type MeWishlistStoreQueryError = ValidationExceptionResponse;
+export type MeWishlistStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useMeWishlistStore<
   TData = Awaited<ReturnType<typeof meWishlistStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  wishlistRequest: WishlistRequest,
+  wishlistRequest: BodyType<WishlistRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistStore>>, TError, TData>> &
       Pick<
@@ -249,9 +262,9 @@ export function useMeWishlistStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeWishlistStore<
   TData = Awaited<ReturnType<typeof meWishlistStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  wishlistRequest: WishlistRequest,
+  wishlistRequest: BodyType<WishlistRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistStore>>, TError, TData>> &
       Pick<
@@ -268,9 +281,9 @@ export function useMeWishlistStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeWishlistStore<
   TData = Awaited<ReturnType<typeof meWishlistStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  wishlistRequest: WishlistRequest,
+  wishlistRequest: BodyType<WishlistRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -283,9 +296,9 @@ export function useMeWishlistStore<
 
 export function useMeWishlistStore<
   TData = Awaited<ReturnType<typeof meWishlistStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  wishlistRequest: WishlistRequest,
+  wishlistRequest: BodyType<WishlistRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -331,7 +344,7 @@ export const getMeWishlistDestroyQueryKey = (course: string) => {
 
 export const getMeWishlistDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof meWishlistDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -357,9 +370,12 @@ export const getMeWishlistDestroyQueryOptions = <
 };
 
 export type MeWishlistDestroyQueryResult = NonNullable<Awaited<ReturnType<typeof meWishlistDestroy>>>;
-export type MeWishlistDestroyQueryError = unknown;
+export type MeWishlistDestroyQueryError = ErrorType<unknown>;
 
-export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlistDestroy>>, TError = unknown>(
+export function useMeWishlistDestroy<
+  TData = Awaited<ReturnType<typeof meWishlistDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistDestroy>>, TError, TData>> &
@@ -375,7 +391,10 @@ export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlis
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlistDestroy>>, TError = unknown>(
+export function useMeWishlistDestroy<
+  TData = Awaited<ReturnType<typeof meWishlistDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistDestroy>>, TError, TData>> &
@@ -391,7 +410,10 @@ export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlis
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlistDestroy>>, TError = unknown>(
+export function useMeWishlistDestroy<
+  TData = Awaited<ReturnType<typeof meWishlistDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistDestroy>>, TError, TData>>;
@@ -400,7 +422,10 @@ export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlis
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useMeWishlistDestroy<TData = Awaited<ReturnType<typeof meWishlistDestroy>>, TError = unknown>(
+export function useMeWishlistDestroy<
+  TData = Awaited<ReturnType<typeof meWishlistDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistDestroy>>, TError, TData>>;

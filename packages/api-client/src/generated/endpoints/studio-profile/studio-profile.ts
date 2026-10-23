@@ -29,6 +29,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -76,7 +77,7 @@ export const getProfessorProfileShowQueryKey = () => {
 
 export const getProfessorProfileShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorProfileShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileShow>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -96,11 +97,11 @@ export const getProfessorProfileShowQueryOptions = <
 };
 
 export type ProfessorProfileShowQueryResult = NonNullable<Awaited<ReturnType<typeof professorProfileShow>>>;
-export type ProfessorProfileShowQueryError = unknown;
+export type ProfessorProfileShowQueryError = ErrorType<unknown>;
 
 export function useProfessorProfileShow<
   TData = Awaited<ReturnType<typeof professorProfileShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileShow>>, TError, TData>> &
@@ -118,7 +119,7 @@ export function useProfessorProfileShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorProfileShow<
   TData = Awaited<ReturnType<typeof professorProfileShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileShow>>, TError, TData>> &
@@ -136,7 +137,7 @@ export function useProfessorProfileShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorProfileShow<
   TData = Awaited<ReturnType<typeof professorProfileShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileShow>>, TError, TData>>;
@@ -147,7 +148,7 @@ export function useProfessorProfileShow<
 
 export function useProfessorProfileShow<
   TData = Awaited<ReturnType<typeof professorProfileShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileShow>>, TError, TData>>;
@@ -217,16 +218,16 @@ export const professorProfileUpdate = async (
 };
 
 export const getProfessorProfileUpdateQueryKey = (
-  updateProfessorProfileRequest?: UpdateProfessorProfileRequest,
+  updateProfessorProfileRequest?: BodyType<UpdateProfessorProfileRequest>,
 ) => {
   return ["PATCH", `/professor/profile`, updateProfessorProfileRequest] as const;
 };
 
 export const getProfessorProfileUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorProfileUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfessorProfileRequest?: UpdateProfessorProfileRequest,
+  updateProfessorProfileRequest?: BodyType<UpdateProfessorProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -249,13 +250,13 @@ export const getProfessorProfileUpdateQueryOptions = <
 export type ProfessorProfileUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorProfileUpdate>>
 >;
-export type ProfessorProfileUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorProfileUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorProfileUpdate<
   TData = Awaited<ReturnType<typeof professorProfileUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfessorProfileRequest: undefined | UpdateProfessorProfileRequest,
+  updateProfessorProfileRequest: undefined | BodyType<UpdateProfessorProfileRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileUpdate>>, TError, TData>> &
       Pick<
@@ -272,9 +273,9 @@ export function useProfessorProfileUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorProfileUpdate<
   TData = Awaited<ReturnType<typeof professorProfileUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfessorProfileRequest?: UpdateProfessorProfileRequest,
+  updateProfessorProfileRequest?: BodyType<UpdateProfessorProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileUpdate>>, TError, TData>> &
       Pick<
@@ -291,9 +292,9 @@ export function useProfessorProfileUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorProfileUpdate<
   TData = Awaited<ReturnType<typeof professorProfileUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfessorProfileRequest?: UpdateProfessorProfileRequest,
+  updateProfessorProfileRequest?: BodyType<UpdateProfessorProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -303,9 +304,9 @@ export function useProfessorProfileUpdate<
 
 export function useProfessorProfileUpdate<
   TData = Awaited<ReturnType<typeof professorProfileUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfessorProfileRequest?: UpdateProfessorProfileRequest,
+  updateProfessorProfileRequest?: BodyType<UpdateProfessorProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -362,15 +363,15 @@ export const professorProfileAvatar = async (
   });
 };
 
-export const getProfessorProfileAvatarQueryKey = (uploadAvatarRequest?: UploadAvatarRequest) => {
+export const getProfessorProfileAvatarQueryKey = (uploadAvatarRequest?: BodyType<UploadAvatarRequest>) => {
   return ["POST", `/professor/profile/avatar`, uploadAvatarRequest] as const;
 };
 
 export const getProfessorProfileAvatarQueryOptions = <
   TData = Awaited<ReturnType<typeof professorProfileAvatar>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadAvatarRequest: UploadAvatarRequest,
+  uploadAvatarRequest: BodyType<UploadAvatarRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileAvatar>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -393,13 +394,13 @@ export const getProfessorProfileAvatarQueryOptions = <
 export type ProfessorProfileAvatarQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorProfileAvatar>>
 >;
-export type ProfessorProfileAvatarQueryError = ValidationExceptionResponse;
+export type ProfessorProfileAvatarQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorProfileAvatar<
   TData = Awaited<ReturnType<typeof professorProfileAvatar>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadAvatarRequest: UploadAvatarRequest,
+  uploadAvatarRequest: BodyType<UploadAvatarRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileAvatar>>, TError, TData>> &
       Pick<
@@ -416,9 +417,9 @@ export function useProfessorProfileAvatar<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorProfileAvatar<
   TData = Awaited<ReturnType<typeof professorProfileAvatar>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadAvatarRequest: UploadAvatarRequest,
+  uploadAvatarRequest: BodyType<UploadAvatarRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileAvatar>>, TError, TData>> &
       Pick<
@@ -435,9 +436,9 @@ export function useProfessorProfileAvatar<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorProfileAvatar<
   TData = Awaited<ReturnType<typeof professorProfileAvatar>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadAvatarRequest: UploadAvatarRequest,
+  uploadAvatarRequest: BodyType<UploadAvatarRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileAvatar>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -450,9 +451,9 @@ export function useProfessorProfileAvatar<
 
 export function useProfessorProfileAvatar<
   TData = Awaited<ReturnType<typeof professorProfileAvatar>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadAvatarRequest: UploadAvatarRequest,
+  uploadAvatarRequest: BodyType<UploadAvatarRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorProfileAvatar>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -523,15 +524,17 @@ export const professorTermsAccept = async (
   });
 };
 
-export const getProfessorTermsAcceptQueryKey = (professorTermsAcceptBody?: ProfessorTermsAcceptBody) => {
+export const getProfessorTermsAcceptQueryKey = (
+  professorTermsAcceptBody?: BodyType<ProfessorTermsAcceptBody>,
+) => {
   return ["POST", `/professor/terms/accept`, professorTermsAcceptBody] as const;
 };
 
 export const getProfessorTermsAcceptQueryOptions = <
   TData = Awaited<ReturnType<typeof professorTermsAccept>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorTermsAcceptBody: ProfessorTermsAcceptBody,
+  professorTermsAcceptBody: BodyType<ProfessorTermsAcceptBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorTermsAccept>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -552,13 +555,13 @@ export const getProfessorTermsAcceptQueryOptions = <
 };
 
 export type ProfessorTermsAcceptQueryResult = NonNullable<Awaited<ReturnType<typeof professorTermsAccept>>>;
-export type ProfessorTermsAcceptQueryError = ValidationExceptionResponse;
+export type ProfessorTermsAcceptQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorTermsAccept<
   TData = Awaited<ReturnType<typeof professorTermsAccept>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorTermsAcceptBody: ProfessorTermsAcceptBody,
+  professorTermsAcceptBody: BodyType<ProfessorTermsAcceptBody>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorTermsAccept>>, TError, TData>> &
       Pick<
@@ -575,9 +578,9 @@ export function useProfessorTermsAccept<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorTermsAccept<
   TData = Awaited<ReturnType<typeof professorTermsAccept>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorTermsAcceptBody: ProfessorTermsAcceptBody,
+  professorTermsAcceptBody: BodyType<ProfessorTermsAcceptBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorTermsAccept>>, TError, TData>> &
       Pick<
@@ -594,9 +597,9 @@ export function useProfessorTermsAccept<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorTermsAccept<
   TData = Awaited<ReturnType<typeof professorTermsAccept>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorTermsAcceptBody: ProfessorTermsAcceptBody,
+  professorTermsAcceptBody: BodyType<ProfessorTermsAcceptBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorTermsAccept>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -609,9 +612,9 @@ export function useProfessorTermsAccept<
 
 export function useProfessorTermsAccept<
   TData = Awaited<ReturnType<typeof professorTermsAccept>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorTermsAcceptBody: ProfessorTermsAcceptBody,
+  professorTermsAcceptBody: BodyType<ProfessorTermsAcceptBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorTermsAccept>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

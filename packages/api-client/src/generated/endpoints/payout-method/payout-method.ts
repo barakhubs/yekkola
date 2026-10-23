@@ -25,6 +25,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -72,7 +73,7 @@ export const getProfessorPayoutMethodOtpQueryKey = () => {
 
 export const getProfessorPayoutMethodOtpQueryOptions = <
   TData = Awaited<ReturnType<typeof professorPayoutMethodOtp>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodOtp>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -94,11 +95,11 @@ export const getProfessorPayoutMethodOtpQueryOptions = <
 export type ProfessorPayoutMethodOtpQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorPayoutMethodOtp>>
 >;
-export type ProfessorPayoutMethodOtpQueryError = unknown;
+export type ProfessorPayoutMethodOtpQueryError = ErrorType<unknown>;
 
 export function useProfessorPayoutMethodOtp<
   TData = Awaited<ReturnType<typeof professorPayoutMethodOtp>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodOtp>>, TError, TData>> &
@@ -116,7 +117,7 @@ export function useProfessorPayoutMethodOtp<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorPayoutMethodOtp<
   TData = Awaited<ReturnType<typeof professorPayoutMethodOtp>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodOtp>>, TError, TData>> &
@@ -134,7 +135,7 @@ export function useProfessorPayoutMethodOtp<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorPayoutMethodOtp<
   TData = Awaited<ReturnType<typeof professorPayoutMethodOtp>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodOtp>>, TError, TData>>;
@@ -145,7 +146,7 @@ export function useProfessorPayoutMethodOtp<
 
 export function useProfessorPayoutMethodOtp<
   TData = Awaited<ReturnType<typeof professorPayoutMethodOtp>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodOtp>>, TError, TData>>;
@@ -215,16 +216,16 @@ export const professorPayoutMethodUpdate = async (
 };
 
 export const getProfessorPayoutMethodUpdateQueryKey = (
-  changePayoutMethodRequest?: ChangePayoutMethodRequest,
+  changePayoutMethodRequest?: BodyType<ChangePayoutMethodRequest>,
 ) => {
   return ["PUT", `/professor/payout-method`, changePayoutMethodRequest] as const;
 };
 
 export const getProfessorPayoutMethodUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorPayoutMethodUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePayoutMethodRequest: ChangePayoutMethodRequest,
+  changePayoutMethodRequest: BodyType<ChangePayoutMethodRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -248,13 +249,13 @@ export const getProfessorPayoutMethodUpdateQueryOptions = <
 export type ProfessorPayoutMethodUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorPayoutMethodUpdate>>
 >;
-export type ProfessorPayoutMethodUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorPayoutMethodUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorPayoutMethodUpdate<
   TData = Awaited<ReturnType<typeof professorPayoutMethodUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePayoutMethodRequest: ChangePayoutMethodRequest,
+  changePayoutMethodRequest: BodyType<ChangePayoutMethodRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodUpdate>>, TError, TData>> &
       Pick<
@@ -271,9 +272,9 @@ export function useProfessorPayoutMethodUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorPayoutMethodUpdate<
   TData = Awaited<ReturnType<typeof professorPayoutMethodUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePayoutMethodRequest: ChangePayoutMethodRequest,
+  changePayoutMethodRequest: BodyType<ChangePayoutMethodRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodUpdate>>, TError, TData>> &
       Pick<
@@ -290,9 +291,9 @@ export function useProfessorPayoutMethodUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorPayoutMethodUpdate<
   TData = Awaited<ReturnType<typeof professorPayoutMethodUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePayoutMethodRequest: ChangePayoutMethodRequest,
+  changePayoutMethodRequest: BodyType<ChangePayoutMethodRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -302,9 +303,9 @@ export function useProfessorPayoutMethodUpdate<
 
 export function useProfessorPayoutMethodUpdate<
   TData = Awaited<ReturnType<typeof professorPayoutMethodUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePayoutMethodRequest: ChangePayoutMethodRequest,
+  changePayoutMethodRequest: BodyType<ChangePayoutMethodRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutMethodUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

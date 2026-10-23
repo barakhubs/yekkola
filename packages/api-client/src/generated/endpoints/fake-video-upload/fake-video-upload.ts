@@ -20,6 +20,7 @@ import type {
 import type { ModelNotFoundExceptionResponse } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -77,7 +78,7 @@ export const getFakeVideoUploadQueryKey = (upload: string) => {
 
 export const getFakeVideoUploadQueryOptions = <
   TData = Awaited<ReturnType<typeof fakeVideoUpload>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
   options?: {
@@ -103,11 +104,11 @@ export const getFakeVideoUploadQueryOptions = <
 };
 
 export type FakeVideoUploadQueryResult = NonNullable<Awaited<ReturnType<typeof fakeVideoUpload>>>;
-export type FakeVideoUploadQueryError = ModelNotFoundExceptionResponse;
+export type FakeVideoUploadQueryError = ErrorType<ModelNotFoundExceptionResponse>;
 
 export function useFakeVideoUpload<
   TData = Awaited<ReturnType<typeof fakeVideoUpload>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
   options: {
@@ -126,7 +127,7 @@ export function useFakeVideoUpload<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFakeVideoUpload<
   TData = Awaited<ReturnType<typeof fakeVideoUpload>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
   options?: {
@@ -145,7 +146,7 @@ export function useFakeVideoUpload<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFakeVideoUpload<
   TData = Awaited<ReturnType<typeof fakeVideoUpload>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
   options?: {
@@ -157,7 +158,7 @@ export function useFakeVideoUpload<
 
 export function useFakeVideoUpload<
   TData = Awaited<ReturnType<typeof fakeVideoUpload>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
   options?: {

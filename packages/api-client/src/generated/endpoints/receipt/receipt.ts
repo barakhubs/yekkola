@@ -20,6 +20,7 @@ import type {
 import type { OrdersReceipt200, OrdersReceiptPdf200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -68,7 +69,7 @@ export const getOrdersReceiptQueryKey = (order: string) => {
 
 export const getOrdersReceiptQueryOptions = <
   TData = Awaited<ReturnType<typeof ordersReceipt>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   order: string,
   options?: {
@@ -94,9 +95,12 @@ export const getOrdersReceiptQueryOptions = <
 };
 
 export type OrdersReceiptQueryResult = NonNullable<Awaited<ReturnType<typeof ordersReceipt>>>;
-export type OrdersReceiptQueryError = unknown;
+export type OrdersReceiptQueryError = ErrorType<unknown>;
 
-export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt>>, TError = unknown>(
+export function useOrdersReceipt<
+  TData = Awaited<ReturnType<typeof ordersReceipt>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceipt>>, TError, TData>> &
@@ -112,7 +116,10 @@ export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt>>, TError = unknown>(
+export function useOrdersReceipt<
+  TData = Awaited<ReturnType<typeof ordersReceipt>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceipt>>, TError, TData>> &
@@ -128,7 +135,10 @@ export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt>>, TError = unknown>(
+export function useOrdersReceipt<
+  TData = Awaited<ReturnType<typeof ordersReceipt>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceipt>>, TError, TData>>;
@@ -137,7 +147,10 @@ export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useOrdersReceipt<TData = Awaited<ReturnType<typeof ordersReceipt>>, TError = unknown>(
+export function useOrdersReceipt<
+  TData = Awaited<ReturnType<typeof ordersReceipt>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceipt>>, TError, TData>>;
@@ -184,7 +197,7 @@ export const getOrdersReceiptPdfQueryKey = (order: string) => {
 
 export const getOrdersReceiptPdfQueryOptions = <
   TData = Awaited<ReturnType<typeof ordersReceiptPdf>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   order: string,
   options?: {
@@ -210,9 +223,12 @@ export const getOrdersReceiptPdfQueryOptions = <
 };
 
 export type OrdersReceiptPdfQueryResult = NonNullable<Awaited<ReturnType<typeof ordersReceiptPdf>>>;
-export type OrdersReceiptPdfQueryError = unknown;
+export type OrdersReceiptPdfQueryError = ErrorType<unknown>;
 
-export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersReceiptPdf>>, TError = unknown>(
+export function useOrdersReceiptPdf<
+  TData = Awaited<ReturnType<typeof ordersReceiptPdf>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceiptPdf>>, TError, TData>> &
@@ -228,7 +244,10 @@ export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersRece
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersReceiptPdf>>, TError = unknown>(
+export function useOrdersReceiptPdf<
+  TData = Awaited<ReturnType<typeof ordersReceiptPdf>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceiptPdf>>, TError, TData>> &
@@ -244,7 +263,10 @@ export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersRece
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersReceiptPdf>>, TError = unknown>(
+export function useOrdersReceiptPdf<
+  TData = Awaited<ReturnType<typeof ordersReceiptPdf>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceiptPdf>>, TError, TData>>;
@@ -253,7 +275,10 @@ export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersRece
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useOrdersReceiptPdf<TData = Awaited<ReturnType<typeof ordersReceiptPdf>>, TError = unknown>(
+export function useOrdersReceiptPdf<
+  TData = Awaited<ReturnType<typeof ordersReceiptPdf>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersReceiptPdf>>, TError, TData>>;

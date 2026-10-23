@@ -26,6 +26,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -76,7 +77,7 @@ export const getMeEnrollmentsIndexQueryKey = () => {
 
 export const getMeEnrollmentsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meEnrollmentsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEnrollmentsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -96,11 +97,11 @@ export const getMeEnrollmentsIndexQueryOptions = <
 };
 
 export type MeEnrollmentsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof meEnrollmentsIndex>>>;
-export type MeEnrollmentsIndexQueryError = unknown;
+export type MeEnrollmentsIndexQueryError = ErrorType<unknown>;
 
 export function useMeEnrollmentsIndex<
   TData = Awaited<ReturnType<typeof meEnrollmentsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEnrollmentsIndex>>, TError, TData>> &
@@ -118,7 +119,7 @@ export function useMeEnrollmentsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeEnrollmentsIndex<
   TData = Awaited<ReturnType<typeof meEnrollmentsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEnrollmentsIndex>>, TError, TData>> &
@@ -136,7 +137,7 @@ export function useMeEnrollmentsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeEnrollmentsIndex<
   TData = Awaited<ReturnType<typeof meEnrollmentsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEnrollmentsIndex>>, TError, TData>>;
@@ -150,7 +151,7 @@ export function useMeEnrollmentsIndex<
 
 export function useMeEnrollmentsIndex<
   TData = Awaited<ReturnType<typeof meEnrollmentsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEnrollmentsIndex>>, TError, TData>>;
@@ -197,7 +198,7 @@ export const getMeCoursesShowQueryKey = (course: string) => {
 
 export const getMeCoursesShowQueryOptions = <
   TData = Awaited<ReturnType<typeof meCoursesShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -223,9 +224,12 @@ export const getMeCoursesShowQueryOptions = <
 };
 
 export type MeCoursesShowQueryResult = NonNullable<Awaited<ReturnType<typeof meCoursesShow>>>;
-export type MeCoursesShowQueryError = unknown;
+export type MeCoursesShowQueryError = ErrorType<unknown>;
 
-export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow>>, TError = unknown>(
+export function useMeCoursesShow<
+  TData = Awaited<ReturnType<typeof meCoursesShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCoursesShow>>, TError, TData>> &
@@ -241,7 +245,10 @@ export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow>>, TError = unknown>(
+export function useMeCoursesShow<
+  TData = Awaited<ReturnType<typeof meCoursesShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCoursesShow>>, TError, TData>> &
@@ -257,7 +264,10 @@ export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow>>, TError = unknown>(
+export function useMeCoursesShow<
+  TData = Awaited<ReturnType<typeof meCoursesShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCoursesShow>>, TError, TData>>;
@@ -266,7 +276,10 @@ export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useMeCoursesShow<TData = Awaited<ReturnType<typeof meCoursesShow>>, TError = unknown>(
+export function useMeCoursesShow<
+  TData = Awaited<ReturnType<typeof meCoursesShow>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCoursesShow>>, TError, TData>>;
@@ -338,15 +351,15 @@ export const meProgressSync = async (
   });
 };
 
-export const getMeProgressSyncQueryKey = (syncProgressRequest?: SyncProgressRequest) => {
+export const getMeProgressSyncQueryKey = (syncProgressRequest?: BodyType<SyncProgressRequest>) => {
   return ["PUT", `/me/progress`, syncProgressRequest] as const;
 };
 
 export const getMeProgressSyncQueryOptions = <
   TData = Awaited<ReturnType<typeof meProgressSync>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  syncProgressRequest: SyncProgressRequest,
+  syncProgressRequest: BodyType<SyncProgressRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meProgressSync>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -367,13 +380,13 @@ export const getMeProgressSyncQueryOptions = <
 };
 
 export type MeProgressSyncQueryResult = NonNullable<Awaited<ReturnType<typeof meProgressSync>>>;
-export type MeProgressSyncQueryError = ValidationExceptionResponse;
+export type MeProgressSyncQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useMeProgressSync<
   TData = Awaited<ReturnType<typeof meProgressSync>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  syncProgressRequest: SyncProgressRequest,
+  syncProgressRequest: BodyType<SyncProgressRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meProgressSync>>, TError, TData>> &
       Pick<
@@ -390,9 +403,9 @@ export function useMeProgressSync<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeProgressSync<
   TData = Awaited<ReturnType<typeof meProgressSync>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  syncProgressRequest: SyncProgressRequest,
+  syncProgressRequest: BodyType<SyncProgressRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meProgressSync>>, TError, TData>> &
       Pick<
@@ -409,9 +422,9 @@ export function useMeProgressSync<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeProgressSync<
   TData = Awaited<ReturnType<typeof meProgressSync>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  syncProgressRequest: SyncProgressRequest,
+  syncProgressRequest: BodyType<SyncProgressRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meProgressSync>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -425,9 +438,9 @@ sync never undoes newer progress
 
 export function useMeProgressSync<
   TData = Awaited<ReturnType<typeof meProgressSync>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  syncProgressRequest: SyncProgressRequest,
+  syncProgressRequest: BodyType<SyncProgressRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meProgressSync>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

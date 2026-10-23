@@ -20,6 +20,7 @@ import type {
 import type { ProfessorMediaShow200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -72,7 +73,7 @@ export const getProfessorMediaShowQueryKey = (media: string) => {
 
 export const getProfessorMediaShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorMediaShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   media: string,
   options?: {
@@ -98,11 +99,11 @@ export const getProfessorMediaShowQueryOptions = <
 };
 
 export type ProfessorMediaShowQueryResult = NonNullable<Awaited<ReturnType<typeof professorMediaShow>>>;
-export type ProfessorMediaShowQueryError = unknown;
+export type ProfessorMediaShowQueryError = ErrorType<unknown>;
 
 export function useProfessorMediaShow<
   TData = Awaited<ReturnType<typeof professorMediaShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   media: string,
   options: {
@@ -121,7 +122,7 @@ export function useProfessorMediaShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorMediaShow<
   TData = Awaited<ReturnType<typeof professorMediaShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   media: string,
   options?: {
@@ -140,7 +141,7 @@ export function useProfessorMediaShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorMediaShow<
   TData = Awaited<ReturnType<typeof professorMediaShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   media: string,
   options?: {
@@ -156,7 +157,7 @@ in case a webhook was delayed
 
 export function useProfessorMediaShow<
   TData = Awaited<ReturnType<typeof professorMediaShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   media: string,
   options?: {

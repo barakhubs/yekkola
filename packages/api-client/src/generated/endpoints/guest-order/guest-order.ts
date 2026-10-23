@@ -29,6 +29,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -101,15 +102,15 @@ export const guestOrdersStore = async (
   });
 };
 
-export const getGuestOrdersStoreQueryKey = (guestOrderRequest?: GuestOrderRequest) => {
+export const getGuestOrdersStoreQueryKey = (guestOrderRequest?: BodyType<GuestOrderRequest>) => {
   return ["POST", `/guest/orders`, guestOrderRequest] as const;
 };
 
 export const getGuestOrdersStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof guestOrdersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  guestOrderRequest: GuestOrderRequest,
+  guestOrderRequest: BodyType<GuestOrderRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -130,13 +131,13 @@ export const getGuestOrdersStoreQueryOptions = <
 };
 
 export type GuestOrdersStoreQueryResult = NonNullable<Awaited<ReturnType<typeof guestOrdersStore>>>;
-export type GuestOrdersStoreQueryError = ValidationExceptionResponse;
+export type GuestOrdersStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useGuestOrdersStore<
   TData = Awaited<ReturnType<typeof guestOrdersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  guestOrderRequest: GuestOrderRequest,
+  guestOrderRequest: BodyType<GuestOrderRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersStore>>, TError, TData>> &
       Pick<
@@ -153,9 +154,9 @@ export function useGuestOrdersStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGuestOrdersStore<
   TData = Awaited<ReturnType<typeof guestOrdersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  guestOrderRequest: GuestOrderRequest,
+  guestOrderRequest: BodyType<GuestOrderRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersStore>>, TError, TData>> &
       Pick<
@@ -172,9 +173,9 @@ export function useGuestOrdersStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGuestOrdersStore<
   TData = Awaited<ReturnType<typeof guestOrdersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  guestOrderRequest: GuestOrderRequest,
+  guestOrderRequest: BodyType<GuestOrderRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -187,9 +188,9 @@ export function useGuestOrdersStore<
 
 export function useGuestOrdersStore<
   TData = Awaited<ReturnType<typeof guestOrdersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  guestOrderRequest: GuestOrderRequest,
+  guestOrderRequest: BodyType<GuestOrderRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -235,7 +236,7 @@ export const getGuestOrdersShowQueryKey = (order: string) => {
 
 export const getGuestOrdersShowQueryOptions = <
   TData = Awaited<ReturnType<typeof guestOrdersShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   order: string,
   options?: {
@@ -261,9 +262,12 @@ export const getGuestOrdersShowQueryOptions = <
 };
 
 export type GuestOrdersShowQueryResult = NonNullable<Awaited<ReturnType<typeof guestOrdersShow>>>;
-export type GuestOrdersShowQueryError = unknown;
+export type GuestOrdersShowQueryError = ErrorType<unknown>;
 
-export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrdersShow>>, TError = unknown>(
+export function useGuestOrdersShow<
+  TData = Awaited<ReturnType<typeof guestOrdersShow>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersShow>>, TError, TData>> &
@@ -279,7 +283,10 @@ export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrders
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrdersShow>>, TError = unknown>(
+export function useGuestOrdersShow<
+  TData = Awaited<ReturnType<typeof guestOrdersShow>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersShow>>, TError, TData>> &
@@ -295,7 +302,10 @@ export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrders
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrdersShow>>, TError = unknown>(
+export function useGuestOrdersShow<
+  TData = Awaited<ReturnType<typeof guestOrdersShow>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersShow>>, TError, TData>>;
@@ -304,7 +314,10 @@ export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrders
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGuestOrdersShow<TData = Awaited<ReturnType<typeof guestOrdersShow>>, TError = unknown>(
+export function useGuestOrdersShow<
+  TData = Awaited<ReturnType<typeof guestOrdersShow>>,
+  TError = ErrorType<unknown>,
+>(
   order: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersShow>>, TError, TData>>;
@@ -376,16 +389,19 @@ export const guestOrdersPay = async (
   });
 };
 
-export const getGuestOrdersPayQueryKey = (order: string, startPaymentRequest?: StartPaymentRequest) => {
+export const getGuestOrdersPayQueryKey = (
+  order: string,
+  startPaymentRequest?: BodyType<StartPaymentRequest>,
+) => {
   return ["POST", `/guest/orders/${order}/payments`, startPaymentRequest] as const;
 };
 
 export const getGuestOrdersPayQueryOptions = <
   TData = Awaited<ReturnType<typeof guestOrdersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersPay>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -409,14 +425,14 @@ export const getGuestOrdersPayQueryOptions = <
 };
 
 export type GuestOrdersPayQueryResult = NonNullable<Awaited<ReturnType<typeof guestOrdersPay>>>;
-export type GuestOrdersPayQueryError = ValidationExceptionResponse;
+export type GuestOrdersPayQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useGuestOrdersPay<
   TData = Awaited<ReturnType<typeof guestOrdersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersPay>>, TError, TData>> &
       Pick<
@@ -433,10 +449,10 @@ export function useGuestOrdersPay<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGuestOrdersPay<
   TData = Awaited<ReturnType<typeof guestOrdersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersPay>>, TError, TData>> &
       Pick<
@@ -453,10 +469,10 @@ export function useGuestOrdersPay<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGuestOrdersPay<
   TData = Awaited<ReturnType<typeof guestOrdersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersPay>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -469,10 +485,10 @@ export function useGuestOrdersPay<
 
 export function useGuestOrdersPay<
   TData = Awaited<ReturnType<typeof guestOrdersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof guestOrdersPay>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -527,7 +543,7 @@ export const getGuestOrdersReceiptQueryKey = (order: string) => {
 
 export const getGuestOrdersReceiptQueryOptions = <
   TData = Awaited<ReturnType<typeof guestOrdersReceipt>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -553,11 +569,11 @@ export const getGuestOrdersReceiptQueryOptions = <
 };
 
 export type GuestOrdersReceiptQueryResult = NonNullable<Awaited<ReturnType<typeof guestOrdersReceipt>>>;
-export type GuestOrdersReceiptQueryError = ModelNotFoundExceptionResponse;
+export type GuestOrdersReceiptQueryError = ErrorType<ModelNotFoundExceptionResponse>;
 
 export function useGuestOrdersReceipt<
   TData = Awaited<ReturnType<typeof guestOrdersReceipt>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options: {
@@ -576,7 +592,7 @@ export function useGuestOrdersReceipt<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGuestOrdersReceipt<
   TData = Awaited<ReturnType<typeof guestOrdersReceipt>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -595,7 +611,7 @@ export function useGuestOrdersReceipt<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGuestOrdersReceipt<
   TData = Awaited<ReturnType<typeof guestOrdersReceipt>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -607,7 +623,7 @@ export function useGuestOrdersReceipt<
 
 export function useGuestOrdersReceipt<
   TData = Awaited<ReturnType<typeof guestOrdersReceipt>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {

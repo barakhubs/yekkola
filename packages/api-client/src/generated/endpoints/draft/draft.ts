@@ -41,6 +41,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -92,7 +93,7 @@ export const getProfessorDraftShowQueryKey = (course: string) => {
 
 export const getProfessorDraftShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -118,11 +119,11 @@ export const getProfessorDraftShowQueryOptions = <
 };
 
 export type ProfessorDraftShowQueryResult = NonNullable<Awaited<ReturnType<typeof professorDraftShow>>>;
-export type ProfessorDraftShowQueryError = unknown;
+export type ProfessorDraftShowQueryError = ErrorType<unknown>;
 
 export function useProfessorDraftShow<
   TData = Awaited<ReturnType<typeof professorDraftShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -141,7 +142,7 @@ export function useProfessorDraftShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftShow<
   TData = Awaited<ReturnType<typeof professorDraftShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -160,7 +161,7 @@ export function useProfessorDraftShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftShow<
   TData = Awaited<ReturnType<typeof professorDraftShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -175,7 +176,7 @@ export function useProfessorDraftShow<
 
 export function useProfessorDraftShow<
   TData = Awaited<ReturnType<typeof professorDraftShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -246,16 +247,19 @@ export const professorDraftUpdate = async (
   });
 };
 
-export const getProfessorDraftUpdateQueryKey = (course: string, updateDraftRequest?: UpdateDraftRequest) => {
+export const getProfessorDraftUpdateQueryKey = (
+  course: string,
+  updateDraftRequest?: BodyType<UpdateDraftRequest>,
+) => {
   return ["PATCH", `/professor/courses/${course}/draft`, updateDraftRequest] as const;
 };
 
 export const getProfessorDraftUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateDraftRequest?: UpdateDraftRequest,
+  updateDraftRequest?: BodyType<UpdateDraftRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -279,14 +283,14 @@ export const getProfessorDraftUpdateQueryOptions = <
 };
 
 export type ProfessorDraftUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof professorDraftUpdate>>>;
-export type ProfessorDraftUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorDraftUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftUpdate<
   TData = Awaited<ReturnType<typeof professorDraftUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateDraftRequest: undefined | UpdateDraftRequest,
+  updateDraftRequest: undefined | BodyType<UpdateDraftRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftUpdate>>, TError, TData>> &
       Pick<
@@ -303,10 +307,10 @@ export function useProfessorDraftUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftUpdate<
   TData = Awaited<ReturnType<typeof professorDraftUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateDraftRequest?: UpdateDraftRequest,
+  updateDraftRequest?: BodyType<UpdateDraftRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftUpdate>>, TError, TData>> &
       Pick<
@@ -323,10 +327,10 @@ export function useProfessorDraftUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftUpdate<
   TData = Awaited<ReturnType<typeof professorDraftUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateDraftRequest?: UpdateDraftRequest,
+  updateDraftRequest?: BodyType<UpdateDraftRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -336,10 +340,10 @@ export function useProfessorDraftUpdate<
 
 export function useProfessorDraftUpdate<
   TData = Awaited<ReturnType<typeof professorDraftUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateDraftRequest?: UpdateDraftRequest,
+  updateDraftRequest?: BodyType<UpdateDraftRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -394,16 +398,16 @@ export const professorDraftCover = async (
   });
 };
 
-export const getProfessorDraftCoverQueryKey = (course: string, coverRequest?: CoverRequest) => {
+export const getProfessorDraftCoverQueryKey = (course: string, coverRequest?: BodyType<CoverRequest>) => {
   return ["POST", `/professor/courses/${course}/draft/cover`, coverRequest] as const;
 };
 
 export const getProfessorDraftCoverQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftCover>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  coverRequest: CoverRequest,
+  coverRequest: BodyType<CoverRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftCover>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -427,14 +431,14 @@ export const getProfessorDraftCoverQueryOptions = <
 };
 
 export type ProfessorDraftCoverQueryResult = NonNullable<Awaited<ReturnType<typeof professorDraftCover>>>;
-export type ProfessorDraftCoverQueryError = ValidationExceptionResponse;
+export type ProfessorDraftCoverQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftCover<
   TData = Awaited<ReturnType<typeof professorDraftCover>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  coverRequest: CoverRequest,
+  coverRequest: BodyType<CoverRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftCover>>, TError, TData>> &
       Pick<
@@ -451,10 +455,10 @@ export function useProfessorDraftCover<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftCover<
   TData = Awaited<ReturnType<typeof professorDraftCover>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  coverRequest: CoverRequest,
+  coverRequest: BodyType<CoverRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftCover>>, TError, TData>> &
       Pick<
@@ -471,10 +475,10 @@ export function useProfessorDraftCover<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftCover<
   TData = Awaited<ReturnType<typeof professorDraftCover>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  coverRequest: CoverRequest,
+  coverRequest: BodyType<CoverRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftCover>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -484,10 +488,10 @@ export function useProfessorDraftCover<
 
 export function useProfessorDraftCover<
   TData = Awaited<ReturnType<typeof professorDraftCover>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  coverRequest: CoverRequest,
+  coverRequest: BodyType<CoverRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftCover>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -558,17 +562,17 @@ export const professorDraftReorder = async (
 
 export const getProfessorDraftReorderQueryKey = (
   course: string,
-  reorderCurriculumRequest?: ReorderCurriculumRequest,
+  reorderCurriculumRequest?: BodyType<ReorderCurriculumRequest>,
 ) => {
   return ["PUT", `/professor/courses/${course}/draft/order`, reorderCurriculumRequest] as const;
 };
 
 export const getProfessorDraftReorderQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftReorder>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reorderCurriculumRequest: ReorderCurriculumRequest,
+  reorderCurriculumRequest: BodyType<ReorderCurriculumRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftReorder>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -593,14 +597,14 @@ export const getProfessorDraftReorderQueryOptions = <
 };
 
 export type ProfessorDraftReorderQueryResult = NonNullable<Awaited<ReturnType<typeof professorDraftReorder>>>;
-export type ProfessorDraftReorderQueryError = ValidationExceptionResponse;
+export type ProfessorDraftReorderQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftReorder<
   TData = Awaited<ReturnType<typeof professorDraftReorder>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reorderCurriculumRequest: ReorderCurriculumRequest,
+  reorderCurriculumRequest: BodyType<ReorderCurriculumRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftReorder>>, TError, TData>> &
       Pick<
@@ -617,10 +621,10 @@ export function useProfessorDraftReorder<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftReorder<
   TData = Awaited<ReturnType<typeof professorDraftReorder>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reorderCurriculumRequest: ReorderCurriculumRequest,
+  reorderCurriculumRequest: BodyType<ReorderCurriculumRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftReorder>>, TError, TData>> &
       Pick<
@@ -637,10 +641,10 @@ export function useProfessorDraftReorder<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftReorder<
   TData = Awaited<ReturnType<typeof professorDraftReorder>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reorderCurriculumRequest: ReorderCurriculumRequest,
+  reorderCurriculumRequest: BodyType<ReorderCurriculumRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftReorder>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -650,10 +654,10 @@ export function useProfessorDraftReorder<
 
 export function useProfessorDraftReorder<
   TData = Awaited<ReturnType<typeof professorDraftReorder>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  reorderCurriculumRequest: ReorderCurriculumRequest,
+  reorderCurriculumRequest: BodyType<ReorderCurriculumRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftReorder>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -722,16 +726,19 @@ export const professorDraftSectionsStore = async (
   });
 };
 
-export const getProfessorDraftSectionsStoreQueryKey = (course: string, sectionRequest?: SectionRequest) => {
+export const getProfessorDraftSectionsStoreQueryKey = (
+  course: string,
+  sectionRequest?: BodyType<SectionRequest>,
+) => {
   return ["POST", `/professor/courses/${course}/draft/sections`, sectionRequest] as const;
 };
 
 export const getProfessorDraftSectionsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftSectionsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -757,14 +764,14 @@ export const getProfessorDraftSectionsStoreQueryOptions = <
 export type ProfessorDraftSectionsStoreQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftSectionsStore>>
 >;
-export type ProfessorDraftSectionsStoreQueryError = ValidationExceptionResponse;
+export type ProfessorDraftSectionsStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftSectionsStore<
   TData = Awaited<ReturnType<typeof professorDraftSectionsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsStore>>, TError, TData>> &
       Pick<
@@ -781,10 +788,10 @@ export function useProfessorDraftSectionsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftSectionsStore<
   TData = Awaited<ReturnType<typeof professorDraftSectionsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsStore>>, TError, TData>> &
       Pick<
@@ -801,10 +808,10 @@ export function useProfessorDraftSectionsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftSectionsStore<
   TData = Awaited<ReturnType<typeof professorDraftSectionsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -814,10 +821,10 @@ export function useProfessorDraftSectionsStore<
 
 export function useProfessorDraftSectionsStore<
   TData = Awaited<ReturnType<typeof professorDraftSectionsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -890,18 +897,18 @@ export const professorDraftSectionsUpdate = async (
 export const getProfessorDraftSectionsUpdateQueryKey = (
   course: string,
   section: string,
-  sectionRequest?: SectionRequest,
+  sectionRequest?: BodyType<SectionRequest>,
 ) => {
   return ["PATCH", `/professor/courses/${course}/draft/sections/${section}`, sectionRequest] as const;
 };
 
 export const getProfessorDraftSectionsUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftSectionsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   section: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -928,15 +935,15 @@ export const getProfessorDraftSectionsUpdateQueryOptions = <
 export type ProfessorDraftSectionsUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftSectionsUpdate>>
 >;
-export type ProfessorDraftSectionsUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorDraftSectionsUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftSectionsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftSectionsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   section: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsUpdate>>, TError, TData>> &
       Pick<
@@ -953,11 +960,11 @@ export function useProfessorDraftSectionsUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftSectionsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftSectionsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   section: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsUpdate>>, TError, TData>
@@ -976,11 +983,11 @@ export function useProfessorDraftSectionsUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftSectionsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftSectionsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   section: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -990,11 +997,11 @@ export function useProfessorDraftSectionsUpdate<
 
 export function useProfessorDraftSectionsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftSectionsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   section: string,
-  sectionRequest: SectionRequest,
+  sectionRequest: BodyType<SectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftSectionsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1044,7 +1051,7 @@ export const getProfessorDraftSectionsDestroyQueryKey = (course: string, section
 
 export const getProfessorDraftSectionsDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftSectionsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   section: string,
@@ -1075,11 +1082,11 @@ export const getProfessorDraftSectionsDestroyQueryOptions = <
 export type ProfessorDraftSectionsDestroyQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftSectionsDestroy>>
 >;
-export type ProfessorDraftSectionsDestroyQueryError = unknown;
+export type ProfessorDraftSectionsDestroyQueryError = ErrorType<unknown>;
 
 export function useProfessorDraftSectionsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftSectionsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   section: string,
@@ -1101,7 +1108,7 @@ export function useProfessorDraftSectionsDestroy<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftSectionsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftSectionsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   section: string,
@@ -1123,7 +1130,7 @@ export function useProfessorDraftSectionsDestroy<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftSectionsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftSectionsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   section: string,
@@ -1138,7 +1145,7 @@ export function useProfessorDraftSectionsDestroy<
 
 export function useProfessorDraftSectionsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftSectionsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   section: string,
@@ -1214,17 +1221,17 @@ export const professorDraftLessonsStore = async (
 
 export const getProfessorDraftLessonsStoreQueryKey = (
   course: string,
-  storeLessonRequest?: StoreLessonRequest,
+  storeLessonRequest?: BodyType<StoreLessonRequest>,
 ) => {
   return ["POST", `/professor/courses/${course}/draft/lessons`, storeLessonRequest] as const;
 };
 
 export const getProfessorDraftLessonsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  storeLessonRequest: StoreLessonRequest,
+  storeLessonRequest: BodyType<StoreLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1251,14 +1258,14 @@ export const getProfessorDraftLessonsStoreQueryOptions = <
 export type ProfessorDraftLessonsStoreQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsStore>>
 >;
-export type ProfessorDraftLessonsStoreQueryError = ValidationExceptionResponse;
+export type ProfessorDraftLessonsStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftLessonsStore<
   TData = Awaited<ReturnType<typeof professorDraftLessonsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  storeLessonRequest: StoreLessonRequest,
+  storeLessonRequest: BodyType<StoreLessonRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsStore>>, TError, TData>> &
       Pick<
@@ -1275,10 +1282,10 @@ export function useProfessorDraftLessonsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsStore<
   TData = Awaited<ReturnType<typeof professorDraftLessonsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  storeLessonRequest: StoreLessonRequest,
+  storeLessonRequest: BodyType<StoreLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsStore>>, TError, TData>> &
       Pick<
@@ -1295,10 +1302,10 @@ export function useProfessorDraftLessonsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsStore<
   TData = Awaited<ReturnType<typeof professorDraftLessonsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  storeLessonRequest: StoreLessonRequest,
+  storeLessonRequest: BodyType<StoreLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1308,10 +1315,10 @@ export function useProfessorDraftLessonsStore<
 
 export function useProfessorDraftLessonsStore<
   TData = Awaited<ReturnType<typeof professorDraftLessonsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  storeLessonRequest: StoreLessonRequest,
+  storeLessonRequest: BodyType<StoreLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1384,18 +1391,18 @@ export const professorDraftLessonsUpdate = async (
 export const getProfessorDraftLessonsUpdateQueryKey = (
   course: string,
   lesson: string,
-  updateLessonRequest?: UpdateLessonRequest,
+  updateLessonRequest?: BodyType<UpdateLessonRequest>,
 ) => {
   return ["PATCH", `/professor/courses/${course}/draft/lessons/${lesson}`, updateLessonRequest] as const;
 };
 
 export const getProfessorDraftLessonsUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  updateLessonRequest?: UpdateLessonRequest,
+  updateLessonRequest?: BodyType<UpdateLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1422,15 +1429,15 @@ export const getProfessorDraftLessonsUpdateQueryOptions = <
 export type ProfessorDraftLessonsUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsUpdate>>
 >;
-export type ProfessorDraftLessonsUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorDraftLessonsUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftLessonsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftLessonsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  updateLessonRequest: undefined | UpdateLessonRequest,
+  updateLessonRequest: undefined | BodyType<UpdateLessonRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsUpdate>>, TError, TData>> &
       Pick<
@@ -1447,11 +1454,11 @@ export function useProfessorDraftLessonsUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftLessonsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  updateLessonRequest?: UpdateLessonRequest,
+  updateLessonRequest?: BodyType<UpdateLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsUpdate>>, TError, TData>> &
       Pick<
@@ -1468,11 +1475,11 @@ export function useProfessorDraftLessonsUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftLessonsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  updateLessonRequest?: UpdateLessonRequest,
+  updateLessonRequest?: BodyType<UpdateLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1482,11 +1489,11 @@ export function useProfessorDraftLessonsUpdate<
 
 export function useProfessorDraftLessonsUpdate<
   TData = Awaited<ReturnType<typeof professorDraftLessonsUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  updateLessonRequest?: UpdateLessonRequest,
+  updateLessonRequest?: BodyType<UpdateLessonRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1538,7 +1545,7 @@ export const getProfessorDraftLessonsDestroyQueryKey = (course: string, lesson: 
 
 export const getProfessorDraftLessonsDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1567,11 +1574,11 @@ export const getProfessorDraftLessonsDestroyQueryOptions = <
 export type ProfessorDraftLessonsDestroyQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsDestroy>>
 >;
-export type ProfessorDraftLessonsDestroyQueryError = unknown;
+export type ProfessorDraftLessonsDestroyQueryError = ErrorType<unknown>;
 
 export function useProfessorDraftLessonsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1591,7 +1598,7 @@ export function useProfessorDraftLessonsDestroy<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1613,7 +1620,7 @@ export function useProfessorDraftLessonsDestroy<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1626,7 +1633,7 @@ export function useProfessorDraftLessonsDestroy<
 
 export function useProfessorDraftLessonsDestroy<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1679,7 +1686,7 @@ export const getProfessorDraftLessonsMediaQueryKey = (course: string, lesson: st
 
 export const getProfessorDraftLessonsMediaQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1708,11 +1715,11 @@ export const getProfessorDraftLessonsMediaQueryOptions = <
 export type ProfessorDraftLessonsMediaQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsMedia>>
 >;
-export type ProfessorDraftLessonsMediaQueryError = unknown;
+export type ProfessorDraftLessonsMediaQueryError = ErrorType<unknown>;
 
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1732,7 +1739,7 @@ export function useProfessorDraftLessonsMedia<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1752,7 +1759,7 @@ export function useProfessorDraftLessonsMedia<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1768,7 +1775,7 @@ export function useProfessorDraftLessonsMedia<
 
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   lesson: string,
@@ -1833,18 +1840,18 @@ export const professorDraftLessonsDocument = async (
 export const getProfessorDraftLessonsDocumentQueryKey = (
   course: string,
   lesson: string,
-  documentRequest?: DocumentRequest,
+  documentRequest?: BodyType<DocumentRequest>,
 ) => {
   return ["POST", `/professor/courses/${course}/draft/lessons/${lesson}/document`, documentRequest] as const;
 };
 
 export const getProfessorDraftLessonsDocumentQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsDocument>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  documentRequest: DocumentRequest,
+  documentRequest: BodyType<DocumentRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsDocument>>, TError, TData>
@@ -1873,15 +1880,15 @@ export const getProfessorDraftLessonsDocumentQueryOptions = <
 export type ProfessorDraftLessonsDocumentQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsDocument>>
 >;
-export type ProfessorDraftLessonsDocumentQueryError = ValidationExceptionResponse;
+export type ProfessorDraftLessonsDocumentQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftLessonsDocument<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDocument>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  documentRequest: DocumentRequest,
+  documentRequest: BodyType<DocumentRequest>,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsDocument>>, TError, TData>
@@ -1900,11 +1907,11 @@ export function useProfessorDraftLessonsDocument<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsDocument<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDocument>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  documentRequest: DocumentRequest,
+  documentRequest: BodyType<DocumentRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsDocument>>, TError, TData>
@@ -1923,11 +1930,11 @@ export function useProfessorDraftLessonsDocument<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsDocument<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDocument>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  documentRequest: DocumentRequest,
+  documentRequest: BodyType<DocumentRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsDocument>>, TError, TData>
@@ -1939,11 +1946,11 @@ export function useProfessorDraftLessonsDocument<
 
 export function useProfessorDraftLessonsDocument<
   TData = Awaited<ReturnType<typeof professorDraftLessonsDocument>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  documentRequest: DocumentRequest,
+  documentRequest: BodyType<DocumentRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsDocument>>, TError, TData>
@@ -2018,18 +2025,18 @@ export const professorDraftLessonsQuiz = async (
 export const getProfessorDraftLessonsQuizQueryKey = (
   course: string,
   lesson: string,
-  quizRequest?: QuizRequest,
+  quizRequest?: BodyType<QuizRequest>,
 ) => {
   return ["PUT", `/professor/courses/${course}/draft/lessons/${lesson}/quiz`, quizRequest] as const;
 };
 
 export const getProfessorDraftLessonsQuizQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsQuiz>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  quizRequest: QuizRequest,
+  quizRequest: BodyType<QuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsQuiz>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -2056,15 +2063,15 @@ export const getProfessorDraftLessonsQuizQueryOptions = <
 export type ProfessorDraftLessonsQuizQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsQuiz>>
 >;
-export type ProfessorDraftLessonsQuizQueryError = ValidationExceptionResponse;
+export type ProfessorDraftLessonsQuizQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftLessonsQuiz<
   TData = Awaited<ReturnType<typeof professorDraftLessonsQuiz>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  quizRequest: QuizRequest,
+  quizRequest: BodyType<QuizRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsQuiz>>, TError, TData>> &
       Pick<
@@ -2081,11 +2088,11 @@ export function useProfessorDraftLessonsQuiz<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsQuiz<
   TData = Awaited<ReturnType<typeof professorDraftLessonsQuiz>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  quizRequest: QuizRequest,
+  quizRequest: BodyType<QuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsQuiz>>, TError, TData>> &
       Pick<
@@ -2102,11 +2109,11 @@ export function useProfessorDraftLessonsQuiz<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsQuiz<
   TData = Awaited<ReturnType<typeof professorDraftLessonsQuiz>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  quizRequest: QuizRequest,
+  quizRequest: BodyType<QuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsQuiz>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -2116,11 +2123,11 @@ export function useProfessorDraftLessonsQuiz<
 
 export function useProfessorDraftLessonsQuiz<
   TData = Awaited<ReturnType<typeof professorDraftLessonsQuiz>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
-  quizRequest: QuizRequest,
+  quizRequest: BodyType<QuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsQuiz>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

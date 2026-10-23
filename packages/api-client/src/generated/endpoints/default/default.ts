@@ -20,6 +20,7 @@ import type {
 import type { Ping200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -63,7 +64,10 @@ export const getPingQueryKey = () => {
   return [`/ping`] as const;
 };
 
-export const getPingQueryOptions = <TData = Awaited<ReturnType<typeof ping>>, TError = unknown>(options?: {
+export const getPingQueryOptions = <
+  TData = Awaited<ReturnType<typeof ping>>,
+  TError = ErrorType<unknown>,
+>(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ping>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
 }) => {
@@ -82,9 +86,9 @@ export const getPingQueryOptions = <TData = Awaited<ReturnType<typeof ping>>, TE
 };
 
 export type PingQueryResult = NonNullable<Awaited<ReturnType<typeof ping>>>;
-export type PingQueryError = unknown;
+export type PingQueryError = ErrorType<unknown>;
 
-export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unknown>(
+export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = ErrorType<unknown>>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ping>>, TError, TData>> &
       Pick<
@@ -95,7 +99,7 @@ export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unkno
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unknown>(
+export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ping>>, TError, TData>> &
       Pick<
@@ -110,7 +114,7 @@ export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unkno
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unknown>(
+export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ping>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -118,7 +122,7 @@ export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unkno
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = unknown>(
+export function usePing<TData = Awaited<ReturnType<typeof ping>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ping>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

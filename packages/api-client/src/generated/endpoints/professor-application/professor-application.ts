@@ -32,6 +32,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -92,7 +93,7 @@ export const getAdminProfessorApplicationsIndexQueryKey = () => {
 
 export const getAdminProfessorApplicationsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
@@ -116,11 +117,11 @@ export const getAdminProfessorApplicationsIndexQueryOptions = <
 export type AdminProfessorApplicationsIndexQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>
 >;
-export type AdminProfessorApplicationsIndexQueryError = AuthorizationExceptionResponse;
+export type AdminProfessorApplicationsIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<
@@ -140,7 +141,7 @@ export function useAdminProfessorApplicationsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<
@@ -160,7 +161,7 @@ export function useAdminProfessorApplicationsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<
@@ -176,7 +177,7 @@ export function useAdminProfessorApplicationsIndex<
 
 export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<
@@ -242,7 +243,7 @@ export const getAdminProfessorApplicationsShowQueryKey = (application: string) =
 
 export const getAdminProfessorApplicationsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -272,12 +273,13 @@ export const getAdminProfessorApplicationsShowQueryOptions = <
 export type AdminProfessorApplicationsShowQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsShow>>
 >;
-export type AdminProfessorApplicationsShowQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminProfessorApplicationsShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminProfessorApplicationsShow<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options: {
@@ -298,7 +300,7 @@ export function useAdminProfessorApplicationsShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsShow<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -319,7 +321,7 @@ export function useAdminProfessorApplicationsShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsShow<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -333,7 +335,7 @@ export function useAdminProfessorApplicationsShow<
 
 export function useAdminProfessorApplicationsShow<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -404,7 +406,7 @@ export const getAdminProfessorApplicationsStartReviewQueryKey = (application: st
 
 export const getAdminProfessorApplicationsStartReviewQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsStartReview>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -435,12 +437,13 @@ export const getAdminProfessorApplicationsStartReviewQueryOptions = <
 export type AdminProfessorApplicationsStartReviewQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsStartReview>>
 >;
-export type AdminProfessorApplicationsStartReviewQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminProfessorApplicationsStartReviewQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminProfessorApplicationsStartReview<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsStartReview>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options: {
@@ -461,7 +464,7 @@ export function useAdminProfessorApplicationsStartReview<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsStartReview<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsStartReview>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -482,7 +485,7 @@ export function useAdminProfessorApplicationsStartReview<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsStartReview<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsStartReview>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -496,7 +499,7 @@ export function useAdminProfessorApplicationsStartReview<
 
 export function useAdminProfessorApplicationsStartReview<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsStartReview>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   options?: {
@@ -589,17 +592,19 @@ export const adminProfessorApplicationsApprove = async (
 
 export const getAdminProfessorApplicationsApproveQueryKey = (
   application: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/professor-applications/${application}/approve`, staffNoteRequest] as const;
 };
 
 export const getAdminProfessorApplicationsApproveQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>, TError, TData>
@@ -629,15 +634,18 @@ export const getAdminProfessorApplicationsApproveQueryOptions = <
 export type AdminProfessorApplicationsApproveQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>
 >;
-export type AdminProfessorApplicationsApproveQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminProfessorApplicationsApproveQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminProfessorApplicationsApprove<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>, TError, TData>
@@ -656,10 +664,12 @@ export function useAdminProfessorApplicationsApprove<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsApprove<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>, TError, TData>
@@ -678,10 +688,12 @@ export function useAdminProfessorApplicationsApprove<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsApprove<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>, TError, TData>
@@ -693,10 +705,12 @@ export function useAdminProfessorApplicationsApprove<
 
 export function useAdminProfessorApplicationsApprove<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsApprove>>, TError, TData>
@@ -790,17 +804,19 @@ export const adminProfessorApplicationsReject = async (
 
 export const getAdminProfessorApplicationsRejectQueryKey = (
   application: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/professor-applications/${application}/reject`, staffNoteRequest] as const;
 };
 
 export const getAdminProfessorApplicationsRejectQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsReject>>, TError, TData>
@@ -829,15 +845,18 @@ export const getAdminProfessorApplicationsRejectQueryOptions = <
 export type AdminProfessorApplicationsRejectQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsReject>>
 >;
-export type AdminProfessorApplicationsRejectQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminProfessorApplicationsRejectQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminProfessorApplicationsReject<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsReject>>, TError, TData>
@@ -856,10 +875,12 @@ export function useAdminProfessorApplicationsReject<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsReject<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsReject>>, TError, TData>
@@ -878,10 +899,12 @@ export function useAdminProfessorApplicationsReject<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsReject<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsReject>>, TError, TData>
@@ -893,10 +916,12 @@ export function useAdminProfessorApplicationsReject<
 
 export function useAdminProfessorApplicationsReject<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsReject>>, TError, TData>
@@ -991,17 +1016,19 @@ export const adminProfessorApplicationsRequestInfo = async (
 
 export const getAdminProfessorApplicationsRequestInfoQueryKey = (
   application: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/professor-applications/${application}/request-info`, staffNoteRequest] as const;
 };
 
 export const getAdminProfessorApplicationsRequestInfoQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>, TError, TData>
@@ -1031,15 +1058,18 @@ export const getAdminProfessorApplicationsRequestInfoQueryOptions = <
 export type AdminProfessorApplicationsRequestInfoQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>
 >;
-export type AdminProfessorApplicationsRequestInfoQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminProfessorApplicationsRequestInfoQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminProfessorApplicationsRequestInfo<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>, TError, TData>
@@ -1058,10 +1088,12 @@ export function useAdminProfessorApplicationsRequestInfo<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsRequestInfo<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>, TError, TData>
@@ -1080,10 +1112,12 @@ export function useAdminProfessorApplicationsRequestInfo<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsRequestInfo<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>, TError, TData>
@@ -1095,10 +1129,12 @@ export function useAdminProfessorApplicationsRequestInfo<
 
 export function useAdminProfessorApplicationsRequestInfo<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   application: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsRequestInfo>>, TError, TData>
@@ -1175,7 +1211,7 @@ export const getAdminProfessorApplicationsCredentialQueryKey = (application: str
 
 export const getAdminProfessorApplicationsCredentialQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsCredential>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   file: string,
@@ -1208,12 +1244,13 @@ export const getAdminProfessorApplicationsCredentialQueryOptions = <
 export type AdminProfessorApplicationsCredentialQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorApplicationsCredential>>
 >;
-export type AdminProfessorApplicationsCredentialQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminProfessorApplicationsCredentialQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminProfessorApplicationsCredential<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsCredential>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   file: string,
@@ -1235,7 +1272,7 @@ export function useAdminProfessorApplicationsCredential<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsCredential<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsCredential>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   file: string,
@@ -1257,7 +1294,7 @@ export function useAdminProfessorApplicationsCredential<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorApplicationsCredential<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsCredential>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   file: string,
@@ -1275,7 +1312,7 @@ export function useAdminProfessorApplicationsCredential<
 
 export function useAdminProfessorApplicationsCredential<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsCredential>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   application: string,
   file: string,

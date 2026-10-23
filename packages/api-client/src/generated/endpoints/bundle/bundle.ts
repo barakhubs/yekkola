@@ -32,6 +32,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -81,7 +82,10 @@ export const getBundlesShowQueryKey = (slug: string) => {
   return [`/bundles/${slug}`] as const;
 };
 
-export const getBundlesShowQueryOptions = <TData = Awaited<ReturnType<typeof bundlesShow>>, TError = unknown>(
+export const getBundlesShowQueryOptions = <
+  TData = Awaited<ReturnType<typeof bundlesShow>>,
+  TError = ErrorType<unknown>,
+>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesShow>>, TError, TData>>;
@@ -106,9 +110,9 @@ export const getBundlesShowQueryOptions = <TData = Awaited<ReturnType<typeof bun
 };
 
 export type BundlesShowQueryResult = NonNullable<Awaited<ReturnType<typeof bundlesShow>>>;
-export type BundlesShowQueryError = unknown;
+export type BundlesShowQueryError = ErrorType<unknown>;
 
-export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = unknown>(
+export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesShow>>, TError, TData>> &
@@ -124,7 +128,7 @@ export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, 
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = unknown>(
+export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesShow>>, TError, TData>> &
@@ -140,7 +144,7 @@ export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, 
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = unknown>(
+export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesShow>>, TError, TData>>;
@@ -152,7 +156,7 @@ export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, 
  * @summary A bundle on sale: active, with every course published (PRD-05 FR-13); otherwise not found
  */
 
-export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = unknown>(
+export function useBundlesShow<TData = Awaited<ReturnType<typeof bundlesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesShow>>, TError, TData>>;
@@ -198,7 +202,7 @@ export const getProfessorBundlesIndexQueryKey = () => {
 
 export const getProfessorBundlesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -218,11 +222,11 @@ export const getProfessorBundlesIndexQueryOptions = <
 };
 
 export type ProfessorBundlesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof professorBundlesIndex>>>;
-export type ProfessorBundlesIndexQueryError = unknown;
+export type ProfessorBundlesIndexQueryError = ErrorType<unknown>;
 
 export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>> &
@@ -240,7 +244,7 @@ export function useProfessorBundlesIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>> &
@@ -258,7 +262,7 @@ export function useProfessorBundlesIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
@@ -269,7 +273,7 @@ export function useProfessorBundlesIndex<
 
 export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
@@ -338,15 +342,15 @@ export const professorBundlesStore = async (
   });
 };
 
-export const getProfessorBundlesStoreQueryKey = (bundleRequest?: BundleRequest) => {
+export const getProfessorBundlesStoreQueryKey = (bundleRequest?: BodyType<BundleRequest>) => {
   return ["POST", `/professor/bundles`, bundleRequest] as const;
 };
 
 export const getProfessorBundlesStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorBundlesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -367,13 +371,13 @@ export const getProfessorBundlesStoreQueryOptions = <
 };
 
 export type ProfessorBundlesStoreQueryResult = NonNullable<Awaited<ReturnType<typeof professorBundlesStore>>>;
-export type ProfessorBundlesStoreQueryError = ValidationExceptionResponse;
+export type ProfessorBundlesStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorBundlesStore<
   TData = Awaited<ReturnType<typeof professorBundlesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesStore>>, TError, TData>> &
       Pick<
@@ -390,9 +394,9 @@ export function useProfessorBundlesStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorBundlesStore<
   TData = Awaited<ReturnType<typeof professorBundlesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesStore>>, TError, TData>> &
       Pick<
@@ -409,9 +413,9 @@ export function useProfessorBundlesStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorBundlesStore<
   TData = Awaited<ReturnType<typeof professorBundlesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -421,9 +425,9 @@ export function useProfessorBundlesStore<
 
 export function useProfessorBundlesStore<
   TData = Awaited<ReturnType<typeof professorBundlesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -492,16 +496,19 @@ export const professorBundlesUpdate = async (
   });
 };
 
-export const getProfessorBundlesUpdateQueryKey = (bundle: string, bundleRequest?: BundleRequest) => {
+export const getProfessorBundlesUpdateQueryKey = (
+  bundle: string,
+  bundleRequest?: BodyType<BundleRequest>,
+) => {
   return ["PATCH", `/professor/bundles/${bundle}`, bundleRequest] as const;
 };
 
 export const getProfessorBundlesUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorBundlesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -527,14 +534,14 @@ export const getProfessorBundlesUpdateQueryOptions = <
 export type ProfessorBundlesUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorBundlesUpdate>>
 >;
-export type ProfessorBundlesUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorBundlesUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorBundlesUpdate<
   TData = Awaited<ReturnType<typeof professorBundlesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesUpdate>>, TError, TData>> &
       Pick<
@@ -551,10 +558,10 @@ export function useProfessorBundlesUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorBundlesUpdate<
   TData = Awaited<ReturnType<typeof professorBundlesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesUpdate>>, TError, TData>> &
       Pick<
@@ -571,10 +578,10 @@ export function useProfessorBundlesUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorBundlesUpdate<
   TData = Awaited<ReturnType<typeof professorBundlesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -584,10 +591,10 @@ export function useProfessorBundlesUpdate<
 
 export function useProfessorBundlesUpdate<
   TData = Awaited<ReturnType<typeof professorBundlesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -641,7 +648,7 @@ export const getAdminBundlesIndexQueryKey = () => {
 
 export const getAdminBundlesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminBundlesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -661,11 +668,11 @@ export const getAdminBundlesIndexQueryOptions = <
 };
 
 export type AdminBundlesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminBundlesIndex>>>;
-export type AdminBundlesIndexQueryError = AuthorizationExceptionResponse;
+export type AdminBundlesIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminBundlesIndex<
   TData = Awaited<ReturnType<typeof adminBundlesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesIndex>>, TError, TData>> &
@@ -683,7 +690,7 @@ export function useAdminBundlesIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminBundlesIndex<
   TData = Awaited<ReturnType<typeof adminBundlesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesIndex>>, TError, TData>> &
@@ -701,7 +708,7 @@ export function useAdminBundlesIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminBundlesIndex<
   TData = Awaited<ReturnType<typeof adminBundlesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesIndex>>, TError, TData>>;
@@ -712,7 +719,7 @@ export function useAdminBundlesIndex<
 
 export function useAdminBundlesIndex<
   TData = Awaited<ReturnType<typeof adminBundlesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesIndex>>, TError, TData>>;
@@ -785,15 +792,15 @@ export const adminBundlesStore = async (
   });
 };
 
-export const getAdminBundlesStoreQueryKey = (bundleRequest?: BundleRequest) => {
+export const getAdminBundlesStoreQueryKey = (bundleRequest?: BodyType<BundleRequest>) => {
   return ["POST", `/admin/bundles`, bundleRequest] as const;
 };
 
 export const getAdminBundlesStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof adminBundlesStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -814,13 +821,15 @@ export const getAdminBundlesStoreQueryOptions = <
 };
 
 export type AdminBundlesStoreQueryResult = NonNullable<Awaited<ReturnType<typeof adminBundlesStore>>>;
-export type AdminBundlesStoreQueryError = AuthorizationExceptionResponse | ValidationExceptionResponse;
+export type AdminBundlesStoreQueryError = ErrorType<
+  AuthorizationExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminBundlesStore<
   TData = Awaited<ReturnType<typeof adminBundlesStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesStore>>, TError, TData>> &
       Pick<
@@ -837,9 +846,9 @@ export function useAdminBundlesStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminBundlesStore<
   TData = Awaited<ReturnType<typeof adminBundlesStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesStore>>, TError, TData>> &
       Pick<
@@ -856,9 +865,9 @@ export function useAdminBundlesStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminBundlesStore<
   TData = Awaited<ReturnType<typeof adminBundlesStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -868,9 +877,9 @@ export function useAdminBundlesStore<
 
 export function useAdminBundlesStore<
   TData = Awaited<ReturnType<typeof adminBundlesStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -950,16 +959,18 @@ export const adminBundlesUpdate = async (
   });
 };
 
-export const getAdminBundlesUpdateQueryKey = (bundle: string, bundleRequest?: BundleRequest) => {
+export const getAdminBundlesUpdateQueryKey = (bundle: string, bundleRequest?: BodyType<BundleRequest>) => {
   return ["PATCH", `/admin/bundles/${bundle}`, bundleRequest] as const;
 };
 
 export const getAdminBundlesUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof adminBundlesUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -983,15 +994,18 @@ export const getAdminBundlesUpdateQueryOptions = <
 };
 
 export type AdminBundlesUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof adminBundlesUpdate>>>;
-export type AdminBundlesUpdateQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminBundlesUpdateQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminBundlesUpdate<
   TData = Awaited<ReturnType<typeof adminBundlesUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesUpdate>>, TError, TData>> &
       Pick<
@@ -1008,10 +1022,12 @@ export function useAdminBundlesUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminBundlesUpdate<
   TData = Awaited<ReturnType<typeof adminBundlesUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesUpdate>>, TError, TData>> &
       Pick<
@@ -1028,10 +1044,12 @@ export function useAdminBundlesUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminBundlesUpdate<
   TData = Awaited<ReturnType<typeof adminBundlesUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1041,10 +1059,12 @@ export function useAdminBundlesUpdate<
 
 export function useAdminBundlesUpdate<
   TData = Awaited<ReturnType<typeof adminBundlesUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   bundle: string,
-  bundleRequest: BundleRequest,
+  bundleRequest: BodyType<BundleRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminBundlesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

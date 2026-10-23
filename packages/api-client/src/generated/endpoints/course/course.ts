@@ -38,6 +38,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -109,7 +110,7 @@ export const getCoursesIndexQueryKey = (params?: CoursesIndexParams) => {
 
 export const getCoursesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesIndex>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params?: CoursesIndexParams,
   options?: {
@@ -132,11 +133,11 @@ export const getCoursesIndexQueryOptions = <
 };
 
 export type CoursesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof coursesIndex>>>;
-export type CoursesIndexQueryError = ValidationExceptionResponse;
+export type CoursesIndexQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useCoursesIndex<
   TData = Awaited<ReturnType<typeof coursesIndex>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params: undefined | CoursesIndexParams,
   options: {
@@ -155,7 +156,7 @@ export function useCoursesIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesIndex<
   TData = Awaited<ReturnType<typeof coursesIndex>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params?: CoursesIndexParams,
   options?: {
@@ -174,7 +175,7 @@ export function useCoursesIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCoursesIndex<
   TData = Awaited<ReturnType<typeof coursesIndex>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params?: CoursesIndexParams,
   options?: {
@@ -190,7 +191,7 @@ export function useCoursesIndex<
 
 export function useCoursesIndex<
   TData = Awaited<ReturnType<typeof coursesIndex>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params?: CoursesIndexParams,
   options?: {
@@ -236,7 +237,10 @@ export const getCoursesShowQueryKey = (slug: string) => {
   return [`/courses/${slug}`] as const;
 };
 
-export const getCoursesShowQueryOptions = <TData = Awaited<ReturnType<typeof coursesShow>>, TError = unknown>(
+export const getCoursesShowQueryOptions = <
+  TData = Awaited<ReturnType<typeof coursesShow>>,
+  TError = ErrorType<unknown>,
+>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesShow>>, TError, TData>>;
@@ -261,9 +265,9 @@ export const getCoursesShowQueryOptions = <TData = Awaited<ReturnType<typeof cou
 };
 
 export type CoursesShowQueryResult = NonNullable<Awaited<ReturnType<typeof coursesShow>>>;
-export type CoursesShowQueryError = unknown;
+export type CoursesShowQueryError = ErrorType<unknown>;
 
-export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = unknown>(
+export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesShow>>, TError, TData>> &
@@ -279,7 +283,7 @@ export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, 
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = unknown>(
+export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesShow>>, TError, TData>> &
@@ -295,7 +299,7 @@ export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, 
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = unknown>(
+export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesShow>>, TError, TData>>;
@@ -304,7 +308,7 @@ export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, 
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = unknown>(
+export function useCoursesShow<TData = Awaited<ReturnType<typeof coursesShow>>, TError = ErrorType<unknown>>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesShow>>, TError, TData>>;
@@ -351,7 +355,7 @@ export const getFeaturedQueryKey = () => {
 
 export const getFeaturedQueryOptions = <
   TData = Awaited<ReturnType<typeof featured>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof featured>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -371,9 +375,9 @@ export const getFeaturedQueryOptions = <
 };
 
 export type FeaturedQueryResult = NonNullable<Awaited<ReturnType<typeof featured>>>;
-export type FeaturedQueryError = unknown;
+export type FeaturedQueryError = ErrorType<unknown>;
 
-export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = unknown>(
+export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = ErrorType<unknown>>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof featured>>, TError, TData>> &
       Pick<
@@ -388,7 +392,7 @@ export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = unknown>(
+export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof featured>>, TError, TData>> &
       Pick<
@@ -403,7 +407,7 @@ export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = unknown>(
+export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof featured>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -414,7 +418,7 @@ export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError
  * @summary Home page rails: featured (admin order), popular, new, free
  */
 
-export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = unknown>(
+export function useFeatured<TData = Awaited<ReturnType<typeof featured>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof featured>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -459,7 +463,7 @@ export const getProfessorCoursesIndexQueryKey = () => {
 
 export const getProfessorCoursesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -479,11 +483,11 @@ export const getProfessorCoursesIndexQueryOptions = <
 };
 
 export type ProfessorCoursesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof professorCoursesIndex>>>;
-export type ProfessorCoursesIndexQueryError = unknown;
+export type ProfessorCoursesIndexQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>> &
@@ -501,7 +505,7 @@ export function useProfessorCoursesIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>> &
@@ -519,7 +523,7 @@ export function useProfessorCoursesIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
@@ -530,7 +534,7 @@ export function useProfessorCoursesIndex<
 
 export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
@@ -599,15 +603,15 @@ export const professorCoursesStore = async (
   });
 };
 
-export const getProfessorCoursesStoreQueryKey = (createCourseRequest?: CreateCourseRequest) => {
+export const getProfessorCoursesStoreQueryKey = (createCourseRequest?: BodyType<CreateCourseRequest>) => {
   return ["POST", `/professor/courses`, createCourseRequest] as const;
 };
 
 export const getProfessorCoursesStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  createCourseRequest: CreateCourseRequest,
+  createCourseRequest: BodyType<CreateCourseRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -628,13 +632,13 @@ export const getProfessorCoursesStoreQueryOptions = <
 };
 
 export type ProfessorCoursesStoreQueryResult = NonNullable<Awaited<ReturnType<typeof professorCoursesStore>>>;
-export type ProfessorCoursesStoreQueryError = ValidationExceptionResponse;
+export type ProfessorCoursesStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorCoursesStore<
   TData = Awaited<ReturnType<typeof professorCoursesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  createCourseRequest: CreateCourseRequest,
+  createCourseRequest: BodyType<CreateCourseRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesStore>>, TError, TData>> &
       Pick<
@@ -651,9 +655,9 @@ export function useProfessorCoursesStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesStore<
   TData = Awaited<ReturnType<typeof professorCoursesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  createCourseRequest: CreateCourseRequest,
+  createCourseRequest: BodyType<CreateCourseRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesStore>>, TError, TData>> &
       Pick<
@@ -670,9 +674,9 @@ export function useProfessorCoursesStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesStore<
   TData = Awaited<ReturnType<typeof professorCoursesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  createCourseRequest: CreateCourseRequest,
+  createCourseRequest: BodyType<CreateCourseRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -682,9 +686,9 @@ export function useProfessorCoursesStore<
 
 export function useProfessorCoursesStore<
   TData = Awaited<ReturnType<typeof professorCoursesStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  createCourseRequest: CreateCourseRequest,
+  createCourseRequest: BodyType<CreateCourseRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -730,7 +734,7 @@ export const getProfessorCoursesShowQueryKey = (course: string) => {
 
 export const getProfessorCoursesShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -756,11 +760,11 @@ export const getProfessorCoursesShowQueryOptions = <
 };
 
 export type ProfessorCoursesShowQueryResult = NonNullable<Awaited<ReturnType<typeof professorCoursesShow>>>;
-export type ProfessorCoursesShowQueryError = unknown;
+export type ProfessorCoursesShowQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesShow<
   TData = Awaited<ReturnType<typeof professorCoursesShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -779,7 +783,7 @@ export function useProfessorCoursesShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesShow<
   TData = Awaited<ReturnType<typeof professorCoursesShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -798,7 +802,7 @@ export function useProfessorCoursesShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesShow<
   TData = Awaited<ReturnType<typeof professorCoursesShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -810,7 +814,7 @@ export function useProfessorCoursesShow<
 
 export function useProfessorCoursesShow<
   TData = Awaited<ReturnType<typeof professorCoursesShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -886,17 +890,17 @@ export const professorCoursesUpdate = async (
 
 export const getProfessorCoursesUpdateQueryKey = (
   course: string,
-  updateCourseSettingsRequest?: UpdateCourseSettingsRequest,
+  updateCourseSettingsRequest?: BodyType<UpdateCourseSettingsRequest>,
 ) => {
   return ["PATCH", `/professor/courses/${course}`, updateCourseSettingsRequest] as const;
 };
 
 export const getProfessorCoursesUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateCourseSettingsRequest?: UpdateCourseSettingsRequest,
+  updateCourseSettingsRequest?: BodyType<UpdateCourseSettingsRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -923,14 +927,14 @@ export const getProfessorCoursesUpdateQueryOptions = <
 export type ProfessorCoursesUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesUpdate>>
 >;
-export type ProfessorCoursesUpdateQueryError = ValidationExceptionResponse;
+export type ProfessorCoursesUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorCoursesUpdate<
   TData = Awaited<ReturnType<typeof professorCoursesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateCourseSettingsRequest: undefined | UpdateCourseSettingsRequest,
+  updateCourseSettingsRequest: undefined | BodyType<UpdateCourseSettingsRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesUpdate>>, TError, TData>> &
       Pick<
@@ -947,10 +951,10 @@ export function useProfessorCoursesUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesUpdate<
   TData = Awaited<ReturnType<typeof professorCoursesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateCourseSettingsRequest?: UpdateCourseSettingsRequest,
+  updateCourseSettingsRequest?: BodyType<UpdateCourseSettingsRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesUpdate>>, TError, TData>> &
       Pick<
@@ -967,10 +971,10 @@ export function useProfessorCoursesUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesUpdate<
   TData = Awaited<ReturnType<typeof professorCoursesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateCourseSettingsRequest?: UpdateCourseSettingsRequest,
+  updateCourseSettingsRequest?: BodyType<UpdateCourseSettingsRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -983,10 +987,10 @@ export function useProfessorCoursesUpdate<
 
 export function useProfessorCoursesUpdate<
   TData = Awaited<ReturnType<typeof professorCoursesUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
-  updateCourseSettingsRequest?: UpdateCourseSettingsRequest,
+  updateCourseSettingsRequest?: BodyType<UpdateCourseSettingsRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1035,7 +1039,7 @@ export const getProfessorCoursesDestroyQueryKey = (course: string) => {
 
 export const getProfessorCoursesDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1063,11 +1067,11 @@ export const getProfessorCoursesDestroyQueryOptions = <
 export type ProfessorCoursesDestroyQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesDestroy>>
 >;
-export type ProfessorCoursesDestroyQueryError = unknown;
+export type ProfessorCoursesDestroyQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesDestroy<
   TData = Awaited<ReturnType<typeof professorCoursesDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1086,7 +1090,7 @@ export function useProfessorCoursesDestroy<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesDestroy<
   TData = Awaited<ReturnType<typeof professorCoursesDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1105,7 +1109,7 @@ export function useProfessorCoursesDestroy<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesDestroy<
   TData = Awaited<ReturnType<typeof professorCoursesDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1120,7 +1124,7 @@ export function useProfessorCoursesDestroy<
 
 export function useProfessorCoursesDestroy<
   TData = Awaited<ReturnType<typeof professorCoursesDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1171,7 +1175,7 @@ export const getProfessorCoursesDraftStartQueryKey = (course: string) => {
 
 export const getProfessorCoursesDraftStartQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesDraftStart>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1199,11 +1203,11 @@ export const getProfessorCoursesDraftStartQueryOptions = <
 export type ProfessorCoursesDraftStartQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesDraftStart>>
 >;
-export type ProfessorCoursesDraftStartQueryError = unknown;
+export type ProfessorCoursesDraftStartQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesDraftStart<
   TData = Awaited<ReturnType<typeof professorCoursesDraftStart>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1222,7 +1226,7 @@ export function useProfessorCoursesDraftStart<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesDraftStart<
   TData = Awaited<ReturnType<typeof professorCoursesDraftStart>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1241,7 +1245,7 @@ export function useProfessorCoursesDraftStart<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesDraftStart<
   TData = Awaited<ReturnType<typeof professorCoursesDraftStart>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1256,7 +1260,7 @@ export function useProfessorCoursesDraftStart<
 
 export function useProfessorCoursesDraftStart<
   TData = Awaited<ReturnType<typeof professorCoursesDraftStart>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1304,7 +1308,7 @@ export const getProfessorCoursesSubmitQueryKey = (course: string) => {
 
 export const getProfessorCoursesSubmitQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesSubmit>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1332,11 +1336,11 @@ export const getProfessorCoursesSubmitQueryOptions = <
 export type ProfessorCoursesSubmitQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesSubmit>>
 >;
-export type ProfessorCoursesSubmitQueryError = unknown;
+export type ProfessorCoursesSubmitQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesSubmit<
   TData = Awaited<ReturnType<typeof professorCoursesSubmit>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1355,7 +1359,7 @@ export function useProfessorCoursesSubmit<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesSubmit<
   TData = Awaited<ReturnType<typeof professorCoursesSubmit>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1374,7 +1378,7 @@ export function useProfessorCoursesSubmit<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesSubmit<
   TData = Awaited<ReturnType<typeof professorCoursesSubmit>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1386,7 +1390,7 @@ export function useProfessorCoursesSubmit<
 
 export function useProfessorCoursesSubmit<
   TData = Awaited<ReturnType<typeof professorCoursesSubmit>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1434,7 +1438,7 @@ export const getProfessorCoursesWithdrawQueryKey = (course: string) => {
 
 export const getProfessorCoursesWithdrawQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesWithdraw>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1462,11 +1466,11 @@ export const getProfessorCoursesWithdrawQueryOptions = <
 export type ProfessorCoursesWithdrawQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesWithdraw>>
 >;
-export type ProfessorCoursesWithdrawQueryError = unknown;
+export type ProfessorCoursesWithdrawQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesWithdraw<
   TData = Awaited<ReturnType<typeof professorCoursesWithdraw>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1485,7 +1489,7 @@ export function useProfessorCoursesWithdraw<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesWithdraw<
   TData = Awaited<ReturnType<typeof professorCoursesWithdraw>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1504,7 +1508,7 @@ export function useProfessorCoursesWithdraw<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesWithdraw<
   TData = Awaited<ReturnType<typeof professorCoursesWithdraw>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1516,7 +1520,7 @@ export function useProfessorCoursesWithdraw<
 
 export function useProfessorCoursesWithdraw<
   TData = Awaited<ReturnType<typeof professorCoursesWithdraw>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1564,7 +1568,7 @@ export const getProfessorCoursesUnpublishQueryKey = (course: string) => {
 
 export const getProfessorCoursesUnpublishQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesUnpublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1592,11 +1596,11 @@ export const getProfessorCoursesUnpublishQueryOptions = <
 export type ProfessorCoursesUnpublishQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesUnpublish>>
 >;
-export type ProfessorCoursesUnpublishQueryError = unknown;
+export type ProfessorCoursesUnpublishQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesUnpublish<
   TData = Awaited<ReturnType<typeof professorCoursesUnpublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1615,7 +1619,7 @@ export function useProfessorCoursesUnpublish<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesUnpublish<
   TData = Awaited<ReturnType<typeof professorCoursesUnpublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1634,7 +1638,7 @@ export function useProfessorCoursesUnpublish<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesUnpublish<
   TData = Awaited<ReturnType<typeof professorCoursesUnpublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1646,7 +1650,7 @@ export function useProfessorCoursesUnpublish<
 
 export function useProfessorCoursesUnpublish<
   TData = Awaited<ReturnType<typeof professorCoursesUnpublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1694,7 +1698,7 @@ export const getProfessorCoursesRepublishQueryKey = (course: string) => {
 
 export const getProfessorCoursesRepublishQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesRepublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1722,11 +1726,11 @@ export const getProfessorCoursesRepublishQueryOptions = <
 export type ProfessorCoursesRepublishQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesRepublish>>
 >;
-export type ProfessorCoursesRepublishQueryError = unknown;
+export type ProfessorCoursesRepublishQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesRepublish<
   TData = Awaited<ReturnType<typeof professorCoursesRepublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1745,7 +1749,7 @@ export function useProfessorCoursesRepublish<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesRepublish<
   TData = Awaited<ReturnType<typeof professorCoursesRepublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1764,7 +1768,7 @@ export function useProfessorCoursesRepublish<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesRepublish<
   TData = Awaited<ReturnType<typeof professorCoursesRepublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1776,7 +1780,7 @@ export function useProfessorCoursesRepublish<
 
 export function useProfessorCoursesRepublish<
   TData = Awaited<ReturnType<typeof professorCoursesRepublish>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1824,7 +1828,7 @@ export const getProfessorCoursesArchiveQueryKey = (course: string) => {
 
 export const getProfessorCoursesArchiveQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesArchive>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1852,11 +1856,11 @@ export const getProfessorCoursesArchiveQueryOptions = <
 export type ProfessorCoursesArchiveQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCoursesArchive>>
 >;
-export type ProfessorCoursesArchiveQueryError = unknown;
+export type ProfessorCoursesArchiveQueryError = ErrorType<unknown>;
 
 export function useProfessorCoursesArchive<
   TData = Awaited<ReturnType<typeof professorCoursesArchive>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options: {
@@ -1875,7 +1879,7 @@ export function useProfessorCoursesArchive<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesArchive<
   TData = Awaited<ReturnType<typeof professorCoursesArchive>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1894,7 +1898,7 @@ export function useProfessorCoursesArchive<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCoursesArchive<
   TData = Awaited<ReturnType<typeof professorCoursesArchive>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -1906,7 +1910,7 @@ export function useProfessorCoursesArchive<
 
 export function useProfessorCoursesArchive<
   TData = Awaited<ReturnType<typeof professorCoursesArchive>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {

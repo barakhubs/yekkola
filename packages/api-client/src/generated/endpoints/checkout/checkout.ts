@@ -26,6 +26,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -96,7 +97,7 @@ export const getCheckoutRailsQueryKey = (params?: CheckoutRailsParams) => {
 
 export const getCheckoutRailsQueryOptions = <
   TData = Awaited<ReturnType<typeof checkoutRails>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params: CheckoutRailsParams,
   options?: {
@@ -119,11 +120,11 @@ export const getCheckoutRailsQueryOptions = <
 };
 
 export type CheckoutRailsQueryResult = NonNullable<Awaited<ReturnType<typeof checkoutRails>>>;
-export type CheckoutRailsQueryError = ValidationExceptionResponse;
+export type CheckoutRailsQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useCheckoutRails<
   TData = Awaited<ReturnType<typeof checkoutRails>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params: CheckoutRailsParams,
   options: {
@@ -142,7 +143,7 @@ export function useCheckoutRails<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCheckoutRails<
   TData = Awaited<ReturnType<typeof checkoutRails>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params: CheckoutRailsParams,
   options?: {
@@ -161,7 +162,7 @@ export function useCheckoutRails<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCheckoutRails<
   TData = Awaited<ReturnType<typeof checkoutRails>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params: CheckoutRailsParams,
   options?: {
@@ -176,7 +177,7 @@ export function useCheckoutRails<
 
 export function useCheckoutRails<
   TData = Awaited<ReturnType<typeof checkoutRails>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   params: CheckoutRailsParams,
   options?: {
@@ -248,15 +249,15 @@ export const checkoutQuote = async (
   });
 };
 
-export const getCheckoutQuoteQueryKey = (courseSelectionRequest?: CourseSelectionRequest) => {
+export const getCheckoutQuoteQueryKey = (courseSelectionRequest?: BodyType<CourseSelectionRequest>) => {
   return ["POST", `/checkout/quote`, courseSelectionRequest] as const;
 };
 
 export const getCheckoutQuoteQueryOptions = <
   TData = Awaited<ReturnType<typeof checkoutQuote>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof checkoutQuote>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -277,13 +278,13 @@ export const getCheckoutQuoteQueryOptions = <
 };
 
 export type CheckoutQuoteQueryResult = NonNullable<Awaited<ReturnType<typeof checkoutQuote>>>;
-export type CheckoutQuoteQueryError = ValidationExceptionResponse;
+export type CheckoutQuoteQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useCheckoutQuote<
   TData = Awaited<ReturnType<typeof checkoutQuote>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest: undefined | CourseSelectionRequest,
+  courseSelectionRequest: undefined | BodyType<CourseSelectionRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof checkoutQuote>>, TError, TData>> &
       Pick<
@@ -300,9 +301,9 @@ export function useCheckoutQuote<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCheckoutQuote<
   TData = Awaited<ReturnType<typeof checkoutQuote>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof checkoutQuote>>, TError, TData>> &
       Pick<
@@ -319,9 +320,9 @@ export function useCheckoutQuote<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useCheckoutQuote<
   TData = Awaited<ReturnType<typeof checkoutQuote>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof checkoutQuote>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -334,9 +335,9 @@ export function useCheckoutQuote<
 
 export function useCheckoutQuote<
   TData = Awaited<ReturnType<typeof checkoutQuote>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof checkoutQuote>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

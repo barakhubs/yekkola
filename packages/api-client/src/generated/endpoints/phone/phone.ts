@@ -26,6 +26,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -98,15 +99,17 @@ export const mePhoneOtp = async (
   });
 };
 
-export const getMePhoneOtpQueryKey = (requestPhoneChangeOtpRequest?: RequestPhoneChangeOtpRequest) => {
+export const getMePhoneOtpQueryKey = (
+  requestPhoneChangeOtpRequest?: BodyType<RequestPhoneChangeOtpRequest>,
+) => {
   return ["POST", `/me/phone/otp`, requestPhoneChangeOtpRequest] as const;
 };
 
 export const getMePhoneOtpQueryOptions = <
   TData = Awaited<ReturnType<typeof mePhoneOtp>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestPhoneChangeOtpRequest: RequestPhoneChangeOtpRequest,
+  requestPhoneChangeOtpRequest: BodyType<RequestPhoneChangeOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneOtp>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -127,13 +130,13 @@ export const getMePhoneOtpQueryOptions = <
 };
 
 export type MePhoneOtpQueryResult = NonNullable<Awaited<ReturnType<typeof mePhoneOtp>>>;
-export type MePhoneOtpQueryError = ValidationExceptionResponse;
+export type MePhoneOtpQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useMePhoneOtp<
   TData = Awaited<ReturnType<typeof mePhoneOtp>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestPhoneChangeOtpRequest: RequestPhoneChangeOtpRequest,
+  requestPhoneChangeOtpRequest: BodyType<RequestPhoneChangeOtpRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneOtp>>, TError, TData>> &
       Pick<
@@ -150,9 +153,9 @@ export function useMePhoneOtp<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMePhoneOtp<
   TData = Awaited<ReturnType<typeof mePhoneOtp>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestPhoneChangeOtpRequest: RequestPhoneChangeOtpRequest,
+  requestPhoneChangeOtpRequest: BodyType<RequestPhoneChangeOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneOtp>>, TError, TData>> &
       Pick<
@@ -169,9 +172,9 @@ export function useMePhoneOtp<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMePhoneOtp<
   TData = Awaited<ReturnType<typeof mePhoneOtp>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestPhoneChangeOtpRequest: RequestPhoneChangeOtpRequest,
+  requestPhoneChangeOtpRequest: BodyType<RequestPhoneChangeOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneOtp>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -184,9 +187,9 @@ export function useMePhoneOtp<
 
 export function useMePhoneOtp<
   TData = Awaited<ReturnType<typeof mePhoneOtp>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestPhoneChangeOtpRequest: RequestPhoneChangeOtpRequest,
+  requestPhoneChangeOtpRequest: BodyType<RequestPhoneChangeOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneOtp>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -256,15 +259,15 @@ export const mePhoneUpdate = async (
   });
 };
 
-export const getMePhoneUpdateQueryKey = (changePhoneRequest?: ChangePhoneRequest) => {
+export const getMePhoneUpdateQueryKey = (changePhoneRequest?: BodyType<ChangePhoneRequest>) => {
   return ["PUT", `/me/phone`, changePhoneRequest] as const;
 };
 
 export const getMePhoneUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof mePhoneUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePhoneRequest: ChangePhoneRequest,
+  changePhoneRequest: BodyType<ChangePhoneRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -285,13 +288,13 @@ export const getMePhoneUpdateQueryOptions = <
 };
 
 export type MePhoneUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof mePhoneUpdate>>>;
-export type MePhoneUpdateQueryError = ValidationExceptionResponse;
+export type MePhoneUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useMePhoneUpdate<
   TData = Awaited<ReturnType<typeof mePhoneUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePhoneRequest: ChangePhoneRequest,
+  changePhoneRequest: BodyType<ChangePhoneRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneUpdate>>, TError, TData>> &
       Pick<
@@ -308,9 +311,9 @@ export function useMePhoneUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMePhoneUpdate<
   TData = Awaited<ReturnType<typeof mePhoneUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePhoneRequest: ChangePhoneRequest,
+  changePhoneRequest: BodyType<ChangePhoneRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneUpdate>>, TError, TData>> &
       Pick<
@@ -327,9 +330,9 @@ export function useMePhoneUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMePhoneUpdate<
   TData = Awaited<ReturnType<typeof mePhoneUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePhoneRequest: ChangePhoneRequest,
+  changePhoneRequest: BodyType<ChangePhoneRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -342,9 +345,9 @@ export function useMePhoneUpdate<
 
 export function useMePhoneUpdate<
   TData = Awaited<ReturnType<typeof mePhoneUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  changePhoneRequest: ChangePhoneRequest,
+  changePhoneRequest: BodyType<ChangePhoneRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof mePhoneUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

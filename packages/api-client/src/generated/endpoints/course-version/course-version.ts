@@ -29,6 +29,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -86,7 +87,7 @@ export const getAdminCourseVersionsIndexQueryKey = () => {
 
 export const getAdminCourseVersionsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -108,11 +109,11 @@ export const getAdminCourseVersionsIndexQueryOptions = <
 export type AdminCourseVersionsIndexQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminCourseVersionsIndex>>
 >;
-export type AdminCourseVersionsIndexQueryError = AuthorizationExceptionResponse;
+export type AdminCourseVersionsIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>> &
@@ -130,7 +131,7 @@ export function useAdminCourseVersionsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>> &
@@ -148,7 +149,7 @@ export function useAdminCourseVersionsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
@@ -159,7 +160,7 @@ export function useAdminCourseVersionsIndex<
 
 export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
@@ -223,7 +224,7 @@ export const getAdminCourseVersionsShowQueryKey = (version: string) => {
 
 export const getAdminCourseVersionsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCourseVersionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   version: string,
   options?: {
@@ -251,12 +252,13 @@ export const getAdminCourseVersionsShowQueryOptions = <
 export type AdminCourseVersionsShowQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminCourseVersionsShow>>
 >;
-export type AdminCourseVersionsShowQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminCourseVersionsShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminCourseVersionsShow<
   TData = Awaited<ReturnType<typeof adminCourseVersionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   version: string,
   options: {
@@ -275,7 +277,7 @@ export function useAdminCourseVersionsShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsShow<
   TData = Awaited<ReturnType<typeof adminCourseVersionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   version: string,
   options?: {
@@ -294,7 +296,7 @@ export function useAdminCourseVersionsShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsShow<
   TData = Awaited<ReturnType<typeof adminCourseVersionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   version: string,
   options?: {
@@ -306,7 +308,7 @@ export function useAdminCourseVersionsShow<
 
 export function useAdminCourseVersionsShow<
   TData = Awaited<ReturnType<typeof adminCourseVersionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   version: string,
   options?: {
@@ -393,17 +395,19 @@ export const adminCourseVersionsApprove = async (
 
 export const getAdminCourseVersionsApproveQueryKey = (
   version: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/course-versions/${version}/approve`, staffNoteRequest] as const;
 };
 
 export const getAdminCourseVersionsApproveQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCourseVersionsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsApprove>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -429,15 +433,18 @@ export const getAdminCourseVersionsApproveQueryOptions = <
 export type AdminCourseVersionsApproveQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminCourseVersionsApprove>>
 >;
-export type AdminCourseVersionsApproveQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminCourseVersionsApproveQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminCourseVersionsApprove<
   TData = Awaited<ReturnType<typeof adminCourseVersionsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsApprove>>, TError, TData>> &
       Pick<
@@ -454,10 +461,12 @@ export function useAdminCourseVersionsApprove<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsApprove<
   TData = Awaited<ReturnType<typeof adminCourseVersionsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsApprove>>, TError, TData>> &
       Pick<
@@ -474,10 +483,12 @@ export function useAdminCourseVersionsApprove<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsApprove<
   TData = Awaited<ReturnType<typeof adminCourseVersionsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsApprove>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -487,10 +498,12 @@ export function useAdminCourseVersionsApprove<
 
 export function useAdminCourseVersionsApprove<
   TData = Awaited<ReturnType<typeof adminCourseVersionsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsApprove>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -575,17 +588,19 @@ export const adminCourseVersionsReject = async (
 
 export const getAdminCourseVersionsRejectQueryKey = (
   version: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/course-versions/${version}/reject`, staffNoteRequest] as const;
 };
 
 export const getAdminCourseVersionsRejectQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCourseVersionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -611,15 +626,18 @@ export const getAdminCourseVersionsRejectQueryOptions = <
 export type AdminCourseVersionsRejectQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminCourseVersionsReject>>
 >;
-export type AdminCourseVersionsRejectQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminCourseVersionsRejectQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminCourseVersionsReject<
   TData = Awaited<ReturnType<typeof adminCourseVersionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsReject>>, TError, TData>> &
       Pick<
@@ -636,10 +654,12 @@ export function useAdminCourseVersionsReject<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsReject<
   TData = Awaited<ReturnType<typeof adminCourseVersionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsReject>>, TError, TData>> &
       Pick<
@@ -656,10 +676,12 @@ export function useAdminCourseVersionsReject<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCourseVersionsReject<
   TData = Awaited<ReturnType<typeof adminCourseVersionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -669,10 +691,12 @@ export function useAdminCourseVersionsReject<
 
 export function useAdminCourseVersionsReject<
   TData = Awaited<ReturnType<typeof adminCourseVersionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   version: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

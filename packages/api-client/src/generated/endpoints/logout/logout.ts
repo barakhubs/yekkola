@@ -20,6 +20,7 @@ import type {
 import type { AuthenticationExceptionResponse } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -77,7 +78,7 @@ export const getAuthLogoutQueryKey = () => {
 
 export const getAuthLogoutQueryOptions = <
   TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = AuthenticationExceptionResponse,
+  TError = ErrorType<AuthenticationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -97,11 +98,11 @@ export const getAuthLogoutQueryOptions = <
 };
 
 export type AuthLogoutQueryResult = NonNullable<Awaited<ReturnType<typeof authLogout>>>;
-export type AuthLogoutQueryError = AuthenticationExceptionResponse;
+export type AuthLogoutQueryError = ErrorType<AuthenticationExceptionResponse>;
 
 export function useAuthLogout<
   TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = AuthenticationExceptionResponse,
+  TError = ErrorType<AuthenticationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>> &
@@ -119,7 +120,7 @@ export function useAuthLogout<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthLogout<
   TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = AuthenticationExceptionResponse,
+  TError = ErrorType<AuthenticationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>> &
@@ -137,7 +138,7 @@ export function useAuthLogout<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthLogout<
   TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = AuthenticationExceptionResponse,
+  TError = ErrorType<AuthenticationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>>;
@@ -151,7 +152,7 @@ export function useAuthLogout<
 
 export function useAuthLogout<
   TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = AuthenticationExceptionResponse,
+  TError = ErrorType<AuthenticationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>>;

@@ -20,6 +20,7 @@ import type {
 import type { WebhooksVideo200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -67,7 +68,7 @@ export const getWebhooksVideoQueryKey = () => {
 
 export const getWebhooksVideoQueryOptions = <
   TData = Awaited<ReturnType<typeof webhooksVideo>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof webhooksVideo>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -87,9 +88,12 @@ export const getWebhooksVideoQueryOptions = <
 };
 
 export type WebhooksVideoQueryResult = NonNullable<Awaited<ReturnType<typeof webhooksVideo>>>;
-export type WebhooksVideoQueryError = unknown;
+export type WebhooksVideoQueryError = ErrorType<unknown>;
 
-export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo>>, TError = unknown>(
+export function useWebhooksVideo<
+  TData = Awaited<ReturnType<typeof webhooksVideo>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof webhooksVideo>>, TError, TData>> &
       Pick<
@@ -104,7 +108,10 @@ export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo>>, TError = unknown>(
+export function useWebhooksVideo<
+  TData = Awaited<ReturnType<typeof webhooksVideo>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof webhooksVideo>>, TError, TData>> &
       Pick<
@@ -119,7 +126,10 @@ export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo>>, TError = unknown>(
+export function useWebhooksVideo<
+  TData = Awaited<ReturnType<typeof webhooksVideo>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof webhooksVideo>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -127,7 +137,10 @@ export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useWebhooksVideo<TData = Awaited<ReturnType<typeof webhooksVideo>>, TError = unknown>(
+export function useWebhooksVideo<
+  TData = Awaited<ReturnType<typeof webhooksVideo>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof webhooksVideo>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

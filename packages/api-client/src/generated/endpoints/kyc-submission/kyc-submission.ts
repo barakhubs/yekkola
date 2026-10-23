@@ -30,6 +30,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -87,7 +88,7 @@ export const getAdminKycSubmissionsIndexQueryKey = () => {
 
 export const getAdminKycSubmissionsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -109,11 +110,11 @@ export const getAdminKycSubmissionsIndexQueryOptions = <
 export type AdminKycSubmissionsIndexQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminKycSubmissionsIndex>>
 >;
-export type AdminKycSubmissionsIndexQueryError = AuthorizationExceptionResponse;
+export type AdminKycSubmissionsIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>> &
@@ -131,7 +132,7 @@ export function useAdminKycSubmissionsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>> &
@@ -149,7 +150,7 @@ export function useAdminKycSubmissionsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
@@ -160,7 +161,7 @@ export function useAdminKycSubmissionsIndex<
 
 export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
@@ -224,7 +225,7 @@ export const getAdminKycSubmissionsShowQueryKey = (submission: string) => {
 
 export const getAdminKycSubmissionsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof adminKycSubmissionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -252,12 +253,13 @@ export const getAdminKycSubmissionsShowQueryOptions = <
 export type AdminKycSubmissionsShowQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminKycSubmissionsShow>>
 >;
-export type AdminKycSubmissionsShowQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminKycSubmissionsShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminKycSubmissionsShow<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options: {
@@ -276,7 +278,7 @@ export function useAdminKycSubmissionsShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsShow<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -295,7 +297,7 @@ export function useAdminKycSubmissionsShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsShow<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -307,7 +309,7 @@ export function useAdminKycSubmissionsShow<
 
 export function useAdminKycSubmissionsShow<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -376,7 +378,7 @@ export const getAdminKycSubmissionsFileQueryKey = (submission: string, kind: str
 
 export const getAdminKycSubmissionsFileQueryOptions = <
   TData = Awaited<ReturnType<typeof adminKycSubmissionsFile>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   kind: string,
@@ -405,12 +407,13 @@ export const getAdminKycSubmissionsFileQueryOptions = <
 export type AdminKycSubmissionsFileQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminKycSubmissionsFile>>
 >;
-export type AdminKycSubmissionsFileQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminKycSubmissionsFileQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminKycSubmissionsFile<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsFile>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   kind: string,
@@ -430,7 +433,7 @@ export function useAdminKycSubmissionsFile<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsFile<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsFile>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   kind: string,
@@ -450,7 +453,7 @@ export function useAdminKycSubmissionsFile<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsFile<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsFile>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   kind: string,
@@ -466,7 +469,7 @@ export function useAdminKycSubmissionsFile<
 
 export function useAdminKycSubmissionsFile<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsFile>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   kind: string,
@@ -532,7 +535,7 @@ export const getAdminKycSubmissionsVerifyQueryKey = (submission: string) => {
 
 export const getAdminKycSubmissionsVerifyQueryOptions = <
   TData = Awaited<ReturnType<typeof adminKycSubmissionsVerify>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -560,12 +563,13 @@ export const getAdminKycSubmissionsVerifyQueryOptions = <
 export type AdminKycSubmissionsVerifyQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminKycSubmissionsVerify>>
 >;
-export type AdminKycSubmissionsVerifyQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminKycSubmissionsVerifyQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminKycSubmissionsVerify<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsVerify>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options: {
@@ -584,7 +588,7 @@ export function useAdminKycSubmissionsVerify<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsVerify<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsVerify>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -603,7 +607,7 @@ export function useAdminKycSubmissionsVerify<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsVerify<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsVerify>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -615,7 +619,7 @@ export function useAdminKycSubmissionsVerify<
 
 export function useAdminKycSubmissionsVerify<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsVerify>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   submission: string,
   options?: {
@@ -702,17 +706,19 @@ export const adminKycSubmissionsReject = async (
 
 export const getAdminKycSubmissionsRejectQueryKey = (
   submission: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/kyc-submissions/${submission}/reject`, staffNoteRequest] as const;
 };
 
 export const getAdminKycSubmissionsRejectQueryOptions = <
   TData = Awaited<ReturnType<typeof adminKycSubmissionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   submission: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -739,15 +745,18 @@ export const getAdminKycSubmissionsRejectQueryOptions = <
 export type AdminKycSubmissionsRejectQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminKycSubmissionsReject>>
 >;
-export type AdminKycSubmissionsRejectQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminKycSubmissionsRejectQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminKycSubmissionsReject<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   submission: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsReject>>, TError, TData>> &
       Pick<
@@ -764,10 +773,12 @@ export function useAdminKycSubmissionsReject<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsReject<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   submission: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsReject>>, TError, TData>> &
       Pick<
@@ -784,10 +795,12 @@ export function useAdminKycSubmissionsReject<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminKycSubmissionsReject<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   submission: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -797,10 +810,12 @@ export function useAdminKycSubmissionsReject<
 
 export function useAdminKycSubmissionsReject<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   submission: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

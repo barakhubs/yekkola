@@ -26,6 +26,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -83,7 +84,7 @@ export const getAdminFeaturedCoursesIndexQueryKey = () => {
 
 export const getAdminFeaturedCoursesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -105,11 +106,11 @@ export const getAdminFeaturedCoursesIndexQueryOptions = <
 export type AdminFeaturedCoursesIndexQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>
 >;
-export type AdminFeaturedCoursesIndexQueryError = AuthorizationExceptionResponse;
+export type AdminFeaturedCoursesIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminFeaturedCoursesIndex<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>, TError, TData>> &
@@ -127,7 +128,7 @@ export function useAdminFeaturedCoursesIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminFeaturedCoursesIndex<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>, TError, TData>> &
@@ -145,7 +146,7 @@ export function useAdminFeaturedCoursesIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminFeaturedCoursesIndex<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>, TError, TData>>;
@@ -156,7 +157,7 @@ export function useAdminFeaturedCoursesIndex<
 
 export function useAdminFeaturedCoursesIndex<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesIndex>>, TError, TData>>;
@@ -235,15 +236,17 @@ export const adminFeaturedCoursesUpdate = async (
   });
 };
 
-export const getAdminFeaturedCoursesUpdateQueryKey = (featuredCoursesRequest?: FeaturedCoursesRequest) => {
+export const getAdminFeaturedCoursesUpdateQueryKey = (
+  featuredCoursesRequest?: BodyType<FeaturedCoursesRequest>,
+) => {
   return ["PUT", `/admin/featured-courses`, featuredCoursesRequest] as const;
 };
 
 export const getAdminFeaturedCoursesUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  featuredCoursesRequest: FeaturedCoursesRequest,
+  featuredCoursesRequest: BodyType<FeaturedCoursesRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -266,14 +269,15 @@ export const getAdminFeaturedCoursesUpdateQueryOptions = <
 export type AdminFeaturedCoursesUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>
 >;
-export type AdminFeaturedCoursesUpdateQueryError =
-  AuthorizationExceptionResponse | ValidationExceptionResponse;
+export type AdminFeaturedCoursesUpdateQueryError = ErrorType<
+  AuthorizationExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminFeaturedCoursesUpdate<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  featuredCoursesRequest: FeaturedCoursesRequest,
+  featuredCoursesRequest: BodyType<FeaturedCoursesRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>, TError, TData>> &
       Pick<
@@ -290,9 +294,9 @@ export function useAdminFeaturedCoursesUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminFeaturedCoursesUpdate<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  featuredCoursesRequest: FeaturedCoursesRequest,
+  featuredCoursesRequest: BodyType<FeaturedCoursesRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>, TError, TData>> &
       Pick<
@@ -309,9 +313,9 @@ export function useAdminFeaturedCoursesUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminFeaturedCoursesUpdate<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  featuredCoursesRequest: FeaturedCoursesRequest,
+  featuredCoursesRequest: BodyType<FeaturedCoursesRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -324,9 +328,9 @@ export function useAdminFeaturedCoursesUpdate<
 
 export function useAdminFeaturedCoursesUpdate<
   TData = Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  featuredCoursesRequest: FeaturedCoursesRequest,
+  featuredCoursesRequest: BodyType<FeaturedCoursesRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminFeaturedCoursesUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

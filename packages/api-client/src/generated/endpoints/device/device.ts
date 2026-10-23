@@ -20,6 +20,7 @@ import type {
 import type { MeDevicesIndex200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -70,7 +71,7 @@ export const getMeDevicesIndexQueryKey = () => {
 
 export const getMeDevicesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meDevicesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -90,9 +91,12 @@ export const getMeDevicesIndexQueryOptions = <
 };
 
 export type MeDevicesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof meDevicesIndex>>>;
-export type MeDevicesIndexQueryError = unknown;
+export type MeDevicesIndexQueryError = ErrorType<unknown>;
 
-export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesIndex>>, TError = unknown>(
+export function useMeDevicesIndex<
+  TData = Awaited<ReturnType<typeof meDevicesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesIndex>>, TError, TData>> &
       Pick<
@@ -107,7 +111,10 @@ export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesInd
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesIndex>>, TError = unknown>(
+export function useMeDevicesIndex<
+  TData = Awaited<ReturnType<typeof meDevicesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesIndex>>, TError, TData>> &
       Pick<
@@ -122,7 +129,10 @@ export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesInd
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesIndex>>, TError = unknown>(
+export function useMeDevicesIndex<
+  TData = Awaited<ReturnType<typeof meDevicesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -133,7 +143,10 @@ export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesInd
  * @summary Registered mobile devices (those that can hold downloads)
  */
 
-export function useMeDevicesIndex<TData = Awaited<ReturnType<typeof meDevicesIndex>>, TError = unknown>(
+export function useMeDevicesIndex<
+  TData = Awaited<ReturnType<typeof meDevicesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -182,7 +195,7 @@ export const getMeDevicesDestroyQueryKey = (device: string) => {
 
 export const getMeDevicesDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof meDevicesDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   device: string,
   options?: {
@@ -208,9 +221,12 @@ export const getMeDevicesDestroyQueryOptions = <
 };
 
 export type MeDevicesDestroyQueryResult = NonNullable<Awaited<ReturnType<typeof meDevicesDestroy>>>;
-export type MeDevicesDestroyQueryError = unknown;
+export type MeDevicesDestroyQueryError = ErrorType<unknown>;
 
-export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesDestroy>>, TError = unknown>(
+export function useMeDevicesDestroy<
+  TData = Awaited<ReturnType<typeof meDevicesDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   device: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesDestroy>>, TError, TData>> &
@@ -226,7 +242,10 @@ export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesD
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesDestroy>>, TError = unknown>(
+export function useMeDevicesDestroy<
+  TData = Awaited<ReturnType<typeof meDevicesDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   device: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesDestroy>>, TError, TData>> &
@@ -242,7 +261,10 @@ export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesD
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesDestroy>>, TError = unknown>(
+export function useMeDevicesDestroy<
+  TData = Awaited<ReturnType<typeof meDevicesDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   device: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesDestroy>>, TError, TData>>;
@@ -254,7 +276,10 @@ export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesD
  * @summary Remove a device: it is signed out and its downloads stop being renewed
  */
 
-export function useMeDevicesDestroy<TData = Awaited<ReturnType<typeof meDevicesDestroy>>, TError = unknown>(
+export function useMeDevicesDestroy<
+  TData = Awaited<ReturnType<typeof meDevicesDestroy>>,
+  TError = ErrorType<unknown>,
+>(
   device: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDevicesDestroy>>, TError, TData>>;

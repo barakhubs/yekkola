@@ -29,6 +29,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -102,15 +103,15 @@ export const ordersStore = async (
   });
 };
 
-export const getOrdersStoreQueryKey = (courseSelectionRequest?: CourseSelectionRequest) => {
+export const getOrdersStoreQueryKey = (courseSelectionRequest?: BodyType<CourseSelectionRequest>) => {
   return ["POST", `/orders`, courseSelectionRequest] as const;
 };
 
 export const getOrdersStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof ordersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -131,13 +132,13 @@ export const getOrdersStoreQueryOptions = <
 };
 
 export type OrdersStoreQueryResult = NonNullable<Awaited<ReturnType<typeof ordersStore>>>;
-export type OrdersStoreQueryError = ValidationExceptionResponse;
+export type OrdersStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useOrdersStore<
   TData = Awaited<ReturnType<typeof ordersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest: undefined | CourseSelectionRequest,
+  courseSelectionRequest: undefined | BodyType<CourseSelectionRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersStore>>, TError, TData>> &
       Pick<
@@ -154,9 +155,9 @@ export function useOrdersStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersStore<
   TData = Awaited<ReturnType<typeof ordersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersStore>>, TError, TData>> &
       Pick<
@@ -173,9 +174,9 @@ export function useOrdersStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersStore<
   TData = Awaited<ReturnType<typeof ordersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -189,9 +190,9 @@ export function useOrdersStore<
 
 export function useOrdersStore<
   TData = Awaited<ReturnType<typeof ordersStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  courseSelectionRequest?: CourseSelectionRequest,
+  courseSelectionRequest?: BodyType<CourseSelectionRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -249,7 +250,7 @@ export const getOrdersShowQueryKey = (order: string) => {
 
 export const getOrdersShowQueryOptions = <
   TData = Awaited<ReturnType<typeof ordersShow>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -275,11 +276,11 @@ export const getOrdersShowQueryOptions = <
 };
 
 export type OrdersShowQueryResult = NonNullable<Awaited<ReturnType<typeof ordersShow>>>;
-export type OrdersShowQueryError = ModelNotFoundExceptionResponse;
+export type OrdersShowQueryError = ErrorType<ModelNotFoundExceptionResponse>;
 
 export function useOrdersShow<
   TData = Awaited<ReturnType<typeof ordersShow>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options: {
@@ -298,7 +299,7 @@ export function useOrdersShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersShow<
   TData = Awaited<ReturnType<typeof ordersShow>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -317,7 +318,7 @@ export function useOrdersShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersShow<
   TData = Awaited<ReturnType<typeof ordersShow>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -332,7 +333,7 @@ export function useOrdersShow<
 
 export function useOrdersShow<
   TData = Awaited<ReturnType<typeof ordersShow>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   order: string,
   options?: {
@@ -406,16 +407,16 @@ export const ordersPay = async (
   });
 };
 
-export const getOrdersPayQueryKey = (order: string, startPaymentRequest?: StartPaymentRequest) => {
+export const getOrdersPayQueryKey = (order: string, startPaymentRequest?: BodyType<StartPaymentRequest>) => {
   return ["POST", `/orders/${order}/payments`, startPaymentRequest] as const;
 };
 
 export const getOrdersPayQueryOptions = <
   TData = Awaited<ReturnType<typeof ordersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersPay>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -439,14 +440,14 @@ export const getOrdersPayQueryOptions = <
 };
 
 export type OrdersPayQueryResult = NonNullable<Awaited<ReturnType<typeof ordersPay>>>;
-export type OrdersPayQueryError = ValidationExceptionResponse;
+export type OrdersPayQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useOrdersPay<
   TData = Awaited<ReturnType<typeof ordersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersPay>>, TError, TData>> &
       Pick<
@@ -463,10 +464,10 @@ export function useOrdersPay<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersPay<
   TData = Awaited<ReturnType<typeof ordersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersPay>>, TError, TData>> &
       Pick<
@@ -483,10 +484,10 @@ export function useOrdersPay<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersPay<
   TData = Awaited<ReturnType<typeof ordersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersPay>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -500,10 +501,10 @@ The number defaults to the payer named on the order, then to the buyer's own
 
 export function useOrdersPay<
   TData = Awaited<ReturnType<typeof ordersPay>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  startPaymentRequest: StartPaymentRequest,
+  startPaymentRequest: BodyType<StartPaymentRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersPay>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -548,7 +549,7 @@ export const getMeOrdersIndexQueryKey = () => {
 
 export const getMeOrdersIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meOrdersIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -568,9 +569,12 @@ export const getMeOrdersIndexQueryOptions = <
 };
 
 export type MeOrdersIndexQueryResult = NonNullable<Awaited<ReturnType<typeof meOrdersIndex>>>;
-export type MeOrdersIndexQueryError = unknown;
+export type MeOrdersIndexQueryError = ErrorType<unknown>;
 
-export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex>>, TError = unknown>(
+export function useMeOrdersIndex<
+  TData = Awaited<ReturnType<typeof meOrdersIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>> &
       Pick<
@@ -585,7 +589,10 @@ export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex>>, TError = unknown>(
+export function useMeOrdersIndex<
+  TData = Awaited<ReturnType<typeof meOrdersIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>> &
       Pick<
@@ -600,7 +607,10 @@ export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex>>, TError = unknown>(
+export function useMeOrdersIndex<
+  TData = Awaited<ReturnType<typeof meOrdersIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -608,7 +618,10 @@ export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useMeOrdersIndex<TData = Awaited<ReturnType<typeof meOrdersIndex>>, TError = unknown>(
+export function useMeOrdersIndex<
+  TData = Awaited<ReturnType<typeof meOrdersIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

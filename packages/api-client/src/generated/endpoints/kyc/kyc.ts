@@ -25,6 +25,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -75,7 +76,7 @@ export const getProfessorKycShowQueryKey = () => {
 
 export const getProfessorKycShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorKycShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycShow>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -95,9 +96,12 @@ export const getProfessorKycShowQueryOptions = <
 };
 
 export type ProfessorKycShowQueryResult = NonNullable<Awaited<ReturnType<typeof professorKycShow>>>;
-export type ProfessorKycShowQueryError = unknown;
+export type ProfessorKycShowQueryError = ErrorType<unknown>;
 
-export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorKycShow>>, TError = unknown>(
+export function useProfessorKycShow<
+  TData = Awaited<ReturnType<typeof professorKycShow>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycShow>>, TError, TData>> &
       Pick<
@@ -112,7 +116,10 @@ export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorK
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorKycShow>>, TError = unknown>(
+export function useProfessorKycShow<
+  TData = Awaited<ReturnType<typeof professorKycShow>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycShow>>, TError, TData>> &
       Pick<
@@ -127,7 +134,10 @@ export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorK
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorKycShow>>, TError = unknown>(
+export function useProfessorKycShow<
+  TData = Awaited<ReturnType<typeof professorKycShow>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycShow>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -138,7 +148,10 @@ export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorK
  * @summary Latest identity check
  */
 
-export function useProfessorKycShow<TData = Awaited<ReturnType<typeof professorKycShow>>, TError = unknown>(
+export function useProfessorKycShow<
+  TData = Awaited<ReturnType<typeof professorKycShow>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycShow>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -199,15 +212,15 @@ export const professorKycStore = async (
   });
 };
 
-export const getProfessorKycStoreQueryKey = (submitKycRequest?: SubmitKycRequest) => {
+export const getProfessorKycStoreQueryKey = (submitKycRequest?: BodyType<SubmitKycRequest>) => {
   return ["POST", `/professor/kyc`, submitKycRequest] as const;
 };
 
 export const getProfessorKycStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorKycStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  submitKycRequest: SubmitKycRequest,
+  submitKycRequest: BodyType<SubmitKycRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -228,13 +241,13 @@ export const getProfessorKycStoreQueryOptions = <
 };
 
 export type ProfessorKycStoreQueryResult = NonNullable<Awaited<ReturnType<typeof professorKycStore>>>;
-export type ProfessorKycStoreQueryError = ValidationExceptionResponse;
+export type ProfessorKycStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorKycStore<
   TData = Awaited<ReturnType<typeof professorKycStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  submitKycRequest: SubmitKycRequest,
+  submitKycRequest: BodyType<SubmitKycRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycStore>>, TError, TData>> &
       Pick<
@@ -251,9 +264,9 @@ export function useProfessorKycStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorKycStore<
   TData = Awaited<ReturnType<typeof professorKycStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  submitKycRequest: SubmitKycRequest,
+  submitKycRequest: BodyType<SubmitKycRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycStore>>, TError, TData>> &
       Pick<
@@ -270,9 +283,9 @@ export function useProfessorKycStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorKycStore<
   TData = Awaited<ReturnType<typeof professorKycStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  submitKycRequest: SubmitKycRequest,
+  submitKycRequest: BodyType<SubmitKycRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -285,9 +298,9 @@ export function useProfessorKycStore<
 
 export function useProfessorKycStore<
   TData = Awaited<ReturnType<typeof professorKycStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  submitKycRequest: SubmitKycRequest,
+  submitKycRequest: BodyType<SubmitKycRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorKycStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

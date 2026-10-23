@@ -26,6 +26,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -98,15 +99,15 @@ export const authOtpRequest = async (
   });
 };
 
-export const getAuthOtpRequestQueryKey = (requestOtpRequest?: RequestOtpRequest) => {
+export const getAuthOtpRequestQueryKey = (requestOtpRequest?: BodyType<RequestOtpRequest>) => {
   return ["POST", `/auth/otp/request`, requestOtpRequest] as const;
 };
 
 export const getAuthOtpRequestQueryOptions = <
   TData = Awaited<ReturnType<typeof authOtpRequest>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestOtpRequest: RequestOtpRequest,
+  requestOtpRequest: BodyType<RequestOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpRequest>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -127,13 +128,13 @@ export const getAuthOtpRequestQueryOptions = <
 };
 
 export type AuthOtpRequestQueryResult = NonNullable<Awaited<ReturnType<typeof authOtpRequest>>>;
-export type AuthOtpRequestQueryError = ValidationExceptionResponse;
+export type AuthOtpRequestQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useAuthOtpRequest<
   TData = Awaited<ReturnType<typeof authOtpRequest>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestOtpRequest: RequestOtpRequest,
+  requestOtpRequest: BodyType<RequestOtpRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpRequest>>, TError, TData>> &
       Pick<
@@ -150,9 +151,9 @@ export function useAuthOtpRequest<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthOtpRequest<
   TData = Awaited<ReturnType<typeof authOtpRequest>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestOtpRequest: RequestOtpRequest,
+  requestOtpRequest: BodyType<RequestOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpRequest>>, TError, TData>> &
       Pick<
@@ -169,9 +170,9 @@ export function useAuthOtpRequest<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthOtpRequest<
   TData = Awaited<ReturnType<typeof authOtpRequest>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestOtpRequest: RequestOtpRequest,
+  requestOtpRequest: BodyType<RequestOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpRequest>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -184,9 +185,9 @@ export function useAuthOtpRequest<
 
 export function useAuthOtpRequest<
   TData = Awaited<ReturnType<typeof authOtpRequest>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  requestOtpRequest: RequestOtpRequest,
+  requestOtpRequest: BodyType<RequestOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpRequest>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -256,15 +257,15 @@ export const authOtpVerify = async (
   });
 };
 
-export const getAuthOtpVerifyQueryKey = (verifyOtpRequest?: VerifyOtpRequest) => {
+export const getAuthOtpVerifyQueryKey = (verifyOtpRequest?: BodyType<VerifyOtpRequest>) => {
   return ["POST", `/auth/otp/verify`, verifyOtpRequest] as const;
 };
 
 export const getAuthOtpVerifyQueryOptions = <
   TData = Awaited<ReturnType<typeof authOtpVerify>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  verifyOtpRequest: VerifyOtpRequest,
+  verifyOtpRequest: BodyType<VerifyOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpVerify>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -285,13 +286,13 @@ export const getAuthOtpVerifyQueryOptions = <
 };
 
 export type AuthOtpVerifyQueryResult = NonNullable<Awaited<ReturnType<typeof authOtpVerify>>>;
-export type AuthOtpVerifyQueryError = ValidationExceptionResponse;
+export type AuthOtpVerifyQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useAuthOtpVerify<
   TData = Awaited<ReturnType<typeof authOtpVerify>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  verifyOtpRequest: VerifyOtpRequest,
+  verifyOtpRequest: BodyType<VerifyOtpRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpVerify>>, TError, TData>> &
       Pick<
@@ -308,9 +309,9 @@ export function useAuthOtpVerify<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthOtpVerify<
   TData = Awaited<ReturnType<typeof authOtpVerify>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  verifyOtpRequest: VerifyOtpRequest,
+  verifyOtpRequest: BodyType<VerifyOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpVerify>>, TError, TData>> &
       Pick<
@@ -327,9 +328,9 @@ export function useAuthOtpVerify<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAuthOtpVerify<
   TData = Awaited<ReturnType<typeof authOtpVerify>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  verifyOtpRequest: VerifyOtpRequest,
+  verifyOtpRequest: BodyType<VerifyOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpVerify>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -342,9 +343,9 @@ export function useAuthOtpVerify<
 
 export function useAuthOtpVerify<
   TData = Awaited<ReturnType<typeof authOtpVerify>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  verifyOtpRequest: VerifyOtpRequest,
+  verifyOtpRequest: BodyType<VerifyOtpRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authOtpVerify>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

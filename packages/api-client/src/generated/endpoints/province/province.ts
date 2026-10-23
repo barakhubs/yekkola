@@ -20,6 +20,7 @@ import type {
 import type { ProvincesIndex200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -70,7 +71,7 @@ export const getProvincesIndexQueryKey = () => {
 
 export const getProvincesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof provincesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof provincesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -90,9 +91,12 @@ export const getProvincesIndexQueryOptions = <
 };
 
 export type ProvincesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof provincesIndex>>>;
-export type ProvincesIndexQueryError = unknown;
+export type ProvincesIndexQueryError = ErrorType<unknown>;
 
-export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesIndex>>, TError = unknown>(
+export function useProvincesIndex<
+  TData = Awaited<ReturnType<typeof provincesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof provincesIndex>>, TError, TData>> &
       Pick<
@@ -107,7 +111,10 @@ export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesInd
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesIndex>>, TError = unknown>(
+export function useProvincesIndex<
+  TData = Awaited<ReturnType<typeof provincesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof provincesIndex>>, TError, TData>> &
       Pick<
@@ -122,7 +129,10 @@ export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesInd
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesIndex>>, TError = unknown>(
+export function useProvincesIndex<
+  TData = Awaited<ReturnType<typeof provincesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof provincesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -133,7 +143,10 @@ export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesInd
  * @summary The 26 DRC provinces, alphabetically
  */
 
-export function useProvincesIndex<TData = Awaited<ReturnType<typeof provincesIndex>>, TError = unknown>(
+export function useProvincesIndex<
+  TData = Awaited<ReturnType<typeof provincesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof provincesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

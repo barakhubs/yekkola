@@ -20,6 +20,7 @@ import type {
 import type { CategoriesIndex200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -70,7 +71,7 @@ export const getCategoriesIndexQueryKey = () => {
 
 export const getCategoriesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof categoriesIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof categoriesIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -90,9 +91,12 @@ export const getCategoriesIndexQueryOptions = <
 };
 
 export type CategoriesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof categoriesIndex>>>;
-export type CategoriesIndexQueryError = unknown;
+export type CategoriesIndexQueryError = ErrorType<unknown>;
 
-export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesIndex>>, TError = unknown>(
+export function useCategoriesIndex<
+  TData = Awaited<ReturnType<typeof categoriesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof categoriesIndex>>, TError, TData>> &
       Pick<
@@ -107,7 +111,10 @@ export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesI
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesIndex>>, TError = unknown>(
+export function useCategoriesIndex<
+  TData = Awaited<ReturnType<typeof categoriesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof categoriesIndex>>, TError, TData>> &
       Pick<
@@ -122,7 +129,10 @@ export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesI
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesIndex>>, TError = unknown>(
+export function useCategoriesIndex<
+  TData = Awaited<ReturnType<typeof categoriesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof categoriesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -133,7 +143,10 @@ export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesI
  * @summary The visible category tree (PRD-04 FR-02), in admin order, with listed-course counts
  */
 
-export function useCategoriesIndex<TData = Awaited<ReturnType<typeof categoriesIndex>>, TError = unknown>(
+export function useCategoriesIndex<
+  TData = Awaited<ReturnType<typeof categoriesIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof categoriesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

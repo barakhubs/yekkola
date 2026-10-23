@@ -29,6 +29,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -79,7 +80,7 @@ export const getProfessorApplicationShowQueryKey = () => {
 
 export const getProfessorApplicationShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorApplicationShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationShow>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -101,11 +102,11 @@ export const getProfessorApplicationShowQueryOptions = <
 export type ProfessorApplicationShowQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorApplicationShow>>
 >;
-export type ProfessorApplicationShowQueryError = unknown;
+export type ProfessorApplicationShowQueryError = ErrorType<unknown>;
 
 export function useProfessorApplicationShow<
   TData = Awaited<ReturnType<typeof professorApplicationShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationShow>>, TError, TData>> &
@@ -123,7 +124,7 @@ export function useProfessorApplicationShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationShow<
   TData = Awaited<ReturnType<typeof professorApplicationShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationShow>>, TError, TData>> &
@@ -141,7 +142,7 @@ export function useProfessorApplicationShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationShow<
   TData = Awaited<ReturnType<typeof professorApplicationShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationShow>>, TError, TData>>;
@@ -155,7 +156,7 @@ export function useProfessorApplicationShow<
 
 export function useProfessorApplicationShow<
   TData = Awaited<ReturnType<typeof professorApplicationShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationShow>>, TError, TData>>;
@@ -227,15 +228,17 @@ export const professorApplicationSave = async (
   });
 };
 
-export const getProfessorApplicationSaveQueryKey = (saveApplicationRequest?: SaveApplicationRequest) => {
+export const getProfessorApplicationSaveQueryKey = (
+  saveApplicationRequest?: BodyType<SaveApplicationRequest>,
+) => {
   return ["PUT", `/professor/application`, saveApplicationRequest] as const;
 };
 
 export const getProfessorApplicationSaveQueryOptions = <
   TData = Awaited<ReturnType<typeof professorApplicationSave>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  saveApplicationRequest?: SaveApplicationRequest,
+  saveApplicationRequest?: BodyType<SaveApplicationRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSave>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -258,13 +261,13 @@ export const getProfessorApplicationSaveQueryOptions = <
 export type ProfessorApplicationSaveQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorApplicationSave>>
 >;
-export type ProfessorApplicationSaveQueryError = ValidationExceptionResponse;
+export type ProfessorApplicationSaveQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorApplicationSave<
   TData = Awaited<ReturnType<typeof professorApplicationSave>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  saveApplicationRequest: undefined | SaveApplicationRequest,
+  saveApplicationRequest: undefined | BodyType<SaveApplicationRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSave>>, TError, TData>> &
       Pick<
@@ -281,9 +284,9 @@ export function useProfessorApplicationSave<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationSave<
   TData = Awaited<ReturnType<typeof professorApplicationSave>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  saveApplicationRequest?: SaveApplicationRequest,
+  saveApplicationRequest?: BodyType<SaveApplicationRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSave>>, TError, TData>> &
       Pick<
@@ -300,9 +303,9 @@ export function useProfessorApplicationSave<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationSave<
   TData = Awaited<ReturnType<typeof professorApplicationSave>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  saveApplicationRequest?: SaveApplicationRequest,
+  saveApplicationRequest?: BodyType<SaveApplicationRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSave>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -315,9 +318,9 @@ export function useProfessorApplicationSave<
 
 export function useProfessorApplicationSave<
   TData = Awaited<ReturnType<typeof professorApplicationSave>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  saveApplicationRequest?: SaveApplicationRequest,
+  saveApplicationRequest?: BodyType<SaveApplicationRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSave>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -389,16 +392,16 @@ export const professorApplicationSubmit = async (
 };
 
 export const getProfessorApplicationSubmitQueryKey = (
-  professorApplicationSubmitBody?: ProfessorApplicationSubmitBody,
+  professorApplicationSubmitBody?: BodyType<ProfessorApplicationSubmitBody>,
 ) => {
   return ["POST", `/professor/application/submit`, professorApplicationSubmitBody] as const;
 };
 
 export const getProfessorApplicationSubmitQueryOptions = <
   TData = Awaited<ReturnType<typeof professorApplicationSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorApplicationSubmitBody: ProfessorApplicationSubmitBody,
+  professorApplicationSubmitBody: BodyType<ProfessorApplicationSubmitBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSubmit>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -422,13 +425,13 @@ export const getProfessorApplicationSubmitQueryOptions = <
 export type ProfessorApplicationSubmitQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorApplicationSubmit>>
 >;
-export type ProfessorApplicationSubmitQueryError = ValidationExceptionResponse;
+export type ProfessorApplicationSubmitQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorApplicationSubmit<
   TData = Awaited<ReturnType<typeof professorApplicationSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorApplicationSubmitBody: ProfessorApplicationSubmitBody,
+  professorApplicationSubmitBody: BodyType<ProfessorApplicationSubmitBody>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSubmit>>, TError, TData>> &
       Pick<
@@ -445,9 +448,9 @@ export function useProfessorApplicationSubmit<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationSubmit<
   TData = Awaited<ReturnType<typeof professorApplicationSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorApplicationSubmitBody: ProfessorApplicationSubmitBody,
+  professorApplicationSubmitBody: BodyType<ProfessorApplicationSubmitBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSubmit>>, TError, TData>> &
       Pick<
@@ -464,9 +467,9 @@ export function useProfessorApplicationSubmit<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationSubmit<
   TData = Awaited<ReturnType<typeof professorApplicationSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorApplicationSubmitBody: ProfessorApplicationSubmitBody,
+  professorApplicationSubmitBody: BodyType<ProfessorApplicationSubmitBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSubmit>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -479,9 +482,9 @@ export function useProfessorApplicationSubmit<
 
 export function useProfessorApplicationSubmit<
   TData = Awaited<ReturnType<typeof professorApplicationSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  professorApplicationSubmitBody: ProfessorApplicationSubmitBody,
+  professorApplicationSubmitBody: BodyType<ProfessorApplicationSubmitBody>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorApplicationSubmit>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -543,15 +546,17 @@ export const professorApplicationCredentialsStore = async (
   );
 };
 
-export const getProfessorApplicationCredentialsStoreQueryKey = (uploadFileRequest?: UploadFileRequest) => {
+export const getProfessorApplicationCredentialsStoreQueryKey = (
+  uploadFileRequest?: BodyType<UploadFileRequest>,
+) => {
   return ["POST", `/professor/application/credentials`, uploadFileRequest] as const;
 };
 
 export const getProfessorApplicationCredentialsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadFileRequest: UploadFileRequest,
+  uploadFileRequest: BodyType<UploadFileRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorApplicationCredentialsStore>>, TError, TData>
@@ -578,13 +583,13 @@ export const getProfessorApplicationCredentialsStoreQueryOptions = <
 export type ProfessorApplicationCredentialsStoreQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorApplicationCredentialsStore>>
 >;
-export type ProfessorApplicationCredentialsStoreQueryError = ValidationExceptionResponse;
+export type ProfessorApplicationCredentialsStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorApplicationCredentialsStore<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadFileRequest: UploadFileRequest,
+  uploadFileRequest: BodyType<UploadFileRequest>,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorApplicationCredentialsStore>>, TError, TData>
@@ -603,9 +608,9 @@ export function useProfessorApplicationCredentialsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationCredentialsStore<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadFileRequest: UploadFileRequest,
+  uploadFileRequest: BodyType<UploadFileRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorApplicationCredentialsStore>>, TError, TData>
@@ -624,9 +629,9 @@ export function useProfessorApplicationCredentialsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationCredentialsStore<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadFileRequest: UploadFileRequest,
+  uploadFileRequest: BodyType<UploadFileRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorApplicationCredentialsStore>>, TError, TData>
@@ -641,9 +646,9 @@ export function useProfessorApplicationCredentialsStore<
 
 export function useProfessorApplicationCredentialsStore<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  uploadFileRequest: UploadFileRequest,
+  uploadFileRequest: BodyType<UploadFileRequest>,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof professorApplicationCredentialsStore>>, TError, TData>
@@ -699,7 +704,7 @@ export const getProfessorApplicationCredentialsDestroyQueryKey = (file: string) 
 
 export const getProfessorApplicationCredentialsDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   file: string,
   options?: {
@@ -730,11 +735,11 @@ export const getProfessorApplicationCredentialsDestroyQueryOptions = <
 export type ProfessorApplicationCredentialsDestroyQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorApplicationCredentialsDestroy>>
 >;
-export type ProfessorApplicationCredentialsDestroyQueryError = unknown;
+export type ProfessorApplicationCredentialsDestroyQueryError = ErrorType<unknown>;
 
 export function useProfessorApplicationCredentialsDestroy<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   file: string,
   options: {
@@ -755,7 +760,7 @@ export function useProfessorApplicationCredentialsDestroy<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationCredentialsDestroy<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   file: string,
   options?: {
@@ -776,7 +781,7 @@ export function useProfessorApplicationCredentialsDestroy<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorApplicationCredentialsDestroy<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   file: string,
   options?: {
@@ -793,7 +798,7 @@ export function useProfessorApplicationCredentialsDestroy<
 
 export function useProfessorApplicationCredentialsDestroy<
   TData = Awaited<ReturnType<typeof professorApplicationCredentialsDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   file: string,
   options?: {

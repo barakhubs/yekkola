@@ -32,6 +32,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -79,7 +80,7 @@ export const getProfessorCouponsIndexQueryKey = () => {
 
 export const getProfessorCouponsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -99,11 +100,11 @@ export const getProfessorCouponsIndexQueryOptions = <
 };
 
 export type ProfessorCouponsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof professorCouponsIndex>>>;
-export type ProfessorCouponsIndexQueryError = unknown;
+export type ProfessorCouponsIndexQueryError = ErrorType<unknown>;
 
 export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>> &
@@ -121,7 +122,7 @@ export function useProfessorCouponsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>> &
@@ -139,7 +140,7 @@ export function useProfessorCouponsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
@@ -150,7 +151,7 @@ export function useProfessorCouponsIndex<
 
 export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
@@ -219,15 +220,15 @@ export const professorCouponsStore = async (
   });
 };
 
-export const getProfessorCouponsStoreQueryKey = (couponRequest?: CouponRequest) => {
+export const getProfessorCouponsStoreQueryKey = (couponRequest?: BodyType<CouponRequest>) => {
   return ["POST", `/professor/coupons`, couponRequest] as const;
 };
 
 export const getProfessorCouponsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -248,13 +249,13 @@ export const getProfessorCouponsStoreQueryOptions = <
 };
 
 export type ProfessorCouponsStoreQueryResult = NonNullable<Awaited<ReturnType<typeof professorCouponsStore>>>;
-export type ProfessorCouponsStoreQueryError = ValidationExceptionResponse;
+export type ProfessorCouponsStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>> &
       Pick<
@@ -271,9 +272,9 @@ export function useProfessorCouponsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>> &
       Pick<
@@ -290,9 +291,9 @@ export function useProfessorCouponsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -302,9 +303,9 @@ export function useProfessorCouponsStore<
 
 export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -380,16 +381,19 @@ export const professorCouponsUpdate = async (
   });
 };
 
-export const getProfessorCouponsUpdateQueryKey = (coupon: string, couponRequest?: CouponRequest) => {
+export const getProfessorCouponsUpdateQueryKey = (
+  coupon: string,
+  couponRequest?: BodyType<CouponRequest>,
+) => {
   return ["PATCH", `/professor/coupons/${coupon}`, couponRequest] as const;
 };
 
 export const getProfessorCouponsUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCouponsUpdate>>,
-  TError = ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -415,14 +419,16 @@ export const getProfessorCouponsUpdateQueryOptions = <
 export type ProfessorCouponsUpdateQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorCouponsUpdate>>
 >;
-export type ProfessorCouponsUpdateQueryError = ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type ProfessorCouponsUpdateQueryError = ErrorType<
+  ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useProfessorCouponsUpdate<
   TData = Awaited<ReturnType<typeof professorCouponsUpdate>>,
-  TError = ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -439,10 +445,10 @@ export function useProfessorCouponsUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCouponsUpdate<
   TData = Awaited<ReturnType<typeof professorCouponsUpdate>>,
-  TError = ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -459,10 +465,10 @@ export function useProfessorCouponsUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorCouponsUpdate<
   TData = Awaited<ReturnType<typeof professorCouponsUpdate>>,
-  TError = ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -472,10 +478,10 @@ export function useProfessorCouponsUpdate<
 
 export function useProfessorCouponsUpdate<
   TData = Awaited<ReturnType<typeof professorCouponsUpdate>>,
-  TError = ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -529,7 +535,7 @@ export const getAdminCouponsIndexQueryKey = () => {
 
 export const getAdminCouponsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -549,11 +555,11 @@ export const getAdminCouponsIndexQueryOptions = <
 };
 
 export type AdminCouponsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminCouponsIndex>>>;
-export type AdminCouponsIndexQueryError = AuthorizationExceptionResponse;
+export type AdminCouponsIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>> &
@@ -571,7 +577,7 @@ export function useAdminCouponsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>> &
@@ -589,7 +595,7 @@ export function useAdminCouponsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
@@ -600,7 +606,7 @@ export function useAdminCouponsIndex<
 
 export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
@@ -673,15 +679,15 @@ export const adminCouponsStore = async (
   });
 };
 
-export const getAdminCouponsStoreQueryKey = (couponRequest?: CouponRequest) => {
+export const getAdminCouponsStoreQueryKey = (couponRequest?: BodyType<CouponRequest>) => {
   return ["POST", `/admin/coupons`, couponRequest] as const;
 };
 
 export const getAdminCouponsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCouponsStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -702,13 +708,15 @@ export const getAdminCouponsStoreQueryOptions = <
 };
 
 export type AdminCouponsStoreQueryResult = NonNullable<Awaited<ReturnType<typeof adminCouponsStore>>>;
-export type AdminCouponsStoreQueryError = AuthorizationExceptionResponse | ValidationExceptionResponse;
+export type AdminCouponsStoreQueryError = ErrorType<
+  AuthorizationExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminCouponsStore<
   TData = Awaited<ReturnType<typeof adminCouponsStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsStore>>, TError, TData>> &
       Pick<
@@ -725,9 +733,9 @@ export function useAdminCouponsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsStore<
   TData = Awaited<ReturnType<typeof adminCouponsStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsStore>>, TError, TData>> &
       Pick<
@@ -744,9 +752,9 @@ export function useAdminCouponsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsStore<
   TData = Awaited<ReturnType<typeof adminCouponsStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -756,9 +764,9 @@ export function useAdminCouponsStore<
 
 export function useAdminCouponsStore<
   TData = Awaited<ReturnType<typeof adminCouponsStore>>,
-  TError = AuthorizationExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
 >(
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -818,7 +826,7 @@ export const getAdminCouponsShowQueryKey = (coupon: string) => {
 
 export const getAdminCouponsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCouponsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   coupon: string,
   options?: {
@@ -844,11 +852,13 @@ export const getAdminCouponsShowQueryOptions = <
 };
 
 export type AdminCouponsShowQueryResult = NonNullable<Awaited<ReturnType<typeof adminCouponsShow>>>;
-export type AdminCouponsShowQueryError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminCouponsShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminCouponsShow<
   TData = Awaited<ReturnType<typeof adminCouponsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   coupon: string,
   options: {
@@ -867,7 +877,7 @@ export function useAdminCouponsShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsShow<
   TData = Awaited<ReturnType<typeof adminCouponsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   coupon: string,
   options?: {
@@ -886,7 +896,7 @@ export function useAdminCouponsShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsShow<
   TData = Awaited<ReturnType<typeof adminCouponsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   coupon: string,
   options?: {
@@ -898,7 +908,7 @@ export function useAdminCouponsShow<
 
 export function useAdminCouponsShow<
   TData = Awaited<ReturnType<typeof adminCouponsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   coupon: string,
   options?: {
@@ -980,16 +990,18 @@ export const adminCouponsUpdate = async (
   });
 };
 
-export const getAdminCouponsUpdateQueryKey = (coupon: string, couponRequest?: CouponRequest) => {
+export const getAdminCouponsUpdateQueryKey = (coupon: string, couponRequest?: BodyType<CouponRequest>) => {
   return ["PATCH", `/admin/coupons/${coupon}`, couponRequest] as const;
 };
 
 export const getAdminCouponsUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCouponsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1013,15 +1025,18 @@ export const getAdminCouponsUpdateQueryOptions = <
 };
 
 export type AdminCouponsUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof adminCouponsUpdate>>>;
-export type AdminCouponsUpdateQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminCouponsUpdateQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminCouponsUpdate<
   TData = Awaited<ReturnType<typeof adminCouponsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -1038,10 +1053,12 @@ export function useAdminCouponsUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsUpdate<
   TData = Awaited<ReturnType<typeof adminCouponsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -1058,10 +1075,12 @@ export function useAdminCouponsUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminCouponsUpdate<
   TData = Awaited<ReturnType<typeof adminCouponsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1071,10 +1090,12 @@ export function useAdminCouponsUpdate<
 
 export function useAdminCouponsUpdate<
   TData = Awaited<ReturnType<typeof adminCouponsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   coupon: string,
-  couponRequest: CouponRequest,
+  couponRequest: BodyType<CouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

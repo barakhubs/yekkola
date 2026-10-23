@@ -32,6 +32,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -83,7 +84,7 @@ export const getProfessorsShowQueryKey = (slug: string) => {
 
 export const getProfessorsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof professorsShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   slug: string,
   options?: {
@@ -109,9 +110,12 @@ export const getProfessorsShowQueryOptions = <
 };
 
 export type ProfessorsShowQueryResult = NonNullable<Awaited<ReturnType<typeof professorsShow>>>;
-export type ProfessorsShowQueryError = unknown;
+export type ProfessorsShowQueryError = ErrorType<unknown>;
 
-export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsShow>>, TError = unknown>(
+export function useProfessorsShow<
+  TData = Awaited<ReturnType<typeof professorsShow>>,
+  TError = ErrorType<unknown>,
+>(
   slug: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorsShow>>, TError, TData>> &
@@ -127,7 +131,10 @@ export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsSh
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsShow>>, TError = unknown>(
+export function useProfessorsShow<
+  TData = Awaited<ReturnType<typeof professorsShow>>,
+  TError = ErrorType<unknown>,
+>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorsShow>>, TError, TData>> &
@@ -143,7 +150,10 @@ export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsSh
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsShow>>, TError = unknown>(
+export function useProfessorsShow<
+  TData = Awaited<ReturnType<typeof professorsShow>>,
+  TError = ErrorType<unknown>,
+>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorsShow>>, TError, TData>>;
@@ -155,7 +165,10 @@ export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsSh
  * @summary A professor's public page with their listed courses (PRD-02 FR-12, PRD-04 FR-07)
  */
 
-export function useProfessorsShow<TData = Awaited<ReturnType<typeof professorsShow>>, TError = unknown>(
+export function useProfessorsShow<
+  TData = Awaited<ReturnType<typeof professorsShow>>,
+  TError = ErrorType<unknown>,
+>(
   slug: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorsShow>>, TError, TData>>;
@@ -211,7 +224,7 @@ export const getAdminProfessorsIndexQueryKey = () => {
 
 export const getAdminProfessorsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -231,11 +244,11 @@ export const getAdminProfessorsIndexQueryOptions = <
 };
 
 export type AdminProfessorsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminProfessorsIndex>>>;
-export type AdminProfessorsIndexQueryError = AuthorizationExceptionResponse;
+export type AdminProfessorsIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>> &
@@ -253,7 +266,7 @@ export function useAdminProfessorsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>> &
@@ -271,7 +284,7 @@ export function useAdminProfessorsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
@@ -282,7 +295,7 @@ export function useAdminProfessorsIndex<
 
 export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
@@ -346,7 +359,7 @@ export const getAdminProfessorsShowQueryKey = (professor: string) => {
 
 export const getAdminProfessorsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   professor: string,
   options?: {
@@ -372,11 +385,13 @@ export const getAdminProfessorsShowQueryOptions = <
 };
 
 export type AdminProfessorsShowQueryResult = NonNullable<Awaited<ReturnType<typeof adminProfessorsShow>>>;
-export type AdminProfessorsShowQueryError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminProfessorsShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminProfessorsShow<
   TData = Awaited<ReturnType<typeof adminProfessorsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   professor: string,
   options: {
@@ -395,7 +410,7 @@ export function useAdminProfessorsShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsShow<
   TData = Awaited<ReturnType<typeof adminProfessorsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   professor: string,
   options?: {
@@ -414,7 +429,7 @@ export function useAdminProfessorsShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsShow<
   TData = Awaited<ReturnType<typeof adminProfessorsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   professor: string,
   options?: {
@@ -426,7 +441,7 @@ export function useAdminProfessorsShow<
 
 export function useAdminProfessorsShow<
   TData = Awaited<ReturnType<typeof adminProfessorsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   professor: string,
   options?: {
@@ -514,17 +529,19 @@ export const adminProfessorsUpdate = async (
 
 export const getAdminProfessorsUpdateQueryKey = (
   professor: string,
-  updateProfessorRequest?: UpdateProfessorRequest,
+  updateProfessorRequest?: BodyType<UpdateProfessorRequest>,
 ) => {
   return ["PATCH", `/admin/professors/${professor}`, updateProfessorRequest] as const;
 };
 
 export const getAdminProfessorsUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  updateProfessorRequest: UpdateProfessorRequest,
+  updateProfessorRequest: BodyType<UpdateProfessorRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -549,15 +566,18 @@ export const getAdminProfessorsUpdateQueryOptions = <
 };
 
 export type AdminProfessorsUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof adminProfessorsUpdate>>>;
-export type AdminProfessorsUpdateQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminProfessorsUpdateQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminProfessorsUpdate<
   TData = Awaited<ReturnType<typeof adminProfessorsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  updateProfessorRequest: UpdateProfessorRequest,
+  updateProfessorRequest: BodyType<UpdateProfessorRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsUpdate>>, TError, TData>> &
       Pick<
@@ -574,10 +594,12 @@ export function useAdminProfessorsUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsUpdate<
   TData = Awaited<ReturnType<typeof adminProfessorsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  updateProfessorRequest: UpdateProfessorRequest,
+  updateProfessorRequest: BodyType<UpdateProfessorRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsUpdate>>, TError, TData>> &
       Pick<
@@ -594,10 +616,12 @@ export function useAdminProfessorsUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsUpdate<
   TData = Awaited<ReturnType<typeof adminProfessorsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  updateProfessorRequest: UpdateProfessorRequest,
+  updateProfessorRequest: BodyType<UpdateProfessorRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -610,10 +634,12 @@ export function useAdminProfessorsUpdate<
 
 export function useAdminProfessorsUpdate<
   TData = Awaited<ReturnType<typeof adminProfessorsUpdate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  updateProfessorRequest: UpdateProfessorRequest,
+  updateProfessorRequest: BodyType<UpdateProfessorRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -694,16 +720,21 @@ export const adminProfessorsSuspend = async (
   });
 };
 
-export const getAdminProfessorsSuspendQueryKey = (professor: string, staffNoteRequest?: StaffNoteRequest) => {
+export const getAdminProfessorsSuspendQueryKey = (
+  professor: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
   return ["POST", `/admin/professors/${professor}/suspend`, staffNoteRequest] as const;
 };
 
 export const getAdminProfessorsSuspendQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorsSuspend>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsSuspend>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -729,15 +760,18 @@ export const getAdminProfessorsSuspendQueryOptions = <
 export type AdminProfessorsSuspendQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorsSuspend>>
 >;
-export type AdminProfessorsSuspendQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminProfessorsSuspendQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminProfessorsSuspend<
   TData = Awaited<ReturnType<typeof adminProfessorsSuspend>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsSuspend>>, TError, TData>> &
       Pick<
@@ -754,10 +788,12 @@ export function useAdminProfessorsSuspend<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsSuspend<
   TData = Awaited<ReturnType<typeof adminProfessorsSuspend>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsSuspend>>, TError, TData>> &
       Pick<
@@ -774,10 +810,12 @@ export function useAdminProfessorsSuspend<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsSuspend<
   TData = Awaited<ReturnType<typeof adminProfessorsSuspend>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsSuspend>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -787,10 +825,12 @@ export function useAdminProfessorsSuspend<
 
 export function useAdminProfessorsSuspend<
   TData = Awaited<ReturnType<typeof adminProfessorsSuspend>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsSuspend>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -875,17 +915,19 @@ export const adminProfessorsReinstate = async (
 
 export const getAdminProfessorsReinstateQueryKey = (
   professor: string,
-  staffNoteRequest?: StaffNoteRequest,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
 ) => {
   return ["POST", `/admin/professors/${professor}/reinstate`, staffNoteRequest] as const;
 };
 
 export const getAdminProfessorsReinstateQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorsReinstate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsReinstate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -911,15 +953,18 @@ export const getAdminProfessorsReinstateQueryOptions = <
 export type AdminProfessorsReinstateQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminProfessorsReinstate>>
 >;
-export type AdminProfessorsReinstateQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminProfessorsReinstateQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminProfessorsReinstate<
   TData = Awaited<ReturnType<typeof adminProfessorsReinstate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsReinstate>>, TError, TData>> &
       Pick<
@@ -936,10 +981,12 @@ export function useAdminProfessorsReinstate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsReinstate<
   TData = Awaited<ReturnType<typeof adminProfessorsReinstate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsReinstate>>, TError, TData>> &
       Pick<
@@ -956,10 +1003,12 @@ export function useAdminProfessorsReinstate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminProfessorsReinstate<
   TData = Awaited<ReturnType<typeof adminProfessorsReinstate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsReinstate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -969,10 +1018,12 @@ export function useAdminProfessorsReinstate<
 
 export function useAdminProfessorsReinstate<
   TData = Awaited<ReturnType<typeof adminProfessorsReinstate>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   professor: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsReinstate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

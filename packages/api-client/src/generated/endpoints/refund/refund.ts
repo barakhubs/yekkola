@@ -34,6 +34,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -110,17 +111,17 @@ export const ordersRefundRequestsStore = async (
 
 export const getOrdersRefundRequestsStoreQueryKey = (
   order: string,
-  refundRequestRequest?: RefundRequestRequest,
+  refundRequestRequest?: BodyType<RefundRequestRequest>,
 ) => {
   return ["POST", `/orders/${order}/refund-requests`, refundRequestRequest] as const;
 };
 
 export const getOrdersRefundRequestsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof ordersRefundRequestsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  refundRequestRequest: RefundRequestRequest,
+  refundRequestRequest: BodyType<RefundRequestRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersRefundRequestsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -147,14 +148,14 @@ export const getOrdersRefundRequestsStoreQueryOptions = <
 export type OrdersRefundRequestsStoreQueryResult = NonNullable<
   Awaited<ReturnType<typeof ordersRefundRequestsStore>>
 >;
-export type OrdersRefundRequestsStoreQueryError = ValidationExceptionResponse;
+export type OrdersRefundRequestsStoreQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useOrdersRefundRequestsStore<
   TData = Awaited<ReturnType<typeof ordersRefundRequestsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  refundRequestRequest: RefundRequestRequest,
+  refundRequestRequest: BodyType<RefundRequestRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersRefundRequestsStore>>, TError, TData>> &
       Pick<
@@ -171,10 +172,10 @@ export function useOrdersRefundRequestsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersRefundRequestsStore<
   TData = Awaited<ReturnType<typeof ordersRefundRequestsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  refundRequestRequest: RefundRequestRequest,
+  refundRequestRequest: BodyType<RefundRequestRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersRefundRequestsStore>>, TError, TData>> &
       Pick<
@@ -191,10 +192,10 @@ export function useOrdersRefundRequestsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useOrdersRefundRequestsStore<
   TData = Awaited<ReturnType<typeof ordersRefundRequestsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  refundRequestRequest: RefundRequestRequest,
+  refundRequestRequest: BodyType<RefundRequestRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersRefundRequestsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -207,10 +208,10 @@ export function useOrdersRefundRequestsStore<
 
 export function useOrdersRefundRequestsStore<
   TData = Awaited<ReturnType<typeof ordersRefundRequestsStore>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   order: string,
-  refundRequestRequest: RefundRequestRequest,
+  refundRequestRequest: BodyType<RefundRequestRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersRefundRequestsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -255,7 +256,7 @@ export const getMeRefundsIndexQueryKey = () => {
 
 export const getMeRefundsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meRefundsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meRefundsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -275,9 +276,12 @@ export const getMeRefundsIndexQueryOptions = <
 };
 
 export type MeRefundsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof meRefundsIndex>>>;
-export type MeRefundsIndexQueryError = unknown;
+export type MeRefundsIndexQueryError = ErrorType<unknown>;
 
-export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsIndex>>, TError = unknown>(
+export function useMeRefundsIndex<
+  TData = Awaited<ReturnType<typeof meRefundsIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meRefundsIndex>>, TError, TData>> &
       Pick<
@@ -292,7 +296,10 @@ export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsInd
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsIndex>>, TError = unknown>(
+export function useMeRefundsIndex<
+  TData = Awaited<ReturnType<typeof meRefundsIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meRefundsIndex>>, TError, TData>> &
       Pick<
@@ -307,7 +314,10 @@ export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsInd
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsIndex>>, TError = unknown>(
+export function useMeRefundsIndex<
+  TData = Awaited<ReturnType<typeof meRefundsIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meRefundsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -315,7 +325,10 @@ export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsInd
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useMeRefundsIndex<TData = Awaited<ReturnType<typeof meRefundsIndex>>, TError = unknown>(
+export function useMeRefundsIndex<
+  TData = Awaited<ReturnType<typeof meRefundsIndex>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meRefundsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -369,7 +382,7 @@ export const getAdminRefundsIndexQueryKey = () => {
 
 export const getAdminRefundsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -389,11 +402,11 @@ export const getAdminRefundsIndexQueryOptions = <
 };
 
 export type AdminRefundsIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminRefundsIndex>>>;
-export type AdminRefundsIndexQueryError = AuthorizationExceptionResponse;
+export type AdminRefundsIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
 
 export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>> &
@@ -411,7 +424,7 @@ export function useAdminRefundsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>> &
@@ -429,7 +442,7 @@ export function useAdminRefundsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
@@ -440,7 +453,7 @@ export function useAdminRefundsIndex<
 
 export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
-  TError = AuthorizationExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse>,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
@@ -501,7 +514,7 @@ export const getAdminRefundsShowQueryKey = (refund: string) => {
 
 export const getAdminRefundsShowQueryOptions = <
   TData = Awaited<ReturnType<typeof adminRefundsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   refund: string,
   options?: {
@@ -527,11 +540,13 @@ export const getAdminRefundsShowQueryOptions = <
 };
 
 export type AdminRefundsShowQueryResult = NonNullable<Awaited<ReturnType<typeof adminRefundsShow>>>;
-export type AdminRefundsShowQueryError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse;
+export type AdminRefundsShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
 
 export function useAdminRefundsShow<
   TData = Awaited<ReturnType<typeof adminRefundsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   refund: string,
   options: {
@@ -550,7 +565,7 @@ export function useAdminRefundsShow<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsShow<
   TData = Awaited<ReturnType<typeof adminRefundsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   refund: string,
   options?: {
@@ -569,7 +584,7 @@ export function useAdminRefundsShow<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsShow<
   TData = Awaited<ReturnType<typeof adminRefundsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   refund: string,
   options?: {
@@ -581,7 +596,7 @@ export function useAdminRefundsShow<
 
 export function useAdminRefundsShow<
   TData = Awaited<ReturnType<typeof adminRefundsShow>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
 >(
   refund: string,
   options?: {
@@ -664,16 +679,21 @@ export const adminRefundsApprove = async (
   });
 };
 
-export const getAdminRefundsApproveQueryKey = (refund: string, staffNoteRequest?: StaffNoteRequest) => {
+export const getAdminRefundsApproveQueryKey = (
+  refund: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
   return ["POST", `/admin/refunds/${refund}/approve`, staffNoteRequest] as const;
 };
 
 export const getAdminRefundsApproveQueryOptions = <
   TData = Awaited<ReturnType<typeof adminRefundsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsApprove>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -697,15 +717,18 @@ export const getAdminRefundsApproveQueryOptions = <
 };
 
 export type AdminRefundsApproveQueryResult = NonNullable<Awaited<ReturnType<typeof adminRefundsApprove>>>;
-export type AdminRefundsApproveQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminRefundsApproveQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminRefundsApprove<
   TData = Awaited<ReturnType<typeof adminRefundsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsApprove>>, TError, TData>> &
       Pick<
@@ -722,10 +745,12 @@ export function useAdminRefundsApprove<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsApprove<
   TData = Awaited<ReturnType<typeof adminRefundsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsApprove>>, TError, TData>> &
       Pick<
@@ -742,10 +767,12 @@ export function useAdminRefundsApprove<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsApprove<
   TData = Awaited<ReturnType<typeof adminRefundsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsApprove>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -755,10 +782,12 @@ export function useAdminRefundsApprove<
 
 export function useAdminRefundsApprove<
   TData = Awaited<ReturnType<typeof adminRefundsApprove>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsApprove>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -838,16 +867,21 @@ export const adminRefundsReject = async (
   });
 };
 
-export const getAdminRefundsRejectQueryKey = (refund: string, staffNoteRequest?: StaffNoteRequest) => {
+export const getAdminRefundsRejectQueryKey = (
+  refund: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
   return ["POST", `/admin/refunds/${refund}/reject`, staffNoteRequest] as const;
 };
 
 export const getAdminRefundsRejectQueryOptions = <
   TData = Awaited<ReturnType<typeof adminRefundsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -871,15 +905,18 @@ export const getAdminRefundsRejectQueryOptions = <
 };
 
 export type AdminRefundsRejectQueryResult = NonNullable<Awaited<ReturnType<typeof adminRefundsReject>>>;
-export type AdminRefundsRejectQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminRefundsRejectQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminRefundsReject<
   TData = Awaited<ReturnType<typeof adminRefundsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsReject>>, TError, TData>> &
       Pick<
@@ -896,10 +933,12 @@ export function useAdminRefundsReject<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsReject<
   TData = Awaited<ReturnType<typeof adminRefundsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsReject>>, TError, TData>> &
       Pick<
@@ -916,10 +955,12 @@ export function useAdminRefundsReject<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsReject<
   TData = Awaited<ReturnType<typeof adminRefundsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -929,10 +970,12 @@ export function useAdminRefundsReject<
 
 export function useAdminRefundsReject<
   TData = Awaited<ReturnType<typeof adminRefundsReject>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsReject>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1012,16 +1055,21 @@ export const adminRefundsRetry = async (
   });
 };
 
-export const getAdminRefundsRetryQueryKey = (refund: string, staffNoteRequest?: StaffNoteRequest) => {
+export const getAdminRefundsRetryQueryKey = (
+  refund: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
   return ["POST", `/admin/refunds/${refund}/retry`, staffNoteRequest] as const;
 };
 
 export const getAdminRefundsRetryQueryOptions = <
   TData = Awaited<ReturnType<typeof adminRefundsRetry>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsRetry>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1045,15 +1093,18 @@ export const getAdminRefundsRetryQueryOptions = <
 };
 
 export type AdminRefundsRetryQueryResult = NonNullable<Awaited<ReturnType<typeof adminRefundsRetry>>>;
-export type AdminRefundsRetryQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminRefundsRetryQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminRefundsRetry<
   TData = Awaited<ReturnType<typeof adminRefundsRetry>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsRetry>>, TError, TData>> &
       Pick<
@@ -1070,10 +1121,12 @@ export function useAdminRefundsRetry<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsRetry<
   TData = Awaited<ReturnType<typeof adminRefundsRetry>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsRetry>>, TError, TData>> &
       Pick<
@@ -1090,10 +1143,12 @@ export function useAdminRefundsRetry<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminRefundsRetry<
   TData = Awaited<ReturnType<typeof adminRefundsRetry>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsRetry>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1103,10 +1158,12 @@ export function useAdminRefundsRetry<
 
 export function useAdminRefundsRetry<
   TData = Awaited<ReturnType<typeof adminRefundsRetry>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   refund: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsRetry>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1190,16 +1247,21 @@ export const adminPaymentsRefund = async (
   });
 };
 
-export const getAdminPaymentsRefundQueryKey = (payment: string, staffNoteRequest?: StaffNoteRequest) => {
+export const getAdminPaymentsRefundQueryKey = (
+  payment: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
   return ["POST", `/admin/payments/${payment}/refund`, staffNoteRequest] as const;
 };
 
 export const getAdminPaymentsRefundQueryOptions = <
   TData = Awaited<ReturnType<typeof adminPaymentsRefund>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   payment: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRefund>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1223,15 +1285,18 @@ export const getAdminPaymentsRefundQueryOptions = <
 };
 
 export type AdminPaymentsRefundQueryResult = NonNullable<Awaited<ReturnType<typeof adminPaymentsRefund>>>;
-export type AdminPaymentsRefundQueryError =
-  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse;
+export type AdminPaymentsRefundQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
 
 export function useAdminPaymentsRefund<
   TData = Awaited<ReturnType<typeof adminPaymentsRefund>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   payment: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRefund>>, TError, TData>> &
       Pick<
@@ -1248,10 +1313,12 @@ export function useAdminPaymentsRefund<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminPaymentsRefund<
   TData = Awaited<ReturnType<typeof adminPaymentsRefund>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   payment: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRefund>>, TError, TData>> &
       Pick<
@@ -1268,10 +1335,12 @@ export function useAdminPaymentsRefund<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminPaymentsRefund<
   TData = Awaited<ReturnType<typeof adminPaymentsRefund>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   payment: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRefund>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1284,10 +1353,12 @@ export function useAdminPaymentsRefund<
 
 export function useAdminPaymentsRefund<
   TData = Awaited<ReturnType<typeof adminPaymentsRefund>>,
-  TError = AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
 >(
   payment: string,
-  staffNoteRequest: StaffNoteRequest,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRefund>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

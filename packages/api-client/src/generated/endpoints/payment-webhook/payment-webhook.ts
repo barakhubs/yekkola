@@ -20,6 +20,7 @@ import type {
 import type { ModelNotFoundExceptionResponse, WebhooksPayments200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -77,7 +78,7 @@ export const getWebhooksPaymentsQueryKey = (gateway: string) => {
 
 export const getWebhooksPaymentsQueryOptions = <
   TData = Awaited<ReturnType<typeof webhooksPayments>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   gateway: string,
   options?: {
@@ -103,11 +104,11 @@ export const getWebhooksPaymentsQueryOptions = <
 };
 
 export type WebhooksPaymentsQueryResult = NonNullable<Awaited<ReturnType<typeof webhooksPayments>>>;
-export type WebhooksPaymentsQueryError = ModelNotFoundExceptionResponse;
+export type WebhooksPaymentsQueryError = ErrorType<ModelNotFoundExceptionResponse>;
 
 export function useWebhooksPayments<
   TData = Awaited<ReturnType<typeof webhooksPayments>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   gateway: string,
   options: {
@@ -126,7 +127,7 @@ export function useWebhooksPayments<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useWebhooksPayments<
   TData = Awaited<ReturnType<typeof webhooksPayments>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   gateway: string,
   options?: {
@@ -145,7 +146,7 @@ export function useWebhooksPayments<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useWebhooksPayments<
   TData = Awaited<ReturnType<typeof webhooksPayments>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   gateway: string,
   options?: {
@@ -157,7 +158,7 @@ export function useWebhooksPayments<
 
 export function useWebhooksPayments<
   TData = Awaited<ReturnType<typeof webhooksPayments>>,
-  TError = ModelNotFoundExceptionResponse,
+  TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   gateway: string,
   options?: {

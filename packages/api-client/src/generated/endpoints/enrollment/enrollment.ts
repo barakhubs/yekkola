@@ -20,6 +20,7 @@ import type {
 import type { CoursesEnroll200 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -71,7 +72,7 @@ export const getCoursesEnrollQueryKey = (course: string) => {
 
 export const getCoursesEnrollQueryOptions = <
   TData = Awaited<ReturnType<typeof coursesEnroll>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   course: string,
   options?: {
@@ -97,9 +98,12 @@ export const getCoursesEnrollQueryOptions = <
 };
 
 export type CoursesEnrollQueryResult = NonNullable<Awaited<ReturnType<typeof coursesEnroll>>>;
-export type CoursesEnrollQueryError = unknown;
+export type CoursesEnrollQueryError = ErrorType<unknown>;
 
-export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll>>, TError = unknown>(
+export function useCoursesEnroll<
+  TData = Awaited<ReturnType<typeof coursesEnroll>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesEnroll>>, TError, TData>> &
@@ -115,7 +119,10 @@ export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll>>, TError = unknown>(
+export function useCoursesEnroll<
+  TData = Awaited<ReturnType<typeof coursesEnroll>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesEnroll>>, TError, TData>> &
@@ -131,7 +138,10 @@ export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll>>, TError = unknown>(
+export function useCoursesEnroll<
+  TData = Awaited<ReturnType<typeof coursesEnroll>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesEnroll>>, TError, TData>>;
@@ -143,7 +153,10 @@ export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll
  * @summary One-tap enrollment in a free course (PRD-05 FR-01). Enrolling again changes nothing
  */
 
-export function useCoursesEnroll<TData = Awaited<ReturnType<typeof coursesEnroll>>, TError = unknown>(
+export function useCoursesEnroll<
+  TData = Awaited<ReturnType<typeof coursesEnroll>>,
+  TError = ErrorType<unknown>,
+>(
   course: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesEnroll>>, TError, TData>>;

@@ -60,18 +60,19 @@ export function configureApiClient(next: Partial<ClientConfig>): void {
   Object.assign(config, next);
 }
 
-const isBrowser = typeof window !== "undefined";
+const isBrowser = (): boolean => typeof window !== "undefined";
 
 function readCookie(name: string): string | undefined {
-  if (!isBrowser) return undefined;
+  if (!isBrowser()) return undefined;
   const match = document.cookie.split("; ").find((part) => part.startsWith(`${name}=`));
   return match ? decodeURIComponent(match.slice(name.length + 1)) : undefined;
 }
 
 let csrfRequest: Promise<void> | null = null;
 
-async function ensureCsrfCookie(): Promise<string | undefined> {
-  if (!readCookie("XSRF-TOKEN")) {
+/** Gets a fresh XSRF cookie when there is none (or when the session behind it expired: `force`). */
+async function ensureCsrfCookie(force = false): Promise<string | undefined> {
+  if (force || !readCookie("XSRF-TOKEN")) {
     csrfRequest ??= globalThis
       .fetch(`${config.baseUrl}/sanctum/csrf-cookie`, { credentials: "include" })
       .then(() => undefined)
@@ -83,34 +84,50 @@ async function ensureCsrfCookie(): Promise<string | undefined> {
   return readCookie("XSRF-TOKEN");
 }
 
+/** Never throws: an empty or malformed JSON body (e.g. a proxy error page) reads as undefined. */
 async function readBody(response: Response): Promise<unknown> {
   if (response.status === 204) return undefined;
   const type = response.headers.get("content-type") ?? "";
-  if (type.includes("application/json") || type.includes("+json")) return response.json();
   if (type.includes("application/pdf") || type.includes("octet-stream")) return response.blob();
-  return response.text();
+  const text = await response.text();
+  if (type.includes("application/json") || type.includes("+json")) {
+    try {
+      return text === "" ? undefined : JSON.parse(text);
+    } catch {
+      return undefined;
+    }
+  }
+  return text;
 }
 
-/** Orval mutator: returns `{ data, status, headers }` as the generated fetch client expects. */
-export async function apiFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const method = (options.method ?? "GET").toUpperCase();
+async function send(url: string, options: RequestInit, method: string, forceCsrf = false): Promise<Response> {
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
   headers.set("Accept-Language", await config.locale());
   if (config.headers) {
     new Headers(await config.headers()).forEach((value, key) => headers.set(key, value));
   }
-  if (isBrowser && UNSAFE.has(method)) {
-    const token = await ensureCsrfCookie();
+  if (isBrowser() && UNSAFE.has(method)) {
+    const token = await ensureCsrfCookie(forceCsrf);
     if (token) headers.set("X-XSRF-TOKEN", token);
   }
 
-  const response = await globalThis.fetch(`${config.baseUrl}${API_PREFIX}${url}`, {
+  return globalThis.fetch(`${config.baseUrl}${API_PREFIX}${url}`, {
     ...options,
     method,
     headers,
     credentials: "include",
   });
+}
+
+/** Orval mutator: returns `{ data, status, headers }` as the generated fetch client expects. */
+export async function apiFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method ?? "GET").toUpperCase();
+  let response = await send(url, options, method);
+  // 419: the session behind the XSRF cookie expired — refresh the token and try once more.
+  if (response.status === 419 && isBrowser() && UNSAFE.has(method)) {
+    response = await send(url, options, method, true);
+  }
   const data = await readBody(response);
 
   if (!response.ok) {
@@ -122,5 +139,10 @@ export async function apiFetch<T>(url: string, options: RequestInit = {}): Promi
 
   return { data, status: response.status, headers: response.headers } as T;
 }
+
+/** Orval: every generated hook's error type. apiFetch throws ApiError for any non-2xx response. */
+export type ErrorType<_Error> = ApiError;
+/** Orval: request bodies are sent as given. */
+export type BodyType<BodyData> = BodyData;
 
 export default apiFetch;

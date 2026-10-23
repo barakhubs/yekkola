@@ -27,6 +27,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -75,7 +76,7 @@ export const getMeShowQueryKey = () => {
 
 export const getMeShowQueryOptions = <
   TData = Awaited<ReturnType<typeof meShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meShow>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -95,9 +96,9 @@ export const getMeShowQueryOptions = <
 };
 
 export type MeShowQueryResult = NonNullable<Awaited<ReturnType<typeof meShow>>>;
-export type MeShowQueryError = unknown;
+export type MeShowQueryError = ErrorType<unknown>;
 
-export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = unknown>(
+export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = ErrorType<unknown>>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meShow>>, TError, TData>> &
       Pick<
@@ -112,7 +113,7 @@ export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = u
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = unknown>(
+export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meShow>>, TError, TData>> &
       Pick<
@@ -127,7 +128,7 @@ export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = u
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = unknown>(
+export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meShow>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -138,7 +139,7 @@ export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = u
  * @summary The signed-in user's account
  */
 
-export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = unknown>(
+export function useMeShow<TData = Awaited<ReturnType<typeof meShow>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meShow>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -208,15 +209,15 @@ export const meUpdate = async (
   });
 };
 
-export const getMeUpdateQueryKey = (updateProfileRequest?: UpdateProfileRequest) => {
+export const getMeUpdateQueryKey = (updateProfileRequest?: BodyType<UpdateProfileRequest>) => {
   return ["PATCH", `/me`, updateProfileRequest] as const;
 };
 
 export const getMeUpdateQueryOptions = <
   TData = Awaited<ReturnType<typeof meUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfileRequest?: UpdateProfileRequest,
+  updateProfileRequest?: BodyType<UpdateProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -237,13 +238,13 @@ export const getMeUpdateQueryOptions = <
 };
 
 export type MeUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof meUpdate>>>;
-export type MeUpdateQueryError = ValidationExceptionResponse;
+export type MeUpdateQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useMeUpdate<
   TData = Awaited<ReturnType<typeof meUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfileRequest: undefined | UpdateProfileRequest,
+  updateProfileRequest: undefined | BodyType<UpdateProfileRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meUpdate>>, TError, TData>> &
       Pick<
@@ -260,9 +261,9 @@ export function useMeUpdate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeUpdate<
   TData = Awaited<ReturnType<typeof meUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfileRequest?: UpdateProfileRequest,
+  updateProfileRequest?: BodyType<UpdateProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meUpdate>>, TError, TData>> &
       Pick<
@@ -279,9 +280,9 @@ export function useMeUpdate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useMeUpdate<
   TData = Awaited<ReturnType<typeof meUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfileRequest?: UpdateProfileRequest,
+  updateProfileRequest?: BodyType<UpdateProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -294,9 +295,9 @@ export function useMeUpdate<
 
 export function useMeUpdate<
   TData = Awaited<ReturnType<typeof meUpdate>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
-  updateProfileRequest?: UpdateProfileRequest,
+  updateProfileRequest?: BodyType<UpdateProfileRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -342,7 +343,7 @@ export const getMeDestroyQueryKey = () => {
 
 export const getMeDestroyQueryOptions = <
   TData = Awaited<ReturnType<typeof meDestroy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDestroy>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -362,9 +363,9 @@ export const getMeDestroyQueryOptions = <
 };
 
 export type MeDestroyQueryResult = NonNullable<Awaited<ReturnType<typeof meDestroy>>>;
-export type MeDestroyQueryError = unknown;
+export type MeDestroyQueryError = ErrorType<unknown>;
 
-export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = unknown>(
+export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = ErrorType<unknown>>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDestroy>>, TError, TData>> &
       Pick<
@@ -379,7 +380,7 @@ export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TErr
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = unknown>(
+export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDestroy>>, TError, TData>> &
       Pick<
@@ -394,7 +395,7 @@ export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TErr
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = unknown>(
+export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDestroy>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -405,7 +406,7 @@ export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TErr
  * @summary Request account deletion. Personal data is erased after the grace period unless cancelled
  */
 
-export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = unknown>(
+export function useMeDestroy<TData = Awaited<ReturnType<typeof meDestroy>>, TError = ErrorType<unknown>>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDestroy>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -453,7 +454,7 @@ export const getMeDeletionCancelQueryKey = () => {
 
 export const getMeDeletionCancelQueryOptions = <
   TData = Awaited<ReturnType<typeof meDeletionCancel>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDeletionCancel>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -473,9 +474,12 @@ export const getMeDeletionCancelQueryOptions = <
 };
 
 export type MeDeletionCancelQueryResult = NonNullable<Awaited<ReturnType<typeof meDeletionCancel>>>;
-export type MeDeletionCancelQueryError = unknown;
+export type MeDeletionCancelQueryError = ErrorType<unknown>;
 
-export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletionCancel>>, TError = unknown>(
+export function useMeDeletionCancel<
+  TData = Awaited<ReturnType<typeof meDeletionCancel>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDeletionCancel>>, TError, TData>> &
       Pick<
@@ -490,7 +494,10 @@ export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletion
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletionCancel>>, TError = unknown>(
+export function useMeDeletionCancel<
+  TData = Awaited<ReturnType<typeof meDeletionCancel>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDeletionCancel>>, TError, TData>> &
       Pick<
@@ -505,7 +512,10 @@ export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletion
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletionCancel>>, TError = unknown>(
+export function useMeDeletionCancel<
+  TData = Awaited<ReturnType<typeof meDeletionCancel>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDeletionCancel>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -516,7 +526,10 @@ export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletion
  * @summary Cancel a pending deletion request
  */
 
-export function useMeDeletionCancel<TData = Awaited<ReturnType<typeof meDeletionCancel>>, TError = unknown>(
+export function useMeDeletionCancel<
+  TData = Awaited<ReturnType<typeof meDeletionCancel>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meDeletionCancel>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

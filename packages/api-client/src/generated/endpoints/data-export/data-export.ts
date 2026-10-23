@@ -20,6 +20,7 @@ import type {
 import type { MeExportDownload200, MeExportShow200, MeExportStore202 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -70,7 +71,7 @@ export const getMeExportStoreQueryKey = () => {
 
 export const getMeExportStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof meExportStore>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportStore>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -90,9 +91,12 @@ export const getMeExportStoreQueryOptions = <
 };
 
 export type MeExportStoreQueryResult = NonNullable<Awaited<ReturnType<typeof meExportStore>>>;
-export type MeExportStoreQueryError = unknown;
+export type MeExportStoreQueryError = ErrorType<unknown>;
 
-export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore>>, TError = unknown>(
+export function useMeExportStore<
+  TData = Awaited<ReturnType<typeof meExportStore>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportStore>>, TError, TData>> &
       Pick<
@@ -107,7 +111,10 @@ export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore>>, TError = unknown>(
+export function useMeExportStore<
+  TData = Awaited<ReturnType<typeof meExportStore>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportStore>>, TError, TData>> &
       Pick<
@@ -122,7 +129,10 @@ export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore>>, TError = unknown>(
+export function useMeExportStore<
+  TData = Awaited<ReturnType<typeof meExportStore>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -133,7 +143,10 @@ export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore
  * @summary Request a new export (built in the background). One per day
  */
 
-export function useMeExportStore<TData = Awaited<ReturnType<typeof meExportStore>>, TError = unknown>(
+export function useMeExportStore<
+  TData = Awaited<ReturnType<typeof meExportStore>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -181,7 +194,7 @@ export const getMeExportShowQueryKey = () => {
 
 export const getMeExportShowQueryOptions = <
   TData = Awaited<ReturnType<typeof meExportShow>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportShow>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -201,9 +214,12 @@ export const getMeExportShowQueryOptions = <
 };
 
 export type MeExportShowQueryResult = NonNullable<Awaited<ReturnType<typeof meExportShow>>>;
-export type MeExportShowQueryError = unknown;
+export type MeExportShowQueryError = ErrorType<unknown>;
 
-export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>, TError = unknown>(
+export function useMeExportShow<
+  TData = Awaited<ReturnType<typeof meExportShow>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportShow>>, TError, TData>> &
       Pick<
@@ -218,7 +234,10 @@ export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>, TError = unknown>(
+export function useMeExportShow<
+  TData = Awaited<ReturnType<typeof meExportShow>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportShow>>, TError, TData>> &
       Pick<
@@ -233,7 +252,10 @@ export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>, TError = unknown>(
+export function useMeExportShow<
+  TData = Awaited<ReturnType<typeof meExportShow>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportShow>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -244,7 +266,10 @@ export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>
  * @summary Status of the latest export
  */
 
-export function useMeExportShow<TData = Awaited<ReturnType<typeof meExportShow>>, TError = unknown>(
+export function useMeExportShow<
+  TData = Awaited<ReturnType<typeof meExportShow>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportShow>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -292,7 +317,7 @@ export const getMeExportDownloadQueryKey = () => {
 
 export const getMeExportDownloadQueryOptions = <
   TData = Awaited<ReturnType<typeof meExportDownload>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportDownload>>, TError, TData>>;
   request?: SecondParameter<typeof apiFetch>;
@@ -312,9 +337,12 @@ export const getMeExportDownloadQueryOptions = <
 };
 
 export type MeExportDownloadQueryResult = NonNullable<Awaited<ReturnType<typeof meExportDownload>>>;
-export type MeExportDownloadQueryError = unknown;
+export type MeExportDownloadQueryError = ErrorType<unknown>;
 
-export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDownload>>, TError = unknown>(
+export function useMeExportDownload<
+  TData = Awaited<ReturnType<typeof meExportDownload>>,
+  TError = ErrorType<unknown>,
+>(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportDownload>>, TError, TData>> &
       Pick<
@@ -329,7 +357,10 @@ export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDo
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDownload>>, TError = unknown>(
+export function useMeExportDownload<
+  TData = Awaited<ReturnType<typeof meExportDownload>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportDownload>>, TError, TData>> &
       Pick<
@@ -344,7 +375,10 @@ export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDo
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDownload>>, TError = unknown>(
+export function useMeExportDownload<
+  TData = Awaited<ReturnType<typeof meExportDownload>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportDownload>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -355,7 +389,10 @@ export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDo
  * @summary Download the latest ready export: a short-lived signed link on object storage, streamed otherwise
  */
 
-export function useMeExportDownload<TData = Awaited<ReturnType<typeof meExportDownload>>, TError = unknown>(
+export function useMeExportDownload<
+  TData = Awaited<ReturnType<typeof meExportDownload>>,
+  TError = ErrorType<unknown>,
+>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meExportDownload>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;

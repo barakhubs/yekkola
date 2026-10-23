@@ -25,6 +25,7 @@ import type {
 } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -76,7 +77,7 @@ export const getLessonsQuizAttemptsIndexQueryKey = (lesson: string) => {
 
 export const getLessonsQuizAttemptsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -104,11 +105,11 @@ export const getLessonsQuizAttemptsIndexQueryOptions = <
 export type LessonsQuizAttemptsIndexQueryResult = NonNullable<
   Awaited<ReturnType<typeof lessonsQuizAttemptsIndex>>
 >;
-export type LessonsQuizAttemptsIndexQueryError = unknown;
+export type LessonsQuizAttemptsIndexQueryError = ErrorType<unknown>;
 
 export function useLessonsQuizAttemptsIndex<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options: {
@@ -127,7 +128,7 @@ export function useLessonsQuizAttemptsIndex<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLessonsQuizAttemptsIndex<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -146,7 +147,7 @@ export function useLessonsQuizAttemptsIndex<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLessonsQuizAttemptsIndex<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -161,7 +162,7 @@ export function useLessonsQuizAttemptsIndex<
 
 export function useLessonsQuizAttemptsIndex<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsIndex>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -212,7 +213,7 @@ export const getLessonsQuizAttemptsStoreQueryKey = (lesson: string) => {
 
 export const getLessonsQuizAttemptsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsStore>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -240,11 +241,11 @@ export const getLessonsQuizAttemptsStoreQueryOptions = <
 export type LessonsQuizAttemptsStoreQueryResult = NonNullable<
   Awaited<ReturnType<typeof lessonsQuizAttemptsStore>>
 >;
-export type LessonsQuizAttemptsStoreQueryError = unknown;
+export type LessonsQuizAttemptsStoreQueryError = ErrorType<unknown>;
 
 export function useLessonsQuizAttemptsStore<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsStore>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options: {
@@ -263,7 +264,7 @@ export function useLessonsQuizAttemptsStore<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLessonsQuizAttemptsStore<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsStore>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -282,7 +283,7 @@ export function useLessonsQuizAttemptsStore<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLessonsQuizAttemptsStore<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsStore>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -297,7 +298,7 @@ export function useLessonsQuizAttemptsStore<
 
 export function useLessonsQuizAttemptsStore<
   TData = Awaited<ReturnType<typeof lessonsQuizAttemptsStore>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   lesson: string,
   options?: {
@@ -370,16 +371,19 @@ export const quizAttemptsSubmit = async (
   });
 };
 
-export const getQuizAttemptsSubmitQueryKey = (attempt: string, submitQuizRequest?: SubmitQuizRequest) => {
+export const getQuizAttemptsSubmitQueryKey = (
+  attempt: string,
+  submitQuizRequest?: BodyType<SubmitQuizRequest>,
+) => {
   return ["PUT", `/quiz-attempts/${attempt}`, submitQuizRequest] as const;
 };
 
 export const getQuizAttemptsSubmitQueryOptions = <
   TData = Awaited<ReturnType<typeof quizAttemptsSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   attempt: string,
-  submitQuizRequest: SubmitQuizRequest,
+  submitQuizRequest: BodyType<SubmitQuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof quizAttemptsSubmit>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -403,14 +407,14 @@ export const getQuizAttemptsSubmitQueryOptions = <
 };
 
 export type QuizAttemptsSubmitQueryResult = NonNullable<Awaited<ReturnType<typeof quizAttemptsSubmit>>>;
-export type QuizAttemptsSubmitQueryError = ValidationExceptionResponse;
+export type QuizAttemptsSubmitQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useQuizAttemptsSubmit<
   TData = Awaited<ReturnType<typeof quizAttemptsSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   attempt: string,
-  submitQuizRequest: SubmitQuizRequest,
+  submitQuizRequest: BodyType<SubmitQuizRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof quizAttemptsSubmit>>, TError, TData>> &
       Pick<
@@ -427,10 +431,10 @@ export function useQuizAttemptsSubmit<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useQuizAttemptsSubmit<
   TData = Awaited<ReturnType<typeof quizAttemptsSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   attempt: string,
-  submitQuizRequest: SubmitQuizRequest,
+  submitQuizRequest: BodyType<SubmitQuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof quizAttemptsSubmit>>, TError, TData>> &
       Pick<
@@ -447,10 +451,10 @@ export function useQuizAttemptsSubmit<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useQuizAttemptsSubmit<
   TData = Awaited<ReturnType<typeof quizAttemptsSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   attempt: string,
-  submitQuizRequest: SubmitQuizRequest,
+  submitQuizRequest: BodyType<SubmitQuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof quizAttemptsSubmit>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -463,10 +467,10 @@ export function useQuizAttemptsSubmit<
 
 export function useQuizAttemptsSubmit<
   TData = Awaited<ReturnType<typeof quizAttemptsSubmit>>,
-  TError = ValidationExceptionResponse,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   attempt: string,
-  submitQuizRequest: SubmitQuizRequest,
+  submitQuizRequest: BodyType<SubmitQuizRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof quizAttemptsSubmit>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
