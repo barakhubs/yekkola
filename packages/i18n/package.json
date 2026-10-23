@@ -1,0 +1,23 @@
+{
+  "name": "@yekkola/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./messages/fr.json": "./messages/fr.json",
+    "./messages/en.json": "./messages/en.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@yekkola/config": "workspace:*",
+    "eslint": "^9.39.5",
+    "typescript": "~6.0.3",
+    "vite": "^7.3.0",
+    "vitest": "^4.1.0"
+  }
+}
