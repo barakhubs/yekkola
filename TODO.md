@@ -200,7 +200,8 @@ Cannot be defaulted:
 - [x] b: Certificates: rule, PDF with QR, serial, verification endpoint, revocation on refund/reversal (FR-10, FR-11, PRD-04 FR-09)
 - [x] b: Reviews + professor reply; course and professor ratings kept from published reviews (FR-12, BR-03, BR-04)
 - [ ] Notify students on certificate issued and professors on new reviews (`CertificateIssued`; reviews) — with 1.12
-- [ ] Admin hide/restore reviews (`ReviewStatus::Hidden` exists) — with moderation in 1.11
+- [ ] Admin hide/restore reviews (`ReviewStatus::Hidden` exists) — with moderation in 1.11; the ban action must refresh ratings (`RefreshCourseRatings`) if it bypasses Eloquent `saved` events
+- [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
 - [ ] c: Lesson Q&A threads (FR-13)
 - [ ] c: Reports (FR-14)
 - [ ] Course updated notice with changelog (FR-15)
