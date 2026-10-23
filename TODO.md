@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/web-foundations` (Phase 2.1, web milestone 1)
+- **Waiting:** PR #16 (web foundations, Phase 2.1) to be merged
 - **Next up:** minimal playback + document URLs (1.9 slice), then the public site (2.3)
 
 ## Legend
@@ -265,14 +265,14 @@ Cannot be defaulted:
 Needs from the owner for a hosted demo: Mux account (real playback) and Laravel Cloud account (staging) — 0.3.
 
 ### 2.1 Front-end foundations
-- [x] pnpm workspace + Turborepo at repo root
-- [x] `packages/config` (tsconfig, ESLint, Prettier; Tailwind v4 theme lives in `packages/ui` CSS instead of a preset)
-- [x] `packages/ui`: shadcn/ui setup, brand tokens (light/dark), primitives, blocks (KpiCard, PageHeader, EmptyState, ConfirmDialog, StatusBadge, MoneyText)
+- [x] pnpm workspace + Turborepo at repo root — #16
+- [x] `packages/config` (tsconfig, ESLint, Prettier; Tailwind v4 theme lives in `packages/ui` CSS instead of a preset) — #16
+- [x] `packages/ui`: shadcn/ui setup, brand tokens (light/dark), primitives, blocks (KpiCard, PageHeader, EmptyState, ConfirmDialog, StatusBadge, MoneyText) — #16
 - [ ] `packages/ui`: DataTable (TanStack Table + nuqs), ChartCard, FileUpload — with the first screen that needs each (2.2 / 2.5)
-- [x] `packages/i18n`: fr/en catalogues + money/date/phone/duration formatters
-- [x] `packages/api-client`: Orval config + generation script, fetcher (Sanctum cookies + XSRF, locale, error envelope)
-- [x] CI: `web.yml` (lint, typecheck, tests, build, audit) + `contract.yml` (client drift check)
-- [x] `apps/web` and `apps/admin` shells: locale routing (fr default at `/`), Nunito, providers, static home pages
+- [x] `packages/i18n`: fr/en catalogues + money/date/phone/duration formatters — #16
+- [x] `packages/api-client`: Orval config + generation script, fetcher (Sanctum cookies + XSRF, locale, error envelope) — #16
+- [x] CI: `web.yml` (lint, typecheck, tests, build, audit) + `contract.yml` (client drift check) — #16
+- [x] `apps/web` and `apps/admin` shells: locale routing (fr default at `/`), Nunito, providers, static home pages — #16
 - [ ] Local Node is 22.11; Vite 8 / Rolldown need ≥ 22.12 (tests pin Vite 7) — upgrade Node, then drop the pin
 - [ ] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys
 
