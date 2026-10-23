@@ -40,4 +40,19 @@ final class LearningException extends DomainException
     {
         return new self('quiz.max_attempts_reached', 409, ['max_attempts' => $max]);
     }
+
+    public static function reviewProgressTooLow(int $minPct): self
+    {
+        return new self('review.progress_too_low', 422, ['min_progress_pct' => $minPct]);
+    }
+
+    public static function ownCourseReview(): self
+    {
+        return new self('review.own_course', 403);
+    }
+
+    public static function reviewExists(): self
+    {
+        return new self('review.exists', 409);
+    }
 }
