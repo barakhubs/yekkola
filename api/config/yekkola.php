@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 return [
 
+    // Public web app (certificate verification links, PRD-06 FR-10).
+    'web_url' => env('FRONTEND_WEB_URL', 'http://localhost:3000'),
+
     'drivers' => [
         // fake | mux (mux driver lands with Phase 1.5 authoring)
         'video' => env('VIDEO_DRIVER', 'fake'),
