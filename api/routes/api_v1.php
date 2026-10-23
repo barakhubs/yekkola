@@ -87,7 +87,7 @@ Route::middleware('signed-in')->group(function () {
     Route::post('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'store'])->middleware('throttle:quiz')->name('lessons.quiz-attempts.store');
     Route::put('/quiz-attempts/{attempt}', [QuizAttemptController::class, 'submit'])->middleware('throttle:quiz')->name('quiz-attempts.submit');
     Route::get('/me/certificates', [CertificateController::class, 'index'])->name('me.certificates.index');
-    Route::get('/me/certificates/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('throttle:order-status')->name('me.certificates.pdf');
+    Route::get('/me/certificates/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('throttle:certificate-pdf')->name('me.certificates.pdf');
     Route::get('/courses/{course}/review', [ReviewController::class, 'show'])->name('courses.review.show');
     Route::post('/courses/{course}/review', [ReviewController::class, 'store'])->middleware('throttle:reviews')->name('courses.review.store');
     Route::patch('/courses/{course}/review', [ReviewController::class, 'update'])->middleware('throttle:reviews')->name('courses.review.update');

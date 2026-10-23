@@ -11,11 +11,12 @@ final class ReplyToReview
 {
     public function handle(Review $review, ?string $reply): Review
     {
-        $review->forceFill([
+        // Written without touching updated_at: a reply is not an edit of the student's review (edited_at).
+        Review::query()->toBase()->where('id', $review->id)->update([
             'professor_reply' => filled($reply) ? $reply : null,
             'replied_at' => filled($reply) ? now() : null,
-        ])->save();
+        ]);
 
-        return $review;
+        return $review->refresh();
     }
 }

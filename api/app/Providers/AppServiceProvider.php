@@ -79,6 +79,7 @@ final class AppServiceProvider extends ServiceProvider
         // Profile updates (limits probing which emails are taken).
         // Review writes (PRD-06 FR-12) and public certificate lookups (FR-11).
         RateLimiter::for('reviews', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        RateLimiter::for('certificate-pdf', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('certificates', fn (Request $request) => Limit::perMinute(30)->by((string) $request->ip()));
         RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
