@@ -21,6 +21,7 @@ pest()->extend(TestCase::class)
 require_once __DIR__.'/Helpers/authoring.php';
 require_once __DIR__.'/Helpers/catalogue.php';
 require_once __DIR__.'/Helpers/commerce.php';
+require_once __DIR__.'/Helpers/learning.php';
 
 /*
 | Sign-in helpers (PRD-01). The log SMS driver records messages, so tests read codes from it.

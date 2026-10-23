@@ -106,7 +106,8 @@ it('lets the professor list reviews of their courses and reply publicly', functi
         ->assertJsonPath('data.0.course.slug', $this->course->slug);
 
     $this->postJson("/api/v1/professor/reviews/{$id}/reply", ['reply' => 'Merci Grâce !'])->assertOk()
-        ->assertJsonPath('data.reply.body', 'Merci Grâce !');
+        ->assertJsonPath('data.reply.body', 'Merci Grâce !')
+        ->assertJsonPath('data.edited_at', null); // a reply is not an edit
     $this->getJson('/api/v1/professor/reviews?filter[replied]=false')->assertJsonCount(0, 'data');
     $this->getJson("/api/v1/courses/{$this->course->slug}/reviews")->assertJsonPath('data.0.reply.body', 'Merci Grâce !');
 
@@ -124,4 +125,37 @@ it('removes my reviews when my account is deleted', function () {
     event(new App\Domain\Identity\Events\UserAnonymizing($student));
     expect(Review::query()->count())->toBe(0)
         ->and($this->course->refresh()->rating_count)->toBe(0);
+});
+
+it('keeps the professor rating across courses, and drops reviews whose access was revoked', function () {
+    $physics = publishedCourse($this->professor, 'Physique de base', ['is_free' => true, 'price_minor' => null, 'currency' => null]);
+    $student = reviewer();
+    $this->postJson("/api/v1/courses/{$this->course->id}/review", ['rating' => 5])->assertCreated();
+    $this->postJson("/api/v1/courses/{$physics->id}/enroll")->assertOk();
+    $physicsDoc = Lesson::query()->where('course_version_id', $physics->live_version_id)->orderBy('position')->firstOrFail();
+    $this->putJson('/api/v1/me/progress', ['items' => [['lesson_uid' => $physicsDoc->uid, 'completed' => true]]])->assertOk();
+    $this->postJson("/api/v1/courses/{$physics->id}/review", ['rating' => 3])->assertCreated();
+
+    expect($this->professor->refresh()->rating_count)->toBe(2)
+        ->and((float) $this->professor->rating_avg)->toBe(4.0);
+
+    // Refund: the review leaves the list and the ratings; a new grant brings it back.
+    $enrollment = App\Domain\Learning\Models\Enrollment::query()->where('user_id', $student->id)->where('course_id', $this->course->id)->sole();
+    Illuminate\Support\Facades\DB::transaction(fn () => app(App\Domain\Learning\Actions\RevokeEnrollments::class)->handle([paidOrderItemFor($enrollment)], 'refunded'));
+    expect($this->course->refresh()->rating_count)->toBe(0)
+        ->and($this->professor->refresh()->rating_count)->toBe(1);
+    $this->getJson("/api/v1/courses/{$this->course->slug}/reviews")->assertJsonCount(0, 'data');
+
+    Illuminate\Support\Facades\DB::transaction(fn () => app(App\Domain\Learning\Actions\GrantEnrollment::class)->handle($student->id, $this->course->id, App\Domain\Learning\Enums\EnrollmentSource::Admin));
+    expect($this->course->refresh()->rating_count)->toBe(1);
+});
+
+it('never reaches another student\'s review', function () {
+    reviewer();
+    $this->postJson("/api/v1/courses/{$this->course->id}/review", ['rating' => 5])->assertCreated();
+
+    reviewer('Paul Ilunga');
+    $this->getJson("/api/v1/courses/{$this->course->id}/review")->assertNotFound();
+    $this->deleteJson("/api/v1/courses/{$this->course->id}/review")->assertNotFound();
+    expect(Review::query()->count())->toBe(1);
 });
