@@ -12,8 +12,12 @@ use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\PersonalAccessToken;
 use App\Domain\Identity\Models\User;
 use App\Domain\Identity\Support\OtpCodeHasher;
+use App\Domain\Learning\Events\ProgressRecorded;
 use App\Domain\Learning\Listeners\EraseLearningData;
+use App\Domain\Learning\Listeners\IssueCertificateOnProgress;
+use App\Domain\Learning\Listeners\IssueCertificatesOnNameSet;
 use App\Domain\Learning\Listeners\RecomputeProgressOnNewVersion;
+use App\Domain\Learning\Listeners\RefreshRatingsOnUserStatus;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Listeners\EraseProfessorData;
 use App\Domain\Professors\Models\ProfessorProfile;
@@ -73,6 +77,10 @@ final class AppServiceProvider extends ServiceProvider
         // many visitors behind one IP. TODO(2.x): key on the forwarded client IP once trusted proxies are set.
         RateLimiter::for('catalogue', fn (Request $request) => Limit::perMinute(1_200)->by((string) $request->ip()));
         // Profile updates (limits probing which emails are taken).
+        // Review writes (PRD-06 FR-12) and public certificate lookups (FR-11).
+        RateLimiter::for('reviews', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        RateLimiter::for('certificate-pdf', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        RateLimiter::for('certificates', fn (Request $request) => Limit::perMinute(30)->by((string) $request->ip()));
         RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         // Every platform settings change is audited with before/after values.
@@ -84,6 +92,10 @@ final class AppServiceProvider extends ServiceProvider
 
         // Learning: a new live version changes what counts toward progress (PRD-06 BR-02).
         Event::listen(CourseVersionDecided::class, RecomputeProgressOnNewVersion::class);
+        // Certificates follow progress (PRD-06 FR-10); ratings drop banned authors' reviews (BR-03).
+        Event::listen(ProgressRecorded::class, IssueCertificateOnProgress::class);
+        Event::listen('eloquent.saved: '.User::class, IssueCertificatesOnNameSet::class);
+        Event::listen('eloquent.saved: '.User::class, RefreshRatingsOnUserStatus::class);
 
         // Search index: rows the course index depends on (PRD-04 FR-11).
         Scout::makeSearchableUsing(MakeListedSearchable::class);

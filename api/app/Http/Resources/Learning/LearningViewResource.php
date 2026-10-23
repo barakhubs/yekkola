@@ -7,6 +7,7 @@ namespace App\Http\Resources\Learning;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\Section;
+use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Learning\Models\LessonProgress;
 use App\Domain\Learning\Models\QuizAttempt;
@@ -17,7 +18,8 @@ use Illuminate\Support\Collection;
 
 /**
  * The learning view (PRD-06 FR-02): the live curriculum with my status per lesson, where to continue, and
- * quiz facts (never the answers). Lesson content itself comes from the playback/document endpoints.
+ * quiz facts (never the answers), my certificate, and whether I reviewed it (completion screen, FR-16).
+ * Lesson content itself comes from the playback/document endpoints.
  *
  * @mixin Course
  */
@@ -27,8 +29,14 @@ final class LearningViewResource extends JsonResource
      * @param  Collection<string, LessonProgress>  $progress  by lesson uid
      * @param  EloquentCollection<int, QuizAttempt>  $attempts  mine, on this course's quizzes
      */
-    public function __construct(Course $course, private readonly Enrollment $enrollment, private readonly Collection $progress, private readonly EloquentCollection $attempts)
-    {
+    public function __construct(
+        Course $course,
+        private readonly Enrollment $enrollment,
+        private readonly Collection $progress,
+        private readonly EloquentCollection $attempts,
+        private readonly ?Certificate $certificate = null,
+        private readonly bool $reviewed = false,
+    ) {
         parent::__construct($course);
     }
 
@@ -76,6 +84,8 @@ final class LearningViewResource extends JsonResource
             'completed_at' => $this->enrollment->completed_at?->toIso8601String(),
             'continue_lesson_uid' => $this->progress->has((string) $this->enrollment->last_lesson_uid) || $this->isLive($this->enrollment->last_lesson_uid) ? $this->enrollment->last_lesson_uid : $next,
             'next_lesson_uid' => $next,
+            'certificate' => $this->certificate === null ? null : ['id' => $this->certificate->id, 'serial' => $this->certificate->serial, 'verification_url' => $this->certificate->verificationUrl()],
+            'has_reviewed' => $this->reviewed,
             'sections' => $sections,
         ];
     }

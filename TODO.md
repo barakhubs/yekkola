@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see *How to update*).
-> Last updated: 2026-10-15
+> Last updated: 2026-10-23
 
 ## Now
 
-- **Waiting:** PR #14 (learning: progress + quizzes, Phase 1.8a) to be merged
-- **Next up:** 1.8b certificates + reviews
+- **Waiting:** PR #15 (certificates + reviews, Phase 1.8b) to be merged
+- **Next up:** 1.8c lesson Q&A + reports
 
 ## Legend
 
@@ -158,7 +158,7 @@ Cannot be defaulted:
 - [x] Home rails + admin-ordered featured list (FR-01, BR-03) — #9
 - [x] Meilisearch indexing (queued, after commit, reindex on professor/category changes) with database fallback (FR-03, FR-11) — #9
 - [x] Wishlist (erased on deletion, in data export) (FR-08) — #9
-- [ ] Certificate verification endpoint (FR-09) — with certificates in 1.8
+- [x] Certificate verification endpoint (FR-09) — #15
 - [ ] Preview playback tokens without login (FR-06) — with playback in 1.9
 - [ ] Popular rail by enrollments in the last 30 days — with 1.8
 - [ ] API response cache for public pages (tag-invalidated on publish)
@@ -197,8 +197,11 @@ Cannot be defaulted:
 - [x] a: Progress batch sync with monotonic merge; server-side completion rules (FR-04, FR-05) — #14
 - [x] a: Quiz attempts: start/resume, submit, server timing with grace, attempts limit, corrections (FR-07) — #14
 - [ ] Offline quiz attempts submitted on sync (FR-08) — with the mobile app
-- [ ] b: Certificates: rule, PDF, serial, verification page endpoint, revocation on refund (FR-10, FR-11, PRD-04 FR-09)
-- [ ] b: Reviews + professor reply (FR-12)
+- [x] b: Certificates: rule, PDF with QR, serial, verification endpoint, revocation on refund/reversal (FR-10, FR-11, PRD-04 FR-09) — #15
+- [x] b: Reviews + professor reply; course and professor ratings kept from published reviews (FR-12, BR-03, BR-04) — #15
+- [ ] Notify students on certificate issued and professors on new reviews (`CertificateIssued`; reviews) — with 1.12
+- [ ] Admin hide/restore reviews (`ReviewStatus::Hidden` exists) — with moderation in 1.11; the ban action must refresh ratings (`RefreshCourseRatings`) if it bypasses Eloquent `saved` events
+- [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
 - [ ] c: Lesson Q&A threads (FR-13)
 - [ ] c: Reports (FR-14)
 - [ ] Course updated notice with changelog (FR-15)

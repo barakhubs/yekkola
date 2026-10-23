@@ -9,9 +9,11 @@ use App\Domain\Catalog\Actions\BrowseCourses;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Actions\SyncProgress;
 use App\Domain\Learning\CourseAccess;
+use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Learning\Models\LessonProgress;
 use App\Domain\Learning\Models\QuizAttempt;
+use App\Domain\Learning\Models\Review;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Learning\SyncProgressRequest;
 use App\Http\Resources\Learning\LearningViewResource;
@@ -54,7 +56,10 @@ final class LearningController extends Controller
         $progress = LessonProgress::query()->where('user_id', $user->id)->whereIn('lesson_uid', $uids)->get()->keyBy('lesson_uid');
         $attempts = QuizAttempt::query()->where('user_id', $user->id)->whereIn('lesson_uid', $uids)->get();
 
-        return new LearningViewResource($model, $enrollment, $progress, $attempts);
+        $certificate = Certificate::query()->valid()->where('user_id', $user->id)->where('course_id', $model->id)->first();
+        $reviewed = Review::query()->where('user_id', $user->id)->where('course_id', $model->id)->exists();
+
+        return new LearningViewResource($model, $enrollment, $progress, $attempts, $certificate, $reviewed);
     }
 
     /**

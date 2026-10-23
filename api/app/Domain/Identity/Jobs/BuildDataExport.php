@@ -8,9 +8,11 @@ use App\Domain\Authoring\Models\Course;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Enums\DataExportStatus;
 use App\Domain\Identity\Models\DataExport;
+use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Learning\Models\LessonProgress;
 use App\Domain\Learning\Models\QuizAttempt;
+use App\Domain\Learning\Models\Review;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -80,6 +82,10 @@ final class BuildDataExport implements ShouldQueue
                 ->map(fn (QuizAttempt $a) => ['lesson_uid' => $a->lesson_uid, 'started_at' => $a->started_at->toIso8601String(), 'submitted_at' => $a->submitted_at?->toIso8601String(), 'score_pct' => $a->score_pct, 'passed' => $a->passed])->all(),
             'wishlist' => Course::query()->join('wishlist_items as w', 'w.course_id', '=', 'courses.id')
                 ->where('w.user_id', $user->id)->orderBy('w.created_at')->pluck('courses.slug')->all(),
+            'certificates' => Certificate::query()->where('user_id', $user->id)->orderBy('issued_at')->get()
+                ->map(fn (Certificate $c) => ['serial' => $c->serial, 'course' => $c->course_title_snapshot, 'name' => $c->student_name_snapshot, 'issued_at' => $c->issued_at->toIso8601String(), 'revoked_at' => $c->revoked_at?->toIso8601String()])->all(),
+            'reviews' => Review::query()->where('user_id', $user->id)->with('course')->orderBy('created_at')->get()
+                ->map(fn (Review $r) => ['course' => $r->course?->slug, 'rating' => $r->rating, 'body' => $r->body, 'created_at' => $r->created_at->toIso8601String(), 'updated_at' => $r->updated_at->toIso8601String()])->all(),
         ];
 
         $path = "exports/{$user->id}/{$export->id}.json";

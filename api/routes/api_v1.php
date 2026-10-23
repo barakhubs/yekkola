@@ -24,8 +24,10 @@ use App\Http\Controllers\Api\V1\Commerce\GuestOrderController;
 use App\Http\Controllers\Api\V1\Commerce\OrderController;
 use App\Http\Controllers\Api\V1\Commerce\ReceiptController;
 use App\Http\Controllers\Api\V1\Commerce\RefundController;
+use App\Http\Controllers\Api\V1\Learning\CertificateController;
 use App\Http\Controllers\Api\V1\Learning\LearningController;
 use App\Http\Controllers\Api\V1\Learning\QuizAttemptController;
+use App\Http\Controllers\Api\V1\Learning\ReviewController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
 use App\Http\Controllers\Api\V1\Professor\CouponController as StudioCouponController;
@@ -34,6 +36,7 @@ use App\Http\Controllers\Api\V1\Professor\DraftController;
 use App\Http\Controllers\Api\V1\Professor\KycController;
 use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
+use App\Http\Controllers\Api\V1\Professor\ReviewController as StudioReviewController;
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
 use App\Http\Controllers\Api\V1\Public\BundleController;
 use App\Http\Controllers\Api\V1\Public\CategoryController;
@@ -83,12 +86,20 @@ Route::middleware('signed-in')->group(function () {
     Route::get('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'index'])->name('lessons.quiz-attempts.index');
     Route::post('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'store'])->middleware('throttle:quiz')->name('lessons.quiz-attempts.store');
     Route::put('/quiz-attempts/{attempt}', [QuizAttemptController::class, 'submit'])->middleware('throttle:quiz')->name('quiz-attempts.submit');
+    Route::get('/me/certificates', [CertificateController::class, 'index'])->name('me.certificates.index');
+    Route::get('/me/certificates/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('throttle:certificate-pdf')->name('me.certificates.pdf');
+    Route::get('/courses/{course}/review', [ReviewController::class, 'show'])->name('courses.review.show');
+    Route::post('/courses/{course}/review', [ReviewController::class, 'store'])->middleware('throttle:reviews')->name('courses.review.store');
+    Route::patch('/courses/{course}/review', [ReviewController::class, 'update'])->middleware('throttle:reviews')->name('courses.review.update');
+    Route::delete('/courses/{course}/review', [ReviewController::class, 'destroy'])->middleware('throttle:reviews')->name('courses.review.destroy');
 });
 
 // Public catalogue (PRD-04)
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/courses', [PublicCourseController::class, 'index'])->middleware('throttle:catalogue')->name('courses.index');
 Route::get('/courses/{slug}', [PublicCourseController::class, 'show'])->name('courses.show');
+Route::get('/courses/{slug}/reviews', [ReviewController::class, 'index'])->middleware('throttle:catalogue')->name('courses.reviews.index');
+Route::get('/certificates/{serial}', [CertificateController::class, 'verify'])->middleware('throttle:certificates')->name('certificates.verify');
 Route::get('/featured', [PublicCourseController::class, 'featured'])->name('featured');
 
 // Auth (PRD-01)
@@ -149,6 +160,10 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
 
     Route::get('/kyc', [KycController::class, 'show'])->name('kyc.show');
     Route::post('/kyc', [KycController::class, 'store'])->middleware('throttle:uploads')->name('kyc.store');
+
+    // Reviews of my courses (PRD-06 FR-12)
+    Route::get('/reviews', [StudioReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{review}/reply', [StudioReviewController::class, 'reply'])->middleware('throttle:reviews')->name('reviews.reply');
 
     // Courses (PRD-03)
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');

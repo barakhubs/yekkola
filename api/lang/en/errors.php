@@ -112,6 +112,11 @@ return [
         'preview_limit_reached' => 'Maximum number of preview lessons reached.',
         'type_mismatch' => 'This content does not match the lesson type.',
     ],
+    'review' => [
+        'progress_too_low' => 'Complete at least :min_progress_pct% of the course before reviewing it.',
+        'own_course' => 'You cannot review your own course.',
+        'exists' => 'You have already reviewed this course. Edit your review instead.',
+    ],
     'quiz' => [
         'not_a_quiz' => 'This lesson is not a quiz.',
         'max_attempts_reached' => 'You have used your :max_attempts attempts for this quiz.',

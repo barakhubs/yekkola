@@ -112,6 +112,11 @@ return [
         'preview_limit_reached' => 'Nombre maximal de leçons d’aperçu atteint.',
         'type_mismatch' => 'Ce contenu ne correspond pas au type de leçon.',
     ],
+    'review' => [
+        'progress_too_low' => 'Suivez au moins :min_progress_pct % du cours avant de le noter.',
+        'own_course' => 'Vous ne pouvez pas noter votre propre cours.',
+        'exists' => 'Vous avez déjà noté ce cours. Modifiez plutôt votre avis.',
+    ],
     'quiz' => [
         'not_a_quiz' => 'Cette leçon n’est pas un quiz.',
         'max_attempts_reached' => 'Vous avez utilisé vos :max_attempts tentatives pour ce quiz.',
