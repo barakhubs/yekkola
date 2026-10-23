@@ -30,29 +30,24 @@ final class KycSubmissionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $data = [
+        return [
             'id' => $this->id,
             'document_type' => $this->document_type->value,
             'status' => $this->status->value,
             'rejection_reason' => $this->rejection_reason,
             'submitted_at' => $this->created_at->toIso8601String(),
             'reviewed_at' => $this->reviewed_at?->toIso8601String(),
-        ];
-
-        if (! $this->forStaff) {
-            return $data;
-        }
-
-        return $data + [
-            'professor' => [
-                'id' => $this->profile->id,
-                'display_name' => $this->profile->display_name,
-                'slug' => $this->profile->slug,
-            ],
-            'files' => collect(KycSubmission::FILES)
-                ->filter(fn (string $kind) => $this->getFirstMedia($kind) !== null)
-                ->mapWithKeys(fn (string $kind) => [$kind => route('admin.kyc-submissions.file', [$this->id, $kind])])
-                ->all(),
+            $this->mergeWhen($this->forStaff, fn () => [
+                'professor' => [
+                    'id' => $this->profile->id,
+                    'display_name' => $this->profile->display_name,
+                    'slug' => $this->profile->slug,
+                ],
+                'files' => collect(KycSubmission::FILES)
+                    ->filter(fn (string $kind) => $this->getFirstMedia($kind) !== null)
+                    ->mapWithKeys(fn (string $kind) => [$kind => route('admin.kyc-submissions.file', [$this->id, $kind])])
+                    ->all(),
+            ]),
         ];
     }
 }

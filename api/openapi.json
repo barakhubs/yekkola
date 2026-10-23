@@ -10288,47 +10288,65 @@
                 "title": "KycDocumentType"
             },
             "KycSubmissionResource": {
-                "anyOf": [
-                    {
-                        "type": "array"
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
                     },
-                    {
+                    "document_type": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "rejection_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "submitted_at": {
+                        "type": "string"
+                    },
+                    "reviewed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "professor": {
                         "type": "object",
                         "properties": {
                             "id": {
                                 "type": "string"
                             },
-                            "document_type": {
+                            "display_name": {
                                 "type": "string"
                             },
-                            "status": {
+                            "slug": {
                                 "type": "string"
-                            },
-                            "rejection_reason": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "submitted_at": {
-                                "type": "string"
-                            },
-                            "reviewed_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
                             }
                         },
                         "required": [
                             "id",
-                            "document_type",
-                            "status",
-                            "rejection_reason",
-                            "submitted_at",
-                            "reviewed_at"
+                            "display_name",
+                            "slug"
                         ]
+                    },
+                    "files": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
+                },
+                "required": [
+                    "id",
+                    "document_type",
+                    "status",
+                    "rejection_reason",
+                    "submitted_at",
+                    "reviewed_at"
                 ],
                 "title": "KycSubmissionResource"
             },
