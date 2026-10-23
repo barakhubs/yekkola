@@ -1,5 +1,6 @@
 import { Button } from "@yekkola/ui/components/button";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 import { Link } from "@/i18n/navigation";
 
@@ -16,10 +17,12 @@ export async function SiteHeader() {
           {common("appName")}
         </Link>
         <nav className="flex items-center gap-1 sm:gap-2">
-          <Button asChild variant="ghost" className="hidden sm:inline-flex">
+          <Button asChild variant="ghost" size="sm">
             <Link href="/courses">{t("courses")}</Link>
           </Button>
-          <LocaleSwitcher />
+          <Suspense>
+            <LocaleSwitcher />
+          </Suspense>
           <Button asChild size="sm">
             <Link href="/login">{t("signIn")}</Link>
           </Button>

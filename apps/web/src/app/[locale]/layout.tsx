@@ -35,7 +35,6 @@ export async function generateMetadata({
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
     title: { default: `${t("appName")} — ${t("tagline")}`, template: `%s · ${t("appName")}` },
     description: t("tagline"),
-    alternates: { languages: { fr: "/", en: "/en" } },
   };
 }
 

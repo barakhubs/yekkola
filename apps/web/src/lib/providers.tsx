@@ -22,7 +22,8 @@ function makeQueryClient(): QueryClient {
 /** Client-side providers: server state (TanStack Query), URL state (nuqs), and the API client's locale. */
 export function Providers({ children }: { children: ReactNode }) {
   const locale = useLocale();
-  // Browser only: during SSR this module is shared by all requests, which use the server config.
+  // Browser only. Server Components use the config in src/lib/api.server.ts; client components fetch in
+  // the browser (hooks), never during SSR.
   if (typeof window !== "undefined") {
     configureApiClient({ locale: () => locale });
   }

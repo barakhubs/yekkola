@@ -14,6 +14,20 @@ export default [
     rules: {
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/consistent-type-imports": "error",
+      // Locale-aware navigation only (notFound and other helpers from next/navigation stay allowed).
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            { name: "next/link", message: "Use Link from @/i18n/navigation." },
+            {
+              name: "next/navigation",
+              importNames: ["redirect", "permanentRedirect", "useRouter", "usePathname"],
+              message: "Use the locale-aware versions from @/i18n/navigation.",
+            },
+          ],
+        },
+      ],
       "no-restricted-globals": [
         "error",
         { name: "fetch", message: "Use the generated hooks/fetchers from @yekkola/api-client." },
