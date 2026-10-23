@@ -26,7 +26,9 @@ final class KycSubmissionResource extends JsonResource
     }
 
     /**
-     * @return array<string, mixed>
+     * Staff fields are merged in by JsonResource (`mergeWhen` sits at an integer key until then).
+     *
+     * @return array<int|string, mixed>
      */
     public function toArray(Request $request): array
     {
