@@ -134,6 +134,16 @@ export const CoursesReviewsIndexParams = zod.object({
   slug: zod.string(),
 });
 
+export const coursesReviewsIndexQueryPageDefault = 1;
+export const coursesReviewsIndexQueryPerPageDefault = 15;
+
+export const CoursesReviewsIndexQueryParams = zod.object({
+  page: zod.int().default(coursesReviewsIndexQueryPageDefault),
+  per_page: zod.int().default(coursesReviewsIndexQueryPerPageDefault),
+  "filter[rating]": zod.int().optional().describe("Only reviews with this rating (1–5)."),
+  sort: zod.string().optional().describe("`-created_at` (default), `-rating`, `rating`, `created_at`."),
+});
+
 export const coursesReviewsIndexResponseMetaPerPageMin = 0;
 
 export const coursesReviewsIndexResponseMetaTotalMin = 0;

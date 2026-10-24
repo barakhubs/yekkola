@@ -140,6 +140,16 @@ export async function apiFetch<T>(url: string, options: RequestInit = {}): Promi
   return { data, status: response.status, headers: response.headers } as T;
 }
 
+/**
+ * The success body of a generated fetcher's response. Generated response types also list error statuses,
+ * but apiFetch throws ApiError for those, so a resolved response is always a 2xx.
+ */
+export function success<R extends { status: number; data: unknown }>(
+  response: R,
+): Extract<R, { status: 200 | 201 | 202 }>["data"] {
+  return response.data as Extract<R, { status: 200 | 201 | 202 }>["data"];
+}
+
 /** Orval: every generated hook's error type. apiFetch throws ApiError for any non-2xx response. */
 export type ErrorType<_Error> = ApiError;
 /** Orval: request bodies are sent as given. */

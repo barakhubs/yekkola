@@ -22,6 +22,7 @@ import type {
   CoursesReviewStore201,
   CoursesReviewUpdate200,
   CoursesReviewsIndex200,
+  CoursesReviewsIndexParams,
   ModelNotFoundExceptionResponse,
   ProfessorReviewsIndex200,
   ProfessorReviewsReply200,
@@ -655,8 +656,20 @@ export type coursesReviewsIndexResponseSuccess = coursesReviewsIndexResponse200 
 };
 export type coursesReviewsIndexResponse = coursesReviewsIndexResponseSuccess;
 
-export const getCoursesReviewsIndexUrl = (slug: string) => {
-  return `/courses/${slug}/reviews`;
+export const getCoursesReviewsIndexUrl = (slug: string, params?: CoursesReviewsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/courses/${slug}/reviews?${stringifiedParams}`
+    : `/courses/${slug}/reviews`;
 };
 
 /**
@@ -664,16 +677,17 @@ export const getCoursesReviewsIndexUrl = (slug: string) => {
  */
 export const coursesReviewsIndex = async (
   slug: string,
+  params?: CoursesReviewsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<coursesReviewsIndexResponse> => {
-  return apiFetch<coursesReviewsIndexResponse>(getCoursesReviewsIndexUrl(slug), {
+  return apiFetch<coursesReviewsIndexResponse>(getCoursesReviewsIndexUrl(slug, params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getCoursesReviewsIndexQueryKey = (slug: string) => {
-  return [`/courses/${slug}/reviews`] as const;
+export const getCoursesReviewsIndexQueryKey = (slug: string, params?: CoursesReviewsIndexParams) => {
+  return [`/courses/${slug}/reviews`, ...(params ? [params] : [])] as const;
 };
 
 export const getCoursesReviewsIndexQueryOptions = <
@@ -681,6 +695,7 @@ export const getCoursesReviewsIndexQueryOptions = <
   TError = ErrorType<unknown>,
 >(
   slug: string,
+  params?: CoursesReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -688,10 +703,10 @@ export const getCoursesReviewsIndexQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getCoursesReviewsIndexQueryKey(slug);
+  const queryKey = queryOptions?.queryKey ?? getCoursesReviewsIndexQueryKey(slug, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof coursesReviewsIndex>>> = ({ signal }) =>
-    coursesReviewsIndex(slug, { signal, ...requestOptions });
+    coursesReviewsIndex(slug, params, { signal, ...requestOptions });
 
   return {
     queryKey,
@@ -711,6 +726,7 @@ export function useCoursesReviewsIndex<
   TError = ErrorType<unknown>,
 >(
   slug: string,
+  params: undefined | CoursesReviewsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewsIndex>>, TError, TData>> &
       Pick<
@@ -730,6 +746,7 @@ export function useCoursesReviewsIndex<
   TError = ErrorType<unknown>,
 >(
   slug: string,
+  params?: CoursesReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewsIndex>>, TError, TData>> &
       Pick<
@@ -749,6 +766,7 @@ export function useCoursesReviewsIndex<
   TError = ErrorType<unknown>,
 >(
   slug: string,
+  params?: CoursesReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -764,13 +782,14 @@ export function useCoursesReviewsIndex<
   TError = ErrorType<unknown>,
 >(
   slug: string,
+  params?: CoursesReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof coursesReviewsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getCoursesReviewsIndexQueryOptions(slug, options);
+  const queryOptions = getCoursesReviewsIndexQueryOptions(slug, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

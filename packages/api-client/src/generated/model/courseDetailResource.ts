@@ -39,7 +39,7 @@ export interface CourseDetailResource {
   outcomes: string[];
   requirements: string[];
   sections: CourseDetailResourceSectionsItem[];
-  lesson_count: string;
+  lesson_count: number;
   download_bytes: number;
   /** @nullable */
   updated_at: string | null;

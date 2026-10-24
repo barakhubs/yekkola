@@ -12,7 +12,8 @@ export interface CertificateVerificationResource {
   student_name: string;
   course_title: string;
   professor_name: string;
-  course_slug: unknown;
+  /** @nullable */
+  course_slug: string | null;
   issued_at: string;
   /** @nullable */
   revoked_at: string | null;

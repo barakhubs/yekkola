@@ -39,6 +39,10 @@ export const ProfessorsShowResponse = zod.object({
     is_verified: zod.boolean(),
     rating_avg: zod.number(),
     rating_count: zod.int(),
+    rating: zod
+      .number()
+      .nullable()
+      .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
     student_count: zod.int(),
     member_since: zod.string(),
     courses: zod
@@ -113,6 +117,10 @@ export const AdminProfessorsIndexResponse = zod.object({
       is_verified: zod.boolean(),
       rating_avg: zod.number(),
       rating_count: zod.int(),
+      rating: zod
+        .number()
+        .nullable()
+        .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
       student_count: zod.int(),
       member_since: zod.string(),
       courses: zod
@@ -234,6 +242,10 @@ export const AdminProfessorsShowResponse = zod.object({
     is_verified: zod.boolean(),
     rating_avg: zod.number(),
     rating_count: zod.int(),
+    rating: zod
+      .number()
+      .nullable()
+      .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
     student_count: zod.int(),
     member_since: zod.string(),
     courses: zod
@@ -346,6 +358,10 @@ export const AdminProfessorsUpdateResponse = zod.object({
     is_verified: zod.boolean(),
     rating_avg: zod.number(),
     rating_count: zod.int(),
+    rating: zod
+      .number()
+      .nullable()
+      .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
     student_count: zod.int(),
     member_since: zod.string(),
     courses: zod
@@ -447,6 +463,10 @@ export const AdminProfessorsSuspendResponse = zod.object({
     is_verified: zod.boolean(),
     rating_avg: zod.number(),
     rating_count: zod.int(),
+    rating: zod
+      .number()
+      .nullable()
+      .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
     student_count: zod.int(),
     member_since: zod.string(),
     courses: zod
@@ -548,6 +568,10 @@ export const AdminProfessorsReinstateResponse = zod.object({
     is_verified: zod.boolean(),
     rating_avg: zod.number(),
     rating_count: zod.int(),
+    rating: zod
+      .number()
+      .nullable()
+      .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
     student_count: zod.int(),
     member_since: zod.string(),
     courses: zod

@@ -86,7 +86,7 @@ export const CertificatesVerifyResponse = zod.object({
     student_name: zod.string(),
     course_title: zod.string(),
     professor_name: zod.string(),
-    course_slug: zod.unknown(),
+    course_slug: zod.string().nullable(),
     issued_at: zod.string(),
     revoked_at: zod.string().nullable(),
   }),

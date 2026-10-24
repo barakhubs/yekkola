@@ -165,6 +165,10 @@ export const CoursesShowResponse = zod.object({
       is_verified: zod.boolean(),
       rating_avg: zod.number(),
       rating_count: zod.int(),
+      rating: zod
+        .number()
+        .nullable()
+        .describe("What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."),
       student_count: zod.int(),
       member_since: zod.string(),
       courses: zod
@@ -252,7 +256,7 @@ export const CoursesShowResponse = zod.object({
         ),
       }),
     ),
-    lesson_count: zod.string(),
+    lesson_count: zod.int(),
     download_bytes: zod.int(),
     updated_at: zod.string().nullable(),
   }),
@@ -262,7 +266,152 @@ export const CoursesShowResponse = zod.object({
  * @summary Home page rails: featured (admin order), popular, new, free
  */
 export const FeaturedResponse = zod.object({
-  data: zod.record(zod.string(), zod.array(zod.string())),
+  data: zod.object({
+    featured: zod.array(
+      zod.object({
+        id: zod.string(),
+        slug: zod.string(),
+        title: zod.string().nullable(),
+        subtitle: zod.string().nullable(),
+        cover_url: zod.string().nullable(),
+        professor: zod.object({
+          slug: zod.string(),
+          display_name: zod.string(),
+          avatar_url: zod.string().nullable(),
+          is_verified: zod.boolean(),
+        }),
+        category: zod
+          .object({
+            slug: zod.string(),
+            name: zod.string(),
+          })
+          .nullable(),
+        language: zod.string(),
+        level: zod.string(),
+        audience: zod.array(zod.string()),
+        is_free: zod.boolean(),
+        price: zod
+          .object({
+            amount_minor: zod.int(),
+            currency: zod.string(),
+          })
+          .nullable(),
+        rating: zod.number().nullable(),
+        rating_count: zod.int(),
+        enrollment_count: zod.int(),
+        total_duration_seconds: zod.int(),
+        published_at: zod.string().nullable(),
+      }),
+    ),
+    popular: zod.array(
+      zod.object({
+        id: zod.string(),
+        slug: zod.string(),
+        title: zod.string().nullable(),
+        subtitle: zod.string().nullable(),
+        cover_url: zod.string().nullable(),
+        professor: zod.object({
+          slug: zod.string(),
+          display_name: zod.string(),
+          avatar_url: zod.string().nullable(),
+          is_verified: zod.boolean(),
+        }),
+        category: zod
+          .object({
+            slug: zod.string(),
+            name: zod.string(),
+          })
+          .nullable(),
+        language: zod.string(),
+        level: zod.string(),
+        audience: zod.array(zod.string()),
+        is_free: zod.boolean(),
+        price: zod
+          .object({
+            amount_minor: zod.int(),
+            currency: zod.string(),
+          })
+          .nullable(),
+        rating: zod.number().nullable(),
+        rating_count: zod.int(),
+        enrollment_count: zod.int(),
+        total_duration_seconds: zod.int(),
+        published_at: zod.string().nullable(),
+      }),
+    ),
+    new: zod.array(
+      zod.object({
+        id: zod.string(),
+        slug: zod.string(),
+        title: zod.string().nullable(),
+        subtitle: zod.string().nullable(),
+        cover_url: zod.string().nullable(),
+        professor: zod.object({
+          slug: zod.string(),
+          display_name: zod.string(),
+          avatar_url: zod.string().nullable(),
+          is_verified: zod.boolean(),
+        }),
+        category: zod
+          .object({
+            slug: zod.string(),
+            name: zod.string(),
+          })
+          .nullable(),
+        language: zod.string(),
+        level: zod.string(),
+        audience: zod.array(zod.string()),
+        is_free: zod.boolean(),
+        price: zod
+          .object({
+            amount_minor: zod.int(),
+            currency: zod.string(),
+          })
+          .nullable(),
+        rating: zod.number().nullable(),
+        rating_count: zod.int(),
+        enrollment_count: zod.int(),
+        total_duration_seconds: zod.int(),
+        published_at: zod.string().nullable(),
+      }),
+    ),
+    free: zod.array(
+      zod.object({
+        id: zod.string(),
+        slug: zod.string(),
+        title: zod.string().nullable(),
+        subtitle: zod.string().nullable(),
+        cover_url: zod.string().nullable(),
+        professor: zod.object({
+          slug: zod.string(),
+          display_name: zod.string(),
+          avatar_url: zod.string().nullable(),
+          is_verified: zod.boolean(),
+        }),
+        category: zod
+          .object({
+            slug: zod.string(),
+            name: zod.string(),
+          })
+          .nullable(),
+        language: zod.string(),
+        level: zod.string(),
+        audience: zod.array(zod.string()),
+        is_free: zod.boolean(),
+        price: zod
+          .object({
+            amount_minor: zod.int(),
+            currency: zod.string(),
+          })
+          .nullable(),
+        rating: zod.number().nullable(),
+        rating_count: zod.int(),
+        enrollment_count: zod.int(),
+        total_duration_seconds: zod.int(),
+        published_at: zod.string().nullable(),
+      }),
+    ),
+  }),
 });
 
 export const professorCoursesIndexResponseMetaPerPageMin = 0;
