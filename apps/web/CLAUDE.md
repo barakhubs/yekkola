@@ -19,6 +19,10 @@
 
 ## Setup notes
 
+- Public pages (`(marketing)`) are Server Components fed by `src/lib/public-api.ts` (ISR: `revalidate` + cache tags `courses`, `course:{slug}`, `professor:{slug}`, `categories`). Course and professor pages render on first visit (`generateStaticParams` returns `[]`). Use `success()` from `@yekkola/api-client` to unwrap generated responses.
+- Filters and search are plain GET forms (work without JavaScript); `AutoSubmit` applies selects on change. Mux Player loads only when a preview opens (`next/dynamic`).
+- Images: covers/avatars via `next/image`; allowed hosts = API origin + `NEXT_PUBLIC_IMAGE_HOSTS`.
+
 - Locale routing: next-intl with `localePrefix: "as-needed"` — French at `/`, English at `/en`; `src/proxy.ts` (Next 16 middleware) negotiates it. Use `Link`/`redirect`/`useRouter` from `@/i18n/navigation`.
 - Every layout and page that renders text calls `setRequestLocale(locale)` so pages stay static.
 - Providers (`src/lib/providers.tsx`): TanStack Query (no retries on 4xx), nuqs, API client locale.

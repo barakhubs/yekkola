@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #17 (playback + stamped documents, web milestone 1 step 2) to be merged
-- **Next up:** public site (2.3) — web milestone 1 step 3
+- **Current branch:** `feature/prd-04-public-site` (web milestone 1 step 3)
+- **Next up:** sign-in, free enroll, My courses (2.4) — web milestone 1 step 4
 
 ## Legend
 
@@ -161,12 +161,14 @@ Cannot be defaulted:
 - [x] Certificate verification endpoint (FR-09) — #15
 - [x] Preview playback tokens without login (FR-06) — #17
 - [ ] Popular rail by enrollments in the last 30 days — with 1.8
-- [ ] API response cache for public pages (tag-invalidated on publish)
+- [ ] API response cache for public pages (tag-invalidated on publish) — the web app already tags its fetches (`courses`, `course:{slug}`, `professor:{slug}`); add an API → web revalidation hook on publish/unpublish/price change
 - [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against real Mux renditions
 - [ ] Add `php artisan scout:sync-index-settings` to the Cloud deploy commands; check French typo tolerance on Meilisearch Cloud
 - [ ] Search suggestions as you type (FR-03, Should)
 - [ ] Catalogue throttle: key on the real client IP behind apps/web SSR (trusted proxies / forwarded IP)
-- [ ] Accent-insensitive database fallback (`unaccent`); push filters into Meilisearch for very broad searches (> 1,000 hits)
+- [x] Accent-insensitive database fallback (`unaccent`)
+- [ ] Push filters into Meilisearch for very broad searches (> 1,000 hits)
+- [ ] Keep `courses.enrollment_count` (and professor student counts) up to date on grant/revoke — nothing maintains it yet; the demo seeder sets it
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
 *Four PRs: a) checkout core, b) coupons + bundles, c) parent payer, d) receipts + refunds.*
@@ -301,13 +303,15 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Playwright: admin approval journeys
 
 ### 2.3 Web app — public (apps/web) — PRD-04
-- [ ] Layout, header/footer, locale routing, SEO base (metadata, sitemap, robots, hreflang)
-- [ ] Home rails
-- [ ] Category pages + filters
-- [ ] Search page
-- [ ] Course page (JSON-LD, preview playback)
-- [ ] Professor page
-- [ ] Certificate verification page
+- [x] Layout, header/footer, locale routing, SEO base (metadata, sitemap, robots, hreflang, JSON-LD)
+- [x] Home rails + search + categories
+- [x] Category pages + filters (GET forms: no JS needed, state in the URL)
+- [x] Search page (`/courses?q=`)
+- [x] Course page (JSON-LD, preview playback with Mux Player loaded on demand, share, reviews)
+- [ ] Course page: buy/enrol button works (now links to sign-in) — with 2.4
+- [ ] Course page: "more reviews" pagination (first 10 shown)
+- [x] Professor page
+- [x] Certificate verification page (noindex)
 - [ ] "Teach on Yekkola" page (PRD-02)
 - [ ] Legal pages
 - [ ] Lighthouse CI budgets on public pages

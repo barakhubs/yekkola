@@ -357,10 +357,10 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /courses | Catalogue + search (`q`, category slug incl. subcategories, price `free`/`paid`, currency, language, level, audience, sort `relevance`/`popular`/`newest`/`rating`/`price_asc`/`price_desc`). Meilisearch ranks `q`; filters and sorts run in Postgres; database match if search is down |
 | GET | /courses/{slug} | Course detail (live version, curriculum outline with preview flags and per-lesson download size, professor block) |
 | POST | /lessons/{uid}/preview-playback | Preview lessons of listed courses without signing in (no watermark, no stream session) |
-| GET | /courses/{slug}/reviews | Published reviews (paginated; `filter[rating]`, `sort=-created_at\|rating`) |
-| GET | /professors/{slug} | Professor profile + courses |
+| GET | /courses/{slug}/reviews | Published reviews (`page`, `per_page`, `filter[rating]`, `sort=-created_at\|rating`) |
+| GET | /professors/{slug} | Professor profile + courses; `rating` is null below 3 reviews (as courses) |
 | GET | /certificates/{serial} | Certificate verification: names as issued, `valid`/`revoked` (throttled) |
-| GET | /featured | Home page rails (featured, popular, new, free) |
+| GET | /featured | Home page rails `{featured, popular, new, free}` (course cards) |
 
 **Student**
 
