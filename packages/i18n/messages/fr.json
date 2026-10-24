@@ -32,10 +32,143 @@
     "home": {
       "title": "Apprends avec les meilleurs profs du Congo",
       "subtitle": "Cours en vidéo, audio et documents, quiz pour préparer tes examens. Télécharge et apprends même sans connexion.",
-      "browse": "Voir les cours"
+      "browse": "Voir les cours",
+      "searchTitle": "Que veux-tu apprendre ?",
+      "emptyRails": "Les premiers cours arrivent bientôt."
     },
     "footer": {
       "rights": "© {year} Yekkola. Tous droits réservés."
+    },
+    "catalog": {
+      "levels": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "advanced": "Avancé",
+        "all": "Tous niveaux"
+      },
+      "languages": {
+        "fr": "Français",
+        "en": "Anglais"
+      },
+      "audiences": {
+        "exetat": "Examen d’État",
+        "secondaire": "Secondaire",
+        "universite": "Université",
+        "professionnel": "Professionnel"
+      },
+      "lessonTypes": {
+        "video": "Vidéo",
+        "audio": "Audio",
+        "document": "Document",
+        "quiz": "Quiz"
+      },
+      "rating": "{rating, number} sur 5 ({count, plural, one {# avis} other {# avis}})",
+      "students": "{count, plural, =0 {Aucun étudiant} one {# étudiant} other {# étudiants}}",
+      "lessons": "{count, plural, one {# leçon} other {# leçons}}",
+      "verified": "Professeur vérifié",
+      "by": "par <professor>{name}</professor>",
+      "lowData": "Peu de données",
+      "preview": "Aperçu",
+      "rails": {
+        "featured": "À la une",
+        "popular": "Les plus suivis",
+        "new": "Nouveautés",
+        "free": "Cours gratuits"
+      },
+      "seeAll": "Tout voir",
+      "categories": "Catégories",
+      "allCategories": "Toutes les catégories",
+      "breadcrumb": "Fil d’Ariane"
+    },
+    "search": {
+      "label": "Rechercher un cours",
+      "placeholder": "Maths, Examen d’État, comptabilité…",
+      "submit": "Rechercher",
+      "results": "{count, plural, =0 {Aucun cours} one {# cours} other {# cours}}",
+      "resultsFor": "Résultats pour « {query} »",
+      "empty": "Aucun cours ne correspond à ta recherche.",
+      "emptyHint": "Essaie un autre mot, ou explore les catégories et les cours gratuits.",
+      "browseFree": "Voir les cours gratuits"
+    },
+    "filters": {
+      "title": "Filtres",
+      "price": "Prix",
+      "priceAny": "Tous les prix",
+      "free": "Gratuits",
+      "paid": "Payants",
+      "language": "Langue",
+      "languageAny": "Toutes les langues",
+      "level": "Niveau",
+      "levelAny": "Tous les niveaux",
+      "audience": "Public",
+      "audienceAny": "Tous les publics",
+      "sort": "Trier par",
+      "sorts": {
+        "relevance": "Pertinence",
+        "popular": "Popularité",
+        "newest": "Plus récents",
+        "rating": "Mieux notés",
+        "price_asc": "Prix croissant",
+        "price_desc": "Prix décroissant"
+      },
+      "clear": "Effacer les filtres"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {total}"
+    },
+    "course": {
+      "outcomes": "Ce que tu vas apprendre",
+      "requirements": "Prérequis",
+      "description": "À propos de ce cours",
+      "curriculum": "Programme",
+      "curriculumSummary": "{sections, plural, one {# partie} other {# parties}} · {lessons, plural, one {# leçon} other {# leçons}} · {duration}",
+      "downloadSize": "Taille du téléchargement : {size}",
+      "downloadHint": "Télécharge les leçons pour apprendre sans connexion.",
+      "professor": "Ton professeur",
+      "reviews": "Avis des étudiants",
+      "noReviews": "Pas encore d’avis.",
+      "newCourse": "Nouveau",
+      "updated": "Mis à jour le {date}",
+      "language": "Langue : {language}",
+      "level": "Niveau : {level}",
+      "enrollFree": "S’inscrire gratuitement",
+      "buy": "Acheter le cours",
+      "signInToEnroll": "Connecte-toi pour t’inscrire",
+      "watchPreview": "Regarder l’aperçu",
+      "listenPreview": "Écouter l’aperçu",
+      "previewTitle": "Aperçu : {title}",
+      "previewError": "L’aperçu n’a pas pu démarrer. Réessaie dans un instant.",
+      "professorReply": "Réponse du professeur",
+      "edited": "modifié",
+      "share": "Partager",
+      "shareWhatsApp": "Partager sur WhatsApp",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copié",
+      "moreReviews": "Plus d’avis",
+      "anonymous": "Étudiant"
+    },
+    "professor": {
+      "courses": "Cours de {name}",
+      "memberSince": "Sur Yekkola depuis {date}",
+      "noCourses": "Aucun cours publié pour le moment.",
+      "about": "À propos"
+    },
+    "certificate": {
+      "title": "Vérification de certificat",
+      "valid": "Certificat valide",
+      "revoked": "Certificat révoqué",
+      "revokedOn": "Révoqué le {date}",
+      "awardedTo": "Décerné à",
+      "course": "Cours",
+      "professor": "Professeur",
+      "issuedOn": "Délivré le",
+      "serial": "Numéro",
+      "notFound": "Aucun certificat ne correspond à ce numéro.",
+      "notFoundHint": "Vérifie le numéro inscrit sur le certificat (format YK-XXXX-XXXX-XXXX).",
+      "seeCourse": "Voir le cours"
     }
   },
   "admin": {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDuration, formatMoney, formatPhone } from "./format";
+import { formatBytes, formatDuration, formatMoney, formatPhone } from "./format";
 
 describe("formatMoney", () => {
   it("formats minor units per locale", () => {
@@ -28,5 +28,15 @@ describe("formatDuration", () => {
     expect(plain(formatDuration(720, "fr"))).toBe("12 min");
     expect(plain(formatDuration(3900, "fr"))).toBe("1 h 5 min");
     expect(plain(formatDuration(3600, "en"))).toBe("1 hr");
+  });
+});
+
+describe("formatBytes", () => {
+  const plain = (text: string) => text.replace(/\s/g, " ");
+
+  it("uses megabytes, then gigabytes", () => {
+    expect(plain(formatBytes(48_500_000, "en"))).toBe("49 MB");
+    expect(plain(formatBytes(1_250_000_000, "fr"))).toBe("1,3 Go");
+    expect(plain(formatBytes(2_400_000, "fr"))).toBe("2,4 Mo");
   });
 });

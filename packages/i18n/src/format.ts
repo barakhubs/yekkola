@@ -9,6 +9,11 @@ export interface MoneyValue {
 /** Minor-unit digits per currency (ISO 4217) — mirrors the API's Currency enum. */
 const MINOR_UNITS: Record<string, number> = { USD: 2, CDF: 2 };
 
+/** The amount in major units (e.g. for structured data); never for display — use formatMoney. */
+export function moneyToMajor(money: MoneyValue): number {
+  return money.amount_minor / 10 ** (MINOR_UNITS[money.currency] ?? 2);
+}
+
 /**
  * "15,00 $US" / "$15.00". Francs are collected in whole units, so CDF hides centimes unless there are some.
  */
@@ -56,4 +61,18 @@ export function formatDuration(seconds: number, locale: Locale): string {
   const rest = minutes % 60;
 
   return rest === 0 ? unit(hours, "hour") : `${unit(hours, "hour")} ${unit(rest, "minute")}`;
+}
+
+/** Download sizes: "12 Mo" / "12 MB", "1,2 Go" / "1.2 GB" (decimal units, as phones show storage). */
+export function formatBytes(bytes: number, locale: Locale): string {
+  const gigabytes = bytes / 1_000_000_000;
+  const [value, unit] =
+    gigabytes >= 1 ? [gigabytes, "gigabyte"] : [Math.max(bytes / 1_000_000, 0.1), "megabyte"];
+
+  return new Intl.NumberFormat(intlTag(locale), {
+    style: "unit",
+    unit,
+    unitDisplay: "short",
+    maximumFractionDigits: value < 10 ? 1 : 0,
+  }).format(value);
 }
