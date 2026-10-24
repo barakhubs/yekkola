@@ -109,8 +109,8 @@ return [
     ],
     'playback' => [
         'not_playable' => 'Cette leçon n’a ni vidéo ni audio.',
-        'media_not_ready' => 'Cette leçon est encore en cours de traitement. Réessaie dans quelques minutes.',
-        'preview_only' => 'Connecte-toi et inscris-toi pour suivre cette leçon.',
+        'media_not_ready' => 'Cette leçon est encore en cours de traitement. Réessayez dans quelques minutes.',
+        'preview_only' => 'Connectez-vous et inscrivez-vous pour suivre cette leçon.',
         'stream_replaced' => 'Ce cours est en lecture sur un autre écran.',
     ],
     'document' => [

@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Identity\Models\User;
+use App\Domain\Protection\Jobs\StampDocument;
 use App\Domain\Protection\Models\DocumentStamp;
+use App\Domain\Protection\Stamping\DocumentNotStampable;
+use App\Domain\Protection\Stamping\DocumentStamper;
+use App\Domain\Protection\Stamping\StampText;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use setasign\Fpdi\Fpdi;
@@ -86,4 +91,72 @@ it('refuses uploads the stamper cannot read, so no student ever gets an unstampe
 
     $this->post("/api/v1/professor/courses/{$this->course->id}/draft/lessons/{$draftDoc->id}/document", ['document' => fakePdf('nouvelle-fiche.pdf')], ['Accept' => 'application/json'])
         ->assertOk();
+});
+
+it('keeps preview documents of unlisted courses private', function () {
+    Lesson::query()->whereKey($this->document->id)->update(['is_preview' => true]);
+    $this->course->update(['status' => 'unpublished']);
+
+    Sanctum::actingAs(User::factory()->create());
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertForbidden()->assertJsonPath('code', 'enrollment.required');
+
+    // Enrolled students keep their access.
+    Sanctum::actingAs($this->student);
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertOk();
+});
+
+it('answers 202 while the copy is being made, and queues a lost copy again', function () {
+    Queue::fake();
+
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertStatus(202)
+        ->assertJsonPath('data.status', 'processing')
+        ->assertJsonPath('data.retry_after', 3);
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertStatus(202);
+    Queue::assertPushed(StampDocument::class, 1);
+
+    $this->travel(16)->minutes(); // past the job's unique lock and the stale window
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertStatus(202);
+    Queue::assertPushed(StampDocument::class, 2);
+});
+
+it('marks an unreadable PDF as unavailable, and lets a transient failure start over', function () {
+    app()->bind(DocumentStamper::class, fn () => new class implements DocumentStamper
+    {
+        public function inspect(string $sourcePath): int
+        {
+            return 1;
+        }
+
+        public function stamp(string $sourcePath, StampText $text): string
+        {
+            throw new DocumentNotStampable('damaged');
+        }
+    });
+
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertConflict()->assertJsonPath('code', 'document.unavailable');
+    expect(DocumentStamp::query()->sole()->status->value)->toBe('failed');
+
+    // Out of retries on a storage error: the attempt is forgotten.
+    DocumentStamp::query()->update(['status' => 'pending']);
+    (new StampDocument(DocumentStamp::query()->sole()->id))->failed(new RuntimeException('S3 timeout'));
+    expect(DocumentStamp::query()->count())->toBe(0);
+});
+
+it('stops signed links working for banned accounts, and erases copies with the account', function () {
+    $url = $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->json('data.url');
+    $path = DocumentStamp::query()->sole()->path;
+    expect(Storage::disk('local')->exists($path))->toBeTrue();
+
+    $this->student->forceFill(['status' => 'banned'])->save();
+    $this->get($url)->assertNotFound();
+
+    event(new App\Domain\Identity\Events\UserAnonymizing($this->student));
+    expect(DocumentStamp::query()->count())->toBe(0)
+        ->and(Storage::disk('local')->exists($path))->toBeFalse();
+});
+
+it('stops access when the enrollment is revoked', function () {
+    App\Domain\Learning\Models\Enrollment::query()->update(['status' => 'revoked']);
+
+    $this->getJson("/api/v1/lessons/{$this->document->uid}/document")->assertForbidden()->assertJsonPath('code', 'enrollment.required');
 });

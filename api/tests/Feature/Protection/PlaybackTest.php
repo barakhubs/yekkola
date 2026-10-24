@@ -116,3 +116,41 @@ it('does not count mobile apps toward the web stream limit', function () {
         ->assertJsonPath('data.stream', null);
     expect(StreamSession::query()->count())->toBe(0);
 });
+
+it('stops tokens for revoked enrollments, keeps heartbeats to their own lesson, and gives audio no DRM', function () {
+    $first = play($this->video->uid)->json('data.stream.session_id');
+    heartbeat($this->document->uid, $first)->assertNotFound();
+
+    App\Domain\Learning\Models\Enrollment::query()->update(['status' => 'revoked']);
+    play($this->video->uid)->assertForbidden()->assertJsonPath('code', 'enrollment.required');
+
+    App\Domain\Learning\Models\Enrollment::query()->update(['status' => 'active']);
+    MediaAsset::query()->update(['kind' => 'audio']);
+    play($this->video->uid)->assertOk()
+        ->assertJsonPath('data.kind', 'audio')
+        ->assertJsonPath('data.tokens.drm', null)
+        ->assertJsonPath('data.tokens.thumbnail', null);
+});
+
+it('resumes a stream that went quiet while it still fits the limit', function () {
+    $session = play($this->video->uid)->json('data.stream.session_id');
+
+    $this->travel(2)->minutes();
+    heartbeat($this->video->uid, $session)->assertOk();
+    expect(StreamSession::query()->sole()->ended_at)->toBeNull();
+});
+
+it('blocks previews when the professor is suspended', function () {
+    Lesson::query()->whereKey($this->video->id)->update(['is_preview' => true]);
+    $this->professor->forceFill(['status' => 'suspended'])->save();
+    app('auth')->forgetGuards();
+
+    $this->postJson("/api/v1/lessons/{$this->video->uid}/preview-playback")->assertForbidden();
+});
+
+it('ends live streams when the account is deleted', function () {
+    play($this->video->uid)->assertOk();
+
+    event(new App\Domain\Identity\Events\UserAnonymizing($this->student));
+    expect(StreamSession::query()->sole()->ended_at)->not->toBeNull();
+});
