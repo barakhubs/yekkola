@@ -40,13 +40,11 @@ use RuntimeException;
  * Built through the real authoring and review actions, with the fake video driver.
  *
  * Run: php artisan db:seed --class=DemoCatalogueSeeder. Idempotent: skips if the demo professors exist.
- * Demo phone numbers never receive SMS (nobody signs in as them).
+ * Demo phone numbers (`yekkola.demo_phone_prefix`) are never texted outside production (DemoNumberGuard).
+ * Stored covers and PDFs are not rolled back if a run fails (database rows are).
  */
 final class DemoCatalogueSeeder extends Seeder
 {
-    /** Demo accounts use this range; no OTP is ever requested for them. */
-    private const PHONE_PREFIX = '+24399000';
-
     public function run(
         CreateCourse $create,
         EditDraft $edit,
@@ -60,7 +58,7 @@ final class DemoCatalogueSeeder extends Seeder
         if (! app()->environment(['local', 'staging']) || ! $videos instanceof FakeVideoProvider) {
             throw new RuntimeException('The demo catalogue is for local/staging with the fake video driver only.');
         }
-        if (User::query()->where('phone_e164', self::PHONE_PREFIX.'0001')->exists()) {
+        if (User::query()->where('phone_e164', (string) config('yekkola.demo_phone_prefix').'0001')->exists()) {
             $this->command->info('Demo catalogue already seeded.');
 
             return;
@@ -103,8 +101,10 @@ final class DemoCatalogueSeeder extends Seeder
 
         $students = collect(range(10, 17))->map(fn (int $n) => $this->user($n, ['Christelle Mbuyi', 'Patrick Ilunga', 'Divine Kasongo', 'Joël Tshibangu', 'Ruth Mwamba', 'Samuel Lukusa', 'Esther Ngoy', 'David Kalala'][$n - 10], [Role::Student]));
 
+        $demoIds = [];
         foreach ($courses as $i => [$professor, $title, $subtitle, $category, $audience, $language, $free, $price, $currency]) {
             $course = $create->handle($professor, ['title' => $title]);
+            $demoIds[] = $course->id;
             $course->update([
                 'category_id' => Category::query()->where('slug', $category)->value('id'),
                 'audience' => $audience,
@@ -146,8 +146,10 @@ final class DemoCatalogueSeeder extends Seeder
             $this->enrollAndReview($course, $students->slice(0, 3 + $i)->values()->all(), $grant, $ratings);
         }
 
-        Course::query()->whereIn('id', Course::query()->listed()->orderBy('created_at')->limit(3)->pluck('id'))
-            ->get()->each(fn (Course $c, int $position) => $c->forceFill(['featured_position' => $position + 1])->save());
+        // Feature the first demo courses only — never touch real featured slots on staging.
+        foreach (array_slice($demoIds, 0, 3) as $position => $id) {
+            Course::query()->whereKey($id)->update(['featured_position' => $position + 1]);
+        }
     }
 
     /**
@@ -156,7 +158,7 @@ final class DemoCatalogueSeeder extends Seeder
     private function user(int $n, string $name, array $roles): User
     {
         $user = User::query()->create([
-            'phone_e164' => self::PHONE_PREFIX.str_pad((string) $n, 4, '0', STR_PAD_LEFT),
+            'phone_e164' => (string) config('yekkola.demo_phone_prefix').str_pad((string) $n, 4, '0', STR_PAD_LEFT),
             'name' => $name,
             'phone_verified_at' => now(),
         ]);
