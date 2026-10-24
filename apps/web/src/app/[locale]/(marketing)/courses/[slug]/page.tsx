@@ -1,5 +1,4 @@
 import { formatBytes, formatDate, formatDuration, type Locale } from "@yekkola/i18n";
-import { Button } from "@yekkola/ui/components/button";
 import { Check, Download } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -9,6 +8,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PriceTag } from "@/features/catalog/components/price-tag";
 import { RatingStars } from "@/features/catalog/components/rating-stars";
 import { Curriculum } from "@/features/course/components/curriculum";
+import { EnrollButton } from "@/features/course/components/enroll-button";
 import { PreviewButton } from "@/features/course/components/preview-button";
 import { ReviewList } from "@/features/course/components/review-list";
 import { ShareButtons } from "@/features/course/components/share-buttons";
@@ -143,11 +143,7 @@ export default async function CoursePage({ params }: Props) {
               locale={locale}
               className="text-2xl font-extrabold"
             />
-            <Button asChild size="lg" variant={course.is_free ? "accent" : "default"}>
-              <Link href={`/login?next=${encodeURIComponent(`/courses/${slug}`)}`}>
-                {course.is_free ? t("course.enrollFree") : t("course.buy")}
-              </Link>
-            </Button>
+            <EnrollButton courseId={course.id} slug={slug} isFree={course.is_free} />
             {preview ? (
               <PreviewButton
                 lessonUid={preview.uid}
