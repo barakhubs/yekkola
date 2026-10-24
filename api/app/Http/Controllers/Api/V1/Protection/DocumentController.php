@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Protection;
 
+use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
 use App\Domain\Protection\Actions\RequestDocument;
 use App\Domain\Protection\Enums\DocumentStampStatus;
@@ -49,7 +50,10 @@ final class DocumentController extends Controller
      */
     public function download(string $stamp): StreamedResponse
     {
-        $model = DocumentStamp::query()->where('status', DocumentStampStatus::Ready)->findOrFail($stamp);
+        // The link can't be taken back, but it stops working for accounts that are no longer active.
+        $model = DocumentStamp::query()->where('status', DocumentStampStatus::Ready)
+            ->whereIn('user_id', User::query()->where('status', UserStatus::Active)->where('phone_e164', 'not like', 'deleted:%')->select('id'))
+            ->findOrFail($stamp);
 
         return Storage::disk((string) config('yekkola.private_disk'))->response((string) $model->path, 'document.pdf', [
             'Content-Type' => 'application/pdf',

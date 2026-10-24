@@ -40,11 +40,8 @@ final class IssuePlayback
         }
 
         $enrolled = $user !== null && $this->access->activeEnrollment($user, $course->id) !== null;
-        if (! $enrolled) {
-            $course->loadMissing('professor.user');
-            if (! $lesson->is_preview || ! $course->isListed()) {
-                throw $user === null ? ProtectionException::previewOnly() : LearningException::enrollmentRequired();
-            }
+        if (! $enrolled && ! $this->access->previewAllowed($lesson, $course)) {
+            throw $user === null ? ProtectionException::previewOnly() : LearningException::enrollmentRequired();
         }
 
         $asset = MediaAsset::query()->find($lesson->media_asset_id);

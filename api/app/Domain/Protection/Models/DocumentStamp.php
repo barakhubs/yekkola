@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property DocumentStampStatus $status
  * @property string|null $path
  * @property string|null $error
+ * @property \Illuminate\Support\Carbon $updated_at
  */
 final class DocumentStamp extends Model
 {

@@ -41,6 +41,15 @@ final class CourseAccess
     }
 
     /**
+     * A preview lesson is open to anyone only while its course is listed (published, active professor):
+     * a takedown or suspension stops previews too.
+     */
+    public function previewAllowed(Lesson $lesson, Course $course): bool
+    {
+        return $lesson->is_preview && $course->loadMissing('professor.user')->isListed();
+    }
+
+    /**
      * The lesson with this uid in its course's live version — no access check.
      *
      * @return array{0: Lesson, 1: Course}
