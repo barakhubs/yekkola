@@ -1,0 +1,48 @@
+{
+  "common": {
+    "appName": "Yekkola",
+    "tagline": "Les meilleurs profs du Congo, partout au Congo.",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "free": "Gratuit",
+    "new": "Nouveau",
+    "language": "Langue",
+    "skipToContent": "Aller au contenu",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    }
+  },
+  "errors": {
+    "generic": "Une erreur est survenue. Réessaie dans un instant.",
+    "network": "Pas de connexion. Vérifie ton réseau et réessaie.",
+    "notFound": "Cette page n’existe pas.",
+    "forbidden": "Tu n’as pas accès à cette page."
+  },
+  "web": {
+    "nav": {
+      "courses": "Cours",
+      "teach": "Enseigner sur Yekkola",
+      "signIn": "Se connecter",
+      "myCourses": "Mes cours"
+    },
+    "home": {
+      "title": "Apprends avec les meilleurs profs du Congo",
+      "subtitle": "Cours en vidéo, audio et documents, quiz pour préparer tes examens. Télécharge et apprends même sans connexion.",
+      "browse": "Voir les cours"
+    },
+    "footer": {
+      "rights": "© {year} Yekkola. Tous droits réservés."
+    }
+  },
+  "admin": {
+    "title": "Yekkola — Administration",
+    "home": {
+      "title": "Back office",
+      "subtitle": "Validation des professeurs et des cours, commandes, finances et réglages."
+    }
+  }
+}

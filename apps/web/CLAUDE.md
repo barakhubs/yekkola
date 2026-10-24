@@ -14,4 +14,12 @@
 
 ## Commands
 
-Not scaffolded yet.
+- `pnpm --filter @yekkola/web dev` → http://localhost:3000 (copy `.env.example` to `.env.local`; the API runs on :8000)
+- `pnpm --filter @yekkola/web build` · `lint` · `typecheck` (runs `next typegen` first)
+
+## Setup notes
+
+- Locale routing: next-intl with `localePrefix: "as-needed"` — French at `/`, English at `/en`; `src/proxy.ts` (Next 16 middleware) negotiates it. Use `Link`/`redirect`/`useRouter` from `@/i18n/navigation`.
+- Every layout and page that renders text calls `setRequestLocale(locale)` so pages stay static.
+- Providers (`src/lib/providers.tsx`): TanStack Query (no retries on 4xx), nuqs, API client locale.
+- Server Components fetch with generated fetchers; `src/lib/api.server.ts` (imported by the root layout) sends each request's locale. `API_INTERNAL_URL` overrides the API origin for server-side calls.

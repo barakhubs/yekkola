@@ -1,0 +1,38 @@
+{
+  "name": "@yekkola/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./fetcher": "./src/fetcher.ts",
+    "./endpoints": "./src/generated/endpoints/index.ts",
+    "./endpoints/*": "./src/generated/endpoints/*/*.ts",
+    "./zod/*": "./src/generated/endpoints/*/*.zod.ts",
+    "./model": "./src/generated/model/index.ts"
+  },
+  "scripts": {
+    "generate": "orval --config orval.config.ts && prettier --write src/generated --log-level warn",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.104.5",
+    "@yekkola/config": "workspace:*",
+    "eslint": "^9.39.5",
+    "orval": "^8.44.0",
+    "prettier": "^3.9.10",
+    "react": "^19.3.1",
+    "typescript": "~6.0.3",
+    "vite": "^7.3.0",
+    "vitest": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5",
+    "react": "^19"
+  }
+}

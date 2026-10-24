@@ -1,0 +1,163 @@
+/*
+ * Yekkola theme (docs/brand.md). Apps import this file and add `@source` for their own files.
+ * Brand scales replace Tailwind's indigo/amber so `indigo-800` is exactly the brand primary.
+ */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@source "../";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-indigo-50: #f4f6ff;
+  --color-indigo-100: #e7ecfe;
+  --color-indigo-200: #cedafe;
+  --color-indigo-300: #b1c1fb;
+  --color-indigo-400: #95a7e8;
+  --color-indigo-500: #788bd2;
+  --color-indigo-600: #5c6ebc;
+  --color-indigo-700: #4455a8;
+  --color-indigo-800: #2c3892;
+  --color-indigo-900: #212982;
+  --color-indigo-950: #130f68;
+
+  --color-amber-50: #fef6e9;
+  --color-amber-100: #faead4;
+  --color-amber-200: #ffd391;
+  --color-amber-300: #fdb73b;
+  --color-amber-400: #e09c0f;
+  --color-amber-500: #bc8309;
+  --color-amber-600: #9a6a04;
+  --color-amber-700: #7d5501;
+  --color-amber-800: #644302;
+  --color-amber-900: #4c3200;
+  --color-amber-950: #322001;
+}
+
+@theme inline {
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-foreground: var(--brand-accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: var(--color-indigo-800);
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: var(--color-indigo-50);
+  --accent-foreground: var(--color-indigo-900);
+  /* Amber surfaces always carry indigo text — never white (1.75:1). */
+  --brand-accent: var(--color-amber-300);
+  --brand-accent-foreground: var(--color-indigo-800);
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --success: #15803d;
+  --success-foreground: #ffffff;
+  /* Status warning stays orange so it is never confused with the amber brand accent. */
+  --warning: #c2410c;
+  --warning-foreground: #ffffff;
+  --info: #0369a1;
+  --info-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: var(--color-indigo-600);
+  --chart-1: var(--color-indigo-800);
+  --chart-2: var(--color-amber-300);
+  --chart-3: #0d9488;
+  --chart-4: #db2777;
+  --chart-5: #64748b;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --primary: var(--color-indigo-300);
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: var(--color-indigo-950);
+  --accent-foreground: var(--color-indigo-100);
+  --brand-accent: var(--color-amber-300);
+  --brand-accent-foreground: var(--color-indigo-950);
+  --destructive: #f87171;
+  --destructive-foreground: #0f172a;
+  --success: #4ade80;
+  --success-foreground: #0f172a;
+  --warning: #fb923c;
+  --warning-foreground: #0f172a;
+  --info: #38bdf8;
+  --info-foreground: #0f172a;
+  --border: #334155;
+  --input: #475569;
+  --ring: var(--color-indigo-300);
+  --chart-1: var(--color-indigo-300);
+  --chart-2: var(--color-amber-300);
+  --chart-3: #2dd4bf;
+  --chart-4: #f472b6;
+  --chart-5: #94a3b8;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  .tabular-nums,
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+}

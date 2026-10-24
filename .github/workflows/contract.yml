@@ -1,0 +1,52 @@
+name: Contract
+
+# The typed client must match the API's OpenAPI spec (api.yml checks the spec matches the code).
+on:
+  pull_request:
+    paths:
+      - "api/openapi.json"
+      - "packages/api-client/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/openapi.json"
+      - "packages/api-client/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/contract.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-client:
+    name: API client is up to date
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Regenerate the client
+        run: pnpm api-client:generate
+
+      - name: Fail if the committed client is stale
+        run: |
+          if ! git diff --exit-code -- packages/api-client || [ -n "$(git status --porcelain -- packages/api-client)" ]; then
+            echo "::error::packages/api-client is out of date. Run 'pnpm api-client:generate' and commit the result."
+            exit 1
+          fi

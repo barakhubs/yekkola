@@ -1,0 +1,15 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Native binaries needed by the toolchain (Next.js, Vitest, ESLint resolver).
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@swc/core"
+  - esbuild
+  - unrs-resolver
+
+auditConfig:
+  ignoreGhsas:
+    # braces <=3.0.3 (no patched release): only reached by @next/eslint-plugin-next at lint time, never at runtime.
+    - GHSA-vfj7-8cjw-p6xm

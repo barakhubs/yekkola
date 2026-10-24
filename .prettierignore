@@ -1,0 +1,6 @@
+api/
+mobile/
+docs/
+packages/api-client/src/generated/
+pnpm-lock.yaml
+.next/

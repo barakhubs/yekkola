@@ -1,0 +1,48 @@
+{
+  "common": {
+    "appName": "Yekkola",
+    "tagline": "Congo’s best teachers, anywhere in Congo.",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "free": "Free",
+    "new": "New",
+    "language": "Language",
+    "skipToContent": "Skip to content",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again in a moment.",
+    "network": "No connection. Check your network and try again.",
+    "notFound": "This page doesn’t exist.",
+    "forbidden": "You don’t have access to this page."
+  },
+  "web": {
+    "nav": {
+      "courses": "Courses",
+      "teach": "Teach on Yekkola",
+      "signIn": "Sign in",
+      "myCourses": "My courses"
+    },
+    "home": {
+      "title": "Learn from Congo’s best teachers",
+      "subtitle": "Video, audio and document lessons, plus quizzes for exam prep. Download and learn even offline.",
+      "browse": "Browse courses"
+    },
+    "footer": {
+      "rights": "© {year} Yekkola. All rights reserved."
+    }
+  },
+  "admin": {
+    "title": "Yekkola — Back office",
+    "home": {
+      "title": "Back office",
+      "subtitle": "Professor and course approval, orders, finance and settings."
+    }
+  }
+}

@@ -523,6 +523,12 @@ Rules:
 - Dashboards: KPI cards (GMV, net revenue, new students, active students, conversion), time-series charts, queues needing attention (pending applications, versions in review, open reports, stuck payments, failed payouts).
 - Destructive or financial actions always go through `ConfirmDialog` with a typed reason; reasons are stored in the audit log.
 
+### 5.3a Shared front-end plumbing
+
+- **Workspace:** pnpm + Turborepo at the root; packages ship TypeScript source, consumed via `transpilePackages`. CI: `web.yml` (Prettier, ESLint, `tsc`, Vitest, `next build`, `pnpm audit`) and `contract.yml` (regenerates `packages/api-client` from `api/openapi.json`, fails on drift).
+- **HTTP:** one hand-written Orval mutator (`packages/api-client/src/fetcher.ts`): `/api/v1` prefix, `Accept-Language` from the current locale, Sanctum cookies with `X-XSRF-TOKEN` on unsafe methods (fetched once from `/sanctum/csrf-cookie`), non-2xx thrown as `ApiError` with the error envelope.
+- **Locales:** next-intl, `localePrefix: "as-needed"` (French at `/`, English at `/en`), catalogues from `packages/i18n/messages`, keys typed against `fr.json`.
+
 ### 5.4 Design system
 
 - Tokens (colors, radius, typography, spacing) defined once in `packages/ui` as CSS variables; light + dark themes; brand assets (logo, wordmark, favicon) live there. Full spec: [`brand.md`](brand.md).
