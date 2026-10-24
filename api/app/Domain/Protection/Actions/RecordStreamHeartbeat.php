@@ -13,17 +13,25 @@ use Illuminate\Support\Facades\DB;
 /**
  * Keeps a web stream counted as live (PRD-07 FR-05). A replaced stream gets `playback.stream_replaced` and
  * its player stops ("playing on another screen"). A stream that went quiet (tab asleep) resumes only if
- * it still fits the limit.
+ * it still fits the limit — that path takes the same per-account lock as starting a stream.
  */
 final class RecordStreamHeartbeat
 {
     public function __construct(private readonly ProtectionSettings $settings) {}
 
-    public function handle(User $user, string $sessionId): StreamSession
+    public function handle(User $user, string $lessonUid, string $sessionId): StreamSession
     {
-        return DB::transaction(function () use ($user, $sessionId): StreamSession {
+        $session = StreamSession::query()->where('user_id', $user->id)->where('lesson_uid', $lessonUid)->findOrFail($sessionId);
+
+        if (! $session->isEnded() && $this->isLive($session)) {
+            $session->forceFill(['last_heartbeat_at' => now()])->save();
+
+            return $session;
+        }
+
+        return DB::transaction(function () use ($user, $session): StreamSession {
             User::query()->whereKey($user->id)->lockForUpdate()->first();
-            $session = StreamSession::query()->where('user_id', $user->id)->findOrFail($sessionId);
+            $session = StreamSession::query()->lockForUpdate()->findOrFail($session->id);
 
             if (! $session->isEnded() && ! $this->isLive($session)) {
                 $others = StreamSession::query()->live()->where('user_id', $user->id)->whereKeyNot($session->id)->count();

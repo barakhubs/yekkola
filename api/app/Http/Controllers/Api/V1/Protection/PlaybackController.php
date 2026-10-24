@@ -41,7 +41,7 @@ final class PlaybackController extends Controller
      */
     public function heartbeat(HeartbeatRequest $request, string $lesson, RecordStreamHeartbeat $heartbeat): array
     {
-        $session = $heartbeat->handle($this->user($request), $request->string('session_id')->toString());
+        $session = $heartbeat->handle($this->user($request), $lesson, $request->string('session_id')->toString());
 
         return ['data' => [
             'session_id' => $session->id,

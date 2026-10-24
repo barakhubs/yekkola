@@ -6,6 +6,7 @@ namespace App\Domain\Protection\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 final class StreamSession extends Model
 {
     use HasUlids;
+    use MassPrunable;
 
     public const REPLACED = 'replaced';
 
@@ -47,6 +49,16 @@ final class StreamSession extends Model
     {
         $query->whereNull('ended_at')
             ->where('last_heartbeat_at', '>=', now()->subSeconds((int) config('yekkola.protection.stream_stale_seconds')));
+    }
+
+    /**
+     * Sessions only matter while live; keep a week for support questions.
+     *
+     * @return Builder<self>
+     */
+    public function prunable(): Builder
+    {
+        return self::query()->where('last_heartbeat_at', '<', now()->subDays(7));
     }
 
     public function isEnded(): bool
