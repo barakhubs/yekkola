@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-04-public-site` (web milestone 1 step 3)
+- **Waiting:** PR #18 (public site, web milestone 1 step 3) to be merged
 - **Next up:** sign-in, free enroll, My courses (2.4) — web milestone 1 step 4
 
 ## Legend
@@ -161,13 +161,13 @@ Cannot be defaulted:
 - [x] Certificate verification endpoint (FR-09) — #15
 - [x] Preview playback tokens without login (FR-06) — #17
 - [ ] Popular rail by enrollments in the last 30 days — with 1.8
-- [x] Web page cache expired by tag when a course or professor changes (`RevalidateWebPages` → apps/web `/api/revalidate`, HMAC)
+- [x] Web page cache expired by tag when a course or professor changes (`RevalidateWebPages` → apps/web `/api/revalidate`, HMAC) — #18
 - [ ] Set `WEB_SERVER_KEY` and `WEB_REVALIDATE_SECRET` (same values in api and web) on staging/production
 - [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against real Mux renditions
 - [ ] Add `php artisan scout:sync-index-settings` to the Cloud deploy commands; check French typo tolerance on Meilisearch Cloud
 - [ ] Search suggestions as you type (FR-03, Should)
-- [x] Catalogue and certificate throttles key on the visitor IP forwarded by apps/web (`X-Web-Server-Key` + `X-Client-Ip`)
-- [x] Accent-insensitive database fallback (`unaccent`)
+- [x] Catalogue and certificate throttles key on the visitor IP forwarded by apps/web (`X-Web-Server-Key` + `X-Client-Ip`) — #18
+- [x] Accent-insensitive database fallback (`unaccent`) — #18
 - [ ] Confirm the Laravel Cloud Postgres user can `CREATE EXTENSION unaccent` (first staging deploy)
 - [ ] Push filters into Meilisearch for very broad searches (> 1,000 hits)
 - [ ] Keep `courses.enrollment_count` (and professor student counts) up to date on grant/revoke — nothing maintains it yet; the demo seeder sets it
@@ -305,18 +305,18 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Playwright: admin approval journeys
 
 ### 2.3 Web app — public (apps/web) — PRD-04
-- [x] Layout, header/footer, locale routing, SEO base (metadata, sitemap, robots, hreflang, JSON-LD)
-- [x] Home rails + search + categories
-- [x] Category pages + filters (GET forms: no JS needed, state in the URL)
-- [x] Search page (`/courses?q=`)
-- [x] Course page (JSON-LD, preview playback with Mux Player loaded on demand, share, reviews)
+- [x] Layout, header/footer, locale routing, SEO base (metadata, sitemap, robots, hreflang, JSON-LD) — #18
+- [x] Home rails + search + categories — #18
+- [x] Category pages + filters (GET forms: no JS needed, state in the URL) — #18
+- [x] Search page (`/courses?q=`) — #18
+- [x] Course page (JSON-LD, preview playback with Mux Player loaded on demand, share, reviews) — #18
 - [ ] Course page: buy/enrol button works (now links to sign-in) — with 2.4
 - [ ] Course page: "more reviews" pagination (first 10 shown)
 - [ ] Home: "by category" rails (PRD-04 FR-01; category chips for now)
 - [ ] Sign-in page: accept `?next=` only for same-origin paths starting with a single `/` (no `//`, `/\`) — with 2.4
 - [ ] Show a "try again" state when the API rate-limits a public page (429) instead of the error page
-- [x] Professor page
-- [x] Certificate verification page (noindex)
+- [x] Professor page — #18
+- [x] Certificate verification page (noindex) — #18
 - [ ] "Teach on Yekkola" page (PRD-02)
 - [ ] Legal pages
 - [ ] Lighthouse CI budgets on public pages
