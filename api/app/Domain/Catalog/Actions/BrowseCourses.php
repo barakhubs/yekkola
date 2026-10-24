@@ -89,11 +89,13 @@ final class BrowseCourses
      */
     private function matchInDatabase(Builder $query, string $q): void
     {
+        // Accent-insensitive: French searches are often typed without accents ("algebre" → "Algèbre").
         $like = '%'.addcslashes($q, '%_\\').'%';
+        $matches = 'unaccent(%s) ilike unaccent(?)';
 
         $query->where(fn (Builder $w) => $w
-            ->whereHas('liveVersion', fn (Builder $v) => $v->where('title', 'ilike', $like)->orWhere('subtitle', 'ilike', $like))
-            ->orWhereHas('professor', fn (Builder $p) => $p->where('display_name', 'ilike', $like)));
+            ->whereHas('liveVersion', fn (Builder $v) => $v->whereRaw(sprintf($matches, 'title'), [$like])->orWhereRaw(sprintf($matches, 'subtitle'), [$like]))
+            ->orWhereHas('professor', fn (Builder $p) => $p->whereRaw(sprintf($matches, 'display_name'), [$like])));
     }
 
     /**

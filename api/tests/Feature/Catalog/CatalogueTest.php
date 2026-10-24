@@ -76,6 +76,9 @@ it('falls back to the database when the search service is down', function () {
     config(['scout.driver' => 'meilisearch', 'scout.meilisearch.host' => 'http://127.0.0.1:9']);
 
     expect(slugs($this->getJson('/api/v1/courses?q=physique')))->toBe([$this->sciences->slug]);
+    // Accents don't matter: typed without them, or with them on the wrong letters.
+    expect(slugs($this->getJson('/api/v1/courses?q=algebre')))->toBe([$this->maths->slug])
+        ->and(slugs($this->getJson('/api/v1/courses?q=Phýsique')))->toBe([$this->sciences->slug]);
 });
 
 it('shows the course page with its curriculum outline and download size', function () {
