@@ -51,6 +51,10 @@ final class PublicProfessorResource extends JsonResource
             'is_verified' => $this->isVerified(),
             'rating_avg' => (float) $this->getAttribute('rating_avg'),
             'rating_count' => (int) $this->getAttribute('rating_count'),
+            // What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02).
+            'rating' => (int) $this->getAttribute('rating_count') >= Course::MIN_REVIEWS_FOR_RATING
+                ? round((float) $this->getAttribute('rating_avg'), 1)
+                : null,
             'student_count' => (int) $this->getAttribute('student_count'),
             'member_since' => $this->created_at->toIso8601String(),
             'courses' => $this->when($this->courses !== null, fn () => CourseCardResource::collection($this->courses)),

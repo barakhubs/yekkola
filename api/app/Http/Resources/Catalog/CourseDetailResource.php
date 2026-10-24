@@ -68,7 +68,7 @@ final class CourseDetailResource extends JsonResource
             ] : null,
             'professor' => new PublicProfessorResource($this->professor),
             'sections' => $sections,
-            'lesson_count' => $live->sections->sum(fn (Section $s) => $s->lessons->count()),
+            'lesson_count' => (int) $live->sections->sum(fn (Section $s) => $s->lessons->count()),
             'download_bytes' => $downloadBytes,
             'updated_at' => $live->reviewed_at?->toIso8601String(),
         ];

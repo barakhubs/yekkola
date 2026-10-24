@@ -50,10 +50,17 @@ final class CourseController extends Controller
     /**
      * Home page rails: featured (admin order), popular, new, free.
      *
-     * @return array{data: array<string, AnonymousResourceCollection>}
+     * @return array{data: array{featured: AnonymousResourceCollection<CourseCardResource>, popular: AnonymousResourceCollection<CourseCardResource>, new: AnonymousResourceCollection<CourseCardResource>, free: AnonymousResourceCollection<CourseCardResource>}}
      */
     public function featured(HomeRails $rails): array
     {
-        return ['data' => array_map(fn ($courses) => CourseCardResource::collection($courses), $rails->handle())];
+        $rail = $rails->handle();
+
+        return ['data' => [
+            'featured' => CourseCardResource::collection($rail['featured']),
+            'popular' => CourseCardResource::collection($rail['popular']),
+            'new' => CourseCardResource::collection($rail['new']),
+            'free' => CourseCardResource::collection($rail['free']),
+        ]];
     }
 }

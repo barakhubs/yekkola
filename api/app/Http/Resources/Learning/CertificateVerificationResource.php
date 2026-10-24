@@ -32,7 +32,7 @@ final class CertificateVerificationResource extends JsonResource
             'student_name' => $this->student_name_snapshot,
             'course_title' => $this->course_title_snapshot,
             'professor_name' => $this->professor_name_snapshot,
-            'course_slug' => $this->listedSlug,
+            'course_slug' => $this->listedSlug === null ? null : (string) $this->listedSlug,
             'issued_at' => $this->issued_at->toIso8601String(),
             'revoked_at' => $this->revoked_at?->toIso8601String(),
         ];
