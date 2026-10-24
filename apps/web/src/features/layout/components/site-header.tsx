@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { Link } from "@/i18n/navigation";
 
+import { AccountNav } from "./account-nav";
 import { LocaleSwitcher } from "./locale-switcher";
 
 export async function SiteHeader() {
@@ -23,9 +24,7 @@ export async function SiteHeader() {
           <Suspense>
             <LocaleSwitcher />
           </Suspense>
-          <Button asChild size="sm">
-            <Link href="/login">{t("signIn")}</Link>
-          </Button>
+          <AccountNav />
         </nav>
       </div>
     </header>
