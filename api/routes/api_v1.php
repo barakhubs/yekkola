@@ -38,6 +38,8 @@ use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
 use App\Http\Controllers\Api\V1\Professor\ReviewController as StudioReviewController;
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
+use App\Http\Controllers\Api\V1\Protection\DocumentController;
+use App\Http\Controllers\Api\V1\Protection\PlaybackController;
 use App\Http\Controllers\Api\V1\Public\BundleController;
 use App\Http\Controllers\Api\V1\Public\CategoryController;
 use App\Http\Controllers\Api\V1\Public\CourseController as PublicCourseController;
@@ -86,6 +88,10 @@ Route::middleware('signed-in')->group(function () {
     Route::get('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'index'])->name('lessons.quiz-attempts.index');
     Route::post('/lessons/{lesson}/quiz-attempts', [QuizAttemptController::class, 'store'])->middleware('throttle:quiz')->name('lessons.quiz-attempts.store');
     Route::put('/quiz-attempts/{attempt}', [QuizAttemptController::class, 'submit'])->middleware('throttle:quiz')->name('quiz-attempts.submit');
+    // Content protection (PRD-07)
+    Route::post('/lessons/{lesson}/playback', [PlaybackController::class, 'store'])->middleware('throttle:playback')->name('lessons.playback');
+    Route::post('/lessons/{lesson}/playback/heartbeat', [PlaybackController::class, 'heartbeat'])->middleware('throttle:playback')->name('lessons.playback.heartbeat');
+    Route::get('/lessons/{lesson}/document', [DocumentController::class, 'show'])->middleware('throttle:playback')->name('lessons.document');
     Route::get('/me/certificates', [CertificateController::class, 'index'])->name('me.certificates.index');
     Route::get('/me/certificates/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('throttle:certificate-pdf')->name('me.certificates.pdf');
     Route::get('/courses/{course}/review', [ReviewController::class, 'show'])->name('courses.review.show');
@@ -99,6 +105,9 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::get('/courses', [PublicCourseController::class, 'index'])->middleware('throttle:catalogue')->name('courses.index');
 Route::get('/courses/{slug}', [PublicCourseController::class, 'show'])->name('courses.show');
 Route::get('/courses/{slug}/reviews', [ReviewController::class, 'index'])->middleware('throttle:catalogue')->name('courses.reviews.index');
+Route::post('/lessons/{lesson}/preview-playback', [PlaybackController::class, 'preview'])->middleware('throttle:preview-playback')->name('lessons.preview-playback');
+// Stamped documents behind short-lived signed links (PRD-07 FR-12)
+Route::get('/documents/{stamp}/download', [DocumentController::class, 'download'])->middleware(['signed', 'throttle:playback'])->name('documents.download');
 Route::get('/certificates/{serial}', [CertificateController::class, 'verify'])->middleware('throttle:certificates')->name('certificates.verify');
 Route::get('/featured', [PublicCourseController::class, 'featured'])->name('featured');
 

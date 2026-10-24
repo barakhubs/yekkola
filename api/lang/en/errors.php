@@ -111,6 +111,17 @@ return [
         'not_found' => 'Lesson not found.',
         'preview_limit_reached' => 'Maximum number of preview lessons reached.',
         'type_mismatch' => 'This content does not match the lesson type.',
+        'document_not_supported' => 'This PDF can’t be protected. Export it again as PDF 1.4 (for example “PDF/A-1b”) and upload it again.',
+    ],
+    'playback' => [
+        'not_playable' => 'This lesson has no video or audio.',
+        'media_not_ready' => 'This lesson is still being processed. Try again in a few minutes.',
+        'preview_only' => 'Sign in and enrol to watch this lesson.',
+        'stream_replaced' => 'This course is playing on another screen.',
+    ],
+    'document' => [
+        'not_a_document' => 'This lesson has no document.',
+        'unavailable' => 'This document is not available right now.',
     ],
     'review' => [
         'progress_too_low' => 'Complete at least :min_progress_pct% of the course before reviewing it.',

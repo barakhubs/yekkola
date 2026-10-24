@@ -21,6 +21,8 @@ use App\Domain\Learning\Listeners\RefreshRatingsOnUserStatus;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Listeners\EraseProfessorData;
 use App\Domain\Professors\Models\ProfessorProfile;
+use App\Domain\Protection\Stamping\DocumentStamper;
+use App\Domain\Protection\Stamping\FpdiDocumentStamper;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Foundation\Application;
@@ -38,6 +40,7 @@ final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(DocumentStamper::class, FpdiDocumentStamper::class);
         $this->app->singleton(OtpCodeHasher::class, fn (Application $app): OtpCodeHasher => new OtpCodeHasher((string) $app['config']->get('app.key')));
 
         // Atomic locks (payment handlers, payout runs) come from the default cache store.
@@ -79,6 +82,9 @@ final class AppServiceProvider extends ServiceProvider
         // Profile updates (limits probing which emails are taken).
         // Review writes (PRD-06 FR-12) and public certificate lookups (FR-11).
         RateLimiter::for('reviews', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Playback tokens and documents (PRD-07): per student; previews per IP.
+        RateLimiter::for('playback', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        RateLimiter::for('preview-playback', fn (Request $request) => Limit::perMinute(30)->by((string) $request->ip()));
         RateLimiter::for('certificate-pdf', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('certificates', fn (Request $request) => Limit::perMinute(30)->by((string) $request->ip()));
         RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
