@@ -21,6 +21,7 @@ use App\Domain\Learning\Listeners\RefreshRatingsOnUserStatus;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Listeners\EraseProfessorData;
 use App\Domain\Professors\Models\ProfessorProfile;
+use App\Domain\Protection\Listeners\EraseProtectionData;
 use App\Domain\Protection\Stamping\DocumentStamper;
 use App\Domain\Protection\Stamping\FpdiDocumentStamper;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -95,6 +96,7 @@ final class AppServiceProvider extends ServiceProvider
         // Account deletion: each domain erases its own personal data (PRD-01 FR-11).
         Event::listen(UserAnonymizing::class, EraseProfessorData::class);
         Event::listen(UserAnonymizing::class, EraseLearningData::class);
+        Event::listen(UserAnonymizing::class, EraseProtectionData::class);
 
         // Learning: a new live version changes what counts toward progress (PRD-06 BR-02).
         Event::listen(CourseVersionDecided::class, RecomputeProgressOnNewVersion::class);
