@@ -529,6 +529,8 @@ Rules:
 
 - **Workspace:** pnpm + Turborepo at the root; packages ship TypeScript source, consumed via `transpilePackages`. CI: `web.yml` (Prettier, ESLint, `tsc`, Vitest, `next build`, `pnpm audit`) and `contract.yml` (regenerates `packages/api-client` from `api/openapi.json`, fails on drift).
 - **HTTP:** one hand-written Orval mutator (`packages/api-client/src/fetcher.ts`): `/api/v1` prefix, `Accept-Language` from the current locale, Sanctum cookies with `X-XSRF-TOKEN` on unsafe methods (fetched once from `/sanctum/csrf-cookie`), non-2xx thrown as `ApiError` with the error envelope.
+- **Public page caching:** Server Components fetch through `apps/web/src/lib/public-api.ts` with ISR (`revalidate` 5 min) and cache tags (`courses`, `categories`, `course:{slug}`, `professor:{slug}`). When a public course or professor changes, the API queues `RevalidateWebPages`, which POSTs the tags to `apps/web /api/revalidate` (HMAC with `WEB_REVALIDATE_SECRET`); the web app expires them at once (`revalidateTag(tag, { expire: 0 })`). Free-text searches and certificate checks are never cached.
+- **Rate limits behind SSR:** the web server sends `X-Web-Server-Key` (`WEB_SERVER_KEY`) and, on per-visitor requests, the visitor's IP in `X-Client-Ip`; the API's public limiters key on that IP (`ClientIp`), and the server's own cache refreshes share one larger bucket.
 - **Locales:** next-intl, `localePrefix: "as-needed"` (French at `/`, English at `/en`), catalogues from `packages/i18n/messages`, keys typed against `fr.json`.
 
 ### 5.4 Design system
