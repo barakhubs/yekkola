@@ -21,7 +21,7 @@ export async function CourseCard({ course, locale, priority = false }: CourseCar
   const t = await getTranslations("web");
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
+    <article className="group relative flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background hover:shadow-md">
       <div className="relative aspect-video bg-indigo-100 dark:bg-indigo-950">
         {course.cover_url ? (
           <Image

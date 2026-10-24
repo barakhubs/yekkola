@@ -17,7 +17,11 @@ export async function ReviewList({ reviews, locale }: { reviews: ReviewResource[
         <li key={review.id} className="grid gap-2 rounded-lg border p-4">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
             <span className="font-bold">{review.author.name ?? t("anonymous")}</span>
-            <span className="inline-flex" role="img" aria-label={`${review.rating}/5`}>
+            <span
+              className="inline-flex"
+              role="img"
+              aria-label={t("ratingOutOf5", { rating: review.rating })}
+            >
               {[1, 2, 3, 4, 5].map((n) => (
                 <Star
                   key={n}

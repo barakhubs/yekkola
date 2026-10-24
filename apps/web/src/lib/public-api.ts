@@ -17,8 +17,8 @@ import type { CoursesIndexParams } from "@yekkola/api-client/model";
 
 type CacheOptions = RequestInit & { next: { revalidate: number | false; tags?: string[] } };
 
-/** How long public pages may be stale (seconds). Course changes also revalidate by tag. */
-const REVALIDATE = { catalogue: 300, course: 300, rails: 300, categories: 3600, certificate: 60 } as const;
+/** How long public pages may be stale (seconds). The API also expires them by tag on changes (/api/revalidate). */
+const REVALIDATE = { catalogue: 300, course: 300, rails: 300, categories: 3600 } as const;
 
 function cached(revalidate: number, tags: string[] = []): CacheOptions {
   return { next: { revalidate, tags } };
@@ -66,8 +66,16 @@ export async function getCategories() {
   );
 }
 
-export async function getCourses(params: CoursesIndexParams) {
-  return success(await coursesIndex(params, cached(REVALIDATE.catalogue, ["courses"])));
+/**
+ * Filter and category combinations are bounded, so they're cached. Free-text searches are not (every query
+ * would fill the cache) and count against the visitor's own rate limit (`visitor`: their forwarded IP).
+ */
+export async function getCourses(params: CoursesIndexParams, visitor: Record<string, string> = {}) {
+  const options: RequestInit = params.q
+    ? { cache: "no-store", headers: visitor }
+    : cached(REVALIDATE.catalogue, ["courses"]);
+
+  return success(await coursesIndex(params, options));
 }
 
 export async function getCourse(slug: string) {
@@ -76,10 +84,15 @@ export async function getCourse(slug: string) {
   );
 }
 
+/** Best effort: the course page still renders (without reviews) if this fails. */
 export async function getCourseReviews(slug: string, page = 1) {
-  return orNull(
-    coursesReviewsIndex(slug, { page, per_page: 10 }, cached(REVALIDATE.course, [`course:${slug}`])),
-  );
+  try {
+    return await orNull(
+      coursesReviewsIndex(slug, { page, per_page: 10 }, cached(REVALIDATE.course, [`course:${slug}`])),
+    );
+  } catch {
+    return null;
+  }
 }
 
 export async function getProfessor(slug: string) {
@@ -89,6 +102,7 @@ export async function getProfessor(slug: string) {
   );
 }
 
-export async function verifyCertificate(serial: string) {
-  return (await orNull(certificatesVerify(serial, cached(REVALIDATE.certificate))))?.data ?? null;
+/** Never cached (a revocation must show at once); counted per visitor. */
+export async function verifyCertificate(serial: string, visitor: Record<string, string>) {
+  return (await orNull(certificatesVerify(serial, { cache: "no-store", headers: visitor })))?.data ?? null;
 }

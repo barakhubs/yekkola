@@ -45,7 +45,13 @@ export function PreviewButton({ lessonUid, title, kind, compact = false }: Previ
   const Icon = kind === "audio" ? Headphones : PlayCircle;
 
   return (
-    <Dialog onOpenChange={(open) => open && !playback.data && !playback.isPending && playback.mutate()}>
+    <Dialog
+      onOpenChange={(open) => {
+        // Tokens are short-lived: fetch fresh ones each time the preview opens.
+        if (open) playback.mutate();
+        else playback.reset();
+      }}
+    >
       <DialogTrigger asChild>
         {compact ? (
           <Button variant="link" size="sm" className="h-auto p-0">

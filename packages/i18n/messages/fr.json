@@ -88,7 +88,9 @@
       "resultsFor": "Résultats pour « {query} »",
       "empty": "Aucun cours ne correspond à ta recherche.",
       "emptyHint": "Essaie un autre mot, ou explore les catégories et les cours gratuits.",
-      "browseFree": "Voir les cours gratuits"
+      "browseFree": "Voir les cours gratuits",
+      "resultsHeading": "Résultats",
+      "browseCategories": "Voir les catégories"
     },
     "filters": {
       "title": "Filtres",
@@ -111,7 +113,8 @@
         "price_asc": "Prix croissant",
         "price_desc": "Prix décroissant"
       },
-      "clear": "Effacer les filtres"
+      "clear": "Effacer les filtres",
+      "apply": "Appliquer"
     },
     "pagination": {
       "label": "Pagination",
@@ -148,7 +151,8 @@
       "copyLink": "Copier le lien",
       "linkCopied": "Lien copié",
       "moreReviews": "Plus d’avis",
-      "anonymous": "Étudiant"
+      "anonymous": "Étudiant",
+      "ratingOutOf5": "{rating} sur 5"
     },
     "professor": {
       "courses": "Cours de {name}",

@@ -88,7 +88,9 @@
       "resultsFor": "Results for “{query}”",
       "empty": "No courses match your search.",
       "emptyHint": "Try another word, or browse categories and free courses.",
-      "browseFree": "See free courses"
+      "browseFree": "See free courses",
+      "resultsHeading": "Results",
+      "browseCategories": "Browse categories"
     },
     "filters": {
       "title": "Filters",
@@ -111,7 +113,8 @@
         "price_asc": "Price: low to high",
         "price_desc": "Price: high to low"
       },
-      "clear": "Clear filters"
+      "clear": "Clear filters",
+      "apply": "Apply"
     },
     "pagination": {
       "label": "Pagination",
@@ -148,7 +151,8 @@
       "copyLink": "Copy link",
       "linkCopied": "Link copied",
       "moreReviews": "More reviews",
-      "anonymous": "Student"
+      "anonymous": "Student",
+      "ratingOutOf5": "{rating} out of 5"
     },
     "professor": {
       "courses": "Courses by {name}",

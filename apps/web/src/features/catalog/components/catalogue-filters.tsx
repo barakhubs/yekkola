@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 import { type CatalogueQuery, FILTER_OPTIONS, type FilterName, hasFilters } from "../catalogue-params";
-import { AutoSubmit } from "./auto-submit";
+import { OmitEmptyFields } from "./omit-empty-fields";
 
 interface CatalogueFiltersProps {
   query: CatalogueQuery;
@@ -19,7 +19,7 @@ const selectClass =
 
 /**
  * Filters and sort (PRD-04 FR-02) as a GET form: works without JavaScript, state lives in the URL (shareable,
- * back-button safe). With JavaScript, changing a select applies it at once.
+ * back-button safe). Applied with the button — never on change, so keyboard users can browse options.
  */
 export async function CatalogueFilters({ query, action, clearHref }: CatalogueFiltersProps) {
   const t = await getTranslations("web.filters");
@@ -64,7 +64,7 @@ export async function CatalogueFilters({ query, action, clearHref }: CatalogueFi
       id="catalogue-filters"
       action={action}
       method="get"
-      className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
+      className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6"
     >
       {query.q ? <input type="hidden" name="q" value={query.q} /> : null}
       {(["price", "language", "level", "audience", "sort"] as const).map((name) => (
@@ -82,11 +82,13 @@ export async function CatalogueFilters({ query, action, clearHref }: CatalogueFi
           </select>
         </div>
       ))}
-      <noscript>
-        <Button type="submit">{t("title")}</Button>
-      </noscript>
+      <div className="flex items-end">
+        <Button type="submit" variant="secondary" className="w-full">
+          {t("apply")}
+        </Button>
+      </div>
       {hasFilters(query) ? (
-        <div className="sm:col-span-2 lg:col-span-5">
+        <div className="sm:col-span-2 lg:col-span-6">
           <Link
             href={clearHref}
             className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
@@ -95,7 +97,7 @@ export async function CatalogueFilters({ query, action, clearHref }: CatalogueFi
           </Link>
         </div>
       ) : null}
-      <AutoSubmit formId="catalogue-filters" />
+      <OmitEmptyFields formId="catalogue-filters" />
     </form>
   );
 }

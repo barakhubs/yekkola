@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 
 import { getPathname, Link } from "@/i18n/navigation";
 import { getCourses } from "@/lib/public-api";
+import { visitorHeaders } from "@/lib/visitor";
 
 import { type CatalogueQuery, toApiParams, toQueryString } from "../catalogue-params";
 import { CatalogueFilters } from "./catalogue-filters";
@@ -23,7 +24,7 @@ interface CatalogueViewProps {
 /** Course list with filters, result count, empty state, and pagination — shared by search and category pages. */
 export async function CatalogueView({ query, locale, path, category }: CatalogueViewProps) {
   const t = await getTranslations("web.search");
-  const result = await getCourses(toApiParams(query, category));
+  const result = await getCourses(toApiParams(query, category), query.q ? await visitorHeaders() : {});
   const href = (overrides: Partial<CatalogueQuery>) => `${path}${toQueryString({ ...query, ...overrides })}`;
 
   return (
@@ -33,6 +34,7 @@ export async function CatalogueView({ query, locale, path, category }: Catalogue
         action={getPathname({ href: path, locale })}
         clearHref={`${path}${toQueryString({ q: query.q })}`}
       />
+      <h2 className="sr-only">{t("resultsHeading")}</h2>
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {t("results", { count: result.meta.total })}
       </p>
@@ -42,9 +44,14 @@ export async function CatalogueView({ query, locale, path, category }: Catalogue
           title={t("empty")}
           description={t("emptyHint")}
           action={
-            <Button asChild variant="accent">
-              <Link href="/courses?price=free">{t("browseFree")}</Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button asChild variant="accent">
+                <Link href="/courses?price=free">{t("browseFree")}</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/#home-categories">{t("browseCategories")}</Link>
+              </Button>
+            </div>
           }
         />
       ) : (

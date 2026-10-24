@@ -1,23 +1,20 @@
 import { formatDate, type Locale } from "@yekkola/i18n";
-import { EmptyState } from "@yekkola/ui/blocks/empty-state";
 import { Button } from "@yekkola/ui/components/button";
 import { BadgeCheck, ShieldX } from "lucide-react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { verifyCertificate } from "@/lib/public-api";
+import { visitorHeaders } from "@/lib/visitor";
 
 interface Props {
   params: Promise<{ locale: string; serial: string }>;
 }
 
-/** Checked again at most every minute: a revocation shows up quickly. */
-export const revalidate = 60;
-
-export function generateStaticParams() {
-  return [];
-}
+/** Checked live on every visit: a revocation shows at once. */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -33,14 +30,11 @@ export default async function CertificatePage({ params }: Props) {
   const locale = rawLocale as Locale;
   setRequestLocale(locale);
   const t = await getTranslations("web.certificate");
-  const certificate = /^[A-Za-z0-9-]{4,32}$/.test(serial) ? await verifyCertificate(serial) : null;
-
+  const certificate = /^[A-Za-z0-9-]{4,32}$/.test(serial)
+    ? await verifyCertificate(serial, await visitorHeaders())
+    : null;
   if (!certificate) {
-    return (
-      <div className="mx-auto max-w-xl px-4 py-16">
-        <EmptyState icon={<ShieldX />} title={t("notFound")} description={t("notFoundHint")} />
-      </div>
-    );
+    notFound();
   }
 
   const valid = certificate.status === "valid";

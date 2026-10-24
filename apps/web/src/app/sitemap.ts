@@ -51,8 +51,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const slug of professors) {
       entries.push(entry(`/professors/${slug}`));
     }
-  } catch {
-    // API unreachable (e.g. at build time): serve the static pages; the next revalidation adds the rest.
+  } catch (error) {
+    // At build time the API may be unreachable: start with the static pages, the next revalidation adds the rest.
+    // At runtime, fail so the last good sitemap keeps being served instead of a near-empty one.
+    if (process.env.NEXT_PHASE !== "phase-production-build") {
+      throw error;
+    }
   }
 
   return entries;

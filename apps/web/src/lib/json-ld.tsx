@@ -53,10 +53,10 @@ export function courseJsonLd(course: CourseDetailResource, locale: Locale) {
     "@context": "https://schema.org",
     "@type": "Course",
     name: course.title,
-    description: course.subtitle ?? course.description ?? undefined,
+    description: course.subtitle ?? course.description ?? course.title ?? "",
     url: absolute(`/courses/${course.slug}`, locale),
     inLanguage: course.language,
-    provider: { "@type": "Organization", name: "Yekkola", sameAs: siteUrl },
+    provider: { "@type": "Organization", name: "Yekkola", url: siteUrl },
     instructor: personJsonLd(course.professor, locale),
     ...(course.cover_url ? { image: course.cover_url } : {}),
     ...(course.rating !== null
