@@ -161,7 +161,7 @@ it('creates the account in the request language', function () {
 });
 
 it('signs a web user in with a session', function () {
-    $response = signInWeb()->assertOk()->assertJsonMissingPath('data.token');
+    $response = signInWeb()->assertOk()->assertJsonPath('data.token', null)->assertJsonPath('data.device', null);
 
     $cookie = $response->getCookie(config('session.cookie'), false);
 

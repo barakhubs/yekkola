@@ -66,11 +66,12 @@ final class OtpController extends Controller
 
         $result->user->load('province');
 
-        return new JsonResponse(['data' => array_filter([
+        // Web sign-ins get the session cookie: `token` and `device` are null for them.
+        return new JsonResponse(['data' => [
             'user' => new UserResource($result->user),
             'is_new_user' => $result->isNewUser,
             'token' => $result->plainTextToken,
             'device' => $result->device ? new DeviceResource($result->device) : null,
-        ], fn ($v) => $v !== null)]);
+        ]]);
     }
 }
