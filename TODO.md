@@ -215,7 +215,13 @@ Cannot be defaulted:
 - [x] Per-student PDF stamping + signed URLs (FR-12)
 - [ ] Free FPDI can't read PDFs with compressed cross-reference streams (many PDF 1.5+ exports); those uploads are refused with export advice. Evaluate the FPDI PDF-Parser licence or a qpdf/Ghostscript normaliser on Laravel Cloud **(needs: decision)**
 - [ ] Clean up stamped copies when a document is replaced (old `document_stamps` rows go with the media row; their files stay)
+- [ ] Check documents uploaded before the stamper check (`inspect`) and tell professors which ones must be re-exported
+- [ ] Quiz attempts on preview lessons: also require the course to be listed (`CourseAccess::previewAllowed`, as playback and documents do)
+- [ ] Shorter web playback tokens refreshed only for a live stream session, so the web stream limit doesn't rely on the player (FR-05)
 - [ ] Takedown/revocation effects (FR-15)
+
+### 1.9b Copy
+- [ ] API messages to students use *vous* (`lang/fr/errors.php`); the brand says *tu* for students — align student-facing API copy in one pass
 
 ### 1.10 Finance — PRD-08
 - [x] Ledger accounts/transactions/entries + posting service (FR-01) — core in 1.7a, #10
