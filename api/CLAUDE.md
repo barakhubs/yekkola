@@ -93,4 +93,6 @@ Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_
 
 **LogSmsSender:** numbers ending `0000` simulate a provider rejection. Logs mask the number.
 
+Demo content (local/staging, fake video driver): `php artisan db:seed --class=DemoCatalogueSeeder` — 3 professors, 5 courses, students, reviews; demo phones `+24399000xxxx` never receive SMS. Run `php artisan storage:link` once so covers load.
+
 Fake drivers outside local/testing need `FAKE_WEBHOOK_SECRET`. Set `DEMO_ADMIN_PHONE` (a number you control) to seed a demo super admin locally/on staging.
