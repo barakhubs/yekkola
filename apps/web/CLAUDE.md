@@ -21,6 +21,9 @@
 
 - Public pages (`(marketing)`) are Server Components fed by `src/lib/public-api.ts` (ISR: `revalidate` + cache tags `courses`, `course:{slug}`, `professor:{slug}`, `categories`). Course and professor pages render on first visit (`generateStaticParams` returns `[]`). Use `success()` from `@yekkola/api-client` to unwrap generated responses.
 - Filters and search are plain GET forms (work without JavaScript); `AutoSubmit` applies selects on change. Mux Player loads only when a preview opens (`next/dynamic`).
+- Session: `useSession()` (GET /me; null on 401) drives the header (`AccountNav`) and `RequireSession` guards `(student)` pages (redirect to `/login?next=`). Sign-in posts to the API with the Sanctum cookie; redirect targets go through `safeNext()`.
+- Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; empty locally/staging (placeholder token for the API's fake driver).
+- Unit tests: `pnpm --filter @yekkola/web test` (Vitest, `src/**/*.test.ts`).
 - Images: covers/avatars via `next/image`; allowed hosts = API origin + `NEXT_PUBLIC_IMAGE_HOSTS`.
 
 - Locale routing: next-intl with `localePrefix: "as-needed"` — French at `/`, English at `/en`; `src/proxy.ts` (Next 16 middleware) negotiates it. Use `Link`/`redirect`/`useRouter` from `@/i18n/navigation`.

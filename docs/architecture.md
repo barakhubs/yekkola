@@ -335,7 +335,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | Method | Path | Purpose |
 |---|---|---|
 | POST | /auth/otp/request | Send OTP to phone |
-| POST | /auth/otp/verify | Verify OTP → session (web) or token (mobile, with device payload) |
+| POST | /auth/otp/verify | Verify OTP → `{user, is_new_user, token, device}`: session cookie on web (`token`/`device` null), token on mobile (with device payload) |
 | POST | /auth/logout | End session / revoke current token |
 | GET / PATCH | /me | Profile (name, email, locale, province) |
 | POST | /me/phone/otp | Send a code to the new number |
@@ -366,7 +366,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | /me/enrollments | My courses with progress, `filter[state]=in_progress\|completed` |
+| GET | /me/enrollments | My courses with progress (`page`, `per_page`, `filter[state]=in_progress\|completed`, `sort`) |
 | POST | /courses/{id}/enroll | Enroll in a free course |
 | GET | /me/courses/{id} | Learning view: live curriculum, my status per lesson, continue/next lesson, quiz facts (never answers), my certificate, `has_reviewed` |
 | POST | /lessons/{uid}/playback | Playback ID + signed tokens (`playback`, `drm` for video, `thumbnail`, `storyboard`) + watermark text (short name + masked phone) + web `stream.session_id`. Enrolled, or a preview lesson. Never a media URL |
