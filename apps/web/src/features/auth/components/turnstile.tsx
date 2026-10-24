@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useRef } from "react";
+import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
 
 declare global {
   interface Window {
@@ -18,18 +18,23 @@ const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 /** Placeholder token for local/staging, where the API uses the fake bot-check driver (production refuses it). */
 export const DEV_BOT_TOKEN = "dev-token";
 
+export interface TurnstileHandle {
+  /** Tokens are single-use: ask for a new one after every OTP request (success or failure). */
+  reset: () => void;
+}
+
 interface TurnstileProps {
-  /** Called with a token for the OTP request (PRD-01 FR-10), or null when it expires. */
+  /** Called with a token for the OTP request (PRD-01 FR-10), or null when it expires or is reset. */
   onToken: (token: string | null) => void;
   locale: string;
-  label: string;
+  ref?: Ref<TurnstileHandle>;
 }
 
 /**
  * Cloudflare Turnstile on the web OTP request. Without a site key (local/staging) it hands back a placeholder
- * token at once.
+ * token at once (and again after each reset).
  */
-export function Turnstile({ onToken, locale, label }: TurnstileProps) {
+export function Turnstile({ onToken, locale, ref }: TurnstileProps) {
   const container = useRef<HTMLDivElement>(null);
   const widget = useRef<string | null>(null);
   const callback = useRef(onToken);
@@ -37,11 +42,16 @@ export function Turnstile({ onToken, locale, label }: TurnstileProps) {
     callback.current = onToken;
   }, [onToken]);
 
-  useEffect(() => {
-    if (!SITE_KEY) {
-      callback.current(DEV_BOT_TOKEN);
-    }
-  }, []);
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      callback.current(null);
+      if (!SITE_KEY) {
+        callback.current(DEV_BOT_TOKEN);
+      } else if (widget.current && window.turnstile) {
+        window.turnstile.reset(widget.current);
+      }
+    },
+  }));
 
   const render = () => {
     if (!SITE_KEY || !container.current || !window.turnstile || widget.current) return;
@@ -56,6 +66,10 @@ export function Turnstile({ onToken, locale, label }: TurnstileProps) {
   };
 
   useEffect(() => {
+    if (!SITE_KEY) {
+      callback.current(DEV_BOT_TOKEN);
+      return;
+    }
     render();
     return () => {
       if (widget.current && window.turnstile) window.turnstile.remove(widget.current);
@@ -75,7 +89,7 @@ export function Turnstile({ onToken, locale, label }: TurnstileProps) {
         strategy="afterInteractive"
         onLoad={render}
       />
-      <div ref={container} aria-label={label} />
+      <div ref={container} />
     </>
   );
 }

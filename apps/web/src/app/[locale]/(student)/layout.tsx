@@ -1,7 +1,7 @@
 import type { Locale } from "@yekkola/i18n";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { RequireSession } from "@/features/auth/components/require-session";
 import { SiteFooter } from "@/features/layout/components/site-footer";
@@ -24,7 +24,9 @@ export default async function StudentLayout({
     <div className="flex min-h-dvh flex-col">
       <SiteHeader />
       <main id="content" className="flex-1">
-        <RequireSession>{children}</RequireSession>
+        <Suspense>
+          <RequireSession>{children}</RequireSession>
+        </Suspense>
       </main>
       <SiteFooter />
     </div>

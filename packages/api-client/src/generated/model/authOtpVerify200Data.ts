@@ -9,7 +9,7 @@ import type { UserResource } from "./userResource";
 
 export type AuthOtpVerify200Data = {
   user: UserResource;
-  is_new_user: string | boolean;
+  is_new_user: boolean;
   /** @nullable */
   token: string | null;
   device: DeviceResource | null;

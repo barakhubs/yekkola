@@ -5378,10 +5378,7 @@
                                                     "$ref": "#/components/schemas/UserResource"
                                                 },
                                                 "is_new_user": {
-                                                    "type": [
-                                                        "string",
-                                                        "boolean"
-                                                    ]
+                                                    "type": "boolean"
                                                 },
                                                 "token": {
                                                     "type": [

@@ -11,7 +11,7 @@ import { cn } from "@yekkola/ui/lib/utils";
 import { BookOpen, GraduationCap } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { parseAsInteger, parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { Link } from "@/i18n/navigation";
 
@@ -22,12 +22,16 @@ export function MyCourses() {
   const t = useTranslations("web.myCourses");
   const errors = useTranslations("errors");
   const common = useTranslations("common");
+  const pagination = useTranslations("web.pagination");
   const locale = useLocale() as Locale;
   const [state, setState] = useQueryState("state", parseAsStringLiteral(STATES).withDefault("all"));
-  const enrollments = useMeEnrollmentsIndex(
-    { per_page: 50, ...(state === "all" ? {} : { "filter[state]": state }) },
-    { query: { select: (r) => success(r).data } },
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const result = useMeEnrollmentsIndex(
+    { page, per_page: 24, ...(state === "all" ? {} : { "filter[state]": state }) },
+    { query: { select: (r) => success(r) } },
   );
+  const enrollments = { ...result, data: result.data?.data };
+  const lastPage = result.data?.meta.last_page ?? 1;
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 sm:py-12">
@@ -39,7 +43,10 @@ export function MyCourses() {
             role="tab"
             type="button"
             aria-selected={state === value}
-            onClick={() => setState(value)}
+            onClick={() => {
+              void setPage(null);
+              void setState(value);
+            }}
             className={cn(
               "rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               state === value ? "border-primary bg-primary text-primary-foreground" : "hover:bg-accent",
@@ -60,12 +67,12 @@ export function MyCourses() {
         <EmptyState
           title={errors("generic")}
           action={
-            <Button variant="outline" onClick={() => enrollments.refetch()}>
+            <Button variant="outline" onClick={() => result.refetch()}>
               {common("retry")}
             </Button>
           }
         />
-      ) : enrollments.data.length === 0 ? (
+      ) : !enrollments.data || enrollments.data.length === 0 ? (
         <EmptyState
           icon={<GraduationCap />}
           title={state === "completed" ? t("emptyCompleted") : t("empty")}
@@ -131,6 +138,19 @@ export function MyCourses() {
           ))}
         </ul>
       )}
+      {lastPage > 1 ? (
+        <nav aria-label={pagination("label")} className="flex items-center justify-between gap-4">
+          <Button variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+            {pagination("previous")}
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            {pagination("page", { page, total: lastPage })}
+          </span>
+          <Button variant="outline" disabled={page >= lastPage} onClick={() => setPage(page + 1)}>
+            {pagination("next")}
+          </Button>
+        </nav>
+      ) : null}
     </div>
   );
 }

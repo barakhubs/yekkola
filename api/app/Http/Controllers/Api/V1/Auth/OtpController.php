@@ -69,7 +69,7 @@ final class OtpController extends Controller
         // Web sign-ins get the session cookie: `token` and `device` are null for them.
         return new JsonResponse(['data' => [
             'user' => new UserResource($result->user),
-            'is_new_user' => $result->isNewUser,
+            'is_new_user' => (bool) $result->isNewUser,
             'token' => $result->plainTextToken,
             'device' => $result->device ? new DeviceResource($result->device) : null,
         ]]);

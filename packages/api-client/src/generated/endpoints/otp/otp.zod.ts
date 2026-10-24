@@ -92,7 +92,7 @@ export const AuthOtpVerifyResponse = zod.object({
       deletion_requested_at: zod.string().nullable(),
       created_at: zod.string(),
     }),
-    is_new_user: zod.union([zod.string(), zod.boolean()]),
+    is_new_user: zod.boolean(),
     token: zod.string().nullable(),
     device: zod.union([
       zod.object({

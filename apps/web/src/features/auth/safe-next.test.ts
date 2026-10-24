@@ -5,7 +5,14 @@ import { safeNext } from "./safe-next";
 describe("safeNext", () => {
   it("keeps paths on this site", () => {
     expect(safeNext("/courses/algebre?tab=reviews")).toBe("/courses/algebre?tab=reviews");
-    expect(safeNext("/en/my-courses")).toBe("/en/my-courses");
+    expect(safeNext("/my-courses?state=completed")).toBe("/my-courses?state=completed");
+  });
+
+  it("drops the locale prefix (the router adds the current one)", () => {
+    expect(safeNext("/en/my-courses")).toBe("/my-courses");
+    expect(safeNext("/fr")).toBe("/");
+    expect(safeNext("/en?x=1")).toBe("/?x=1");
+    expect(safeNext("/entreprises")).toBe("/entreprises");
   });
 
   it("refuses anything that could leave the site", () => {

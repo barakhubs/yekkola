@@ -27,8 +27,7 @@
       "courses": "Cours",
       "teach": "Enseigner sur Yekkola",
       "signIn": "Se connecter",
-      "myCourses": "Mes cours",
-      "account": "Mon compte"
+      "myCourses": "Mes cours"
     },
     "home": {
       "title": "Apprends avec les meilleurs profs du Congo",
@@ -194,7 +193,9 @@
       "provinceNone": "Je préfère ne pas dire",
       "continue": "Continuer",
       "signOut": "Se déconnecter",
-      "botCheck": "Vérification anti-robot"
+      "botCheck": "Vérification anti-robot",
+      "suspendedTitle": "Ton compte est suspendu",
+      "suspendedBody": "Tu ne peux pas suivre de cours pour le moment. Contacte le support Yekkola pour en savoir plus."
     },
     "myCourses": {
       "title": "Mes cours",
@@ -213,8 +214,7 @@
     "enroll": {
       "enrolling": "Inscription…",
       "continueLearning": "Continuer le cours",
-      "paymentSoon": "Le paiement par mobile money arrive très bientôt sur Yekkola.",
-      "enrolled": "Tu es inscrit !"
+      "paymentSoon": "Le paiement par mobile money arrive très bientôt sur Yekkola."
     }
   },
   "admin": {

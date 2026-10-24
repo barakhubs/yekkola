@@ -181,7 +181,10 @@ it('refuses to sign in a client that is neither the web app nor a device', funct
 });
 
 it('recognises returning users', function () {
-    signInMobile()->assertOk();
+    // Mobile always gets its device-bound token (web gets null and a session cookie).
+    $first = signInMobile()->assertOk()->assertJsonPath('data.is_new_user', true)->json('data');
+    expect($first['token'])->toBeString()->not->toBeEmpty()
+        ->and($first['device']['id'] ?? null)->toBeString();
     $this->travel(61)->seconds();
 
     signInMobile()->assertOk()->assertJsonPath('data.is_new_user', false);

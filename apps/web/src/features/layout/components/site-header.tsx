@@ -24,7 +24,9 @@ export async function SiteHeader() {
           <Suspense>
             <LocaleSwitcher />
           </Suspense>
-          <AccountNav />
+          <Suspense>
+            <AccountNav />
+          </Suspense>
         </nav>
       </div>
     </header>

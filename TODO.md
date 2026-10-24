@@ -327,8 +327,9 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout)
 - [ ] Checkout: quote, coupon, rail picker, waiting screen, results, retry
 - [ ] Orders + receipts, refund request
-- [x] My courses (progress, last activity, in progress / completed filter)
-- [ ] Sign-in: resend counts, wait time on 429, support contact after repeated failures (PRD-01 §6–7)
+- [x] My courses (progress, last activity, in progress / completed filter, paging); suspended accounts see an explanation (FR-15)
+- [ ] Sign-in: live countdown from `retry_after` on 429, support contact after 3 resends (PRD-01 §6–7); test resend with single-use bot tokens (Playwright)
+- [ ] Light "am I enrolled" check for the course page (it uses the full learning view today)
 - [ ] Header session check: avoid a GET /me on every public page view for visitors (e.g. a non-HttpOnly "signed-in" hint cookie)
 - [ ] Learning view: Mux Player + watermark overlay, curriculum, progress
 - [ ] Document viewer, quizzes, results

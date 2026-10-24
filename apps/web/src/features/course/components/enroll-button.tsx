@@ -25,11 +25,14 @@ export function EnrollButton({ courseId, slug, isFree }: EnrollButtonProps) {
   const errors = useTranslations("errors");
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { isSignedIn, isLoading } = useSession();
+  const { isSignedIn, isLoading, isSuspended } = useSession();
   // The learning view answers 403 when there's no active enrollment.
   const enrolled = useMeCoursesShow(courseId, {
-    query: { enabled: isSignedIn, retry: false, select: (r) => Boolean(success(r).data) },
+    query: { enabled: isSignedIn && !isSuspended, retry: false, select: (r) => Boolean(success(r).data) },
   });
+  // Only a 403 means "not enrolled"; offline or a server error says nothing either way.
+  const enrollmentUnknown =
+    enrolled.isError && !(enrolled.error instanceof ApiError && enrolled.error.status === 403);
   const enroll = useMutation({
     mutationFn: async () => success(await coursesEnroll(courseId)),
     onSuccess: async () => {
@@ -38,7 +41,11 @@ export function EnrollButton({ courseId, slug, isFree }: EnrollButtonProps) {
     },
   });
 
-  if (isLoading || (isSignedIn && enrolled.isPending)) {
+  if (isSuspended) {
+    return null; // the account can't enrol (FR-15); the explanation is on its pages
+  }
+
+  if (isLoading || (isSignedIn && (enrolled.isPending || enrollmentUnknown))) {
     return (
       <Button size="lg" disabled aria-busy>
         {isFree ? t("course.enrollFree") : t("course.buy")}

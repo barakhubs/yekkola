@@ -27,8 +27,7 @@
       "courses": "Courses",
       "teach": "Teach on Yekkola",
       "signIn": "Sign in",
-      "myCourses": "My courses",
-      "account": "My account"
+      "myCourses": "My courses"
     },
     "home": {
       "title": "Learn from Congo’s best teachers",
@@ -194,7 +193,9 @@
       "provinceNone": "I’d rather not say",
       "continue": "Continue",
       "signOut": "Sign out",
-      "botCheck": "Bot check"
+      "botCheck": "Bot check",
+      "suspendedTitle": "Your account is suspended",
+      "suspendedBody": "You can’t take courses for now. Contact Yekkola support to find out more."
     },
     "myCourses": {
       "title": "My courses",
@@ -213,8 +214,7 @@
     "enroll": {
       "enrolling": "Enrolling…",
       "continueLearning": "Continue the course",
-      "paymentSoon": "Mobile money payment is coming to Yekkola very soon.",
-      "enrolled": "You’re enrolled!"
+      "paymentSoon": "Mobile money payment is coming to Yekkola very soon."
     }
   },
   "admin": {
