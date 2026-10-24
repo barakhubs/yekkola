@@ -37,7 +37,7 @@ final class CategoryResource extends JsonResource
             'description' => $this->description,
             'icon' => $this->icon,
             'course_count' => $own + $children->sum(fn (Category $c) => $this->counts[$c->id] ?? 0),
-            'children' => $children->map(fn (Category $c) => (new self($c, $this->counts))->toArray($request))->values()->all(),
+            'children' => $children->map(fn (Category $c) => new self($c, $this->counts))->values(),
         ];
     }
 }

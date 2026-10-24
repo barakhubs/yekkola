@@ -9,6 +9,7 @@ use App\Integrations\BotChallenge\FakeBotChallenge;
 use App\Integrations\BotChallenge\TurnstileBotChallenge;
 use App\Integrations\Payments\FakeGateway;
 use App\Integrations\Payments\PaymentGateway;
+use App\Integrations\Sms\DemoNumberGuard;
 use App\Integrations\Sms\LogSmsSender;
 use App\Integrations\Sms\SmsSender;
 use App\Integrations\Video\FakeVideoProvider;
@@ -45,9 +46,16 @@ final class IntegrationServiceProvider extends ServiceProvider
             default => throw new InvalidArgumentException('Unknown payments driver ['.$this->driver('payments').'].'),
         });
 
-        $this->app->singleton(SmsSender::class, fn (Application $app): SmsSender => match ($this->driver('sms')) {
-            'log' => new LogSmsSender($app->make('log')),
-            default => throw new InvalidArgumentException('Unknown SMS driver ['.$this->driver('sms').'].'),
+        $this->app->singleton(SmsSender::class, function (Application $app): SmsSender {
+            $driver = match ($this->driver('sms')) {
+                'log' => new LogSmsSender($app->make('log')),
+                default => throw new InvalidArgumentException('Unknown SMS driver ['.$this->driver('sms').'].'),
+            };
+
+            // Demo accounts exist only on local/staging (DemoCatalogueSeeder): never texted there, whatever the driver.
+            return $app->environment(['local', 'staging'])
+                ? new DemoNumberGuard($driver, (string) config('yekkola.demo_phone_prefix'), $app->make('log'))
+                : $driver;
         });
 
         // Search: short timeouts so a hung Meilisearch falls back to the database instead of blocking requests.

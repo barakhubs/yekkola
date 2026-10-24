@@ -1,7 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "stream",
-  "globalEnv": ["NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_SITE_URL", "API_INTERNAL_URL"],
+  "globalEnv": ["NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_SITE_URL", "API_INTERNAL_URL", "NEXT_PUBLIC_IMAGE_HOSTS", "WEB_SERVER_KEY", "WEB_REVALIDATE_SECRET"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

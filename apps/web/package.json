@@ -11,6 +11,7 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@mux/mux-player-react": "^3.14.1",
     "@tanstack/react-query": "^5.104.5",
     "@yekkola/api-client": "workspace:*",
     "@yekkola/i18n": "workspace:*",

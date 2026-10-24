@@ -12,6 +12,7 @@ use App\Domain\Learning\Models\Review;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Learning\ReviewRequest;
 use App\Http\Resources\Learning\ReviewResource;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -25,6 +26,10 @@ final class ReviewController extends Controller
     /**
      * Published reviews of a listed course, newest first. `filter[rating]=1..5`, `sort=-created_at|-rating|rating`.
      */
+    #[QueryParameter('page', type: 'int', default: 1)]
+    #[QueryParameter('per_page', type: 'int', default: 15)]
+    #[QueryParameter('filter[rating]', description: 'Only reviews with this rating (1–5).', type: 'int')]
+    #[QueryParameter('sort', description: '`-created_at` (default), `-rating`, `rating`, `created_at`.', type: 'string')]
     public function index(Request $request, string $slug): AnonymousResourceCollection
     {
         $course = Course::query()->listed()->where('slug', $slug)->firstOrFail();

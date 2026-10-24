@@ -74,6 +74,8 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | Payments | Every gateway result goes through `PaymentLifecycle::apply()` (locks order then payment); start with `StartPayment`, re-query with `SyncPayment`. Ledger writes only via `PostLedgerTransaction` (balanced, one per type + reference) |
 | Course drafts | `EditDraft::withDraft($course, fn ($draft) => …)` locks the draft and refuses unless editable; review transitions in `CourseReview` |
 | Playback / documents | `IssuePlayback` (access, tokens via `VideoProvider`, web stream limit), `RecordStreamHeartbeat`, `RequestDocument` + `StampDocument` job; `ViewerMark` builds watermark/stamp text (masked phone only). PDFs go through `DocumentStamper` (FPDI) — `fakePdf()` in tests makes a real one-page PDF, `brokenPdf()` an unreadable one |
+| Rate limits on public endpoints | key on `App\Http\Support\ClientIp::of($request)` (visitor IP forwarded by apps/web), never `$request->ip()` alone |
+| Web page cache | public course/professor changes dispatch `RevalidateWebPages` (via `RevalidateWebOnChange`); add fields there if public pages start showing them |
 | Mobile money | `App\Integrations\Payments\PaymentGateway` (fake driver until the aggregator is chosen) |
 | SMS | `App\Integrations\Sms\SmsSender` (`log` driver until the provider is chosen) |
 
@@ -92,5 +94,7 @@ Drivers are set in `config/yekkola.php` (`VIDEO_DRIVER`, `PAYMENT_DRIVER`, `SMS_
 **Professor/staff tests:** `actingAsProfessor()`, `actingAsStaff(Role, [extra Permission])`, `fakePdf()`; fake `Storage::fake('local')` / `('public')` for uploads.
 
 **LogSmsSender:** numbers ending `0000` simulate a provider rejection. Logs mask the number.
+
+Demo content (local/staging, fake video driver): `php artisan db:seed --class=DemoCatalogueSeeder` — 3 professors, 5 courses, students, reviews; demo phones `+24399000xxxx` never receive SMS. Run `php artisan storage:link` once so covers load.
 
 Fake drivers outside local/testing need `FAKE_WEBHOOK_SECRET`. Set `DEMO_ADMIN_PHONE` (a number you control) to seed a demo super admin locally/on staging.

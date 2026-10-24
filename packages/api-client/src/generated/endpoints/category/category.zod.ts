@@ -18,7 +18,17 @@ export const CategoriesIndexResponse = zod.object({
       description: zod.string().nullable(),
       icon: zod.string().nullable(),
       course_count: zod.number(),
-      children: zod.array(zod.record(zod.string(), zod.unknown())),
+      children: zod.array(
+        zod.object({
+          id: zod.string(),
+          slug: zod.string(),
+          name: zod.string(),
+          description: zod.string().nullable(),
+          icon: zod.string().nullable(),
+          course_count: zod.number(),
+          children: zod.array(zod.unknown()),
+        }),
+      ),
     }),
   ),
 });

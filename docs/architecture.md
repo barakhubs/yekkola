@@ -357,10 +357,10 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /courses | Catalogue + search (`q`, category slug incl. subcategories, price `free`/`paid`, currency, language, level, audience, sort `relevance`/`popular`/`newest`/`rating`/`price_asc`/`price_desc`). Meilisearch ranks `q`; filters and sorts run in Postgres; database match if search is down |
 | GET | /courses/{slug} | Course detail (live version, curriculum outline with preview flags and per-lesson download size, professor block) |
 | POST | /lessons/{uid}/preview-playback | Preview lessons of listed courses without signing in (no watermark, no stream session) |
-| GET | /courses/{slug}/reviews | Published reviews (paginated; `filter[rating]`, `sort=-created_at\|rating`) |
-| GET | /professors/{slug} | Professor profile + courses |
+| GET | /courses/{slug}/reviews | Published reviews (`page`, `per_page`, `filter[rating]`, `sort=-created_at\|rating`) |
+| GET | /professors/{slug} | Professor profile + courses; `rating` is null below 3 reviews (as courses) |
 | GET | /certificates/{serial} | Certificate verification: names as issued, `valid`/`revoked` (throttled) |
-| GET | /featured | Home page rails (featured, popular, new, free) |
+| GET | /featured | Home page rails `{featured, popular, new, free}` (course cards) |
 
 **Student**
 
@@ -529,6 +529,8 @@ Rules:
 
 - **Workspace:** pnpm + Turborepo at the root; packages ship TypeScript source, consumed via `transpilePackages`. CI: `web.yml` (Prettier, ESLint, `tsc`, Vitest, `next build`, `pnpm audit`) and `contract.yml` (regenerates `packages/api-client` from `api/openapi.json`, fails on drift).
 - **HTTP:** one hand-written Orval mutator (`packages/api-client/src/fetcher.ts`): `/api/v1` prefix, `Accept-Language` from the current locale, Sanctum cookies with `X-XSRF-TOKEN` on unsafe methods (fetched once from `/sanctum/csrf-cookie`), non-2xx thrown as `ApiError` with the error envelope.
+- **Public page caching:** Server Components fetch through `apps/web/src/lib/public-api.ts` with ISR (`revalidate` 5 min) and cache tags (`courses`, `categories`, `course:{slug}`, `professor:{slug}`). When a public course or professor changes, the API queues `RevalidateWebPages`, which POSTs the tags to `apps/web /api/revalidate` (HMAC with `WEB_REVALIDATE_SECRET`); the web app expires them at once (`revalidateTag(tag, { expire: 0 })`). Free-text searches and certificate checks are never cached.
+- **Rate limits behind SSR:** the web server sends `X-Web-Server-Key` (`WEB_SERVER_KEY`) and, on per-visitor requests, the visitor's IP in `X-Client-Ip`; the API's public limiters key on that IP (`ClientIp`), and the server's own cache refreshes share one larger bucket.
 - **Locales:** next-intl, `localePrefix: "as-needed"` (French at `/`, English at `/en`), catalogues from `packages/i18n/messages`, keys typed against `fr.json`.
 
 ### 5.4 Design system

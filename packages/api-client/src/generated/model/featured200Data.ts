@@ -4,5 +4,11 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { CourseCardResource } from "./courseCardResource";
 
-export type Featured200Data = { [key: string]: string[] };
+export type Featured200Data = {
+  featured: CourseCardResource[];
+  popular: CourseCardResource[];
+  new: CourseCardResource[];
+  free: CourseCardResource[];
+};

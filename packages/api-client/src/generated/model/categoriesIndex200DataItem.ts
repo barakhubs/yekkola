@@ -4,7 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { CategoriesIndex200DataItemChildrenItem } from "./categoriesIndex200DataItemChildrenItem";
+import type { CategoryResource } from "./categoryResource";
 
 export type CategoriesIndex200DataItem = {
   id: string;
@@ -15,5 +15,5 @@ export type CategoriesIndex200DataItem = {
   /** @nullable */
   icon: string | null;
   course_count: number;
-  children: CategoriesIndex200DataItemChildrenItem[];
+  children: CategoryResource[];
 };

@@ -797,8 +797,7 @@
                                                     "children": {
                                                         "type": "array",
                                                         "items": {
-                                                            "type": "object",
-                                                            "additionalProperties": {}
+                                                            "$ref": "#/components/schemas/CategoryResource"
                                                         }
                                                     }
                                                 },
@@ -2115,12 +2114,38 @@
                                     "properties": {
                                         "data": {
                                             "type": "object",
-                                            "additionalProperties": {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "string"
+                                            "properties": {
+                                                "featured": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CourseCardResource"
+                                                    }
+                                                },
+                                                "popular": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CourseCardResource"
+                                                    }
+                                                },
+                                                "new": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CourseCardResource"
+                                                    }
+                                                },
+                                                "free": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/CourseCardResource"
+                                                    }
                                                 }
-                                            }
+                                            },
+                                            "required": [
+                                                "featured",
+                                                "popular",
+                                                "new",
+                                                "free"
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -8140,6 +8165,38 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[rating]",
+                        "in": "query",
+                        "description": "Only reviews with this rating (1\u20135).",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`-created_at` (default), `-rating`, `rating`, `created_at`.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -9108,11 +9165,15 @@
                     "is_verified": {
                         "type": "boolean"
                     },
-                    "rating_avg": {
-                        "type": "number"
-                    },
                     "rating_count": {
                         "type": "integer"
+                    },
+                    "rating": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "description": "What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."
                     },
                     "student_count": {
                         "type": "integer"
@@ -9217,8 +9278,8 @@
                     "avatar_url",
                     "province",
                     "is_verified",
-                    "rating_avg",
                     "rating_count",
+                    "rating",
                     "student_count",
                     "member_since",
                     "user_id",
@@ -9371,6 +9432,51 @@
                 ],
                 "title": "BundleStatus"
             },
+            "CategoryResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "icon": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "course_count": {
+                        "type": "number"
+                    },
+                    "children": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoryResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "description",
+                    "icon",
+                    "course_count",
+                    "children"
+                ],
+                "title": "CategoryResource"
+            },
             "CertificateResource": {
                 "type": "object",
                 "properties": {
@@ -9455,7 +9561,12 @@
                     "professor_name": {
                         "type": "string"
                     },
-                    "course_slug": {},
+                    "course_slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "issued_at": {
                         "type": "string"
                     },
@@ -10059,7 +10170,7 @@
                         }
                     },
                     "lesson_count": {
-                        "type": "string"
+                        "type": "integer"
                     },
                     "download_bytes": {
                         "type": "integer"
@@ -11895,11 +12006,15 @@
                     "is_verified": {
                         "type": "boolean"
                     },
-                    "rating_avg": {
-                        "type": "number"
-                    },
                     "rating_count": {
                         "type": "integer"
+                    },
+                    "rating": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "description": "What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."
                     },
                     "student_count": {
                         "type": "integer"
@@ -12021,8 +12136,8 @@
                     "avatar_url",
                     "province",
                     "is_verified",
-                    "rating_avg",
                     "rating_count",
+                    "rating",
                     "student_count",
                     "member_since",
                     "status",
@@ -12124,11 +12239,15 @@
                     "is_verified": {
                         "type": "boolean"
                     },
-                    "rating_avg": {
-                        "type": "number"
-                    },
                     "rating_count": {
                         "type": "integer"
+                    },
+                    "rating": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "description": "What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02)."
                     },
                     "student_count": {
                         "type": "integer"
@@ -12157,8 +12276,8 @@
                     "avatar_url",
                     "province",
                     "is_verified",
-                    "rating_avg",
                     "rating_count",
+                    "rating",
                     "student_count",
                     "member_since"
                 ],

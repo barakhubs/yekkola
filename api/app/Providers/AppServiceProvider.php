@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Domain\Authoring\Events\CourseVersionDecided;
+use App\Domain\Authoring\Models\Course;
 use App\Domain\Catalog\Jobs\MakeListedSearchable;
+use App\Domain\Catalog\Listeners\RevalidateWebOnChange;
 use App\Domain\Catalog\Listeners\SyncCourseIndex;
 use App\Domain\Catalog\Models\Category;
 use App\Domain\Identity\Events\UserAnonymizing;
@@ -24,6 +26,7 @@ use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Protection\Listeners\EraseProtectionData;
 use App\Domain\Protection\Stamping\DocumentStamper;
 use App\Domain\Protection\Stamping\FpdiDocumentStamper;
+use App\Http\Support\ClientIp;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Foundation\Application;
@@ -79,15 +82,15 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('quiz', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Catalogue and search: a coarse abuse cap only. Server-side rendering (apps/web) and carrier NAT put
         // many visitors behind one IP. TODO(2.x): key on the forwarded client IP once trusted proxies are set.
-        RateLimiter::for('catalogue', fn (Request $request) => Limit::perMinute(1_200)->by((string) $request->ip()));
+        RateLimiter::for('catalogue', fn (Request $request) => self::perVisitor($request, 1_200));
         // Profile updates (limits probing which emails are taken).
         // Review writes (PRD-06 FR-12) and public certificate lookups (FR-11).
         RateLimiter::for('reviews', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Playback tokens and documents (PRD-07): per student; previews per IP.
         RateLimiter::for('playback', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
-        RateLimiter::for('preview-playback', fn (Request $request) => Limit::perMinute(30)->by((string) $request->ip()));
+        RateLimiter::for('preview-playback', fn (Request $request) => self::perVisitor($request, 30));
         RateLimiter::for('certificate-pdf', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
-        RateLimiter::for('certificates', fn (Request $request) => Limit::perMinute(30)->by((string) $request->ip()));
+        RateLimiter::for('certificates', fn (Request $request) => self::perVisitor($request, 30));
         RateLimiter::for('profile-update', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
         // Every platform settings change is audited with before/after values.
@@ -112,7 +115,25 @@ final class AppServiceProvider extends ServiceProvider
         Event::listen('eloquent.deleted: '.User::class, [SyncCourseIndex::class, 'userDeleted']);
         Event::listen('eloquent.saved: '.Category::class, [SyncCourseIndex::class, 'categorySaved']);
 
+        // Web app caches: refresh public pages when what they show changes (PRD-04 FR-11, FR-12).
+        Event::listen('eloquent.saved: '.Course::class, [RevalidateWebOnChange::class, 'courseSaved']);
+        Event::listen('eloquent.deleted: '.Course::class, [RevalidateWebOnChange::class, 'courseDeleted']);
+        Event::listen('eloquent.saved: '.ProfessorProfile::class, [RevalidateWebOnChange::class, 'professorSaved']);
+
         // Catch lazy loading, silently discarded attributes, and missing attributes outside production.
         Model::shouldBeStrict(! $this->app->isProduction());
+    }
+
+    /**
+     * Limits public endpoints per visitor, even when our web server renders the page (ClientIp). Our server's own
+     * cache refreshes (no visitor behind them) share one generous bucket.
+     */
+    private static function perVisitor(Request $request, int $perMinute): Limit
+    {
+        $ip = ClientIp::of($request);
+
+        return $ip === null
+            ? Limit::perMinute($perMinute * 50)->by('web-server')
+            : Limit::perMinute($perMinute)->by($ip);
     }
 }

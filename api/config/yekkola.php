@@ -11,6 +11,12 @@ return [
 
     // Public web app (certificate verification links, PRD-06 FR-10).
     'web_url' => env('FRONTEND_WEB_URL', 'http://localhost:3000'),
+    // Shared with the web app: proves its server-side requests (and the visitor IP it forwards, for rate limits).
+    'web_server_key' => env('WEB_SERVER_KEY', ''),
+    // Shared with the web app: signs "drop these cached pages" calls. Empty = don't call (local without the web app).
+    'web_revalidate_secret' => env('WEB_REVALIDATE_SECRET', ''),
+    // Demo accounts (DemoCatalogueSeeder) use this range; outside production no SMS is ever sent to it.
+    'demo_phone_prefix' => '+24399000',
 
     'drivers' => [
         // fake | mux (mux driver lands with Phase 1.5 authoring)
