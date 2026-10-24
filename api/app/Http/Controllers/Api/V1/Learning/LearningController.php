@@ -18,6 +18,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Learning\SyncProgressRequest;
 use App\Http\Resources\Learning\LearningViewResource;
 use App\Http\Resources\Learning\MyCourseResource;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -29,6 +30,10 @@ final class LearningController extends Controller
     /**
      * My courses, most recently active first. `filter[state]=in_progress|completed`.
      */
+    #[QueryParameter('page', type: 'int', default: 1)]
+    #[QueryParameter('per_page', type: 'int', default: 15)]
+    #[QueryParameter('filter[state]', description: '`in_progress` or `completed`.', type: 'string')]
+    #[QueryParameter('sort', description: '`-last_activity_at` (default), `-enrolled_at`.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $enrollments = QueryBuilder::for(Enrollment::query()->active()->where('user_id', $this->user($request)->id)

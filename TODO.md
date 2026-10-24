@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Waiting:** PR #18 (public site, web milestone 1 step 3) to be merged
-- **Next up:** sign-in, free enroll, My courses (2.4) — web milestone 1 step 4
+- **Waiting:** PR #19 (sign-in, free enrolment, My courses — web milestone 1 step 4) to be merged
+- **Next up:** learning view (2.4) — web milestone 1 step 5
 
 ## Legend
 
@@ -313,7 +313,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Course page: buy/enrol button works (now links to sign-in) — with 2.4
 - [ ] Course page: "more reviews" pagination (first 10 shown)
 - [ ] Home: "by category" rails (PRD-04 FR-01; category chips for now)
-- [ ] Sign-in page: accept `?next=` only for same-origin paths starting with a single `/` (no `//`, `/\`) — with 2.4
+- [x] Sign-in page: accept `?next=` only for same-origin paths starting with a single `/` (`safeNext`, unit-tested) — #19
 - [ ] Show a "try again" state when the API rate-limits a public page (429) instead of the error page
 - [x] Professor page — #18
 - [x] Certificate verification page (noindex) — #18
@@ -322,12 +322,15 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Lighthouse CI budgets on public pages
 
 ### 2.4 Web app — students — PRD-01, 05, 06, 07
-- [ ] Sign-in (phone + OTP, Turnstile)
+- [x] Sign-in (phone + OTP, Turnstile, first-time name + optional province, safe `?next=`) — #19
 - [ ] Account, devices, notification preferences, data export/deletion
-- [ ] Free enroll
+- [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout) — #19
 - [ ] Checkout: quote, coupon, rail picker, waiting screen, results, retry
 - [ ] Orders + receipts, refund request
-- [ ] My courses
+- [x] My courses (progress, last activity, in progress / completed filter, paging); suspended accounts see an explanation (FR-15) — #19
+- [ ] Sign-in: live countdown from `retry_after` on 429, support contact after 3 resends (PRD-01 §6–7); test resend with single-use bot tokens (Playwright)
+- [ ] Light "am I enrolled" check for the course page (it uses the full learning view today)
+- [ ] Header session check: avoid a GET /me on every public page view for visitors (e.g. a non-HttpOnly "signed-in" hint cookie)
 - [ ] Learning view: Mux Player + watermark overlay, curriculum, progress
 - [ ] Document viewer, quizzes, results
 - [ ] Certificates, reviews, lesson Q&A

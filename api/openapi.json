@@ -4671,6 +4671,40 @@
                 "tags": [
                     "Learning"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[state]",
+                        "in": "query",
+                        "description": "`in_progress` or `completed`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`-last_activity_at` (default), `-enrolled_at`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `MyCourseResource`",
@@ -5338,8 +5372,37 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {}
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                "is_new_user": {
+                                                    "type": "boolean"
+                                                },
+                                                "token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "device": {
+                                                    "anyOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/DeviceResource"
+                                                        },
+                                                        {
+                                                            "type": "null"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "is_new_user",
+                                                "token",
+                                                "device"
+                                            ]
                                         }
                                     },
                                     "required": [

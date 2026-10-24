@@ -68,5 +68,43 @@ export const AuthOtpVerifyBody = zod.object({
 });
 
 export const AuthOtpVerifyResponse = zod.object({
-  data: zod.array(zod.unknown()),
+  data: zod.object({
+    user: zod.object({
+      id: zod.string(),
+      phone: zod.string(),
+      name: zod.string().nullable(),
+      email: zod.string().nullable(),
+      email_verified: zod.boolean(),
+      locale: zod.string(),
+      province: zod
+        .union([
+          zod.object({
+            id: zod.string(),
+            code: zod.string(),
+            name: zod.string(),
+          }),
+          zod.null(),
+        ])
+        .optional(),
+      city: zod.string().nullable(),
+      status: zod.string(),
+      roles: zod.array(zod.string()),
+      deletion_requested_at: zod.string().nullable(),
+      created_at: zod.string(),
+    }),
+    is_new_user: zod.boolean(),
+    token: zod.string().nullable(),
+    device: zod.union([
+      zod.object({
+        id: zod.string(),
+        platform: zod.string(),
+        name: zod.string().nullable(),
+        app_version: zod.string().nullable(),
+        registered_at: zod.string(),
+        last_active_at: zod.string().nullable(),
+        is_current: zod.string(),
+      }),
+      zod.null(),
+    ]),
+  }),
 });

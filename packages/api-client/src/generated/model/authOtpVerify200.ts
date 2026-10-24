@@ -4,7 +4,8 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AuthOtpVerify200Data } from "./authOtpVerify200Data";
 
 export type AuthOtpVerify200 = {
-  data: unknown[];
+  data: AuthOtpVerify200Data;
 };

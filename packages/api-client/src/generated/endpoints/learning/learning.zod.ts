@@ -9,6 +9,15 @@ import * as zod from "zod";
 /**
  * @summary My courses, most recently active first. `filter[state]=in_progress|completed`
  */
+export const meEnrollmentsIndexQueryPageDefault = 1;
+export const meEnrollmentsIndexQueryPerPageDefault = 15;
+
+export const MeEnrollmentsIndexQueryParams = zod.object({
+  page: zod.int().default(meEnrollmentsIndexQueryPageDefault),
+  per_page: zod.int().default(meEnrollmentsIndexQueryPerPageDefault),
+  "filter[state]": zod.string().optional().describe("`in_progress` or `completed`."),
+  sort: zod.string().optional().describe("`-last_activity_at` (default), `-enrolled_at`."),
+});
 
 export const meEnrollmentsIndexResponseMetaPerPageMin = 0;
 

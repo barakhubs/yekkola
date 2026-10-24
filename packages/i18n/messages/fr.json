@@ -173,6 +173,48 @@
       "notFound": "Aucun certificat ne correspond à ce numéro.",
       "notFoundHint": "Vérifie le numéro inscrit sur le certificat (format YK-XXXX-XXXX-XXXX).",
       "seeCourse": "Voir le cours"
+    },
+    "auth": {
+      "title": "Connexion",
+      "subtitle": "Connecte-toi avec ton numéro de téléphone : on t’envoie un code par SMS.",
+      "phoneLabel": "Numéro de téléphone",
+      "phoneHint": "Exemple : 0812 345 678",
+      "sendCode": "Recevoir le code",
+      "codeSentTo": "Code envoyé au {phone}.",
+      "codeLabel": "Code à 6 chiffres",
+      "verify": "Valider",
+      "resendIn": "Renvoyer le code dans {seconds} s",
+      "resend": "Renvoyer le code",
+      "changeNumber": "Changer de numéro",
+      "profileTitle": "Bienvenue sur Yekkola !",
+      "profileSubtitle": "Comment t’appelles-tu ? Ton nom apparaîtra sur tes certificats.",
+      "nameLabel": "Nom complet",
+      "provinceLabel": "Province (facultatif)",
+      "provinceNone": "Je préfère ne pas dire",
+      "continue": "Continuer",
+      "signOut": "Se déconnecter",
+      "botCheck": "Vérification anti-robot",
+      "suspendedTitle": "Ton compte est suspendu",
+      "suspendedBody": "Tu ne peux pas suivre de cours pour le moment. Contacte le support Yekkola pour en savoir plus."
+    },
+    "myCourses": {
+      "title": "Mes cours",
+      "all": "Tous",
+      "inProgress": "En cours",
+      "completed": "Terminés",
+      "empty": "Tu n’es inscrit à aucun cours pour le moment.",
+      "emptyCompleted": "Aucun cours terminé pour le moment.",
+      "browse": "Découvrir les cours",
+      "progress": "{pct} % terminé",
+      "continue": "Continuer",
+      "start": "Commencer",
+      "lastActivity": "Dernière activité le {date}",
+      "completedOn": "Terminé le {date}"
+    },
+    "enroll": {
+      "enrolling": "Inscription…",
+      "continueLearning": "Continuer le cours",
+      "paymentSoon": "Le paiement par mobile money arrive très bientôt sur Yekkola."
     }
   },
   "admin": {
