@@ -59,6 +59,11 @@ final class AuthoringException extends DomainException
         return new self('lesson.preview_limit_reached', 422, ['max' => $max]);
     }
 
+    public static function documentNotSupported(): self
+    {
+        return new self('lesson.document_not_supported', 422);
+    }
+
     public static function lessonTypeMismatch(): self
     {
         return new self('lesson.type_mismatch', 422);

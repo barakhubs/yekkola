@@ -136,8 +136,19 @@ function actingAsProfessor(string $name = 'Marie Kabila'): App\Domain\Professors
     return $profile;
 }
 
-/** A small valid PDF upload (real PDF magic bytes, so MIME sniffing accepts it). */
-function fakePdf(string $name = 'diplome.pdf'): Illuminate\Http\UploadedFile
+/** A real one-page PDF upload (the document stamper and MIME sniffing both read it). */
+function fakePdf(string $name = 'diplome.pdf', string $text = 'Fiche de revision'): Illuminate\Http\UploadedFile
+{
+    $pdf = new FPDF;
+    $pdf->AddPage();
+    $pdf->SetFont('Helvetica', '', 14);
+    $pdf->Cell(0, 10, $text);
+
+    return Illuminate\Http\UploadedFile::fake()->createWithContent($name, $pdf->Output('S'));
+}
+
+/** Starts like a PDF but has no readable structure (damaged, or a format the stamper can't parse). */
+function brokenPdf(string $name = 'casse.pdf'): Illuminate\Http\UploadedFile
 {
     return Illuminate\Http\UploadedFile::fake()->createWithContent($name, "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n");
 }
