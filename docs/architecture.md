@@ -283,7 +283,8 @@ PostgreSQL. Conventions:
 | Table | Columns (key) | Notes |
 |---|---|---|
 | `offline_licenses` | id, user_id, device_id, lesson_uid, media_asset_id, issued_at, expires_at, revoked_at | Record of persistent licenses issued; drives entitlement sync and audits. |
-| `document_stamps` | id, user_id, document_media_id, stamped_media (private), created_at | Cache of per-student stamped PDFs; regenerated if source changes. |
+| `stream_sessions` | id, user_id, lesson_uid, media_asset_id, last_heartbeat_at, ended_at, ended_reason (`replaced`) | Web playbacks only (mobile is limited by registered devices). Live = not ended and a heartbeat within 90 s. Starting a stream locks the user row and ends the oldest live ones over `concurrent_web_streams` (newest wins); a replaced stream's heartbeat gets `playback.stream_replaced`. |
+| `document_stamps` | id, user_id, source_media_id (FK `media`, cascade), status (`pending`/`ready`/`failed`), path (private disk), error | Unique `(user_id, source_media_id)`: one stamped copy per student and source PDF (a replaced PDF gets new copies). Made on the queue (`StampDocument`, FPDI behind `DocumentStamper`): footer with full name, masked phone, date; faint diagonal name + masked phone. Uploads the stamper can't read are refused (`lesson.document_not_supported`), so no student ever gets an unstamped copy. |
 
 ### 3.7 Finance (double-entry ledger)
 
@@ -355,6 +356,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /categories | Visible category tree (request locale) with listed-course counts |
 | GET | /courses | Catalogue + search (`q`, category slug incl. subcategories, price `free`/`paid`, currency, language, level, audience, sort `relevance`/`popular`/`newest`/`rating`/`price_asc`/`price_desc`). Meilisearch ranks `q`; filters and sorts run in Postgres; database match if search is down |
 | GET | /courses/{slug} | Course detail (live version, curriculum outline with preview flags and per-lesson download size, professor block) |
+| POST | /lessons/{uid}/preview-playback | Preview lessons of listed courses without signing in (no watermark, no stream session) |
 | GET | /courses/{slug}/reviews | Published reviews (paginated; `filter[rating]`, `sort=-created_at\|rating`) |
 | GET | /professors/{slug} | Professor profile + courses |
 | GET | /certificates/{serial} | Certificate verification: names as issued, `valid`/`revoked` (throttled) |
@@ -367,10 +369,10 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /me/enrollments | My courses with progress, `filter[state]=in_progress\|completed` |
 | POST | /courses/{id}/enroll | Enroll in a free course |
 | GET | /me/courses/{id} | Learning view: live curriculum, my status per lesson, continue/next lesson, quiz facts (never answers), my certificate, `has_reviewed` |
-| POST | /lessons/{uid}/playback | Playback + DRM tokens + watermark text (stream) |
-| POST | /lessons/{uid}/playback/heartbeat | Keep stream session alive (concurrency) |
+| POST | /lessons/{uid}/playback | Playback ID + signed tokens (`playback`, `drm` for video, `thumbnail`, `storyboard`) + watermark text (short name + masked phone) + web `stream.session_id`. Enrolled, or a preview lesson. Never a media URL |
+| POST | /lessons/{uid}/playback/heartbeat | `{session_id}` every 30 s; 409 `playback.stream_replaced` → stop (another screen took over) |
 | POST | /lessons/{uid}/offline-license | Persistent license for a registered device |
-| GET | /lessons/{uid}/document | Short-lived signed URL to the stamped PDF |
+| GET | /lessons/{uid}/document | My stamped copy: `ready` + signed `url` (10 min), or 202 `processing` with `retry_after`. The URL (`GET /documents/{stamp}/download`, signed, no session) streams the PDF inline, `no-store` |
 | GET | /me/entitlements | Mobile sync: active enrollments, revoked items, license states |
 | PUT | /me/progress | Batch progress sync `{items: [{lesson_uid, position_seconds?, completed?, client_updated_at?}]}` (≤ 100; monotonic) |
 | GET / POST | /lessons/{uid}/quiz-attempts | My attempts / start (or resume) one: questions without answers |

@@ -73,6 +73,7 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | Search index | `Course` is Scout-searchable (queued, after commit); `SyncCourseIndex` reindexes (after commit) on professor/user/category changes; `MakeListedSearchable` re-checks listing when the job runs. Production refuses any driver but `meilisearch`. Run `php artisan scout:sync-index-settings` on deploy |
 | Payments | Every gateway result goes through `PaymentLifecycle::apply()` (locks order then payment); start with `StartPayment`, re-query with `SyncPayment`. Ledger writes only via `PostLedgerTransaction` (balanced, one per type + reference) |
 | Course drafts | `EditDraft::withDraft($course, fn ($draft) => …)` locks the draft and refuses unless editable; review transitions in `CourseReview` |
+| Playback / documents | `IssuePlayback` (access, tokens via `VideoProvider`, web stream limit), `RecordStreamHeartbeat`, `RequestDocument` + `StampDocument` job; `ViewerMark` builds watermark/stamp text (masked phone only). PDFs go through `DocumentStamper` (FPDI) — `fakePdf()` in tests makes a real one-page PDF, `brokenPdf()` an unreadable one |
 | Mobile money | `App\Integrations\Payments\PaymentGateway` (fake driver until the aggregator is chosen) |
 | SMS | `App\Integrations\Sms\SmsSender` (`log` driver until the provider is chosen) |
 
