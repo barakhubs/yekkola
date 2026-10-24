@@ -25,7 +25,6 @@ export interface ProfessorProfileResource {
   avatar_url: string | null;
   province: ProvinceResource | null;
   is_verified: boolean;
-  rating_avg: number;
   rating_count: number;
   /**
    * What to display: like courses, nothing until there are enough reviews (PRD-04 BR-02).

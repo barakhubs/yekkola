@@ -37,7 +37,6 @@ export const ProfessorsShowResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -115,7 +114,6 @@ export const AdminProfessorsIndexResponse = zod.object({
         zod.null(),
       ]),
       is_verified: zod.boolean(),
-      rating_avg: zod.number(),
       rating_count: zod.int(),
       rating: zod
         .number()
@@ -240,7 +238,6 @@ export const AdminProfessorsShowResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -356,7 +353,6 @@ export const AdminProfessorsUpdateResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -461,7 +457,6 @@ export const AdminProfessorsSuspendResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -566,7 +561,6 @@ export const AdminProfessorsReinstateResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()

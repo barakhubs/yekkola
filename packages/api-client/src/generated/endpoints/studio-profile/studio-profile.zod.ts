@@ -30,7 +30,6 @@ export const ProfessorProfileShowResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -183,7 +182,6 @@ export const ProfessorProfileUpdateResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -286,7 +284,6 @@ export const ProfessorProfileAvatarResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
@@ -389,7 +386,6 @@ export const ProfessorTermsAcceptResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()

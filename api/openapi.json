@@ -9165,9 +9165,6 @@
                     "is_verified": {
                         "type": "boolean"
                     },
-                    "rating_avg": {
-                        "type": "number"
-                    },
                     "rating_count": {
                         "type": "integer"
                     },
@@ -9281,7 +9278,6 @@
                     "avatar_url",
                     "province",
                     "is_verified",
-                    "rating_avg",
                     "rating_count",
                     "rating",
                     "student_count",
@@ -12010,9 +12006,6 @@
                     "is_verified": {
                         "type": "boolean"
                     },
-                    "rating_avg": {
-                        "type": "number"
-                    },
                     "rating_count": {
                         "type": "integer"
                     },
@@ -12143,7 +12136,6 @@
                     "avatar_url",
                     "province",
                     "is_verified",
-                    "rating_avg",
                     "rating_count",
                     "rating",
                     "student_count",
@@ -12247,9 +12239,6 @@
                     "is_verified": {
                         "type": "boolean"
                     },
-                    "rating_avg": {
-                        "type": "number"
-                    },
                     "rating_count": {
                         "type": "integer"
                     },
@@ -12287,7 +12276,6 @@
                     "avatar_url",
                     "province",
                     "is_verified",
-                    "rating_avg",
                     "rating_count",
                     "rating",
                     "student_count",

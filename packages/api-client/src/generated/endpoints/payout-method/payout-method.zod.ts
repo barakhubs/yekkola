@@ -52,7 +52,6 @@ export const ProfessorPayoutMethodUpdateResponse = zod.object({
       zod.null(),
     ]),
     is_verified: zod.boolean(),
-    rating_avg: zod.number(),
     rating_count: zod.int(),
     rating: zod
       .number()
