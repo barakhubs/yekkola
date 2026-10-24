@@ -73,6 +73,15 @@ return [
     // Private files (data exports, later KYC): `local` in development, an S3/R2 disk in staging/production.
     'private_disk' => env('PRIVATE_DISK', 'local'),
 
+    // Content protection (PRD-07). Per-account limits and token lifetimes are platform settings (ProtectionSettings).
+    'protection' => [
+        // Web players send a heartbeat this often; a stream without one for `stream_stale_seconds` no longer counts.
+        'stream_heartbeat_seconds' => 30,
+        'stream_stale_seconds' => 90,
+        // Signed download links for stamped documents.
+        'document_link_ttl_minutes' => 10,
+    ],
+
     // Local/staging seed: phone number (one you control) for the demo super admin. Empty = not seeded.
     'demo_admin_phone' => env('DEMO_ADMIN_PHONE'),
 

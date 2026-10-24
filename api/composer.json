@@ -21,6 +21,8 @@
         "laravel/scout": "^11.9",
         "laravel/tinker": "^3.0",
         "meilisearch/meilisearch-php": "^1.17",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi": "^2.6",
         "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-backup": "^10.3",
         "spatie/laravel-medialibrary": "^11.23",

@@ -107,10 +107,21 @@ return [
         'own_course' => 'Vous ne pouvez pas examiner votre propre cours.',
         'invalid_order' => 'L’ordre envoyé ne correspond pas au contenu du cours.',
     ],
+    'playback' => [
+        'not_playable' => 'Cette leçon n’a ni vidéo ni audio.',
+        'media_not_ready' => 'Cette leçon est encore en cours de traitement. Réessayez dans quelques minutes.',
+        'preview_only' => 'Connectez-vous et inscrivez-vous pour suivre cette leçon.',
+        'stream_replaced' => 'Ce cours est en lecture sur un autre écran.',
+    ],
+    'document' => [
+        'not_a_document' => 'Cette leçon n’a pas de document.',
+        'unavailable' => 'Ce document n’est pas disponible pour le moment.',
+    ],
     'lesson' => [
         'not_found' => 'Leçon introuvable.',
         'preview_limit_reached' => 'Nombre maximal de leçons d’aperçu atteint.',
         'type_mismatch' => 'Ce contenu ne correspond pas au type de leçon.',
+        'document_not_supported' => 'Ce PDF ne peut pas être protégé. Exportez-le à nouveau en PDF 1.4 (par exemple « PDF/A-1b ») puis rechargez-le.',
     ],
     'review' => [
         'progress_too_low' => 'Suivez au moins :min_progress_pct % du cours avant de le noter.',

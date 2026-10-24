@@ -12,6 +12,8 @@ use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\CourseVersion;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\MediaAsset;
+use App\Domain\Protection\Stamping\DocumentNotStampable;
+use App\Domain\Protection\Stamping\DocumentStamper;
 use App\Integrations\Video\DirectUploadRequest;
 use App\Integrations\Video\VideoProvider;
 use Illuminate\Http\UploadedFile;
@@ -29,6 +31,7 @@ final class SetLessonContent
     public function __construct(
         private readonly EditDraft $editDraft,
         private readonly VideoProvider $videos,
+        private readonly DocumentStamper $stamper,
     ) {}
 
     /**
@@ -63,6 +66,13 @@ final class SetLessonContent
 
     public function attachDocument(Course $course, string $lessonId, UploadedFile $file): Lesson
     {
+        // Students only ever get stamped copies (PRD-07 FR-12): refuse a PDF the stamper can't read.
+        try {
+            $this->stamper->inspect((string) $file->getRealPath());
+        } catch (DocumentNotStampable) {
+            throw AuthoringException::documentNotSupported();
+        }
+
         return $this->editDraft->withDraft($course, function (CourseVersion $draft) use ($lessonId, $file): Lesson {
             $lesson = $draft->lessons()->findOrFail($lessonId);
 

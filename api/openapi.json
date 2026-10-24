@@ -3190,6 +3190,137 @@
                 }
             }
         },
+        "/lessons/{lesson}/document": {
+            "get": {
+                "operationId": "lessons.document",
+                "summary": "`ready` with a signed `url` (valid a few minutes), or `processing` (202) while the copy is being made:\nask again after `retry_after` seconds",
+                "tags": [
+                    "Document"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "const": "ready"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "expires_at": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "status",
+                                                "url",
+                                                "expires_at"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "const": "processing"
+                                                },
+                                                "retry_after": {
+                                                    "type": "integer",
+                                                    "const": 3
+                                                }
+                                            },
+                                            "required": [
+                                                "status",
+                                                "retry_after"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/documents/{stamp}/download": {
+            "get": {
+                "operationId": "documents.download",
+                "summary": "The stamped PDF behind a signed link (no session needed: in-app viewers and downloads open it directly)",
+                "tags": [
+                    "Document"
+                ],
+                "parameters": [
+                    {
+                        "name": "stamp",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/professor/courses/{course}/draft/cover": {
             "post": {
                 "operationId": "professor.draft.cover",
@@ -5431,6 +5562,152 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/playback": {
+            "post": {
+                "operationId": "lessons.playback",
+                "summary": "Tokens for an enrolled lesson (or a preview). Web players get a stream session to heartbeat; mobile apps\n(device token) don't count toward the web stream limit",
+                "tags": [
+                    "Playback"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PlaybackResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PlaybackResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/playback/heartbeat": {
+            "post": {
+                "operationId": "lessons.playback.heartbeat",
+                "summary": "Keeps a web stream live. `playback.stream_replaced` (409) means another screen took over: stop playing",
+                "tags": [
+                    "Playback"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HeartbeatRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "session_id": {
+                                                    "type": "string"
+                                                },
+                                                "active": {
+                                                    "type": "boolean"
+                                                },
+                                                "heartbeat_seconds": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "session_id",
+                                                "active",
+                                                "heartbeat_seconds"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/preview-playback": {
+            "post": {
+                "operationId": "lessons.preview-playback",
+                "summary": "Tokens for a preview lesson of a listed course, without signing in (PRD-04 FR-06). No watermark name",
+                "tags": [
+                    "Playback"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PlaybackResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PlaybackResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -10278,6 +10555,21 @@
                 ],
                 "title": "GuestOrderRequest"
             },
+            "HeartbeatRequest": {
+                "type": "object",
+                "description": "The stream session returned with the playback tokens (PRD-07 FR-05).",
+                "properties": {
+                    "session_id": {
+                        "type": "string",
+                        "minLength": 26,
+                        "maxLength": 26
+                    }
+                },
+                "required": [
+                    "session_id"
+                ],
+                "title": "HeartbeatRequest"
+            },
             "KycDocumentType": {
                 "type": "string",
                 "enum": [
@@ -11070,6 +11362,107 @@
                     "created_at"
                 ],
                 "title": "PaymentResource"
+            },
+            "PlaybackResource": {
+                "type": "object",
+                "properties": {
+                    "lesson_uid": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "type": "string"
+                    },
+                    "playback_id": {
+                        "type": "string"
+                    },
+                    "tokens": {
+                        "type": "object",
+                        "properties": {
+                            "playback": {
+                                "type": "string"
+                            },
+                            "drm": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "thumbnail": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "storyboard": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "playback",
+                            "drm",
+                            "thumbnail",
+                            "storyboard"
+                        ]
+                    },
+                    "expires_at": {
+                        "type": "string"
+                    },
+                    "watermark": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "text": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "text"
+                        ]
+                    },
+                    "stream": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "session_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "heartbeat_seconds": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "session_id",
+                            "heartbeat_seconds"
+                        ]
+                    },
+                    "is_preview": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "lesson_uid",
+                    "kind",
+                    "playback_id",
+                    "tokens",
+                    "expires_at",
+                    "watermark",
+                    "stream",
+                    "is_preview"
+                ],
+                "title": "PlaybackResource"
             },
             "ProfessorApplicationResource": {
                 "anyOf": [
