@@ -144,6 +144,17 @@ final class User extends Authenticatable
         return str_starts_with($this->phone_e164, 'deleted:') ? null : $this->phone->masked();
     }
 
+    /** First name and last initial ("Marie Kabongo" → "Marie K."): reviews, the player watermark. */
+    public static function shortNameOf(?string $name): ?string
+    {
+        $parts = preg_split('/\s+/u', trim((string) $name), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if ($parts === []) {
+            return null;
+        }
+
+        return count($parts) === 1 ? $parts[0] : $parts[0].' '.mb_strtoupper(mb_substr((string) end($parts), 0, 1)).'.';
+    }
+
     public function isAnonymised(): bool
     {
         return str_starts_with($this->phone_e164, 'deleted:');

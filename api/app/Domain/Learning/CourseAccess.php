@@ -18,8 +18,12 @@ final class CourseAccess
 {
     public function enrollment(User $user, string $courseId): Enrollment
     {
-        return Enrollment::query()->active()->where('user_id', $user->id)->where('course_id', $courseId)->first()
-            ?? throw LearningException::enrollmentRequired();
+        return $this->activeEnrollment($user, $courseId) ?? throw LearningException::enrollmentRequired();
+    }
+
+    public function activeEnrollment(User $user, string $courseId): ?Enrollment
+    {
+        return Enrollment::query()->active()->where('user_id', $user->id)->where('course_id', $courseId)->first();
     }
 
     /**
@@ -27,16 +31,28 @@ final class CourseAccess
      */
     public function lesson(User $user, string $lessonUid, bool $allowPreview = false): array
     {
+        [$lesson, $course] = $this->liveLesson($lessonUid);
+
+        if (! ($allowPreview && $lesson->is_preview)) {
+            $this->enrollment($user, $course->id);
+        }
+
+        return [$lesson, $course];
+    }
+
+    /**
+     * The lesson with this uid in its course's live version — no access check.
+     *
+     * @return array{0: Lesson, 1: Course}
+     */
+    public function liveLesson(string $lessonUid): array
+    {
         $lesson = Lesson::query()->where('uid', $lessonUid)
             ->whereHas('version', fn ($q) => $q->whereIn('id', Course::query()->whereNotNull('live_version_id')->select('live_version_id')))
             ->with('version')
             ->first() ?? throw LearningException::lessonNotFound();
 
         $course = Course::query()->where('live_version_id', $lesson->course_version_id)->firstOrFail();
-
-        if (! ($allowPreview && $lesson->is_preview)) {
-            $this->enrollment($user, $course->id);
-        }
 
         return [$lesson, $course];
     }
