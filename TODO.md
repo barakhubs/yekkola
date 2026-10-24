@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-07-playback-documents` (1.9 slice for web milestone 1, step 2)
-- **Next up:** minimal playback + document URLs (1.9 slice), then the public site (2.3)
+- **Waiting:** PR #17 (playback + stamped documents, web milestone 1 step 2) to be merged
+- **Next up:** public site (2.3) — web milestone 1 step 3
 
 ## Legend
 
@@ -159,7 +159,7 @@ Cannot be defaulted:
 - [x] Meilisearch indexing (queued, after commit, reindex on professor/category changes) with database fallback (FR-03, FR-11) — #9
 - [x] Wishlist (erased on deletion, in data export) (FR-08) — #9
 - [x] Certificate verification endpoint (FR-09) — #15
-- [x] Preview playback tokens without login (FR-06)
+- [x] Preview playback tokens without login (FR-06) — #17
 - [ ] Popular rail by enrollments in the last 30 days — with 1.8
 - [ ] API response cache for public pages (tag-invalidated on publish)
 - [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against real Mux renditions
@@ -207,12 +207,12 @@ Cannot be defaulted:
 - [ ] Course updated notice with changelog (FR-15)
 
 ### 1.9 Content protection — PRD-07
-- [x] Playback + DRM token endpoint with checks, viewer watermark text (FR-02, FR-04)
+- [x] Playback + DRM token endpoint with checks, viewer watermark text (FR-02, FR-04) — #17
 - [ ] Playback for mobile: require the registered device (`X-Device-Id`) and check account device limits (FR-06) — with offline licenses
-- [x] Stream sessions + concurrent web limit (FR-05)
+- [x] Stream sessions + concurrent web limit (FR-05) — #17
 - [ ] Offline license endpoint + `offline_licenses` (FR-07)
 - [ ] Entitlement sync endpoint (FR-10)
-- [x] Per-student PDF stamping + signed URLs (FR-12)
+- [x] Per-student PDF stamping + signed URLs (FR-12) — #17
 - [ ] Free FPDI can't read PDFs with compressed cross-reference streams (many PDF 1.5+ exports); those uploads are refused with export advice. Evaluate the FPDI PDF-Parser licence or a qpdf/Ghostscript normaliser on Laravel Cloud **(needs: decision)**
 - [ ] Clean up stamped copies when a document is replaced (old `document_stamps` rows go with the media row; their files stay)
 - [ ] Check documents uploaded before the stamper check (`inspect`) and tell professors which ones must be re-exported
