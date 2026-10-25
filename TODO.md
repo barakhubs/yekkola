@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-06-learning-view` (web milestone 1 step 5)
+- **Waiting:** PR #20 (learning view — web milestone 1 step 5) to be merged
 - **Next up:** paid checkout on the fake gateway (2.4) — web milestone 1 step 6
 
 ## Legend
@@ -331,9 +331,9 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Sign-in: live countdown from `retry_after` on 429, support contact after 3 resends (PRD-01 §6–7); test resend with single-use bot tokens (Playwright)
 - [ ] Light "am I enrolled" check for the course page (it uses the full learning view today)
 - [ ] Header session check: avoid a GET /me on every public page view for visitors (e.g. a non-HttpOnly "signed-in" hint cookie)
-- [x] Learning view: Mux Player + watermark overlay, curriculum, progress (saved every 15 s, on pause/end/leave), web stream limit
-- [x] Document viewer (stamped copy, inline + open), quizzes (timer, results, explanations, retake)
-- [x] Course completion: certificate link + review form (PRD-06 FR-16)
+- [x] Learning view: Mux Player + watermark overlay, curriculum, progress (saved every 15 s, on pause/end/leave), web stream limit — #20
+- [x] Document viewer (stamped copy, inline + open), quizzes (timer, results, explanations, retake) — #20
+- [x] Course completion: certificate link + review form (PRD-06 FR-16) — #20
 - [ ] Lesson Q&A (with API 1.8c), certificates list page, edit/delete my review
 - [ ] Learning view: refresh playback tokens before they expire on long sessions; keyboard shortcuts for next/previous
 - [ ] Playwright journey: sign in → enrol free → watch preview → finish document + quiz → certificate
