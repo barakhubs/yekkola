@@ -291,6 +291,7 @@ export * from "./professorCoursesIndex200";
 export * from "./professorCoursesIndex200Links";
 export * from "./professorCoursesIndex200Meta";
 export * from "./professorCoursesIndex200MetaLinksItem";
+export * from "./professorCoursesIndexParams";
 export * from "./professorCoursesRepublish200";
 export * from "./professorCoursesShow200";
 export * from "./professorCoursesStore201";

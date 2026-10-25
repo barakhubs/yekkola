@@ -26,6 +26,7 @@ import type {
   ProfessorCoursesArchive200,
   ProfessorCoursesDraftStart201,
   ProfessorCoursesIndex200,
+  ProfessorCoursesIndexParams,
   ProfessorCoursesRepublish200,
   ProfessorCoursesShow200,
   ProfessorCoursesStore201,
@@ -444,36 +445,53 @@ export type professorCoursesIndexResponseSuccess = professorCoursesIndexResponse
 };
 export type professorCoursesIndexResponse = professorCoursesIndexResponseSuccess;
 
-export const getProfessorCoursesIndexUrl = () => {
-  return `/professor/courses`;
+export const getProfessorCoursesIndexUrl = (params?: ProfessorCoursesIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/professor/courses?${stringifiedParams}` : `/professor/courses`;
 };
 
+/**
+ * @summary My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`
+ */
 export const professorCoursesIndex = async (
+  params?: ProfessorCoursesIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorCoursesIndexResponse> => {
-  return apiFetch<professorCoursesIndexResponse>(getProfessorCoursesIndexUrl(), {
+  return apiFetch<professorCoursesIndexResponse>(getProfessorCoursesIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getProfessorCoursesIndexQueryKey = () => {
-  return [`/professor/courses`] as const;
+export const getProfessorCoursesIndexQueryKey = (params?: ProfessorCoursesIndexParams) => {
+  return [`/professor/courses`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfessorCoursesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: ProfessorCoursesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorCoursesIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getProfessorCoursesIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorCoursesIndex>>> = ({ signal }) =>
-    professorCoursesIndex({ signal, ...requestOptions });
+    professorCoursesIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof professorCoursesIndex>>,
@@ -489,6 +507,7 @@ export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | ProfessorCoursesIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>> &
       Pick<
@@ -507,6 +526,7 @@ export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorCoursesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>> &
       Pick<
@@ -525,24 +545,29 @@ export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorCoursesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`
+ */
 
 export function useProfessorCoursesIndex<
   TData = Awaited<ReturnType<typeof professorCoursesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorCoursesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCoursesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorCoursesIndexQueryOptions(options);
+  const queryOptions = getProfessorCoursesIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

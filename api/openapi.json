@@ -2346,8 +2346,34 @@
         "/professor/courses": {
             "get": {
                 "operationId": "professor.courses.index",
+                "summary": "My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`",
                 "tags": [
                     "Course"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {

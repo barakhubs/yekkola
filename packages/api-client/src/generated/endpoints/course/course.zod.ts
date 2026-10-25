@@ -413,6 +413,18 @@ export const FeaturedResponse = zod.object({
   }),
 });
 
+/**
+ * @summary My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`
+ */
+export const professorCoursesIndexQueryPageDefault = 1;
+export const professorCoursesIndexQueryPerPageDefault = 15;
+
+export const ProfessorCoursesIndexQueryParams = zod.object({
+  page: zod.int().default(professorCoursesIndexQueryPageDefault),
+  per_page: zod.int().default(professorCoursesIndexQueryPerPageDefault),
+  "filter[status]": zod.string().optional(),
+});
+
 export const professorCoursesIndexResponseMetaPerPageMin = 0;
 
 export const professorCoursesIndexResponseMetaTotalMin = 0;
