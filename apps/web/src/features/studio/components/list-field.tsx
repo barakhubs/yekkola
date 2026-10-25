@@ -4,7 +4,9 @@ import { Button } from "@yekkola/ui/components/button";
 import { Input } from "@yekkola/ui/components/input";
 import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useId } from "react";
+import { useId, useState } from "react";
+
+let nextKey = 0;
 
 /**
  * A short list of lines (outcomes, requirements). Field errors come back per line from the API
@@ -32,6 +34,15 @@ export function ListField({
   const t = useTranslations("web.studio");
   const id = useId();
   const listError = errors[name];
+  // Stable keys per line, so removing a middle line keeps focus and input state on the right rows.
+  const [keys, setKeys] = useState<number[]>(() => items.map(() => nextKey++));
+  if (keys.length !== items.length) {
+    setKeys(
+      keys.length < items.length
+        ? [...keys, ...items.slice(keys.length).map(() => nextKey++)]
+        : keys.slice(0, items.length),
+    );
+  }
 
   return (
     <fieldset className="grid gap-2" disabled={disabled}>
@@ -45,7 +56,7 @@ export function ListField({
         {items.map((item, index) => {
           const error = errors[`${name}.${index}`];
           return (
-            <li key={index} className="grid gap-1">
+            <li key={keys[index] ?? `extra-${index}`} className="grid gap-1">
               <div className="flex gap-2">
                 <Input
                   value={item}
@@ -59,7 +70,10 @@ export function ListField({
                   variant="ghost"
                   size="icon"
                   aria-label={t("removeItem", { number: index + 1 })}
-                  onClick={() => onChange(items.filter((_, i) => i !== index))}
+                  onClick={() => {
+                    setKeys(keys.filter((_, i) => i !== index));
+                    onChange(items.filter((_, i) => i !== index));
+                  }}
                 >
                   <X aria-hidden />
                 </Button>

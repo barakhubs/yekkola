@@ -42,11 +42,16 @@ export function MediaContent({
   const maxMb = options.data?.upload_limits_mb[kind];
   const media = lesson.media;
 
-  // While the provider processes the file, ask about it (the API re-checks the provider for late webhooks).
-  const waiting =
-    media?.status === "processing" || (media?.status === "waiting_upload" && upload?.status === "done");
+  // Until the provider has processed the file, ask about it: the API re-checks the provider while processing,
+  // and an upload that finished just before a reload shows up once the provider's webhook arrives. Stops after
+  // about 5 minutes so an abandoned upload doesn't poll forever.
+  const waiting = media?.status === "processing" || media?.status === "waiting_upload";
   const polled = useProfessorMediaShow(media?.id ?? "", {
-    query: { enabled: Boolean(media && waiting), refetchInterval: 5_000, select: (r) => success(r).data },
+    query: {
+      enabled: Boolean(media && waiting),
+      refetchInterval: (query) => (query.state.dataUpdateCount < 60 ? 5_000 : false),
+      select: (r) => success(r).data,
+    },
   });
   const polledStatus = polled.data?.status;
   useEffect(() => {
@@ -70,7 +75,10 @@ export function MediaContent({
                 {upload.status === "offline" ? <WifiOff aria-hidden className="size-4" /> : null}
                 {upload.status === "offline" ? t("media.offline") : t("media.uploading")}
               </span>
-              <span className="tabular-nums">{upload.progress} %</span>
+              {/* The progress bar carries the number; the live region only announces state changes. */}
+              <span aria-hidden className="tabular-nums">
+                {upload.progress} %
+              </span>
             </div>
             <div
               role="progressbar"

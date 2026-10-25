@@ -14,6 +14,7 @@ import { type FormEvent, useId, useRef, useState } from "react";
 
 import { fieldErrorsOf, useAuthoringOptions, useErrorText, useRefreshCourse } from "../hooks";
 import { selectClass } from "../styles";
+import { useUnsavedChanges } from "../unsaved";
 
 interface DraftOption {
   key: string;
@@ -77,6 +78,8 @@ export function QuizBuilder({
     })),
   );
   const [dirty, setDirty] = useState(false);
+  const addButton = useRef<HTMLButtonElement>(null);
+  useUnsavedChanges(dirty);
 
   const save = useMutation({
     mutationFn: async () =>
@@ -105,7 +108,8 @@ export function QuizBuilder({
   const change = (next: DraftQuestion[]) => {
     setQuestions(next);
     setDirty(true);
-    if (save.isSuccess) save.reset();
+    // Earlier errors point at question/option indices that may have moved.
+    if (!save.isPending) save.reset();
   };
   const update = (index: number, patch: Partial<DraftQuestion>) =>
     change(questions.map((q, i) => (i === index ? { ...q, ...patch } : q)));
@@ -402,7 +406,10 @@ export function QuizBuilder({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => change(questions.filter((_, i) => i !== index))}
+                    onClick={() => {
+                      change(questions.filter((_, i) => i !== index));
+                      addButton.current?.focus();
+                    }}
                   >
                     <Trash2 aria-hidden />
                     {t("removeQuestion")}
@@ -419,7 +426,13 @@ export function QuizBuilder({
 
       {editable ? (
         <div className="flex flex-wrap items-center gap-3">
-          <Button type="button" variant="outline" onClick={addQuestion} disabled={questions.length >= 200}>
+          <Button
+            ref={addButton}
+            type="button"
+            variant="outline"
+            onClick={addQuestion}
+            disabled={questions.length >= 200}
+          >
             <Plus aria-hidden />
             {t("addQuestion")}
           </Button>

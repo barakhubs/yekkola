@@ -15,10 +15,11 @@ import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { Textarea } from "@yekkola/ui/components/textarea";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import { fieldErrorsOf, useAuthoringOptions, useErrorText, useRefreshCourse } from "../hooks";
 import { DocumentContent, MediaContent } from "./lesson-content";
+import { useUnsavedChanges } from "../unsaved";
 import { QuizBuilder } from "./quiz-builder";
 
 /** One lesson: title, description, free preview (PRD-03 FR-08), and its content by type (FR-04, FR-06, FR-07). */
@@ -26,11 +27,14 @@ export function LessonEditor({
   courseId,
   lesson,
   editable,
+  focusOnMount = false,
   onDeleted,
 }: {
   courseId: string;
   lesson: StudioLessonResource;
   editable: boolean;
+  /** A lesson just added: start typing its details straight away. */
+  focusOnMount?: boolean;
   onDeleted: () => void;
 }) {
   const t = useTranslations("web.studio");
@@ -43,6 +47,14 @@ export function LessonEditor({
   const [description, setDescription] = useState(lesson.description ?? "");
   const [preview, setPreview] = useState(lesson.is_preview);
   const [dirty, setDirty] = useState(false);
+  const titleInput = useRef<HTMLInputElement>(null);
+  useUnsavedChanges(dirty);
+
+  useEffect(() => {
+    if (focusOnMount) titleInput.current?.focus();
+    // Only when the editor first appears.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const save = useMutation({
     mutationFn: async () =>
@@ -85,6 +97,7 @@ export function LessonEditor({
           <div className="grid gap-2">
             <Label htmlFor={`${id}-title`}>{t("fields.lessonTitle")}</Label>
             <Input
+              ref={titleInput}
               id={`${id}-title`}
               value={title}
               maxLength={120}
@@ -152,6 +165,10 @@ export function LessonEditor({
         </h4>
         {options.isPending ? (
           <Skeleton className="h-20 w-full" />
+        ) : options.isError ? (
+          <p role="alert" className="text-sm text-destructive">
+            {errorText(options.error)}
+          </p>
         ) : lesson.type === "video" || lesson.type === "audio" ? (
           <MediaContent courseId={courseId} lesson={lesson} editable={editable} />
         ) : lesson.type === "document" ? (

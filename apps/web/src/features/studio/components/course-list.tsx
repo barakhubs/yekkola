@@ -39,7 +39,7 @@ import { COURSE_TONES, courseStatusOf } from "../status";
 export function StudioCourseList() {
   const t = useTranslations("web.studio");
   const pagination = useTranslations("web.pagination");
-  const errors = useTranslations("errors");
+  const errorText = useErrorText();
   const locale = useLocale() as Locale;
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const courses = useProfessorCoursesIndex({ page, per_page: 20 }, { query: { select: (r) => success(r) } });
@@ -52,7 +52,7 @@ export function StudioCourseList() {
       {courses.isPending ? (
         <Skeleton className="h-48 w-full" />
       ) : courses.isError ? (
-        <EmptyState title={errors("network")} />
+        <EmptyState title={errorText(courses.error)} />
       ) : courses.data.data.length === 0 ? (
         <EmptyState icon={<BookOpen />} title={t("noCourses")} description={t("noCoursesHint")} />
       ) : (
@@ -95,7 +95,12 @@ export function StudioCourseList() {
                 </div>
                 <div className="flex items-center">
                   <Button asChild variant="outline">
-                    <Link href={`/studio/courses/${course.id}/details`}>{t("edit")}</Link>
+                    <Link
+                      href={`/studio/courses/${course.id}/details`}
+                      aria-label={t("editNamed", { title: course.title ?? t("untitled") })}
+                    >
+                      {t("edit")}
+                    </Link>
                   </Button>
                 </div>
               </li>

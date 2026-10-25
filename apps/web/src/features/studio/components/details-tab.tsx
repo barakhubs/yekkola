@@ -30,6 +30,7 @@ import {
   useStudioCourse,
 } from "../hooks";
 import { selectClass } from "../styles";
+import { useUnsavedChanges } from "../unsaved";
 import { DraftGate } from "./draft-gate";
 import { ListField } from "./list-field";
 
@@ -111,6 +112,23 @@ function SaveStatus({ saved, error }: { saved: boolean; error: unknown }) {
   );
 }
 
+/** Non-blank lines with their row index, as sent to the API. */
+function filled(lines: string[]): [string, number][] {
+  return lines.flatMap((line, row) => (line.trim() ? [[line.trim(), row] as [string, number]] : []));
+}
+
+/** Re-keys `outcomes.N` / `requirements.N` errors from the sent (blank-free) list to the rows on screen. */
+function rowErrors(errors: Record<string, string>, lists: Record<string, string[]>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(errors).map(([key, message]) => {
+      const [list, index] = key.split(".");
+      const lines = list ? lists[list] : undefined;
+      const row = lines && index !== undefined ? filled(lines)[Number(index)]?.[1] : undefined;
+      return [row === undefined ? key : `${list}.${row}`, message];
+    }),
+  );
+}
+
 function DraftDetailsForm({
   courseId,
   draft,
@@ -133,6 +151,7 @@ function DraftDetailsForm({
   const [requirements, setRequirements] = useState<string[]>(draft.requirements);
   const [changelog, setChangelog] = useState(draft.changelog ?? "");
   const [dirty, setDirty] = useState(false);
+  useUnsavedChanges(dirty);
 
   const save = useMutation({
     mutationFn: async () =>
@@ -141,8 +160,8 @@ function DraftDetailsForm({
           title: title.trim(),
           subtitle: subtitle.trim() || null,
           description: description.trim() || null,
-          outcomes: outcomes.map((o) => o.trim()).filter(Boolean),
-          requirements: requirements.map((r) => r.trim()).filter(Boolean),
+          outcomes: filled(outcomes).map(([text]) => text),
+          requirements: filled(requirements).map(([text]) => text),
           ...(hasLive ? { changelog: changelog.trim() || null } : {}),
         }),
       ),
@@ -151,7 +170,7 @@ function DraftDetailsForm({
       await refresh();
     },
   });
-  const errors = fieldErrorsOf(save.error);
+  const errors = rowErrors(fieldErrorsOf(save.error), { outcomes, requirements });
   const edit =
     <T,>(set: (value: T) => void) =>
     (value: T) => {
@@ -338,6 +357,7 @@ function CourseSettingsForm({ course }: { course: StudioCourseResource }) {
   const catalog = useTranslations("web.catalog");
   const common = useTranslations("common");
   const refresh = useRefreshCourse(course.id);
+  const errorText = useErrorText();
   const options = useAuthoringOptions();
   const categories = useCategoriesIndex({
     query: { select: (r) => success(r).data, staleTime: 10 * 60_000 },
@@ -347,6 +367,7 @@ function CourseSettingsForm({ course }: { course: StudioCourseResource }) {
   const [level, setLevel] = useState(course.level);
   const [audience, setAudience] = useState<string[]>(course.audience);
   const [dirty, setDirty] = useState(false);
+  useUnsavedChanges(dirty);
 
   const save = useMutation({
     mutationFn: async () =>
@@ -371,6 +392,13 @@ function CourseSettingsForm({ course }: { course: StudioCourseResource }) {
 
   if (options.isPending || categories.isPending) {
     return <Skeleton className="h-48 w-full" />;
+  }
+  if (options.isError || categories.isError) {
+    return (
+      <p role="alert" className="text-sm text-destructive">
+        {errorText(options.error ?? categories.error)}
+      </p>
+    );
   }
 
   return (

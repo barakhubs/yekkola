@@ -103,6 +103,16 @@ function Curriculum({
   const [local, setLocal] = useState<Layout | null>(null);
   const localRef = useRef<Layout | null>(null);
   const [openLesson, setOpenLesson] = useState<string | null>(null);
+  // Editors opened once stay mounted while folded, so unsaved edits survive folding a lesson.
+  const [mounted, setMounted] = useState<ReadonlySet<string>>(() => new Set());
+  const [justAdded, setJustAdded] = useState<string | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const openOnly = (lessonId: string | null) => {
+    setOpenLesson(lessonId);
+    if (lessonId) setMounted((current) => new Set(current).add(lessonId));
+  };
+  // After a deletion the focused control is gone: put focus back at the top of the curriculum.
+  const afterDelete = () => heading.current?.focus();
   const layout = local ?? server;
 
   const setLayout = (next: Layout | null) => {
@@ -173,6 +183,9 @@ function Curriculum({
 
   return (
     <div className="grid gap-4">
+      <h2 ref={heading} tabIndex={-1} className="sr-only">
+        {t("tabs.curriculum")}
+      </h2>
       {editable ? <p className="text-sm text-muted-foreground">{t("curriculumIntro")}</p> : null}
 
       {reorder.isError ? (
@@ -224,7 +237,11 @@ function Curriculum({
                   editable={editable}
                   busy={reorder.isPending}
                   lessonCount={(layout.lessons[sectionId] ?? []).length}
-                  onLessonAdded={setOpenLesson}
+                  onLessonAdded={(lessonId) => {
+                    openOnly(lessonId);
+                    setJustAdded(lessonId);
+                  }}
+                  onDeleted={afterDelete}
                 >
                   {(layout.lessons[sectionId] ?? []).map((lessonId, lessonIndex) => {
                     const lesson = lessonsById.get(lessonId);
@@ -234,11 +251,15 @@ function Curriculum({
                       lesson,
                       editable,
                       open: openLesson === lessonId,
-                      onToggle: () => setOpenLesson(openLesson === lessonId ? null : lessonId),
-                      onDeleted: () => setOpenLesson(null),
+                      mounted: mounted.has(lessonId),
+                      focusOnOpen: justAdded === lessonId,
+                      onToggle: () => openOnly(openLesson === lessonId ? null : lessonId),
+                      onDeleted: () => {
+                        openOnly(null);
+                        afterDelete();
+                      },
                     };
-                    // An open lesson is too tall to move comfortably (one key press barely moves it): fold it first.
-                    return editable && !props.open ? (
+                    return editable ? (
                       <DraggableLesson
                         key={lessonId}
                         {...props}
@@ -276,6 +297,7 @@ interface SectionProps {
   editable: boolean;
   lessonCount: number;
   onLessonAdded: (lessonId: string) => void;
+  onDeleted: () => void;
   children: ReactNode;
 }
 
@@ -326,6 +348,7 @@ function SectionCard({
   editable,
   lessonCount,
   onLessonAdded,
+  onDeleted,
   children,
   itemRef,
   handle,
@@ -393,6 +416,7 @@ function SectionCard({
             destructive
             onConfirm={async () => {
               await remove.mutateAsync();
+              onDeleted();
             }}
           />
         ) : null}
@@ -420,10 +444,18 @@ interface LessonProps {
   lesson: StudioLessonResource;
   editable: boolean;
   open: boolean;
+  /** Opened before: keep the editor (and its unsaved edits) while folded. */
+  mounted: boolean;
+  focusOnOpen: boolean;
   onToggle: () => void;
   onDeleted: () => void;
 }
 
+/**
+ * A lesson in an editable draft. Always mounted with its handle (dnd-kit would otherwise make the whole item a
+ * focusable "button"); the handle is disabled while the lesson is open — it is too tall to move comfortably,
+ * one key press barely moves it — and while a new order is being saved.
+ */
 function DraggableLesson({
   index,
   sectionId,
@@ -437,7 +469,7 @@ function DraggableLesson({
     group: sectionId,
     type: "lesson",
     accept: "lesson",
-    disabled: busy,
+    disabled: busy || props.open,
   });
 
   return (
@@ -449,9 +481,10 @@ function DraggableLesson({
         <button
           ref={handleRef}
           type="button"
-          disabled={busy}
+          disabled={busy || props.open}
           className={HANDLE_CLASS}
           aria-label={t("dragLesson", { title: props.lesson.title })}
+          title={props.open ? t("foldToMove") : undefined}
         >
           <GripVertical aria-hidden className="size-4" />
         </button>
@@ -465,6 +498,8 @@ function LessonCard({
   lesson,
   editable,
   open,
+  mounted,
+  focusOnOpen,
   onToggle,
   onDeleted,
   itemRef,
@@ -485,8 +520,7 @@ function LessonCard({
       className={cn("overflow-hidden rounded-lg border bg-background", dragging && "opacity-60")}
     >
       <div className="flex items-center gap-2 p-2">
-        {/* Same indent with or without a handle (an open lesson is folded before moving). */}
-        {handle ?? (editable ? <span aria-hidden className="size-6 shrink-0" /> : null)}
+        {handle}
         <span className="text-muted-foreground" title={catalog(`lessonTypes.${lesson.type as LessonType}`)}>
           {TYPE_ICONS[lesson.type]}
         </span>
@@ -515,6 +549,7 @@ function LessonCard({
           size="sm"
           aria-expanded={open}
           aria-controls={panelId}
+          aria-label={t(editable ? "editLessonNamed" : "viewLessonNamed", { title: lesson.title })}
           onClick={onToggle}
         >
           {editable ? t("editLesson") : t("viewLesson")}
@@ -522,12 +557,12 @@ function LessonCard({
         </Button>
       </div>
       <div id={panelId} hidden={!open}>
-        {open ? (
+        {open || mounted ? (
           <LessonEditor
-            key={`${lesson.id}:${lesson.title}:${lesson.is_preview}`}
             courseId={courseId}
             lesson={lesson}
             editable={editable}
+            focusOnMount={focusOnOpen}
             onDeleted={onDeleted}
           />
         ) : null}

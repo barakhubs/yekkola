@@ -1,7 +1,9 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  getProfessorCoursesIndexQueryKey,
+  getProfessorCoursesShowQueryKey,
   professorCoursesArchive,
   professorCoursesDestroy,
   professorCoursesDraftStart,
@@ -10,6 +12,8 @@ import {
   professorCoursesUnpublish,
   professorCoursesWithdraw,
 } from "@yekkola/api-client/endpoints/course";
+import { getProfessorDraftShowQueryKey } from "@yekkola/api-client/endpoints/draft";
+import type { StudioCourseResourceCan } from "@yekkola/api-client/model";
 import { formatDateTime, type Locale } from "@yekkola/i18n";
 import { ConfirmDialog } from "@yekkola/ui/blocks/confirm-dialog";
 import { Button } from "@yekkola/ui/components/button";
@@ -96,6 +100,7 @@ export function ReviewTab({ courseId }: { courseId: string }) {
                             <Link
                               href={`/studio/courses/${courseId}/${tab}`}
                               className="font-semibold underline"
+                              aria-label={t("fixItNamed", { item: t(`checklist.${item}`) })}
                             >
                               {t("fixIt")}
                             </Link>
@@ -113,13 +118,7 @@ export function ReviewTab({ courseId }: { courseId: string }) {
       ) : null}
 
       <Panel title={t("publishingTitle")}>
-        <Lifecycle
-          courseId={courseId}
-          status={c.status}
-          hasLive={Boolean(c.live_version)}
-          hasDraft={hasDraft}
-          enrollments={c.enrollment_count}
-        />
+        <Lifecycle courseId={courseId} can={c.can} />
       </Panel>
     </div>
   );
@@ -206,23 +205,12 @@ function InReview({ courseId, submittedAt }: { courseId: string; submittedAt: st
   );
 }
 
-/** Start a new draft, unpublish / republish, archive, delete — each offered only when it can apply. */
-function Lifecycle({
-  courseId,
-  status,
-  hasLive,
-  hasDraft,
-  enrollments,
-}: {
-  courseId: string;
-  status: string;
-  hasLive: boolean;
-  hasDraft: boolean;
-  enrollments: number;
-}) {
+/** Start a new draft, unpublish / republish, archive, delete — offered only when the API says they apply. */
+function Lifecycle({ courseId, can }: { courseId: string; can: StudioCourseResourceCan }) {
   const t = useTranslations("web.studio");
   const common = useTranslations("common");
   const router = useRouter();
+  const queryClient = useQueryClient();
   const refresh = useRefreshCourse(courseId);
   const action = useMutation({
     mutationFn: async (kind: "draft" | "unpublish" | "republish" | "archive" | "delete") => {
@@ -238,6 +226,10 @@ function Lifecycle({
     },
     onSuccess: async (kind) => {
       if (kind === "delete") {
+        // The course is gone: drop its cached pages and reload the list before going back to it.
+        queryClient.removeQueries({ queryKey: getProfessorCoursesShowQueryKey(courseId) });
+        queryClient.removeQueries({ queryKey: getProfessorDraftShowQueryKey(courseId) });
+        await queryClient.invalidateQueries({ queryKey: getProfessorCoursesIndexQueryKey() });
         router.push("/studio/courses");
         return;
       }
@@ -250,10 +242,9 @@ function Lifecycle({
     await action.mutateAsync(kind);
   };
 
-  const canDelete = !hasLive && enrollments === 0 && status !== "in_review";
   const items: ReactNode[] = [];
 
-  if (hasLive && !hasDraft && status !== "archived") {
+  if (can.start_draft) {
     items.push(
       <Action key="draft" hint={t("startDraftHint")}>
         <Button variant="outline" onClick={() => action.mutate("draft")} disabled={action.isPending}>
@@ -262,7 +253,7 @@ function Lifecycle({
       </Action>,
     );
   }
-  if (status === "published") {
+  if (can.unpublish) {
     items.push(
       <Action key="unpublish" hint={t("unpublishHint")}>
         <ConfirmDialog
@@ -276,7 +267,7 @@ function Lifecycle({
       </Action>,
     );
   }
-  if (status === "unpublished") {
+  if (can.republish) {
     items.push(
       <Action key="republish" hint={t("republishHint")}>
         <Button variant="outline" onClick={() => action.mutate("republish")} disabled={action.isPending}>
@@ -285,7 +276,7 @@ function Lifecycle({
       </Action>,
     );
   }
-  if (hasLive && status !== "archived") {
+  if (can.archive) {
     items.push(
       <Action key="archive" hint={t("archiveHint")}>
         <ConfirmDialog
@@ -300,7 +291,7 @@ function Lifecycle({
       </Action>,
     );
   }
-  if (canDelete) {
+  if (can.delete) {
     items.push(
       <Action key="delete" hint={t("deleteHint")}>
         <ConfirmDialog

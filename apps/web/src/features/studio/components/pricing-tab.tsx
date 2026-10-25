@@ -21,12 +21,21 @@ import {
   useStudioCourse,
 } from "../hooks";
 import { selectClass } from "../styles";
+import { useUnsavedChanges } from "../unsaved";
 
 /** Pricing tab (PRD-03 FR-09, FR-15, FR-18). */
 export function PricingTab({ courseId }: { courseId: string }) {
   const course = useStudioCourse(courseId);
   const options = useAuthoringOptions();
+  const errorText = useErrorText();
 
+  if (options.isError) {
+    return (
+      <p role="alert" className="text-sm text-destructive">
+        {errorText(options.error)}
+      </p>
+    );
+  }
   if (!course.data || options.isPending) {
     return <Skeleton className="h-64 w-full" />;
   }
@@ -46,10 +55,17 @@ function PricingForm({ course }: { course: StudioCourseResource }) {
   const options = useAuthoringOptions();
   const currencies = options.data?.currencies ?? [];
   const [mode, setMode] = useState<"free" | "paid">(course.is_free ? "free" : "paid");
-  const [currency, setCurrency] = useState(course.price?.currency ?? options.data?.default_currency ?? "");
+  // A currency the admin has since turned off can't take new prices: start from the default one instead.
+  const [currency, setCurrency] = useState(() => {
+    const current = course.price?.currency;
+    return current && currencies.some((c) => c.code === current)
+      ? current
+      : (options.data?.default_currency ?? "");
+  });
   const [amount, setAmount] = useState(course.price ? moneyInputValue(course.price, locale) : "");
   const [invalid, setInvalid] = useState(false);
   const [dirty, setDirty] = useState(false);
+  useUnsavedChanges(dirty);
   const limits = currencies.find((c) => c.code === currency);
 
   const save = useMutation({

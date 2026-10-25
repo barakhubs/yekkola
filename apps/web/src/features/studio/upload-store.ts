@@ -64,9 +64,10 @@ export function useUpload(lessonId: string): UploadState | undefined {
 
 /**
  * Asks the API for a fresh upload URL (each attempt gets its own, so an expired one is never reused), then sends
- * the file. `onSettled` runs once the provider has the whole file or the upload failed, to refresh the lesson.
+ * the file. `onChange` runs when the upload starts (the lesson now points at the new, empty asset) and when it
+ * ends (the provider has the whole file, or it failed), to refresh the lesson.
  */
-export async function startUpload(courseId: string, lessonId: string, file: File, onSettled: () => void) {
+export async function startUpload(courseId: string, lessonId: string, file: File, onChange: () => void) {
   if (isActive(uploads.get(lessonId))) return;
   set(lessonId, { status: "starting" });
 
@@ -80,9 +81,10 @@ export async function startUpload(courseId: string, lessonId: string, file: File
     ]);
   } catch {
     set(lessonId, { status: "failed", reason: "start" });
-    onSettled();
+    onChange();
     return;
   }
+  onChange();
 
   const upload = createUpload({ endpoint: url, file, chunkSize: CHUNK_KB });
   running.set(lessonId, upload);
@@ -100,16 +102,19 @@ export async function startUpload(courseId: string, lessonId: string, file: File
   upload.on("error", () => {
     running.delete(lessonId);
     set(lessonId, { status: "failed", reason: "transfer" });
-    onSettled();
+    onChange();
   });
   upload.on("success", () => {
     running.delete(lessonId);
     set(lessonId, { status: "done" });
-    onSettled();
+    onChange();
   });
 }
 
-/** Stops an upload; the lesson keeps whatever content it had (the API's asset stays waiting for a file). */
+/**
+ * Stops an upload. The lesson already points at the new asset, which stays waiting for a file: choosing the file
+ * again starts over (a replaced file is not restored — TODO 2.5).
+ */
 export function cancelUpload(lessonId: string) {
   running.get(lessonId)?.abort();
   running.delete(lessonId);

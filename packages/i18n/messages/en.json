@@ -591,7 +591,13 @@
       "archiveHint": "It leaves the catalogue; only students already enrolled still see it.",
       "delete": "Delete the course",
       "deleteConfirm": "Delete this course for good?",
-      "deleteHint": "Possible while it has never been published or taken. This can’t be undone."
+      "deleteHint": "The course and its draft will be deleted for good.",
+      "unsavedConfirm": "Some changes aren’t saved. Leave anyway?",
+      "editNamed": "Edit “{title}”",
+      "fixItNamed": "Complete: {item}",
+      "editLessonNamed": "Edit lesson “{title}”",
+      "viewLessonNamed": "View lesson “{title}”",
+      "foldToMove": "Fold the lesson to move it"
     }
   },
   "admin": {

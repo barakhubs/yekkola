@@ -591,7 +591,13 @@
       "archiveHint": "Il disparaît du catalogue ; seuls les étudiants déjà inscrits le voient encore.",
       "delete": "Supprimer le cours",
       "deleteConfirm": "Supprimer définitivement ce cours ?",
-      "deleteHint": "Possible tant qu’il n’a jamais été publié ni suivi. Cette action est définitive."
+      "deleteHint": "Le cours et son brouillon seront supprimés définitivement.",
+      "unsavedConfirm": "Certaines modifications ne sont pas enregistrées. Quitter quand même ?",
+      "editNamed": "Modifier « {title} »",
+      "fixItNamed": "Compléter : {item}",
+      "editLessonNamed": "Modifier la leçon « {title} »",
+      "viewLessonNamed": "Voir la leçon « {title} »",
+      "foldToMove": "Repliez la leçon pour la déplacer"
     }
   },
   "admin": {

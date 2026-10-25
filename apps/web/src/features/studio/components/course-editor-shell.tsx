@@ -7,12 +7,13 @@ import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { cn } from "@yekkola/ui/lib/utils";
 import { ArrowLeft, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 
-import { useStudioCourse } from "../hooks";
+import { useErrorText, useStudioCourse } from "../hooks";
 import { bannerOf, COURSE_TONES, courseStatusOf } from "../status";
+import { hasUnsavedChanges } from "../unsaved";
 
 const TABS = ["details", "curriculum", "pricing", "review"] as const;
 
@@ -22,7 +23,7 @@ const TABS = ["details", "curriculum", "pricing", "review"] as const;
  */
 export function CourseEditorShell({ courseId, children }: { courseId: string; children: ReactNode }) {
   const t = useTranslations("web.studio");
-  const errors = useTranslations("errors");
+  const errorText = useErrorText();
   const pathname = usePathname();
   const course = useStudioCourse(courseId);
 
@@ -39,13 +40,16 @@ export function CourseEditorShell({ courseId, children }: { courseId: string; ch
     const missing = course.error instanceof ApiError && course.error.status === 404;
     return (
       <div className="mx-auto max-w-xl px-4 py-16">
-        <EmptyState title={missing ? t("courseNotFound") : errors("network")} />
+        <EmptyState title={missing ? t("courseNotFound") : errorText(course.error)} />
       </div>
     );
   }
 
   const c = course.data;
   const status = courseStatusOf(c.status);
+  const confirmLeave = (event: MouseEvent) => {
+    if (hasUnsavedChanges() && !window.confirm(t("unsavedConfirm"))) event.preventDefault();
+  };
   const banner = bannerOf(c);
 
   return (
@@ -53,6 +57,7 @@ export function CourseEditorShell({ courseId, children }: { courseId: string; ch
       <div className="grid gap-3">
         <Link
           href="/studio/courses"
+          onClick={confirmLeave}
           className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft aria-hidden className="size-4" />
@@ -92,6 +97,7 @@ export function CourseEditorShell({ courseId, children }: { courseId: string; ch
               <li key={tab}>
                 <Link
                   href={href}
+                  onClick={current ? undefined : confirmLeave}
                   aria-current={current ? "page" : undefined}
                   className={cn(
                     "-mb-px inline-block border-b-2 px-4 py-2 text-sm font-semibold",
