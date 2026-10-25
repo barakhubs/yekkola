@@ -4,16 +4,12 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { SubmitQuizRequestAnswers } from "./submitQuizRequestAnswers";
 
 /**
  * Answers to a quiz attempt: question id => chosen option ids (PRD-06 FR-07).
  */
 export interface SubmitQuizRequest {
-  /**
-   * @maxItems 200
-   * @items.maxItems 20
-   * @items.items.minLength 26
-   * @items.items.maxLength 26
-   */
-  answers: string[][];
+  /** Question id => chosen option ids. */
+  answers: SubmitQuizRequestAnswers;
 }

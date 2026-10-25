@@ -84,6 +84,14 @@ async function ensureCsrfCookie(force = false): Promise<string | undefined> {
   return readCookie("XSRF-TOKEN");
 }
 
+/**
+ * Fetches the XSRF cookie ahead of time, so writes sent while the page is closing (`keepalive`) don't have to
+ * wait for a network round trip that would never finish.
+ */
+export async function primeCsrf(): Promise<void> {
+  if (isBrowser()) await ensureCsrfCookie();
+}
+
 /** Never throws: an empty or malformed JSON body (e.g. a proxy error page) reads as undefined. */
 async function readBody(response: Response): Promise<unknown> {
   if (response.status === 204) return undefined;

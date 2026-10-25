@@ -28,6 +28,10 @@ export const LessonsQuizAttemptsIndexResponse = zod.object({
         .describe(
           "Count down to this; the server accepts answers for a short grace period after it (network slack).",
         ),
+      seconds_left: zod
+        .int()
+        .nullable()
+        .describe("Count down from this rather than the device clock (it can be minutes off, PRD-06 §7)."),
       submitted_at: zod.string().nullable(),
       pass_mark_pct: zod.int(),
       score_pct: zod.int().nullable(),
@@ -47,6 +51,10 @@ export const LessonsQuizAttemptsIndexResponse = zod.object({
           ),
           chosen: zod.array(zod.string()).nullable(),
           correct: zod.array(zod.string()).nullable(),
+          answered_correctly: zod
+            .boolean()
+            .nullable()
+            .describe("Graded by the API's own rule, so the results always match the score."),
           explanation: zod.string().nullable(),
         }),
       ),
@@ -101,6 +109,10 @@ export const LessonsQuizAttemptsStoreResponse = zod.object({
       .describe(
         "Count down to this; the server accepts answers for a short grace period after it (network slack).",
       ),
+    seconds_left: zod
+      .int()
+      .nullable()
+      .describe("Count down from this rather than the device clock (it can be minutes off, PRD-06 §7)."),
     submitted_at: zod.string().nullable(),
     pass_mark_pct: zod.int(),
     score_pct: zod.int().nullable(),
@@ -120,6 +132,10 @@ export const LessonsQuizAttemptsStoreResponse = zod.object({
         ),
         chosen: zod.array(zod.string()).nullable(),
         correct: zod.array(zod.string()).nullable(),
+        answered_correctly: zod
+          .boolean()
+          .nullable()
+          .describe("Graded by the API's own rule, so the results always match the score."),
         explanation: zod.string().nullable(),
       }),
     ),
@@ -133,27 +149,9 @@ export const QuizAttemptsSubmitParams = zod.object({
   attempt: zod.string(),
 });
 
-export const quizAttemptsSubmitBodyAnswersItemItemMin = 26;
-export const quizAttemptsSubmitBodyAnswersItemItemMax = 26;
-
-export const quizAttemptsSubmitBodyAnswersItemMax = 20;
-
-export const quizAttemptsSubmitBodyAnswersMax = 200;
-
 export const QuizAttemptsSubmitBody = zod
   .object({
-    answers: zod
-      .array(
-        zod
-          .array(
-            zod
-              .string()
-              .min(quizAttemptsSubmitBodyAnswersItemItemMin)
-              .max(quizAttemptsSubmitBodyAnswersItemItemMax),
-          )
-          .max(quizAttemptsSubmitBodyAnswersItemMax),
-      )
-      .max(quizAttemptsSubmitBodyAnswersMax),
+    answers: zod.record(zod.string(), zod.array(zod.string())).describe("Question id => chosen option ids."),
   })
   .describe("Answers to a quiz attempt: question id => chosen option ids (PRD-06 FR-07).");
 
@@ -167,6 +165,10 @@ export const QuizAttemptsSubmitResponse = zod.object({
       .describe(
         "Count down to this; the server accepts answers for a short grace period after it (network slack).",
       ),
+    seconds_left: zod
+      .int()
+      .nullable()
+      .describe("Count down from this rather than the device clock (it can be minutes off, PRD-06 §7)."),
     submitted_at: zod.string().nullable(),
     pass_mark_pct: zod.int(),
     score_pct: zod.int().nullable(),
@@ -186,6 +188,10 @@ export const QuizAttemptsSubmitResponse = zod.object({
         ),
         chosen: zod.array(zod.string()).nullable(),
         correct: zod.array(zod.string()).nullable(),
+        answered_correctly: zod
+          .boolean()
+          .nullable()
+          .describe("Graded by the API's own rule, so the results always match the score."),
         explanation: zod.string().nullable(),
       }),
     ),

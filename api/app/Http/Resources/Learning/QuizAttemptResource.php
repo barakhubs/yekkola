@@ -31,6 +31,8 @@ final class QuizAttemptResource extends JsonResource
             'started_at' => $this->started_at->toIso8601String(),
             // Count down to this; the server accepts answers for a short grace period after it (network slack).
             'ends_at' => $this->quiz->time_limit_seconds === null ? null : $this->started_at->copy()->addSeconds($this->quiz->time_limit_seconds)->toIso8601String(),
+            // Count down from this rather than the device clock (it can be minutes off, PRD-06 §7).
+            'seconds_left' => $this->secondsLeft(),
             'submitted_at' => $this->submitted_at?->toIso8601String(),
             'pass_mark_pct' => $this->quiz->pass_mark_pct,
             'score_pct' => $this->score_pct,
@@ -42,5 +44,15 @@ final class QuizAttemptResource extends JsonResource
                 ->map(fn (QuizQuestion $q) => new QuizQuestionResource($q, $submitted, $submitted ? ($this->answers[$q->id] ?? []) : null))
                 ->values(),
         ];
+    }
+
+    /** Until the time limit (the server adds a short grace after it); null when untimed or submitted. */
+    private function secondsLeft(): ?int
+    {
+        if ($this->quiz->time_limit_seconds === null || $this->submitted_at !== null) {
+            return null;
+        }
+
+        return max(0, (int) now()->diffInSeconds($this->started_at->copy()->addSeconds($this->quiz->time_limit_seconds), false));
     }
 }

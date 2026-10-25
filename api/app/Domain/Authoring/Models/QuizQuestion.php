@@ -39,4 +39,18 @@ final class QuizQuestion extends Model
     {
         return $this->hasMany(QuizOption::class)->orderBy('position');
     }
+
+    /**
+     * Right only with exactly the correct options (no partial credit).
+     *
+     * @param  list<string>  $chosen
+     */
+    public function isAnsweredBy(array $chosen): bool
+    {
+        $correct = $this->options->filter(fn (QuizOption $o) => $o->is_correct)->pluck('id')->map(fn ($id) => (string) $id)->sort()->values()->all();
+        $chosen = array_values(array_unique(array_map('strval', $chosen)));
+        sort($chosen);
+
+        return $chosen !== [] && $chosen === $correct;
+    }
 }

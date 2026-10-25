@@ -183,3 +183,26 @@ it('completes the course again after a new grant, and recomputes progress when a
     app(App\Domain\Learning\Actions\GrantEnrollment::class)->handle($this->student->id, $this->course->id, App\Domain\Learning\Enums\EnrollmentSource::Admin);
     Event::assertDispatchedTimes(CourseCompleted::class, 2);
 });
+
+it('lets a student resume an open attempt on the last allowed try, and grades each question for the results', function () {
+    Quiz::query()->where('lesson_id', $this->quiz->id)->update(['max_attempts' => 1, 'time_limit_seconds' => 600]);
+    $quizFacts = fn () => $this->getJson("/api/v1/me/courses/{$this->course->id}")->json('data.sections.0.lessons.1.quiz');
+
+    expect($quizFacts())->toMatchArray(['can_start' => true, 'open_attempt_id' => null]);
+
+    $attempt = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->assertCreated()->json('data');
+    expect($attempt['seconds_left'])->toBeGreaterThan(590)->toBeLessThanOrEqual(600)
+        ->and($quizFacts())->toMatchArray(['attempts_used' => 1, 'can_start' => true, 'open_attempt_id' => $attempt['id']]);
+
+    $result = $this->putJson("/api/v1/quiz-attempts/{$attempt['id']}", ['answers' => quizAnswer('5')])->assertOk()->json('data');
+    expect($result['questions'][0]['answered_correctly'])->toBeFalse()
+        ->and($result['seconds_left'])->toBeNull()
+        ->and($quizFacts())->toMatchArray(['can_start' => false, 'open_attempt_id' => null]);
+});
+
+it('refuses answers that are not lists of option ids', function () {
+    $id = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->json('data.id');
+
+    $this->putJson("/api/v1/quiz-attempts/{$id}", ['answers' => ['q' => 'not-a-list']])->assertUnprocessable()->assertJsonValidationErrors('answers');
+    $this->putJson("/api/v1/quiz-attempts/{$id}", ['answers' => ['q' => ['short']]])->assertUnprocessable()->assertJsonValidationErrors('answers');
+});

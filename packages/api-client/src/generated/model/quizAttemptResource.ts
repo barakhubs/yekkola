@@ -15,6 +15,11 @@ export interface QuizAttemptResource {
    * @nullable
    */
   ends_at: null;
+  /**
+   * Count down from this rather than the device clock (it can be minutes off, PRD-06 §7).
+   * @nullable
+   */
+  seconds_left: number | null;
   /** @nullable */
   submitted_at: string | null;
   pass_mark_pct: number;

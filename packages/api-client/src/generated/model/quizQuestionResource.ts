@@ -16,6 +16,11 @@ export interface QuizQuestionResource {
   chosen: string[] | null;
   /** @nullable */
   correct: string[] | null;
+  /**
+   * Graded by the API's own rule, so the results always match the score.
+   * @nullable
+   */
+  answered_correctly: boolean | null;
   /** @nullable */
   explanation: string | null;
 }

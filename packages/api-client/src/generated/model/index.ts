@@ -369,6 +369,7 @@ export * from "./studioLessonResourceQuizQuestionsItem";
 export * from "./studioLessonResourceQuizQuestionsItemOptionsItem";
 export * from "./submitKycRequest";
 export * from "./submitQuizRequest";
+export * from "./submitQuizRequestAnswers";
 export * from "./syncProgressRequest";
 export * from "./syncProgressRequestItemsItem";
 export * from "./teachingLevel";

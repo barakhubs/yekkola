@@ -38,6 +38,8 @@ final class QuizQuestionResource extends JsonResource
             'options' => $this->options->map(fn (QuizOption $o) => ['id' => (string) $o->id, 'text' => (string) $o->text])->values()->all(),
             'chosen' => $this->submitted ? collect($this->chosen ?? [])->map(fn ($id) => (string) $id)->values()->all() : null,
             'correct' => $this->submitted ? $this->options->where('is_correct', true)->pluck('id')->map(fn ($id) => (string) $id)->values()->all() : null,
+            // Graded by the API's own rule, so the results always match the score.
+            'answered_correctly' => $this->submitted ? $this->resource->isAnsweredBy($this->chosen ?? []) : null,
             'explanation' => $this->submitted ? $this->explanation : null,
         ];
     }

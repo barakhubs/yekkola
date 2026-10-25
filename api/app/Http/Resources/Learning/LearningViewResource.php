@@ -121,6 +121,11 @@ final class LearningViewResource extends JsonResource
             'time_limit_seconds' => $quiz->time_limit_seconds,
             'max_attempts' => $quiz->max_attempts,
             'attempts_used' => $attempts->count(),
+            // An open attempt can always be resumed, even on the last allowed try.
+            'open_attempt_id' => $attempts->first(fn (QuizAttempt $a) => $a->isOpen())?->id,
+            'can_start' => (bool) ($attempts->contains(fn (QuizAttempt $a) => $a->isOpen())
+                || $quiz->max_attempts === null
+                || $attempts->count() < $quiz->max_attempts),
             'best_score_pct' => $submitted->max('score_pct'),
             'passed' => $submitted->contains('passed', true),
         ];
