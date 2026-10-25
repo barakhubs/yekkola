@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-web-checkout` (web milestone 1 step 6, PR open — waiting for merge)
-- **Next up:** professor studio (2.5) — web milestone 1 step 7
+- **Current branch:** `feature/prd-03-web-studio` (web milestone 1 step 7)
+- **Next up:** minimal back office (2.2) — web milestone 1 step 8
 
 ## Legend
 
@@ -379,14 +379,19 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 - [ ] Application flow + status
 - [ ] Onboarding checklist, profile, KYC upload, payout method
-- [ ] Course list + course editor (details, curriculum DnD, pricing, review status)
-- [ ] Mux uploader (resumable) + processing status
-- [ ] Document upload, quiz builder
-- [ ] Submit for review, version diff, unpublish
+- [x] Course list + course editor (details, cover, category/level/audience, curriculum DnD with keyboard, pricing, status banner) — #PR
+- [x] Video/audio uploader (chunked, resumes offline, survives tab changes) + processing status — #PR
+- [x] Document upload, quiz builder — #PR
+- [x] Submit / withdraw, reviewer notes, start new draft, unpublish / republish / archive / delete — #PR
+- [ ] Version diff view “changes since live” (PRD-03 FR-14, needs an API diff endpoint)
+- [ ] Course preview as a student from the studio (PRD-03 FR-19)
+- [ ] Rich-text course description (PRD-03 FR-02 asks for rich text; plain text today) and quiz bulk paste (§6, Should)
+- [ ] Studio upload size check before upload uses the settings; confirm Mux enforces the same limit server-side (PRD-03 FR-04)
+- [ ] Favicon / app icons (404 on /favicon.ico) — with the logo set (0.2)
 - [ ] Analytics dashboard
 - [ ] Earnings, statement, payouts
 - [ ] Reviews + Q&A inbox, coupons
-- [ ] Playwright: create course → submit
+- [ ] Playwright: create course → submit (a local script covered it for #PR: details, cover, chunked video, PDF, quiz, keyboard reorder, price, submit)
 
 ---
 
