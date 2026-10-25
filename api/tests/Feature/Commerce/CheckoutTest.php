@@ -76,7 +76,9 @@ it('enrolls in a free course in one tap, idempotently', function () {
 it('quotes server-side and leaves out courses already owned', function () {
     $this->postJson('/api/v1/checkout/quote', ['course_ids' => [$this->maths->id, $this->physics->id]])
         ->assertOk()
-        ->assertJsonPath('data.total', ['amount_minor' => 3_500, 'currency' => 'USD']);
+        ->assertJsonPath('data.total', ['amount_minor' => 3_500, 'currency' => 'USD'])
+        ->assertJsonPath('data.items.0.course_id', $this->maths->id)
+        ->assertJsonPath('data.items.0.course_slug', $this->maths->slug);
 
     Enrollment::query()->create(['user_id' => $this->student->id, 'course_id' => $this->maths->id, 'source' => 'admin', 'status' => 'active', 'enrolled_at' => now()]);
 
@@ -161,6 +163,31 @@ it('lets the student retry after a failure, one attempt at a time', function () 
 
     pay($orderId, PENDING_FOREVER, 'airtel', 'pay-key-2')->assertCreated(); // same key: replayed, not a new attempt
     expect(Payment::query()->count())->toBe(2);
+
+    // The waiting screen reads the latest attempt first, even when both started in the same second.
+    $this->getJson("/api/v1/orders/{$orderId}")
+        ->assertJsonCount(2, 'data.payments')
+        ->assertJsonPath('data.payments.0.rail', 'airtel')
+        ->assertJsonPath('data.payments.1.rail', 'orange');
+});
+
+it('expires an overdue order when the waiting screen polls, before the reconcile run', function () {
+    $orderId = order([$this->maths->id])->json('data.id');
+    pay($orderId, INSUFFICIENT_FUNDS)->assertCreated();
+
+    $this->travel(16)->minutes();
+
+    $this->getJson("/api/v1/orders/{$orderId}")->assertJsonPath('data.status', 'expired');
+    pay($orderId, PAYS, key: 'pay-key-2')->assertConflict()->assertJsonPath('code', 'order.not_payable');
+});
+
+it('lets a payment confirmed at the last second win over the deadline on poll', function () {
+    $orderId = order([$this->maths->id])->json('data.id');
+    pay($orderId, PAYS)->assertCreated();
+
+    $this->travel(16)->minutes();
+
+    $this->getJson("/api/v1/orders/{$orderId}")->assertJsonPath('data.status', 'paid');
 });
 
 it('expires unpaid orders, and a late success still grants access, flagged', function () {
