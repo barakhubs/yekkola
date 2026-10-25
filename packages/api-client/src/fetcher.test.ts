@@ -29,21 +29,25 @@ describe("apiFetch", () => {
   it("throws the error envelope with field errors", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue(
-          jsonResponse(
-            { code: "validation_failed", message: "Invalid.", errors: { rating: ["Too high.", "x"] } },
-            422,
-          ),
+      vi.fn().mockResolvedValue(
+        jsonResponse(
+          {
+            title: "Données invalides.",
+            status: 422,
+            code: "validation.failed",
+            errors: { rating: ["Too high.", "x"] },
+          },
+          422,
         ),
+      ),
     );
 
     const error = await apiFetch("/courses/1/review", { method: "GET" }).catch((e: unknown) => e);
 
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).status).toBe(422);
-    expect((error as ApiError).code).toBe("validation_failed");
+    expect((error as ApiError).code).toBe("validation.failed");
+    expect((error as ApiError).title).toBe("Données invalides.");
     expect((error as ApiError).fieldErrors()).toEqual({ rating: "Too high." });
   });
 
@@ -76,7 +80,7 @@ describe("apiFetch in the browser", () => {
         return new Response(null, { status: 204 });
       }
       return fetchMock.mock.calls.length < 3
-        ? jsonResponse({ message: "CSRF token mismatch." }, 419)
+        ? jsonResponse({ title: "Session expirée.", status: 419, code: "auth.csrf_mismatch" }, 419)
         : jsonResponse({ ok: true }, 201);
     });
     vi.stubGlobal("fetch", fetchMock);

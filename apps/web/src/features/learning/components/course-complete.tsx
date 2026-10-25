@@ -114,9 +114,7 @@ function ReviewForm({ courseId }: { courseId: string }) {
       </div>
       {post.isError ? (
         <p role="alert" className="text-sm text-destructive">
-          {post.error instanceof ApiError
-            ? (post.error.body.message ?? errors("generic"))
-            : errors("network")}
+          {post.error instanceof ApiError ? (post.error.title ?? errors("generic")) : errors("network")}
         </p>
       ) : null}
       <div>

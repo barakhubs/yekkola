@@ -84,7 +84,7 @@ export function LearningView({ courseId, lessonUid }: LearningViewProps) {
     return (
       <div className="mx-auto max-w-xl px-4 py-16">
         <EmptyState
-          title={notEnrolled ? (view.error.body.message ?? errors("forbidden")) : t("lessonError")}
+          title={notEnrolled ? (view.error.title ?? errors("forbidden")) : t("lessonError")}
           action={
             notEnrolled ? (
               <Button asChild>

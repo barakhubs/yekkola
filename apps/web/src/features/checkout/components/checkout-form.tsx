@@ -125,7 +125,7 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
   });
 
   const errorText = (error: unknown) =>
-    error instanceof ApiError ? (error.body.message ?? errors("generic")) : errors("network");
+    error instanceof ApiError ? (error.title ?? errors("generic")) : errors("network");
 
   if (quote.isPending) {
     return (
