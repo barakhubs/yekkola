@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see *How to update*).
-> Last updated: 2026-10-24
+> Last updated: 2026-10-25
 
 ## Now
 
-- **Waiting:** PR #19 (sign-in, free enrolment, My courses — web milestone 1 step 4) to be merged
-- **Next up:** learning view (2.4) — web milestone 1 step 5
+- **Current branch:** `feature/prd-06-learning-view` (web milestone 1 step 5)
+- **Next up:** paid checkout on the fake gateway (2.4) — web milestone 1 step 6
 
 ## Legend
 
@@ -331,9 +331,13 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Sign-in: live countdown from `retry_after` on 429, support contact after 3 resends (PRD-01 §6–7); test resend with single-use bot tokens (Playwright)
 - [ ] Light "am I enrolled" check for the course page (it uses the full learning view today)
 - [ ] Header session check: avoid a GET /me on every public page view for visitors (e.g. a non-HttpOnly "signed-in" hint cookie)
-- [ ] Learning view: Mux Player + watermark overlay, curriculum, progress
-- [ ] Document viewer, quizzes, results
-- [ ] Certificates, reviews, lesson Q&A
+- [x] Learning view: Mux Player + watermark overlay, curriculum, progress (saved every 15 s, on pause/end/leave), web stream limit
+- [x] Document viewer (stamped copy, inline + open), quizzes (timer, results, explanations, retake)
+- [x] Course completion: certificate link + review form (PRD-06 FR-16)
+- [ ] Lesson Q&A (with API 1.8c), certificates list page, edit/delete my review
+- [ ] Learning view: refresh playback tokens before they expire on long sessions; keyboard shortcuts for next/previous
+- [ ] Playwright journey: sign in → enrol free → watch preview → finish document + quiz → certificate
+- [ ] Quiz submit body: the spec types `answers` as a list (Scramble reads `answers.*` rules); switch the request to `[{question_id, option_ids}]` or document it as a map, then drop the cast in quiz-lesson.tsx
 - [ ] Wishlist, in-app notifications
 - [ ] Playwright: sign-in, free enroll, paid checkout (fake), learning
 

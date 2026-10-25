@@ -23,6 +23,7 @@
 - Filters and search are plain GET forms (work without JavaScript); `AutoSubmit` applies selects on change. Mux Player loads only when a preview opens (`next/dynamic`).
 - Session: `useSession()` (GET /me; null on 401) drives the header (`AccountNav`) and `RequireSession` guards `(student)` pages (redirect to `/login?next=`). Sign-in posts to the API with the Sanctum cookie; redirect targets go through `safeNext()`.
 - Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; empty locally/staging (placeholder token for the API's fake driver).
+- Learning view (`/learn/[course]/[lesson]`, `features/learning`): lesson content by type (`MediaLesson` with fresh tokens + stream heartbeat, `DocumentLesson` polling the stamped copy, `QuizLesson`); positions go through `useProgressSync` (15 s batches, flushed on pause/end/hide/leave with `keepalive`). Completion rules are the API's — the view only reports positions and "done".
 - Unit tests: `pnpm --filter @yekkola/web test` (Vitest, `src/**/*.test.ts`).
 - Images: covers/avatars via `next/image`; allowed hosts = API origin + `NEXT_PUBLIC_IMAGE_HOSTS`.
 
