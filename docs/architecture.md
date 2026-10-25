@@ -47,7 +47,7 @@
                     │ (Horizon)          │──► Payment gateway (collect, disburse)
                     │                    │──► SMS gateway, email, FCM
                     └────────────────────┘
-   Inbound webhooks: Mux ──► /webhooks/mux   Gateway ──► /webhooks/payments/{gateway}
+   Inbound webhooks: Mux ──► /webhooks/video  Gateway ──► /webhooks/payments/{gateway}
    Media delivery:   Mux CDN ──► players directly (never through the API)
 ```
 
@@ -78,7 +78,7 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 **B. Video upload (professor)**
 1. Studio calls `POST /professor/courses/{id}/draft/lessons/{lid}/media` → API calls Mux "create direct upload" (with burned-in watermark overlay + DRM playback policy) → returns upload URL + `MediaAsset` (status `waiting_upload`).
 2. Browser uploads the file **directly to Mux** (UpChunk: 5 MB chunks, retried, paused while offline; a fresh upload URL per attempt).
-3. Mux webhook `video.asset.ready` → `/webhooks/mux` → dedupe by event ID → queue → update `MediaAsset` (`ready`, duration, playback ID).
+3. Mux webhook `video.asset.ready` → `/webhooks/video` → dedupe by event ID → queue → update `MediaAsset` (`ready`, duration, playback ID).
 4. Studio polls `GET /professor/media/{id}` (or listens via notifications) to show status.
 
 **C. Paid purchase (mobile money)**
@@ -421,7 +421,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET / POST / PATCH {id} | /professor/bundles | Own bundles (own courses) |
 | GET | /professor/authoring-options | Choices and limits for the studio (enabled currencies + price limits/steps, preview limit, upload sizes, default pass mark, languages, levels, audiences) |
 | GET / POST | /professor/courses | List (`filter[status]`, paging) / create (creates draft v1) |
-| GET / PATCH / DELETE | /professor/courses/{id} | Settings (category, language, level, audience, price/free — immediate) / delete if never published |
+| GET / PATCH / DELETE | /professor/courses/{id} | Settings (category, language, level, audience, price/free — immediate) / delete if never published. Includes `can` (start_draft, submit, withdraw, unpublish, republish, archive, delete) from the actions' own rules, so the studio offers only what applies |
 | POST | /professor/courses/{id}/draft | Start a draft from the live version |
 | POST | /professor/courses/{id}/(submit\|withdraw) | Review submission |
 | POST | /professor/courses/{id}/(unpublish\|republish\|archive) | Visibility |
