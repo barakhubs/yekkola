@@ -76,3 +76,31 @@ export function formatBytes(bytes: number, locale: Locale): string {
     maximumFractionDigits: value < 10 ? 1 : 0,
   }).format(value);
 }
+
+/** An amount as an editable number ("15,00" / "15.00"), without currency or grouping — for price inputs. */
+export function moneyInputValue(money: MoneyValue, locale: Locale): string {
+  const digits = MINOR_UNITS[money.currency] ?? 2;
+  const whole = money.amount_minor % 10 ** digits === 0 && money.currency === "CDF";
+
+  return new Intl.NumberFormat(intlTag(locale), {
+    useGrouping: false,
+    minimumFractionDigits: whole ? 0 : digits,
+    maximumFractionDigits: whole ? 0 : digits,
+  }).format(money.amount_minor / 10 ** digits);
+}
+
+/**
+ * A typed price ("15", "15,5", "25 000") in minor units, without float maths; null if it isn't an amount
+ * (letters, two separators, more decimals than the currency has). The API still checks limits and steps.
+ */
+export function parseMoneyInput(text: string, currency: string): number | null {
+  const digits = MINOR_UNITS[currency] ?? 2;
+  const compact = text.replace(/[\s\u00a0\u202f]/g, "");
+  const match = new RegExp(`^(\\d+)(?:[.,](\\d{1,${digits}}))?$`).exec(compact);
+  if (!match?.[1]) {
+    return null;
+  }
+  const fraction = (match[2] ?? "").padEnd(digits, "0");
+
+  return Number(match[1]) * 10 ** digits + Number(fraction || "0");
+}
