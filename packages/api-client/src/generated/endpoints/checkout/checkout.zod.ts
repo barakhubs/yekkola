@@ -47,9 +47,27 @@ export const CheckoutQuoteBody = zod
 export const CheckoutQuoteResponse = zod.object({
   data: zod.object({
     currency: zod.string(),
-    items: zod.array(zod.unknown()),
+    items: zod.array(
+      zod.object({
+        course_id: zod.string(),
+        course_slug: zod.string(),
+        title: zod.string().nullable(),
+        list_price: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        discount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        price: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+      }),
+    ),
     is_free: zod.boolean(),
-    excluded_course_ids: zod.array(zod.unknown()),
+    excluded_course_ids: zod.array(zod.string()),
     coupon: zod
       .object({
         code: zod.string(),

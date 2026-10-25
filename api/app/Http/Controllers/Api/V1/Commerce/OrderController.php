@@ -28,6 +28,11 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
  */
 final class OrderController extends Controller
 {
+    /**
+     * My orders, newest first (PRD-05 FR-17).
+     */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
     public function index(Request $request): AnonymousResourceCollection
     {
         $orders = $this->visible($request)

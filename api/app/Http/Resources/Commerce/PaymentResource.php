@@ -28,9 +28,20 @@ final class PaymentResource extends JsonResource
             'amount' => $this->amount()->toArray(),
             'status' => $this->status->value,
             'failure_code' => $this->failure_code,
-            'failure_reason' => $this->failure_code === null ? null : (trans()->has('payments.failure.'.$this->failure_code) ? __('payments.failure.'.$this->failure_code) : __('payments.failure.failed')),
+            'failure_reason' => $this->failureReason(),
             'operator_reference' => $this->operator_reference,
             'created_at' => $this->created_at->toIso8601String(),
         ];
+    }
+
+    /** Why it failed, in the reader's language (insufficient funds, rejected, timeout…). */
+    private function failureReason(): ?string
+    {
+        if ($this->failure_code === null) {
+            return null;
+        }
+        $key = 'payments.failure.'.$this->failure_code;
+
+        return (string) (trans()->has($key) ? __($key) : __('payments.failure.failed'));
     }
 }

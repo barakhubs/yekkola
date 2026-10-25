@@ -74,51 +74,23 @@ export const OrdersStoreResponse = zod.object({
         }),
       }),
     ),
-    payments: zod.union([
-      zod.array(
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
+    payments: zod.array(
+      zod.object({
+        id: zod.string(),
+        order_id: zod.string(),
+        rail: zod.string(),
+        payer: zod.string(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
         }),
-      ),
-      zod.record(
-        zod.string(),
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
-        }),
-      ),
-    ]),
+        status: zod.string(),
+        failure_code: zod.string().nullable(),
+        failure_reason: zod.string().nullable(),
+        operator_reference: zod.string().nullable(),
+        created_at: zod.string(),
+      }),
+    ),
   }),
 });
 
@@ -169,51 +141,23 @@ export const OrdersShowResponse = zod.object({
         }),
       }),
     ),
-    payments: zod.union([
-      zod.array(
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
+    payments: zod.array(
+      zod.object({
+        id: zod.string(),
+        order_id: zod.string(),
+        rail: zod.string(),
+        payer: zod.string(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
         }),
-      ),
-      zod.record(
-        zod.string(),
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
-        }),
-      ),
-    ]),
+        status: zod.string(),
+        failure_code: zod.string().nullable(),
+        failure_reason: zod.string().nullable(),
+        operator_reference: zod.string().nullable(),
+        created_at: zod.string(),
+      }),
+    ),
   }),
 });
 
@@ -248,14 +192,21 @@ export const OrdersPayResponse = zod.object({
     }),
     status: zod.string(),
     failure_code: zod.string().nullable(),
-    failure_reason: zod.union([
-      zod.null(),
-      zod.string(),
-      zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-    ]),
+    failure_reason: zod.string().nullable(),
     operator_reference: zod.string().nullable(),
     created_at: zod.string(),
   }),
+});
+
+/**
+ * @summary My orders, newest first (PRD-05 FR-17)
+ */
+export const meOrdersIndexQueryPageDefault = 1;
+export const meOrdersIndexQueryPerPageDefault = 15;
+
+export const MeOrdersIndexQueryParams = zod.object({
+  page: zod.int().default(meOrdersIndexQueryPageDefault),
+  per_page: zod.int().default(meOrdersIndexQueryPerPageDefault),
 });
 
 export const meOrdersIndexResponseMetaPerPageMin = 0;
@@ -303,51 +254,23 @@ export const MeOrdersIndexResponse = zod.object({
           }),
         }),
       ),
-      payments: zod.union([
-        zod.array(
-          zod.object({
-            id: zod.string(),
-            order_id: zod.string(),
-            rail: zod.string(),
-            payer: zod.string(),
-            amount: zod.object({
-              amount_minor: zod.int(),
-              currency: zod.string(),
-            }),
-            status: zod.string(),
-            failure_code: zod.string().nullable(),
-            failure_reason: zod.union([
-              zod.null(),
-              zod.string(),
-              zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-            ]),
-            operator_reference: zod.string().nullable(),
-            created_at: zod.string(),
+      payments: zod.array(
+        zod.object({
+          id: zod.string(),
+          order_id: zod.string(),
+          rail: zod.string(),
+          payer: zod.string(),
+          amount: zod.object({
+            amount_minor: zod.int(),
+            currency: zod.string(),
           }),
-        ),
-        zod.record(
-          zod.string(),
-          zod.object({
-            id: zod.string(),
-            order_id: zod.string(),
-            rail: zod.string(),
-            payer: zod.string(),
-            amount: zod.object({
-              amount_minor: zod.int(),
-              currency: zod.string(),
-            }),
-            status: zod.string(),
-            failure_code: zod.string().nullable(),
-            failure_reason: zod.union([
-              zod.null(),
-              zod.string(),
-              zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-            ]),
-            operator_reference: zod.string().nullable(),
-            created_at: zod.string(),
-          }),
-        ),
-      ]),
+          status: zod.string(),
+          failure_code: zod.string().nullable(),
+          failure_reason: zod.string().nullable(),
+          operator_reference: zod.string().nullable(),
+          created_at: zod.string(),
+        }),
+      ),
     }),
   ),
   links: zod.object({

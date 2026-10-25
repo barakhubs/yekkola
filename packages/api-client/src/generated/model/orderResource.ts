@@ -6,9 +6,9 @@
  */
 import type { OrderResourceDiscount } from "./orderResourceDiscount";
 import type { OrderResourceItemsItem } from "./orderResourceItemsItem";
-import type { OrderResourcePayments } from "./orderResourcePayments";
 import type { OrderResourceSubtotal } from "./orderResourceSubtotal";
 import type { OrderResourceTotal } from "./orderResourceTotal";
+import type { PaymentResource } from "./paymentResource";
 
 export interface OrderResource {
   id: string;
@@ -23,5 +23,5 @@ export interface OrderResource {
   paid_at: string | null;
   created_at: string;
   items: OrderResourceItemsItem[];
-  payments: OrderResourcePayments;
+  payments: PaymentResource[];
 }

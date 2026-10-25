@@ -1120,14 +1120,85 @@
                                                 },
                                                 "items": {
                                                     "type": "array",
-                                                    "items": {}
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "course_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "course_slug": {
+                                                                "type": "string"
+                                                            },
+                                                            "title": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "list_price": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            },
+                                                            "discount": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            },
+                                                            "price": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "course_id",
+                                                            "course_slug",
+                                                            "title",
+                                                            "list_price",
+                                                            "discount",
+                                                            "price"
+                                                        ]
+                                                    }
                                                 },
                                                 "is_free": {
                                                     "type": "boolean"
                                                 },
                                                 "excluded_course_ids": {
                                                     "type": "array",
-                                                    "items": {}
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
                                                 },
                                                 "coupon": {
                                                     "type": [
@@ -5142,8 +5213,27 @@
         "/me/orders": {
             "get": {
                 "operationId": "me.orders.index",
+                "summary": "My orders, newest first (PRD-05 FR-17)",
                 "tags": [
                     "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -11317,170 +11407,10 @@
                         }
                     },
                     "payments": {
-                        "anyOf": [
-                            {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "order_id": {
-                                            "type": "string"
-                                        },
-                                        "rail": {
-                                            "type": "string"
-                                        },
-                                        "payer": {
-                                            "type": "string"
-                                        },
-                                        "amount": {
-                                            "type": "object",
-                                            "properties": {
-                                                "amount_minor": {
-                                                    "type": "integer"
-                                                },
-                                                "currency": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "amount_minor",
-                                                "currency"
-                                            ]
-                                        },
-                                        "status": {
-                                            "type": "string"
-                                        },
-                                        "failure_code": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "failure_reason": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "null"
-                                                },
-                                                {
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "Le paiement a \u00e9chou\u00e9. R\u00e9essayez ou choisissez un autre op\u00e9rateur."
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "operator_reference": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "created_at": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "order_id",
-                                        "rail",
-                                        "payer",
-                                        "amount",
-                                        "status",
-                                        "failure_code",
-                                        "failure_reason",
-                                        "operator_reference",
-                                        "created_at"
-                                    ]
-                                }
-                            },
-                            {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "order_id": {
-                                            "type": "string"
-                                        },
-                                        "rail": {
-                                            "type": "string"
-                                        },
-                                        "payer": {
-                                            "type": "string"
-                                        },
-                                        "amount": {
-                                            "type": "object",
-                                            "properties": {
-                                                "amount_minor": {
-                                                    "type": "integer"
-                                                },
-                                                "currency": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "amount_minor",
-                                                "currency"
-                                            ]
-                                        },
-                                        "status": {
-                                            "type": "string"
-                                        },
-                                        "failure_code": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "failure_reason": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "null"
-                                                },
-                                                {
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "Le paiement a \u00e9chou\u00e9. R\u00e9essayez ou choisissez un autre op\u00e9rateur."
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "operator_reference": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "created_at": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "order_id",
-                                        "rail",
-                                        "payer",
-                                        "amount",
-                                        "status",
-                                        "failure_code",
-                                        "failure_reason",
-                                        "operator_reference",
-                                        "created_at"
-                                    ]
-                                }
-                            }
-                        ]
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PaymentResource"
+                        }
                     }
                 },
                 "required": [
@@ -11539,19 +11469,9 @@
                         ]
                     },
                     "failure_reason": {
-                        "anyOf": [
-                            {
-                                "type": "null"
-                            },
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "string",
-                                "enum": [
-                                    "Le paiement a \u00e9chou\u00e9. R\u00e9essayez ou choisissez un autre op\u00e9rateur."
-                                ]
-                            }
+                        "type": [
+                            "string",
+                            "null"
                         ]
                     },
                     "operator_reference": {

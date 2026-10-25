@@ -26,7 +26,7 @@ final class OrderResource extends JsonResource
     {
         $currency = Currency::from($this->currency);
         $money = fn (int $minor) => Money::of($minor, $currency)->toArray();
-        $payments = $this->relationLoaded('payments') ? $this->payments->sortByDesc('created_at')->values() : collect();
+        $payments = $this->relationLoaded('payments') ? $this->payments->sortByDesc(fn (Payment $p) => [$p->created_at, $p->id])->values() : collect();
 
         return [
             'id' => $this->id,
@@ -47,7 +47,7 @@ final class OrderResource extends JsonResource
                 'discount' => $money($item->discount_minor),
                 'price' => $money($item->price_minor),
             ])->all(),
-            'payments' => $payments->map(fn (Payment $p) => (new PaymentResource($p))->toArray($request))->all(),
+            'payments' => $payments->map(fn (Payment $p) => new PaymentResource($p))->values(),
         ];
     }
 }

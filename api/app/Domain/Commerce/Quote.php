@@ -58,15 +58,16 @@ final readonly class Quote
     {
         return [
             'currency' => $this->currency->value,
-            'items' => array_map(fn (QuoteLine $l) => [
-                'course_id' => $l->course->id,
+            'items' => collect($this->lines)->map(fn (QuoteLine $l) => [
+                'course_id' => (string) $l->course->id,
+                'course_slug' => (string) $l->course->slug,
                 'title' => $l->course->liveVersion?->title,
                 'list_price' => $l->listPrice->toArray(),
                 'discount' => $l->discount->toArray(),
                 'price' => $l->price()->toArray(),
-            ], $this->lines),
+            ])->values()->all(),
             'is_free' => $this->total()->isZero(),
-            'excluded_course_ids' => $this->excludedCourseIds,
+            'excluded_course_ids' => collect($this->excludedCourseIds)->map(fn ($id) => (string) $id)->values()->all(),
             'coupon' => $this->coupon === null ? null : ['code' => $this->coupon->code],
             'bundle' => $this->bundle === null ? null : ['id' => $this->bundle->id, 'slug' => $this->bundle->slug, 'title' => $this->bundle->title],
             'subtotal' => $this->subtotal()->toArray(),
