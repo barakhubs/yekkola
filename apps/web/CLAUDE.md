@@ -24,6 +24,7 @@
 - Session: `useSession()` (GET /me; null on 401) drives the header (`AccountNav`) and `RequireSession` guards `(student)` pages (redirect to `/login?next=`). Sign-in posts to the API with the Sanctum cookie; redirect targets go through `safeNext()`.
 - Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; empty locally/staging (placeholder token for the API's fake driver).
 - Learning view (`/learn/[course]/[lesson]`, `features/learning`): lesson content by type (`MediaLesson` with fresh tokens + stream heartbeat, `DocumentLesson` polling the stamped copy, `QuizLesson`); positions go through `useProgressSync` (15 s batches, flushed on pause/end/hide/leave with `keepalive`). Completion rules are the API's — the view only reports positions and "done".
+- Checkout (`/checkout?course=`, `/checkout/[orderId]`, `/orders`, `features/checkout`): every money write goes through `withIdempotencyKey(scope, …)` — the key survives network errors and 5xx (safe replay) and is forgotten once the API gives a final answer (2xx, 400/404/410/422), so the next try is a new action. The order page polls with backoff and only shows "paid" when the API says so; payer numbers come back masked, so retries ask for the number again.
 - Unit tests: `pnpm --filter @yekkola/web test` (Vitest, `src/**/*.test.ts`).
 - Images: covers/avatars via `next/image`; allowed hosts = API origin + `NEXT_PUBLIC_IMAGE_HOSTS`.
 
