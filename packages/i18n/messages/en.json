@@ -215,6 +215,72 @@
       "enrolling": "Enrolling…",
       "continueLearning": "Continue the course",
       "paymentSoon": "Mobile money payment is coming to Yekkola very soon."
+    },
+    "learn": {
+      "curriculum": "Curriculum",
+      "showCurriculum": "Show curriculum",
+      "hideCurriculum": "Hide curriculum",
+      "progress": "{pct}% complete",
+      "previous": "Previous lesson",
+      "next": "Next lesson",
+      "status": {
+        "not_started": "Not started",
+        "in_progress": "In progress",
+        "completed": "Completed"
+      },
+      "loadingLesson": "Loading the lesson…",
+      "lessonError": "This lesson couldn’t be loaded.",
+      "playingElsewhere": "This course is playing on another screen.",
+      "playHere": "Watch here",
+      "mediaProcessing": "This lesson is still being processed. Try again in a few minutes.",
+      "document": {
+        "preparing": "Preparing your document…",
+        "open": "Open the document",
+        "markDone": "I’ve finished this document",
+        "done": "Document finished",
+        "linkExpires": "The link works for a few minutes; reopen the lesson to get a new one.",
+        "lowData": "Documents use very little data."
+      },
+      "quiz": {
+        "facts": "{questions, plural, one {# question} other {# questions}} · pass mark {pass}%",
+        "timeLimit": "Time limit: {minutes} min",
+        "attempts": "{used, plural, =0 {No attempts} one {# attempt} other {# attempts}}{max, select, null {} other { of {max}}}",
+        "best": "Best score: {score}%",
+        "passed": "Quiz passed",
+        "start": "Start the quiz",
+        "resume": "Resume the quiz",
+        "retake": "Retake the quiz",
+        "noAttemptsLeft": "You’ve used all your attempts.",
+        "question": "Question {n} of {total}",
+        "chooseOne": "Choose one answer.",
+        "chooseMany": "Choose all the correct answers.",
+        "true": "True",
+        "false": "False",
+        "submit": "Submit my answers",
+        "submitting": "Marking…",
+        "timeLeft": "Time left: {time}",
+        "unanswered": "{count, plural, one {# question unanswered} other {# questions unanswered}}",
+        "resultPassed": "Well done! You passed with {score}%.",
+        "resultFailed": "You scored {score}% ({pass}% needed).",
+        "timedOut": "Time was up: your answers weren’t counted.",
+        "yourAnswer": "Your answer",
+        "correctAnswer": "Correct answer",
+        "correct": "Correct",
+        "incorrect": "Incorrect",
+        "explanation": "Explanation:"
+      },
+      "complete": {
+        "title": "Congratulations, you’ve finished the course!",
+        "certificate": "View my certificate",
+        "certificatePending": "Your certificate is being prepared.",
+        "reviewTitle": "Review this course",
+        "reviewHint": "Your review helps other students choose.",
+        "rating": "Rating",
+        "stars": "{count, plural, one {# star} other {# stars}}",
+        "comment": "Comment (optional)",
+        "send": "Post my review",
+        "thanks": "Thanks for your review!"
+      }
     }
   },
   "admin": {
