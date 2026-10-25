@@ -238,7 +238,6 @@
         "open": "Ouvrir le document",
         "markDone": "J’ai terminé ce document",
         "done": "Document terminé",
-        "linkExpires": "Le lien est valable quelques minutes ; rouvre la leçon pour en obtenir un nouveau.",
         "lowData": "Les documents consomment peu de données."
       },
       "quiz": {

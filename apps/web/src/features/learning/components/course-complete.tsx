@@ -62,7 +62,7 @@ function ReviewForm({ courseId }: { courseId: string }) {
 
   if (post.isSuccess) {
     return (
-      <p role="status" className="font-semibold">
+      <p ref={(el) => el?.focus()} tabIndex={-1} role="status" className="font-semibold focus:outline-none">
         {t("thanks")}
       </p>
     );

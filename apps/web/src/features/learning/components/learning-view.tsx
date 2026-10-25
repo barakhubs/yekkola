@@ -24,9 +24,9 @@ import {
   PlayCircle,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 import { useProgressSync } from "../hooks/use-progress-sync";
 import { CourseComplete } from "./course-complete";
@@ -52,6 +52,7 @@ export function LearningView({ courseId, lessonUid }: LearningViewProps) {
   const t = useTranslations("web.learn");
   const errors = useTranslations("errors");
   const common = useTranslations("common");
+  const nav = useTranslations("web.nav");
   const queryClient = useQueryClient();
   const view = useMeCoursesShow(courseId, { query: { select: (r) => success(r).data, retry: false } });
   const refreshAfterSync = useRef(false);
@@ -87,7 +88,7 @@ export function LearningView({ courseId, lessonUid }: LearningViewProps) {
           action={
             notEnrolled ? (
               <Button asChild>
-                <Link href="/my-courses">{t("curriculum")}</Link>
+                <Link href="/my-courses">{nav("myCourses")}</Link>
               </Button>
             ) : (
               <Button variant="outline" onClick={() => view.refetch()}>
@@ -134,10 +135,19 @@ function LessonLayout({ view, lessonUid, onPosition, onDocumentDone, onQuizSubmi
   const locale = useLocale() as Locale;
   const [curriculumOpen, setCurriculumOpen] = useState(false);
   const lessons = useMemo(() => view.sections.flatMap((s) => s.lessons), [view.sections]);
+  const requested = lessons.findIndex(
+    (l) => l.uid === (lessonUid ?? view.continue_lesson_uid ?? view.next_lesson_uid),
+  );
+  // A lesson removed in a newer version (or a bad link): show the course from where to continue.
+  const unknownLesson = lessonUid !== undefined && requested === -1;
   const index = Math.max(
     0,
-    lessons.findIndex((l) => l.uid === (lessonUid ?? view.continue_lesson_uid ?? view.next_lesson_uid)),
+    unknownLesson ? lessons.findIndex((l) => l.uid === view.continue_lesson_uid) : requested,
   );
+  const router = useRouter();
+  useEffect(() => {
+    if (unknownLesson) router.replace(`/learn/${view.course.id}`);
+  }, [unknownLesson, router, view.course.id]);
   const lesson = lessons[index];
   const previous = lessons[index - 1];
   const next = lessons[index + 1];

@@ -238,7 +238,6 @@
         "open": "Open the document",
         "markDone": "I’ve finished this document",
         "done": "Document finished",
-        "linkExpires": "The link works for a few minutes; reopen the lesson to get a new one.",
         "lowData": "Documents use very little data."
       },
       "quiz": {

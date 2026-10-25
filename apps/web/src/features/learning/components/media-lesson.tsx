@@ -9,7 +9,7 @@ import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { MonitorSmartphone } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const ProtectedPlayer = dynamic(
   () => import("@/features/player/components/protected-player").then((m) => m.ProtectedPlayer),
@@ -32,7 +32,11 @@ export function MediaLesson({ lessonUid, title, startAt, onPosition }: MediaLess
   const t = useTranslations("web.learn");
   const common = useTranslations("common");
   const [attempt, setAttempt] = useState(0);
-  const [replaced, setReplaced] = useState(false);
+  const [stopped, setStopped] = useState<"replaced" | "ended" | null>(null);
+  const playHere = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (stopped === "replaced") playHere.current?.focus();
+  }, [stopped]);
 
   const playback = useQuery({
     queryKey: ["playback", lessonUid, attempt],
@@ -52,7 +56,11 @@ export function MediaLesson({ lessonUid, title, startAt, onPosition }: MediaLess
         await lessonsPlaybackHeartbeat(lessonUid, { session_id: sessionId });
       } catch (error) {
         if (error instanceof ApiError && error.code === "playback.stream_replaced") {
-          setReplaced(true);
+          setStopped("replaced");
+          window.clearInterval(timer);
+        } else if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
+          // Access ended while watching (refund, takedown, signed out): stop, don't offer to take over.
+          setStopped("ended");
           window.clearInterval(timer);
         }
       }
@@ -82,30 +90,36 @@ export function MediaLesson({ lessonUid, title, startAt, onPosition }: MediaLess
 
   return (
     <div className="relative">
-      <ProtectedPlayer
-        playback={playback.data}
-        title={title}
-        startTime={startAt > 5 ? startAt : undefined}
-        stopped={replaced}
-        onProgress={(seconds) => onPosition(seconds, false)}
-        onStop={(seconds) => onPosition(seconds, true)}
-      />
-      {replaced ? (
+      {/* While stopped, the player can't take focus or keyboard input (Space would resume it). */}
+      <div inert={stopped !== null}>
+        <ProtectedPlayer
+          playback={playback.data}
+          title={title}
+          startTime={startAt > 5 ? startAt : undefined}
+          stopped={stopped !== null}
+          onProgress={(seconds) => onPosition(seconds, false)}
+          onStop={(seconds) => onPosition(seconds, true)}
+        />
+      </div>
+      {stopped ? (
         <div className="absolute inset-0 grid place-items-center rounded-md bg-black/80 p-4 text-center text-white">
           <div className="grid justify-items-center gap-3">
             <MonitorSmartphone aria-hidden className="size-8" />
             <p role="status" className="font-semibold">
-              {t("playingElsewhere")}
+              {stopped === "replaced" ? t("playingElsewhere") : t("lessonError")}
             </p>
-            <Button
-              variant="accent"
-              onClick={() => {
-                setReplaced(false);
-                setAttempt((n) => n + 1); // a new stream session takes over from the other screen
-              }}
-            >
-              {t("playHere")}
-            </Button>
+            {stopped === "replaced" ? (
+              <Button
+                ref={playHere}
+                variant="accent"
+                onClick={() => {
+                  setStopped(null);
+                  setAttempt((n) => n + 1); // a new stream session takes over from the other screen
+                }}
+              >
+                {t("playHere")}
+              </Button>
+            ) : null}
           </div>
         </div>
       ) : null}

@@ -68,6 +68,9 @@ export function ProtectedPlayer({
           lastReport.current = now;
           onProgress?.(...position());
         }}
+        onPlay={() => {
+          if (stopped) player.current?.pause();
+        }}
         onPause={() => onStop?.(...position())}
         onEnded={() => onStop?.(...position())}
       />

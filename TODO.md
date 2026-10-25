@@ -337,7 +337,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Lesson Q&A (with API 1.8c), certificates list page, edit/delete my review
 - [ ] Learning view: refresh playback tokens before they expire on long sessions; keyboard shortcuts for next/previous
 - [ ] Playwright journey: sign in → enrol free → watch preview → finish document + quiz → certificate
-- [ ] Quiz submit body: the spec types `answers` as a list (Scramble reads `answers.*` rules); switch the request to `[{question_id, option_ids}]` or document it as a map, then drop the cast in quiz-lesson.tsx
+- [ ] Check on staging that the `keepalive` progress PUT on tab close arrives (Chrome, Safari, Firefox; it needs a CORS preflight); if not, save to localStorage on `pagehide` and send on the next visit
+- [ ] Learning view: re-issue playback tokens on a player error after a very long pause
 - [ ] Wishlist, in-app notifications
 - [ ] Playwright: sign-in, free enroll, paid checkout (fake), learning
 
