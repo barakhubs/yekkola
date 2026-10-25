@@ -20,6 +20,7 @@ import type {
 import type {
   CourseSelectionRequest,
   MeOrdersIndex200,
+  MeOrdersIndexParams,
   ModelNotFoundExceptionResponse,
   OrdersPay201,
   OrdersShow200,
@@ -530,36 +531,53 @@ export type meOrdersIndexResponseSuccess = meOrdersIndexResponse200 & {
 };
 export type meOrdersIndexResponse = meOrdersIndexResponseSuccess;
 
-export const getMeOrdersIndexUrl = () => {
-  return `/me/orders`;
+export const getMeOrdersIndexUrl = (params?: MeOrdersIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/me/orders?${stringifiedParams}` : `/me/orders`;
 };
 
+/**
+ * @summary My orders, newest first (PRD-05 FR-17)
+ */
 export const meOrdersIndex = async (
+  params?: MeOrdersIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<meOrdersIndexResponse> => {
-  return apiFetch<meOrdersIndexResponse>(getMeOrdersIndexUrl(), {
+  return apiFetch<meOrdersIndexResponse>(getMeOrdersIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getMeOrdersIndexQueryKey = () => {
-  return [`/me/orders`] as const;
+export const getMeOrdersIndexQueryKey = (params?: MeOrdersIndexParams) => {
+  return [`/me/orders`, ...(params ? [params] : [])] as const;
 };
 
 export const getMeOrdersIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meOrdersIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: MeOrdersIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getMeOrdersIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getMeOrdersIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof meOrdersIndex>>> = ({ signal }) =>
-    meOrdersIndex({ signal, ...requestOptions });
+    meOrdersIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof meOrdersIndex>>,
@@ -575,6 +593,7 @@ export function useMeOrdersIndex<
   TData = Awaited<ReturnType<typeof meOrdersIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | MeOrdersIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>> &
       Pick<
@@ -593,6 +612,7 @@ export function useMeOrdersIndex<
   TData = Awaited<ReturnType<typeof meOrdersIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeOrdersIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>> &
       Pick<
@@ -611,24 +631,29 @@ export function useMeOrdersIndex<
   TData = Awaited<ReturnType<typeof meOrdersIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeOrdersIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary My orders, newest first (PRD-05 FR-17)
+ */
 
 export function useMeOrdersIndex<
   TData = Awaited<ReturnType<typeof meOrdersIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeOrdersIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meOrdersIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getMeOrdersIndexQueryOptions(options);
+  const queryOptions = getMeOrdersIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

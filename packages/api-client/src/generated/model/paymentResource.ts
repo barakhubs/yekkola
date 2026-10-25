@@ -15,7 +15,8 @@ export interface PaymentResource {
   status: string;
   /** @nullable */
   failure_code: string | null;
-  failure_reason: null | string | "Le paiement a échoué. Réessayez ou choisissez un autre opérateur.";
+  /** @nullable */
+  failure_reason: string | null;
   /** @nullable */
   operator_reference: string | null;
   created_at: string;

@@ -72,51 +72,23 @@ export const GuestOrdersStoreResponse = zod.object({
         }),
       }),
     ),
-    payments: zod.union([
-      zod.array(
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
+    payments: zod.array(
+      zod.object({
+        id: zod.string(),
+        order_id: zod.string(),
+        rail: zod.string(),
+        payer: zod.string(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
         }),
-      ),
-      zod.record(
-        zod.string(),
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
-        }),
-      ),
-    ]),
+        status: zod.string(),
+        failure_code: zod.string().nullable(),
+        failure_reason: zod.string().nullable(),
+        operator_reference: zod.string().nullable(),
+        created_at: zod.string(),
+      }),
+    ),
   }),
   access_token: zod.string(),
 });
@@ -165,51 +137,23 @@ export const GuestOrdersShowResponse = zod.object({
         }),
       }),
     ),
-    payments: zod.union([
-      zod.array(
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
+    payments: zod.array(
+      zod.object({
+        id: zod.string(),
+        order_id: zod.string(),
+        rail: zod.string(),
+        payer: zod.string(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
         }),
-      ),
-      zod.record(
-        zod.string(),
-        zod.object({
-          id: zod.string(),
-          order_id: zod.string(),
-          rail: zod.string(),
-          payer: zod.string(),
-          amount: zod.object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          }),
-          status: zod.string(),
-          failure_code: zod.string().nullable(),
-          failure_reason: zod.union([
-            zod.null(),
-            zod.string(),
-            zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-          ]),
-          operator_reference: zod.string().nullable(),
-          created_at: zod.string(),
-        }),
-      ),
-    ]),
+        status: zod.string(),
+        failure_code: zod.string().nullable(),
+        failure_reason: zod.string().nullable(),
+        operator_reference: zod.string().nullable(),
+        created_at: zod.string(),
+      }),
+    ),
   }),
 });
 
@@ -243,11 +187,7 @@ export const GuestOrdersPayResponse = zod.object({
     }),
     status: zod.string(),
     failure_code: zod.string().nullable(),
-    failure_reason: zod.union([
-      zod.null(),
-      zod.string(),
-      zod.enum(["Le paiement a échoué. Réessayez ou choisissez un autre opérateur."]),
-    ]),
+    failure_reason: zod.string().nullable(),
     operator_reference: zod.string().nullable(),
     created_at: zod.string(),
   }),

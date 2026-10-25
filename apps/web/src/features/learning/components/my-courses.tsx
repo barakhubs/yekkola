@@ -23,6 +23,7 @@ export function MyCourses() {
   const errors = useTranslations("errors");
   const common = useTranslations("common");
   const pagination = useTranslations("web.pagination");
+  const nav = useTranslations("web.nav");
   const locale = useLocale() as Locale;
   const [state, setState] = useQueryState("state", parseAsStringLiteral(STATES).withDefault("all"));
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -35,7 +36,14 @@ export function MyCourses() {
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 sm:py-12">
-      <PageHeader title={t("title")} />
+      <PageHeader
+        title={t("title")}
+        actions={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/orders">{nav("orders")}</Link>
+          </Button>
+        }
+      />
       <div role="tablist" aria-label={t("title")} className="flex gap-2">
         {STATES.map((value) => (
           <button

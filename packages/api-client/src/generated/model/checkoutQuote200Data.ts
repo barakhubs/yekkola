@@ -7,14 +7,15 @@
 import type { CheckoutQuote200DataBundle } from "./checkoutQuote200DataBundle";
 import type { CheckoutQuote200DataCoupon } from "./checkoutQuote200DataCoupon";
 import type { CheckoutQuote200DataDiscount } from "./checkoutQuote200DataDiscount";
+import type { CheckoutQuote200DataItemsItem } from "./checkoutQuote200DataItemsItem";
 import type { CheckoutQuote200DataSubtotal } from "./checkoutQuote200DataSubtotal";
 import type { CheckoutQuote200DataTotal } from "./checkoutQuote200DataTotal";
 
 export type CheckoutQuote200Data = {
   currency: string;
-  items: unknown[];
+  items: CheckoutQuote200DataItemsItem[];
   is_free: boolean;
-  excluded_course_ids: unknown[];
+  excluded_course_ids: string[];
   /** @nullable */
   coupon: CheckoutQuote200DataCoupon;
   /** @nullable */

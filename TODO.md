@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
-> Single list of everything from start to launch. **Update it in the same PR as the work** (see *How to update*).
+> Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
 > Last updated: 2026-10-25
 
 ## Now
 
-- **Waiting:** PR #20 (learning view — web milestone 1 step 5) to be merged
-- **Next up:** paid checkout on the fake gateway (2.4) — web milestone 1 step 6
+- **Current branch:** `feature/prd-05-web-checkout` (web milestone 1 step 6, PR open — waiting for merge)
+- **Next up:** professor studio (2.5) — web milestone 1 step 7
 
 ## Legend
 
@@ -18,6 +18,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 ## Phase 0 — Foundations & decisions
 
 ### 0.1 Docs & tooling
+
 - [x] Project context (`project-context.md`)
 - [x] Architecture doc (`docs/architecture.md`)
 - [x] PRDs 01–10 (`docs/prd/`)
@@ -29,14 +30,16 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [x] Runbooks: stuck payments, failed payouts, Mux outage, SMS outage, compromised admin (`docs/runbooks/`) — #3
 
 ### 0.2 Brand
+
 - [x] Brand colours: primary `#2c3892`, secondary `#fdb73b`
 - [x] Full colour scales (50–950), dark-mode tints, contrast-checked (`docs/brand.md`) — #3
 - [x] Typography: **Nunito** everywhere, type scale (`docs/brand.md`) — #3
-- [x] Tagline *(provisional)*: *Les meilleurs profs du Congo, partout au Congo.*
+- [x] Tagline _(provisional)_: _Les meilleurs profs du Congo, partout au Congo._
 - [ ] Logo set — brief in `docs/brand.md` §4 **(needs: owner / designer)**
 - [ ] Domain name(s) on one parent domain (`api.`, `www.`, `admin.`) **(needs: owner to purchase)**
 
 ### 0.3 Accounts & services — all **(needs: owner — account + billing)**
+
 - [ ] Laravel Cloud organisation + `staging` and `production` environments
 - [ ] Mux account (DRM enabled, signing keys, webhook secret)
 - [ ] Meilisearch Cloud project
@@ -48,6 +51,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [-] GitHub branch protection — moved to Phase 1.1 (needs CI checks first)
 
 ### 0.4 Technical spikes
+
 - [x] Mux research: DRM needs `plus` quality; **audio-only can't use DRM** → signed playback + encrypted offline files; download tiers; free tiers (`docs/research/mux.md`)
 - [x] Mux cost estimate (`docs/research/mux.md` §4) — #3
 - [x] Spike plans written (`docs/spikes/`) — #3
@@ -56,19 +60,22 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [ ] Run region latency measurement → choose region (`docs/spikes/region-latency.md`) **(needs: RIPE Atlas credits or DRC testers)**
 
 ### 0.5 Business & legal decisions
-Provisional defaults recorded in `project-context.md` → *Platform settings* (confirm before launch — Phase 5):
-- [x] Revenue split — 70% professor / 30% platform *(provisional)*
-- [x] Payouts — monthly, minimum 10 USD / 25,000 CDF *(provisional)*
-- [x] Currencies — USD + CDF enabled, USD default *(provisional)*
-- [x] Launch categories — academic + professional tree (`docs/catalogue-categories.md`) *(provisional)*
-- [x] Disbursement fees — platform pays *(provisional)*
-- [x] Bundle with an owned course — exclude + pro-rata price *(provisional)*
-- [x] Coupon funding — platform-funded keeps the professor's list-price share (capped at the price paid); professor-funded keeps the platform's; zero-priced lines earn nothing *(provisional)*
-- [x] No coupon on top of a bundle *(provisional)*
-- [x] Review SLAs — courses 48 h, applications 72 h *(provisional)*
-- [x] WhatsApp channel — post-launch backlog *(provisional)*
+
+Provisional defaults recorded in `project-context.md` → _Platform settings_ (confirm before launch — Phase 5):
+
+- [x] Revenue split — 70% professor / 30% platform _(provisional)_
+- [x] Payouts — monthly, minimum 10 USD / 25,000 CDF _(provisional)_
+- [x] Currencies — USD + CDF enabled, USD default _(provisional)_
+- [x] Launch categories — academic + professional tree (`docs/catalogue-categories.md`) _(provisional)_
+- [x] Disbursement fees — platform pays _(provisional)_
+- [x] Bundle with an owned course — exclude + pro-rata price _(provisional)_
+- [x] Coupon funding — platform-funded keeps the professor's list-price share (capped at the price paid); professor-funded keeps the platform's; zero-priced lines earn nothing _(provisional)_
+- [x] No coupon on top of a bundle _(provisional)_
+- [x] Review SLAs — courses 48 h, applications 72 h _(provisional)_
+- [x] WhatsApp channel — post-launch backlog _(provisional)_
 
 Cannot be defaulted:
+
 - [ ] Tax treatment (VAT on sales, withholding on payouts) **(needs: DRC accountant)**
 - [ ] Legal entity; terms of service; privacy policy; professor agreement **(needs: counsel)**
 - [ ] Minimum age + minors' data policy **(needs: counsel)**
@@ -78,6 +85,7 @@ Cannot be defaulted:
 ## Phase 1 — Backend (API)
 
 ### 1.1 Scaffold & CI
+
 - [x] Laravel 13 API-only app in `api/` — PHP 8.3+ (CI 8.3 + 8.4), PostgreSQL, Valkey — #4
 - [x] Local services via `compose.yaml`: Postgres (port 55432), Valkey, Meilisearch; separate `yekkola_test` DB — #4
 - [x] Packages: Sanctum, Horizon, Scout + Meilisearch, query-builder, permission, medialibrary, settings, translatable, activitylog, backup, Scramble, php-jwt, libphonenumber (`muxinc/mux-php` dropped — needs Guzzle 7; Mux via HTTP client + JWT) — #4
@@ -92,6 +100,7 @@ Cannot be defaulted:
 - [ ] GitHub branch protection requiring CI — needs an always-running summary job first (path-filtered workflows don't report on docs-only PRs); do with `contract.yml` in 2.1
 
 ### 1.2 Platform core
+
 - [x] Settings classes (commerce, payouts, protection, catalog, learning, moderation) + seeded defaults — #5
 - [x] Roles & permissions from enums (student, professor, moderator, admin, super-admin; `finance.*` granted individually) + seeder — #5
 - [x] Provinces seed (26, ISO 3166-2:CD) + optional `users.province_id` — #5
@@ -100,6 +109,7 @@ Cannot be defaulted:
 - [x] Production boot guard against fake/log drivers — #5
 
 ### 1.3 Auth & identity — PRD-01
+
 - [x] Users (phone-first, auth_epoch, deletion request), OTP challenges, devices, device-bound tokens, data exports tables — #6
 - [x] `$user->phone` returns a `PhoneNumber` (column stays `phone_e164`) — #6
 - [x] Mobile tokens expire after 90 days and are bound to a device (one token per device) — #6
@@ -117,6 +127,7 @@ Cannot be defaulted:
 - [ ] Real SMS provider driver + delivery reports — phase 4
 
 ### 1.4 Professors — PRD-02
+
 - [x] Applications: draft autosave, credentials (max 5, private disk), submit with agreement, needs-info loop, reapply cooldown, 30-day expiry (FR-01–03, FR-06) — #7
 - [x] Staff review: queue + filters, start review, approve (profile + role + unique slug), reject, request info, audited, no self-review (FR-04, FR-05) — #7
 - [x] Profiles + public page by slug, slug editable once, avatar (FR-05, FR-07, FR-12) — #7
@@ -132,6 +143,7 @@ Cannot be defaulted:
 - [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
 
 ### 1.5 Authoring — PRD-03
+
 - [x] Schema: categories (+ seed), courses, versions, sections, lessons (stable uid), media assets, quizzes, webhook inbox — #8
 - [x] Course create + settings (category, language, level, audience, price/free with limits and CDF whole francs) (FR-01, FR-09, FR-15, FR-18) — #8
 - [x] Draft details + cover; curriculum CRUD + full reorder; preview limit (FR-02, FR-03, FR-08) — #8
@@ -153,6 +165,7 @@ Cannot be defaulted:
 - [ ] Re-poll media assets still waiting for upload; test out-of-order webhooks
 
 ### 1.6 Catalogue & search — PRD-04
+
 - [x] Categories API (visible tree, fr/en, course counts) (FR-02) — #9
 - [x] Catalogue with filters + sorts; course page with curriculum outline and download sizes; professor page with courses (FR-02, FR-04, FR-05, FR-07, BR-01, BR-02, FR-12) — #9
 - [x] Home rails + admin-ordered featured list (FR-01, BR-03) — #9
@@ -173,7 +186,9 @@ Cannot be defaulted:
 - [ ] Keep `courses.enrollment_count` (and professor student counts) up to date on grant/revoke — nothing maintains it yet; the demo seeder sets it
 
 ### 1.7 Checkout & payments — PRD-05 (fake gateway)
-*Four PRs: a) checkout core, b) coupons + bundles, c) parent payer, d) receipts + refunds.*
+
+_Four PRs: a) checkout core, b) coupons + bundles, c) parent payer, d) receipts + refunds._
+
 - [x] a: Orders, items, payments, payment events, enrollments schema (arch §3.4, §3.5 enrollments) — #10
 - [x] a: Ledger core pulled forward from 1.10 — accounts, append-only transactions/entries, sale + reversal postings (PRD-08 FR-01, FR-02) — #10
 - [x] a: Free enroll (FR-01) — #10
@@ -195,7 +210,9 @@ Cannot be defaulted:
 - [ ] Payment webhooks: release the job (don't mark processed) when the status API is down, as refunds now do
 
 ### 1.8 Learning — PRD-06
-*Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports.*
+
+_Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
+
 - [x] a: Progress and quiz-attempt schema (arch §3.5; enrollments landed in 1.7a) — #14
 - [x] a: My courses + learning view endpoints (FR-01, FR-02, FR-09) — #14
 - [x] a: Progress batch sync with monotonic merge; server-side completion rules (FR-04, FR-05) — #14
@@ -211,6 +228,7 @@ Cannot be defaulted:
 - [ ] Course updated notice with changelog (FR-15)
 
 ### 1.9 Content protection — PRD-07
+
 - [x] Playback + DRM token endpoint with checks, viewer watermark text (FR-02, FR-04) — #17
 - [ ] Playback for mobile: require the registered device (`X-Device-Id`) and check account device limits (FR-06) — with offline licenses
 - [x] Stream sessions + concurrent web limit (FR-05) — #17
@@ -225,9 +243,11 @@ Cannot be defaulted:
 - [ ] Takedown/revocation effects (FR-15)
 
 ### 1.9b Copy
-- [ ] API messages to students use *vous* (`lang/fr/errors.php`); the brand says *tu* for students — align student-facing API copy in one pass
+
+- [ ] API messages to students use _vous_ (`lang/fr/errors.php`); the brand says _tu_ for students — align student-facing API copy in one pass
 
 ### 1.10 Finance — PRD-08
+
 - [x] Ledger accounts/transactions/entries + posting service (FR-01) — core in 1.7a, #10
 - [ ] Sale, release, refund postings (FR-02–05)
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
@@ -238,6 +258,7 @@ Cannot be defaulted:
 - [ ] Ledger integrity job (FR-12)
 
 ### 1.11 Admin API — PRD-09
+
 - [ ] Dashboard stats + rollup jobs (`course_daily_stats`, `platform_daily_stats`)
 - [ ] Users, applications, professors, KYC endpoints
 - [ ] Content review queue + version diff data
@@ -249,6 +270,7 @@ Cannot be defaulted:
 - [ ] Settings + audit log + staff endpoints — settings update action validates invariants (bps 0–10000, limits per enabled currency, hold ≥ refund window, schedule enum) and wraps save in a transaction
 
 ### 1.12 Notifications — PRD-10
+
 - [ ] Notification classes per catalogue event, fr/en templates (FR-01, FR-02)
 - [ ] In-app feed + preferences (FR-03, FR-05)
 - [ ] FCM channel + device tokens (FR-04)
@@ -256,6 +278,7 @@ Cannot be defaulted:
 - [ ] Admin alert routing (FR-09)
 
 ### 1.13 Backend hardening
+
 - [ ] OpenAPI spec complete and published as CI artifact
 - [ ] Rate limits on all sensitive endpoints
 - [ ] k6 load tests: catalogue, playback token, progress sync, checkout
@@ -266,6 +289,7 @@ Cannot be defaulted:
 ## Phase 2 — Web
 
 ### Web milestone 1 — client demo (in this order; the rest of Phase 2 comes after)
+
 1. Foundations (2.1)
 2. Minimal playback token + document URL endpoints (1.9 FR-01, FR-02, FR-12 slice) so lessons can be watched/read
 3. Public site: layout, home rails, catalogue + search, course page, professor page (2.3)
@@ -278,6 +302,7 @@ Cannot be defaulted:
 Needs from the owner for a hosted demo: Mux account (real playback) and Laravel Cloud account (staging) — 0.3.
 
 ### 2.1 Front-end foundations
+
 - [x] pnpm workspace + Turborepo at repo root — #16
 - [x] `packages/config` (tsconfig, ESLint, Prettier; Tailwind v4 theme lives in `packages/ui` CSS instead of a preset) — #16
 - [x] `packages/ui`: shadcn/ui setup, brand tokens (light/dark), primitives, blocks (KpiCard, PageHeader, EmptyState, ConfirmDialog, StatusBadge, MoneyText) — #16
@@ -290,6 +315,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys
 
 ### 2.2 Back office (apps/admin) — PRD-09 (before the student web app)
+
 - [ ] App shell: auth, sidebar, command palette, locale switch
 - [ ] Dashboard (KPIs, charts, attention queues)
 - [ ] Users (list, detail, actions)
@@ -305,6 +331,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Playwright: admin approval journeys
 
 ### 2.3 Web app — public (apps/web) — PRD-04
+
 - [x] Layout, header/footer, locale routing, SEO base (metadata, sitemap, robots, hreflang, JSON-LD) — #18
 - [x] Home rails + search + categories — #18
 - [x] Category pages + filters (GET forms: no JS needed, state in the URL) — #18
@@ -322,11 +349,17 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Lighthouse CI budgets on public pages
 
 ### 2.4 Web app — students — PRD-01, 05, 06, 07
+
 - [x] Sign-in (phone + OTP, Turnstile, first-time name + optional province, safe `?next=`) — #19
 - [ ] Account, devices, notification preferences, data export/deletion
 - [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout) — #19
-- [ ] Checkout: quote, coupon, rail picker, waiting screen, results, retry
-- [ ] Orders + receipts, refund request
+- [x] Checkout on the fake gateway: quote, coupon, rail picker, payer number, waiting screen with countdown, results, retry with another operator or number — #21
+- [x] Orders list + receipt PDF links — #21
+- [ ] Refund request from the orders page (PRD-05 FR-12, API exists)
+- [ ] Buy for another student / guest payer link in the web checkout (PRD-05 FR-14, API exists)
+- [ ] Bundles in the web checkout (course page "bundle" offers, PRD-05 FR-11)
+- [ ] Operator-specific hints on the waiting screen (USSD code, "check *144#") once the real aggregator is chosen
+- [ ] Playwright journey: paid checkout on the fake gateway (success, insufficient funds `…0001` then retry)
 - [x] My courses (progress, last activity, in progress / completed filter, paging); suspended accounts see an explanation (FR-15) — #19
 - [ ] Sign-in: live countdown from `retry_after` on 429, support contact after 3 resends (PRD-01 §6–7); test resend with single-use bot tokens (Playwright)
 - [ ] Light "am I enrolled" check for the course page (it uses the full learning view today)
@@ -343,6 +376,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Playwright: sign-in, free enroll, paid checkout (fake), learning
 
 ### 2.5 Web app — professor studio — PRD-02, 03, 08
+
 - [ ] Application flow + status
 - [ ] Onboarding checklist, profile, KYC upload, payout method
 - [ ] Course list + course editor (details, curriculum DnD, pricing, review status)
@@ -396,7 +430,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Backup restore drill on production-like data
 - [ ] Runbooks written
 - [ ] Legal pages published (ToS, privacy, professor agreement)
-- [ ] Confirm all *(provisional)* defaults (Phase 0.5, tagline, email provider, OTP country allowlist) and finalise platform settings in production
+- [ ] Confirm all _(provisional)_ defaults (Phase 0.5, tagline, email provider, OTP country allowlist) and finalise platform settings in production
 - [ ] Professor recruitment + first courses reviewed and live
 - [ ] Support channel (WhatsApp/email) staffed
 - [ ] Staging → production cutover checklist
