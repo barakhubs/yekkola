@@ -16,21 +16,48 @@ use Illuminate\Database\ConnectionInterface;
  */
 final class CourseLifecycle
 {
+    private const UNPUBLISH_FROM = [CourseStatus::Published];
+
+    private const REPUBLISH_FROM = [CourseStatus::Unpublished, CourseStatus::Archived];
+
+    private const ARCHIVE_FROM = [CourseStatus::Published, CourseStatus::Unpublished];
+
     public function __construct(private readonly ConnectionInterface $db) {}
+
+    public function canUnpublish(Course $course): bool
+    {
+        return $this->canMove($course, self::UNPUBLISH_FROM);
+    }
+
+    public function canRepublish(Course $course): bool
+    {
+        return $this->canMove($course, self::REPUBLISH_FROM);
+    }
+
+    public function canArchive(Course $course): bool
+    {
+        return $this->canMove($course, self::ARCHIVE_FROM);
+    }
+
+    /** Never published, and not in the review queue (withdraw first). */
+    public function canDelete(Course $course): bool
+    {
+        return ! $course->wasEverPublished() && $course->status !== CourseStatus::InReview;
+    }
 
     public function unpublish(Course $course): Course
     {
-        return $this->move($course, [CourseStatus::Published], CourseStatus::Unpublished);
+        return $this->move($course, self::UNPUBLISH_FROM, CourseStatus::Unpublished);
     }
 
     public function republish(Course $course): Course
     {
-        return $this->move($course, [CourseStatus::Unpublished, CourseStatus::Archived], CourseStatus::Published);
+        return $this->move($course, self::REPUBLISH_FROM, CourseStatus::Published);
     }
 
     public function archive(Course $course): Course
     {
-        return $this->move($course, [CourseStatus::Published, CourseStatus::Unpublished], CourseStatus::Archived);
+        return $this->move($course, self::ARCHIVE_FROM, CourseStatus::Archived);
     }
 
     public function delete(Course $course): void
@@ -59,7 +86,7 @@ final class CourseLifecycle
         return $this->db->transaction(function () use ($course, $from, $to): Course {
             $locked = Course::query()->whereKey($course->id)->lockForUpdate()->firstOrFail();
 
-            if (! in_array($locked->status, $from, true) || ! $locked->wasEverPublished()) {
+            if (! $this->canMove($locked, $from)) {
                 throw AuthoringException::invalidTransition();
             }
 
@@ -67,5 +94,13 @@ final class CourseLifecycle
 
             return $locked;
         });
+    }
+
+    /**
+     * @param  list<CourseStatus>  $from
+     */
+    private function canMove(Course $course, array $from): bool
+    {
+        return in_array($course->status, $from, true) && $course->wasEverPublished();
     }
 }

@@ -475,6 +475,15 @@ export const ProfessorCoursesIndexResponse = zod.object({
       enrollment_count: zod.int(),
       published_at: zod.string().nullable(),
       created_at: zod.string(),
+      can: zod.object({
+        start_draft: zod.string(),
+        submit: zod.string(),
+        withdraw: zod.string(),
+        unpublish: zod.string(),
+        republish: zod.string(),
+        archive: zod.string(),
+        delete: zod.string(),
+      }),
     }),
   ),
   links: zod.object({
@@ -563,6 +572,15 @@ export const ProfessorCoursesStoreResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -615,6 +633,15 @@ export const ProfessorCoursesShowResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -703,6 +730,15 @@ export const ProfessorCoursesUpdateResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -1043,6 +1079,15 @@ export const ProfessorCoursesUnpublishResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -1095,6 +1140,15 @@ export const ProfessorCoursesRepublishResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -1147,5 +1201,14 @@ export const ProfessorCoursesArchiveResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });

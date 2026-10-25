@@ -4,6 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { StudioCourseResourceCan } from "./studioCourseResourceCan";
 import type { StudioCourseResourceCategory } from "./studioCourseResourceCategory";
 import type { StudioCourseResourceDraftVersion } from "./studioCourseResourceDraftVersion";
 import type { StudioCourseResourceLiveVersion } from "./studioCourseResourceLiveVersion";
@@ -34,4 +35,5 @@ export interface StudioCourseResource {
   /** @nullable */
   published_at: string | null;
   created_at: string;
+  can: StudioCourseResourceCan;
 }

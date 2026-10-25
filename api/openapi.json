@@ -13341,6 +13341,41 @@
                     },
                     "created_at": {
                         "type": "string"
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "start_draft": {
+                                "type": "string"
+                            },
+                            "submit": {
+                                "type": "string"
+                            },
+                            "withdraw": {
+                                "type": "string"
+                            },
+                            "unpublish": {
+                                "type": "string"
+                            },
+                            "republish": {
+                                "type": "string"
+                            },
+                            "archive": {
+                                "type": "string"
+                            },
+                            "delete": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "start_draft",
+                            "submit",
+                            "withdraw",
+                            "unpublish",
+                            "republish",
+                            "archive",
+                            "delete"
+                        ]
                     }
                 },
                 "required": [
@@ -13360,7 +13395,8 @@
                     "total_duration_seconds",
                     "enrollment_count",
                     "published_at",
-                    "created_at"
+                    "created_at",
+                    "can"
                 ],
                 "title": "StudioCourseResource"
             },

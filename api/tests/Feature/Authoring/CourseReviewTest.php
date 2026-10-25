@@ -169,6 +169,25 @@ it('unpublishes, republishes without review, and archives', function () {
     $this->postJson("/api/v1/professor/courses/{$this->course->id}/archive")->assertOk()->assertJsonPath('data.status', 'archived');
 });
 
+it('tells the studio which lifecycle actions apply now', function () {
+    $can = fn () => $this->getJson("/api/v1/professor/courses/{$this->course->id}")->json('data.can');
+
+    // In review, never published: only withdraw.
+    expect($can())->toBe([
+        'start_draft' => false, 'submit' => false, 'withdraw' => true,
+        'unpublish' => false, 'republish' => false, 'archive' => false, 'delete' => false,
+    ]);
+
+    publish();
+    expect($can())->toMatchArray(['start_draft' => true, 'unpublish' => true, 'archive' => true, 'republish' => false, 'delete' => false]);
+
+    $this->postJson("/api/v1/professor/courses/{$this->course->id}/unpublish")->assertOk();
+    expect($can())->toMatchArray(['unpublish' => false, 'republish' => true, 'archive' => true]);
+
+    $this->postJson("/api/v1/professor/courses/{$this->course->id}/draft")->assertCreated();
+    expect($can())->toMatchArray(['start_draft' => false, 'submit' => true, 'withdraw' => false]);
+});
+
 it('applies price changes immediately, without review', function () {
     publish();
 

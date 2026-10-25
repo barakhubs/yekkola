@@ -20,6 +20,12 @@ final class StartDraftFromLive
 {
     public function __construct(private readonly ConnectionInterface $db) {}
 
+    /** A live course without a draft in progress. */
+    public function canStart(Course $course): bool
+    {
+        return $course->draft_version_id === null && $course->live_version_id !== null;
+    }
+
     public function handle(Course $course): CourseVersion
     {
         return $this->db->transaction(function () use ($course): CourseVersion {

@@ -367,6 +367,7 @@ export * from "./staffNoteRequest";
 export * from "./startPaymentRequest";
 export * from "./storeLessonRequest";
 export * from "./studioCourseResource";
+export * from "./studioCourseResourceCan";
 export * from "./studioCourseResourceCategory";
 export * from "./studioCourseResourceDraftVersion";
 export * from "./studioCourseResourceLiveVersion";
