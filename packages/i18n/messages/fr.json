@@ -215,6 +215,71 @@
       "enrolling": "Inscription…",
       "continueLearning": "Continuer le cours",
       "paymentSoon": "Le paiement par mobile money arrive très bientôt sur Yekkola."
+    },
+    "learn": {
+      "curriculum": "Programme",
+      "showCurriculum": "Voir le programme",
+      "hideCurriculum": "Masquer le programme",
+      "progress": "{pct} % terminé",
+      "previous": "Leçon précédente",
+      "next": "Leçon suivante",
+      "status": {
+        "not_started": "Pas commencée",
+        "in_progress": "En cours",
+        "completed": "Terminée"
+      },
+      "loadingLesson": "Chargement de la leçon…",
+      "lessonError": "Cette leçon n’a pas pu être chargée.",
+      "playingElsewhere": "Ce cours est en lecture sur un autre écran.",
+      "playHere": "Regarder ici",
+      "mediaProcessing": "Cette leçon est encore en cours de traitement. Réessaie dans quelques minutes.",
+      "document": {
+        "preparing": "Préparation de ton document…",
+        "open": "Ouvrir le document",
+        "markDone": "J’ai terminé ce document",
+        "done": "Document terminé",
+        "lowData": "Les documents consomment peu de données."
+      },
+      "quiz": {
+        "facts": "{questions, plural, one {# question} other {# questions}} · réussite à {pass} %",
+        "timeLimit": "Temps limite : {minutes} min",
+        "attempts": "{used, plural, =0 {Aucune tentative} one {# tentative} other {# tentatives}}{max, select, null {} other { sur {max}}}",
+        "best": "Meilleur score : {score} %",
+        "passed": "Quiz réussi",
+        "start": "Commencer le quiz",
+        "resume": "Reprendre le quiz",
+        "retake": "Refaire le quiz",
+        "noAttemptsLeft": "Tu as utilisé toutes tes tentatives.",
+        "question": "Question {n} sur {total}",
+        "chooseOne": "Choisis une réponse.",
+        "chooseMany": "Choisis toutes les bonnes réponses.",
+        "true": "Vrai",
+        "false": "Faux",
+        "submit": "Valider mes réponses",
+        "submitting": "Correction…",
+        "timeLeft": "Temps restant : {time}",
+        "unanswered": "{count, plural, one {# question sans réponse} other {# questions sans réponse}}",
+        "resultPassed": "Bravo ! Tu as réussi avec {score} %.",
+        "resultFailed": "Tu as obtenu {score} % (il faut {pass} %).",
+        "timedOut": "Le temps était écoulé : tes réponses n’ont pas été prises en compte.",
+        "yourAnswer": "Ta réponse",
+        "correctAnswer": "Bonne réponse",
+        "correct": "Correct",
+        "incorrect": "Incorrect",
+        "explanation": "Explication :"
+      },
+      "complete": {
+        "title": "Félicitations, tu as terminé le cours !",
+        "certificate": "Voir mon certificat",
+        "certificatePending": "Ton certificat est en préparation.",
+        "reviewTitle": "Donne ton avis sur ce cours",
+        "reviewHint": "Ton avis aide les autres étudiants à choisir.",
+        "rating": "Note",
+        "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+        "comment": "Commentaire (facultatif)",
+        "send": "Publier mon avis",
+        "thanks": "Merci pour ton avis !"
+      }
     }
   },
   "admin": {

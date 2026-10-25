@@ -7045,11 +7045,37 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`QuizAttemptResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/QuizAttemptResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "`QuizAttemptResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/QuizAttemptResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
                                 }
                             }
                         }
@@ -10887,7 +10913,10 @@
                         ]
                     },
                     "next_lesson_uid": {
-                        "type": "null"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "certificate": {
                         "type": [
@@ -10979,6 +11008,16 @@
                                                         "type": "integer",
                                                         "minimum": 0
                                                     },
+                                                    "open_attempt_id": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ],
+                                                        "description": "An open attempt can always be resumed, even on the last allowed try."
+                                                    },
+                                                    "can_start": {
+                                                        "type": "boolean"
+                                                    },
                                                     "best_score_pct": {
                                                         "type": "string"
                                                     },
@@ -10992,6 +11031,8 @@
                                                     "time_limit_seconds",
                                                     "max_attempts",
                                                     "attempts_used",
+                                                    "open_attempt_id",
+                                                    "can_start",
                                                     "best_score_pct",
                                                     "passed"
                                                 ]
@@ -12372,6 +12413,13 @@
                         "type": "null",
                         "description": "Count down to this; the server accepts answers for a short grace period after it (network slack)."
                     },
+                    "seconds_left": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "Count down from this rather than the device clock (it can be minutes off, PRD-06 \u00a77)."
+                    },
                     "submitted_at": {
                         "type": [
                             "string",
@@ -12399,72 +12447,7 @@
                     "questions": {
                         "type": "array",
                         "items": {
-                            "type": "object",
-                            "properties": {
-                                "id": {
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "type": {
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "prompt": {
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "points": {
-                                    "anyOf": [
-                                        {
-                                            "type": "integer"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "options": {
-                                    "anyOf": [
-                                        {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "text": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "id",
-                                                    "text"
-                                                ]
-                                            }
-                                        },
-                                        {}
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "id",
-                                "type",
-                                "prompt",
-                                "points",
-                                "options"
-                            ],
-                            "additionalProperties": {}
+                            "$ref": "#/components/schemas/QuizQuestionResource"
                         }
                     }
                 },
@@ -12473,6 +12456,7 @@
                     "lesson_uid",
                     "started_at",
                     "ends_at",
+                    "seconds_left",
                     "submitted_at",
                     "pass_mark_pct",
                     "score_pct",
@@ -12481,6 +12465,84 @@
                     "questions"
                 ],
                 "title": "QuizAttemptResource"
+            },
+            "QuizQuestionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "prompt": {
+                        "type": "string"
+                    },
+                    "points": {
+                        "type": "integer"
+                    },
+                    "options": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "text": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "text"
+                            ]
+                        }
+                    },
+                    "chosen": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "correct": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "answered_correctly": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ],
+                        "description": "Graded by the API's own rule, so the results always match the score."
+                    },
+                    "explanation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "prompt",
+                    "points",
+                    "options",
+                    "chosen",
+                    "correct",
+                    "answered_correctly",
+                    "explanation"
+                ],
+                "title": "QuizQuestionResource"
             },
             "QuizRequest": {
                 "type": "object",
@@ -13444,17 +13506,14 @@
                 "description": "Answers to a quiz attempt: question id => chosen option ids (PRD-06 FR-07).",
                 "properties": {
                     "answers": {
-                        "type": "array",
-                        "items": {
+                        "type": "object",
+                        "description": "Question id => chosen option ids.",
+                        "additionalProperties": {
                             "type": "array",
                             "items": {
-                                "type": "string",
-                                "minLength": 26,
-                                "maxLength": 26
-                            },
-                            "maxItems": 20
-                        },
-                        "maxItems": 200
+                                "type": "string"
+                            }
+                        }
                     }
                 },
                 "required": [

@@ -4,7 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { QuizAttemptResourceQuestionsItem } from "./quizAttemptResourceQuestionsItem";
+import type { QuizQuestionResource } from "./quizQuestionResource";
 
 export interface QuizAttemptResource {
   id: string;
@@ -15,6 +15,11 @@ export interface QuizAttemptResource {
    * @nullable
    */
   ends_at: null;
+  /**
+   * Count down from this rather than the device clock (it can be minutes off, PRD-06 §7).
+   * @nullable
+   */
+  seconds_left: number | null;
   /** @nullable */
   submitted_at: string | null;
   pass_mark_pct: number;
@@ -23,5 +28,5 @@ export interface QuizAttemptResource {
   /** @nullable */
   passed: boolean | null;
   timed_out: boolean;
-  questions: QuizAttemptResourceQuestionsItem[];
+  questions: QuizQuestionResource[];
 }

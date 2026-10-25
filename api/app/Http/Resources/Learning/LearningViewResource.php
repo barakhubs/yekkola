@@ -46,17 +46,14 @@ final class LearningViewResource extends JsonResource
     public function toArray(Request $request): array
     {
         $live = $this->liveVersion;
-        $next = null;
+        $next = $this->firstIncompleteLesson();
 
-        $sections = $live->sections->map(function (Section $section) use (&$next): array {
+        $sections = $live->sections->map(function (Section $section): array {
             return [
                 'id' => $section->id,
                 'title' => $section->title,
-                'lessons' => $section->lessons->map(function (Lesson $lesson) use (&$next): array {
+                'lessons' => $section->lessons->map(function (Lesson $lesson): array {
                     $mine = $this->progress->get($lesson->uid);
-                    if ($next === null && ! $mine?->isCompleted()) {
-                        $next = $lesson->uid;
-                    }
 
                     return [
                         'uid' => $lesson->uid,
@@ -90,6 +87,20 @@ final class LearningViewResource extends JsonResource
         ];
     }
 
+    /** The first lesson of the live curriculum I haven't completed, in course order. */
+    private function firstIncompleteLesson(): ?string
+    {
+        foreach ($this->liveVersion->sections as $section) {
+            foreach ($section->lessons as $lesson) {
+                if (! $this->progress->get($lesson->uid)?->isCompleted()) {
+                    return (string) $lesson->uid;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private function isLive(?string $uid): bool
     {
         return $uid !== null && $this->liveVersion->sections->contains(fn (Section $s) => $s->lessons->contains('uid', $uid));
@@ -110,6 +121,11 @@ final class LearningViewResource extends JsonResource
             'time_limit_seconds' => $quiz->time_limit_seconds,
             'max_attempts' => $quiz->max_attempts,
             'attempts_used' => $attempts->count(),
+            // An open attempt can always be resumed, even on the last allowed try.
+            'open_attempt_id' => $attempts->first(fn (QuizAttempt $a) => $a->isOpen())?->id,
+            'can_start' => (bool) ($attempts->contains(fn (QuizAttempt $a) => $a->isOpen())
+                || $quiz->max_attempts === null
+                || $attempts->count() < $quiz->max_attempts),
             'best_score_pct' => $submitted->max('score_pct'),
             'passed' => $submitted->contains('passed', true),
         ];

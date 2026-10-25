@@ -37,7 +37,7 @@ export function EnrollButton({ courseId, slug, isFree }: EnrollButtonProps) {
     mutationFn: async () => success(await coursesEnroll(courseId)),
     onSuccess: async () => {
       await queryClient.invalidateQueries();
-      router.push("/my-courses");
+      router.push(`/learn/${courseId}`);
     },
   });
 

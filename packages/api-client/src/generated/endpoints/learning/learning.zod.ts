@@ -123,7 +123,7 @@ export const MeCoursesShowResponse = zod.object({
     progress_pct: zod.int(),
     completed_at: zod.string().nullable(),
     continue_lesson_uid: zod.string().nullable(),
-    next_lesson_uid: zod.null(),
+    next_lesson_uid: zod.string().nullable(),
     certificate: zod
       .object({
         id: zod.string(),
@@ -153,6 +153,11 @@ export const MeCoursesShowResponse = zod.object({
                 attempts_used: zod
                   .int()
                   .min(meCoursesShowResponseDataSectionsItemLessonsItemQuizAttemptsUsedMin),
+                open_attempt_id: zod
+                  .string()
+                  .nullable()
+                  .describe("An open attempt can always be resumed, even on the last allowed try."),
+                can_start: zod.boolean(),
                 best_score_pct: zod.string(),
                 passed: zod.boolean(),
               })

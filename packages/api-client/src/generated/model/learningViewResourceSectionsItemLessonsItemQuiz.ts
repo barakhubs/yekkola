@@ -17,6 +17,12 @@ export type LearningViewResourceSectionsItemLessonsItemQuiz = {
   max_attempts: number | null;
   /** @minimum 0 */
   attempts_used: number;
+  /**
+   * An open attempt can always be resumed, even on the last allowed try.
+   * @nullable
+   */
+  open_attempt_id: string | null;
+  can_start: boolean;
   best_score_pct: string;
   passed: boolean;
 } | null;

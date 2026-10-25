@@ -19,6 +19,8 @@ import type {
 
 import type {
   LessonsQuizAttemptsIndex200,
+  LessonsQuizAttemptsStore200,
+  LessonsQuizAttemptsStore201,
   QuizAttemptsSubmit200,
   SubmitQuizRequest,
   ValidationExceptionResponse,
@@ -181,11 +183,18 @@ export function useLessonsQuizAttemptsIndex<
 }
 
 export type lessonsQuizAttemptsStoreResponse200 = {
-  data: string;
+  data: LessonsQuizAttemptsStore200;
   status: 200;
 };
 
-export type lessonsQuizAttemptsStoreResponseSuccess = lessonsQuizAttemptsStoreResponse200 & {
+export type lessonsQuizAttemptsStoreResponse201 = {
+  data: LessonsQuizAttemptsStore201;
+  status: 201;
+};
+
+export type lessonsQuizAttemptsStoreResponseSuccess = (
+  lessonsQuizAttemptsStoreResponse200 | lessonsQuizAttemptsStoreResponse201
+) & {
   headers: Headers;
 };
 export type lessonsQuizAttemptsStoreResponse = lessonsQuizAttemptsStoreResponseSuccess;

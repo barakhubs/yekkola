@@ -34,8 +34,14 @@ final class QuizAttemptController extends Controller
     {
         $user = $this->user($request);
         $attempt = $start->handle($user, $lesson, $user->currentDeviceId());
+        $resource = new QuizAttemptResource($attempt->load('quiz.questions.options'));
 
-        return (new QuizAttemptResource($attempt->load('quiz.questions.options')))->response()->setStatusCode($attempt->wasRecentlyCreated ? 201 : 200);
+        // 201 for a new attempt, 200 when the open one is resumed.
+        if ($attempt->wasRecentlyCreated) {
+            return $resource->response()->setStatusCode(201);
+        }
+
+        return $resource->response();
     }
 
     /** Submits answers: score, pass/fail, and the corrections with explanations. */

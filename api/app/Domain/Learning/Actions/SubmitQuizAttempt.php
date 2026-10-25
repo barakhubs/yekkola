@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Learning\Actions;
 
 use App\Domain\Authoring\Models\Lesson;
-use App\Domain\Authoring\Models\QuizOption;
-use App\Domain\Authoring\Models\QuizQuestion;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\CourseAccess;
 use App\Domain\Learning\Models\Enrollment;
@@ -51,7 +49,7 @@ final class SubmitQuizAttempt
             $earned = 0;
             foreach ($quiz->questions as $question) {
                 $total += $question->points;
-                if ($this->isCorrect($question, $answers[$question->id] ?? [])) {
+                if ($question->isAnsweredBy($answers[$question->id] ?? [])) {
                     $earned += $question->points;
                 }
             }
@@ -82,18 +80,6 @@ final class SubmitQuizAttempt
         if ($enrollment !== null) { // preview quizzes have none
             $this->courseProgress->handle($enrollment, $attempt->lesson_uid);
         }
-    }
-
-    /**
-     * @param  list<string>  $chosen
-     */
-    private function isCorrect(QuizQuestion $question, array $chosen): bool
-    {
-        $correct = $question->options->filter(fn (QuizOption $o) => $o->is_correct)->pluck('id')->sort()->values()->all();
-        $chosen = array_values(array_unique($chosen));
-        sort($chosen);
-
-        return $chosen !== [] && $chosen === $correct;
     }
 
     /**
