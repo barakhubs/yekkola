@@ -353,8 +353,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Sign-in (phone + OTP, Turnstile, first-time name + optional province, safe `?next=`) — #19
 - [ ] Account, devices, notification preferences, data export/deletion
 - [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout) — #19
-- [x] Checkout on the fake gateway: quote, coupon, rail picker, payer number, waiting screen with countdown, results, retry with another operator or number — #PR
-- [x] Orders list + receipt PDF links — #PR
+- [x] Checkout on the fake gateway: quote, coupon, rail picker, payer number, waiting screen with countdown, results, retry with another operator or number — #21
+- [x] Orders list + receipt PDF links — #21
 - [ ] Refund request from the orders page (PRD-05 FR-12, API exists)
 - [ ] Buy for another student / guest payer link in the web checkout (PRD-05 FR-14, API exists)
 - [ ] Bundles in the web checkout (course page "bundle" offers, PRD-05 FR-11)
