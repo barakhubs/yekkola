@@ -1,4 +1,5 @@
 export * from "./application/application";
+export * from "./authoring-options/authoring-options";
 export * from "./bundle/bundle";
 export * from "./category/category";
 export * from "./certificate/certificate";

@@ -220,6 +220,120 @@
                 }
             }
         },
+        "/professor/authoring-options": {
+            "get": {
+                "operationId": "professor.authoring-options",
+                "tags": [
+                    "AuthoringOptions"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "currencies": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "code": {
+                                                                "type": "string"
+                                                            },
+                                                            "min_minor": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "max_minor": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "step_minor": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "code",
+                                                            "min_minor",
+                                                            "max_minor",
+                                                            "step_minor"
+                                                        ]
+                                                    }
+                                                },
+                                                "default_currency": {
+                                                    "type": "string"
+                                                },
+                                                "max_preview_lessons": {
+                                                    "type": "integer"
+                                                },
+                                                "upload_limits_mb": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "video": {
+                                                            "type": "integer"
+                                                        },
+                                                        "audio": {
+                                                            "type": "integer"
+                                                        },
+                                                        "document": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "video",
+                                                        "audio",
+                                                        "document"
+                                                    ]
+                                                },
+                                                "languages": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "levels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "audiences": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "currencies",
+                                                "default_currency",
+                                                "max_preview_lessons",
+                                                "upload_limits_mb",
+                                                "languages",
+                                                "levels",
+                                                "audiences"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bundles/{slug}": {
             "get": {
                 "operationId": "bundles.show",
@@ -3865,8 +3979,7 @@
                                             "type": "object",
                                             "properties": {
                                                 "media": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "$ref": "#/components/schemas/MediaAssetResource"
                                                 },
                                                 "upload_url": {
                                                     "type": "string"
@@ -10535,7 +10648,9 @@
                                 },
                                 "lessons": {
                                     "type": "array",
-                                    "items": {}
+                                    "items": {
+                                        "$ref": "#/components/schemas/StudioLessonResource"
+                                    }
                                 }
                             },
                             "required": [
@@ -10547,13 +10662,20 @@
                         }
                     },
                     "checklist": {
-                        "type": "object",
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere.",
                         "properties": {
                             "ready": {
                                 "type": "boolean"
                             },
                             "missing": {
-                                "type": "null"
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "required": [
@@ -13270,13 +13392,13 @@
                             "name": {
                                 "type": "string"
                             },
-                            "size": {
-                                "type": "string"
+                            "size_bytes": {
+                                "type": "integer"
                             }
                         },
                         "required": [
                             "name",
-                            "size"
+                            "size_bytes"
                         ]
                     },
                     "quiz": {

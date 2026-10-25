@@ -1,4 +1,5 @@
 export * from "./application/application.zod";
+export * from "./authoring-options/authoring-options.zod";
 export * from "./bundle/bundle.zod";
 export * from "./category/category.zod";
 export * from "./certificate/certificate.zod";

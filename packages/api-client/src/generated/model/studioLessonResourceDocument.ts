@@ -10,5 +10,5 @@
  */
 export type StudioLessonResourceDocument = {
   name: string;
-  size: string;
+  size_bytes: number;
 } | null;

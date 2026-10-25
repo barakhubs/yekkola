@@ -32,5 +32,9 @@ export interface CourseVersionResource {
   /** @nullable */
   review_notes: string | null;
   sections: CourseVersionResourceSectionsItem[];
+  /**
+   * Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere.
+   * @nullable
+   */
   checklist: CourseVersionResourceChecklist;
 }

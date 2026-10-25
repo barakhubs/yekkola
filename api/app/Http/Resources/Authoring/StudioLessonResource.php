@@ -35,7 +35,7 @@ final class StudioLessonResource extends JsonResource
             'duration_seconds' => $this->duration_seconds,
             'is_content_ready' => $this->isContentReady(),
             'media' => $this->mediaAsset ? new MediaAssetResource($this->mediaAsset) : null,
-            'document' => $document ? ['name' => $document->file_name, 'size' => $document->size] : null,
+            'document' => $document ? ['name' => $document->file_name, 'size_bytes' => (int) $document->size] : null,
             'quiz' => $quiz ? [
                 'pass_mark_pct' => $quiz->pass_mark_pct,
                 'time_limit_seconds' => $quiz->time_limit_seconds,

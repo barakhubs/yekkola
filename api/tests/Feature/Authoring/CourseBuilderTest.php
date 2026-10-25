@@ -56,6 +56,16 @@ it('validates prices against the platform settings', function (array $payload, i
     'unknown currency' => [['price_minor' => 1_500, 'currency' => 'EUR'], 422],
 ]);
 
+it('states price limits as money, not minor units', function () {
+    $course = newCourse();
+
+    $message = $this->patchJson("/api/v1/professor/courses/{$course['id']}", ['price_minor' => 50, 'currency' => 'USD'], ['Accept-Language' => 'en'])
+        ->assertUnprocessable()
+        ->json('errors.price_minor.0');
+
+    expect($message)->toContain('$1.00')->and($message)->not->toContain('100 ');
+});
+
 it('makes a course free, clearing its price, within the free-course limit', function () {
     $first = newCourse();
     $this->patchJson("/api/v1/professor/courses/{$first['id']}", ['price_minor' => 1_500, 'currency' => 'USD']);
@@ -197,6 +207,36 @@ it('uploads video straight to the provider and tracks processing', function () {
     $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")->assertOk()->assertJsonPath('data.status', 'ready');
     expect(Lesson::query()->find($lesson)->duration_seconds)->toBe(1_200)
         ->and(MediaAsset::query()->sole()->status)->toBe(MediaAssetStatus::Ready);
+});
+
+it('completes a chunked upload only on its last chunk, like the provider', function () {
+    $course = newCourse();
+    $section = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/sections", ['title' => 'Section 1'])->json('data.id');
+    $lesson = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons", ['section_id' => $section, 'type' => 'audio', 'title' => 'Audio'])->json('data.id');
+    $upload = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media")->json('data');
+    $path = parse_url($upload['upload_url'], PHP_URL_PATH);
+
+    $this->put($path, [], ['Content-Range' => 'bytes 0-262143/400000'])->assertNoContent();
+    $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")->assertJsonPath('data.status', 'waiting_upload');
+
+    $this->put($path, [], ['Content-Range' => 'bytes 262144-399999/400000'])->assertNoContent();
+    $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")->assertJsonPath('data.status', 'ready');
+
+    $this->put('/api/v1/_fake/video-uploads/fake-upload-unknown', [], ['Content-Range' => 'bytes 0-9/100'])->assertNotFound();
+});
+
+it('tells the studio which choices and limits apply', function () {
+    $this->getJson('/api/v1/professor/authoring-options')
+        ->assertOk()
+        ->assertJsonPath('data.default_currency', 'USD')
+        ->assertJsonPath('data.currencies.0.code', 'USD')
+        ->assertJsonPath('data.max_preview_lessons', app(CatalogSettings::class)->max_preview_lessons)
+        ->assertJsonPath('data.levels', ['beginner', 'intermediate', 'advanced', 'all'])
+        ->assertJsonPath('data.languages', ['fr', 'en']);
+
+    $this->getJson('/api/v1/professor/authoring-options')->assertJsonStructure(['data' => [
+        'currencies' => [['code', 'min_minor', 'max_minor']], 'upload_limits_mb' => ['video', 'audio', 'document'], 'audiences',
+    ]]);
 });
 
 it('refuses content that does not match the lesson type', function () {

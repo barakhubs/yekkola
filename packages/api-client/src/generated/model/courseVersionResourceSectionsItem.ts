@@ -4,10 +4,11 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { StudioLessonResource } from "./studioLessonResource";
 
 export type CourseVersionResourceSectionsItem = {
   id: string;
   title: string;
   position: number;
-  lessons: unknown[];
+  lessons: StudioLessonResource[];
 };
