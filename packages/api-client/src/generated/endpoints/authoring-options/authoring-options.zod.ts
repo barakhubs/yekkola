@@ -18,6 +18,7 @@ export const ProfessorAuthoringOptionsResponse = zod.object({
     ),
     default_currency: zod.string(),
     max_preview_lessons: zod.int(),
+    default_pass_mark_pct: zod.int(),
     upload_limits_mb: zod.object({
       video: zod.int(),
       audio: zod.int(),

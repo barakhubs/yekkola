@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1\Professor;
 
 use App\Domain\Authoring\Enums\Audience;
 use App\Domain\Authoring\Enums\CourseLevel;
+use App\Domain\Authoring\Models\Quiz;
 use App\Domain\Platform\Settings\CatalogSettings;
 use App\Domain\Platform\Settings\CommerceSettings;
 use App\Domain\Shared\Enums\Currency;
@@ -18,7 +19,7 @@ use App\Http\Controllers\Controller;
 final class AuthoringOptionsController extends Controller
 {
     /**
-     * @return array{data: array{currencies: list<array{code: string, min_minor: int|null, max_minor: int|null, step_minor: int}>, default_currency: string, max_preview_lessons: int, upload_limits_mb: array{video: int, audio: int, document: int}, languages: list<string>, levels: list<string>, audiences: list<string>}}
+     * @return array{data: array{currencies: list<array{code: string, min_minor: int|null, max_minor: int|null, step_minor: int}>, default_currency: string, max_preview_lessons: int, default_pass_mark_pct: int, upload_limits_mb: array{video: int, audio: int, document: int}, languages: list<string>, levels: list<string>, audiences: list<string>}}
      */
     public function __invoke(CommerceSettings $commerce, CatalogSettings $catalog): array
     {
@@ -34,6 +35,7 @@ final class AuthoringOptionsController extends Controller
             'currencies' => $currencies,
             'default_currency' => $commerce->default_currency,
             'max_preview_lessons' => $catalog->max_preview_lessons,
+            'default_pass_mark_pct' => Quiz::DEFAULT_PASS_MARK_PCT,
             'upload_limits_mb' => [
                 'video' => $catalog->max_video_upload_mb,
                 'audio' => $catalog->max_audio_upload_mb,

@@ -275,6 +275,9 @@
                                                 "max_preview_lessons": {
                                                     "type": "integer"
                                                 },
+                                                "default_pass_mark_pct": {
+                                                    "type": "integer"
+                                                },
                                                 "upload_limits_mb": {
                                                     "type": "object",
                                                     "properties": {
@@ -317,6 +320,7 @@
                                                 "currencies",
                                                 "default_currency",
                                                 "max_preview_lessons",
+                                                "default_pass_mark_pct",
                                                 "upload_limits_mb",
                                                 "languages",
                                                 "levels",

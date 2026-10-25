@@ -11,6 +11,7 @@ export type ProfessorAuthoringOptions200Data = {
   currencies: ProfessorAuthoringOptions200DataCurrenciesItem[];
   default_currency: string;
   max_preview_lessons: number;
+  default_pass_mark_pct: number;
   upload_limits_mb: ProfessorAuthoringOptions200DataUploadLimitsMb;
   languages: string[];
   levels: string[];

@@ -24,10 +24,13 @@ final class Quiz extends Model
 {
     use HasUlids;
 
+    /** Suggested to professors in the quiz builder; they set their own. */
+    public const DEFAULT_PASS_MARK_PCT = 50;
+
     protected $guarded = [];
 
     protected $attributes = [
-        'pass_mark_pct' => 50,
+        'pass_mark_pct' => self::DEFAULT_PASS_MARK_PCT,
         'shuffle_questions' => false,
     ];
 

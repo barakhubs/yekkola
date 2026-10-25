@@ -231,6 +231,7 @@ it('tells the studio which choices and limits apply', function () {
         ->assertJsonPath('data.default_currency', 'USD')
         ->assertJsonPath('data.currencies.0.code', 'USD')
         ->assertJsonPath('data.max_preview_lessons', app(CatalogSettings::class)->max_preview_lessons)
+        ->assertJsonPath('data.default_pass_mark_pct', 50)
         ->assertJsonPath('data.levels', ['beginner', 'intermediate', 'advanced', 'all'])
         ->assertJsonPath('data.languages', ['fr', 'en']);
 
