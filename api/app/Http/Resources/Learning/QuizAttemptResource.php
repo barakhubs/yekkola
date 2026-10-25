@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Learning;
 
-use App\Domain\Authoring\Models\QuizOption;
 use App\Domain\Authoring\Models\QuizQuestion;
 use App\Domain\Learning\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * A quiz attempt (PRD-06 FR-07). While open: the questions in attempt order, without answers or
- * explanations. Once submitted: score, pass/fail, and per question what I chose, what was right, and why.
+ * A quiz attempt (PRD-06 FR-07). While open: the questions in attempt order, with `chosen`, `correct` and
+ * `explanation` null. Once submitted: score, pass/fail, and per question what I chose, what was right, and why.
  *
  * @mixin QuizAttempt
  */
@@ -40,18 +39,8 @@ final class QuizAttemptResource extends JsonResource
             'questions' => collect($this->question_order)
                 ->map(fn (string $id) => $questions->get($id))
                 ->filter()
-                ->map(fn (QuizQuestion $q) => [
-                    'id' => $q->id,
-                    'type' => $q->type->value,
-                    'prompt' => $q->prompt,
-                    'points' => $q->points,
-                    'options' => $q->options->map(fn (QuizOption $o) => ['id' => $o->id, 'text' => $o->text])->values()->all(),
-                    ...($submitted ? [
-                        'chosen' => $this->answers[$q->id] ?? [],
-                        'correct' => $q->options->where('is_correct', true)->pluck('id')->values()->all(),
-                        'explanation' => $q->explanation,
-                    ] : []),
-                ])->values()->all(),
+                ->map(fn (QuizQuestion $q) => new QuizQuestionResource($q, $submitted, $submitted ? ($this->answers[$q->id] ?? []) : null))
+                ->values(),
         ];
     }
 }

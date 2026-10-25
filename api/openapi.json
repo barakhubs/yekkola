@@ -7045,11 +7045,37 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`QuizAttemptResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/QuizAttemptResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "`QuizAttemptResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/QuizAttemptResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
                                 }
                             }
                         }
@@ -10887,7 +10913,10 @@
                         ]
                     },
                     "next_lesson_uid": {
-                        "type": "null"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "certificate": {
                         "type": [
@@ -12399,72 +12428,7 @@
                     "questions": {
                         "type": "array",
                         "items": {
-                            "type": "object",
-                            "properties": {
-                                "id": {
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "type": {
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "prompt": {
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "points": {
-                                    "anyOf": [
-                                        {
-                                            "type": "integer"
-                                        },
-                                        {}
-                                    ]
-                                },
-                                "options": {
-                                    "anyOf": [
-                                        {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "text": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "id",
-                                                    "text"
-                                                ]
-                                            }
-                                        },
-                                        {}
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "id",
-                                "type",
-                                "prompt",
-                                "points",
-                                "options"
-                            ],
-                            "additionalProperties": {}
+                            "$ref": "#/components/schemas/QuizQuestionResource"
                         }
                     }
                 },
@@ -12481,6 +12445,76 @@
                     "questions"
                 ],
                 "title": "QuizAttemptResource"
+            },
+            "QuizQuestionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "prompt": {
+                        "type": "string"
+                    },
+                    "points": {
+                        "type": "integer"
+                    },
+                    "options": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "text": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "text"
+                            ]
+                        }
+                    },
+                    "chosen": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "correct": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "explanation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "prompt",
+                    "points",
+                    "options",
+                    "chosen",
+                    "correct",
+                    "explanation"
+                ],
+                "title": "QuizQuestionResource"
             },
             "QuizRequest": {
                 "type": "object",

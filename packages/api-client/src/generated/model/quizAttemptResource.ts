@@ -4,7 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { QuizAttemptResourceQuestionsItem } from "./quizAttemptResourceQuestionsItem";
+import type { QuizQuestionResource } from "./quizQuestionResource";
 
 export interface QuizAttemptResource {
   id: string;
@@ -23,5 +23,5 @@ export interface QuizAttemptResource {
   /** @nullable */
   passed: boolean | null;
   timed_out: boolean;
-  questions: QuizAttemptResourceQuestionsItem[];
+  questions: QuizQuestionResource[];
 }

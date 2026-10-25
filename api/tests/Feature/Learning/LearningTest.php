@@ -82,7 +82,9 @@ it('grades quizzes against the key, explains answers, and completes the course o
     syncProgress([['lesson_uid' => $this->document->uid, 'completed' => true], ['lesson_uid' => $this->video->uid, 'position_seconds' => 1_200]]);
 
     $attempt = $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->assertCreated()->json('data');
-    expect($attempt['questions'][0])->not->toHaveKeys(['correct', 'explanation'])
+    expect($attempt['questions'][0]['correct'])->toBeNull()
+        ->and($attempt['questions'][0]['explanation'])->toBeNull()
+        ->and($attempt['questions'][0]['chosen'])->toBeNull()
         ->and(json_encode($attempt))->not->toContain('is_correct');
     $this->postJson("/api/v1/lessons/{$this->quiz->uid}/quiz-attempts")->assertOk()->assertJsonPath('data.id', $attempt['id']); // resumed
 

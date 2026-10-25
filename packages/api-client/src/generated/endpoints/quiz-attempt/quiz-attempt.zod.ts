@@ -34,20 +34,20 @@ export const LessonsQuizAttemptsIndexResponse = zod.object({
       passed: zod.boolean().nullable(),
       timed_out: zod.boolean(),
       questions: zod.array(
-        zod.looseObject({
-          id: zod.union([zod.string(), zod.unknown()]),
-          type: zod.union([zod.string(), zod.unknown()]),
-          prompt: zod.union([zod.string(), zod.unknown()]),
-          points: zod.union([zod.int(), zod.unknown()]),
-          options: zod.union([
-            zod.array(
-              zod.object({
-                id: zod.string(),
-                text: zod.string(),
-              }),
-            ),
-            zod.unknown(),
-          ]),
+        zod.object({
+          id: zod.string(),
+          type: zod.string(),
+          prompt: zod.string(),
+          points: zod.int(),
+          options: zod.array(
+            zod.object({
+              id: zod.string(),
+              text: zod.string(),
+            }),
+          ),
+          chosen: zod.array(zod.string()).nullable(),
+          correct: zod.array(zod.string()).nullable(),
+          explanation: zod.string().nullable(),
         }),
       ),
     }),
@@ -91,7 +91,40 @@ export const LessonsQuizAttemptsStoreParams = zod.object({
   lesson: zod.string(),
 });
 
-export const LessonsQuizAttemptsStoreResponse = zod.string();
+export const LessonsQuizAttemptsStoreResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    lesson_uid: zod.string(),
+    started_at: zod.string(),
+    ends_at: zod
+      .null()
+      .describe(
+        "Count down to this; the server accepts answers for a short grace period after it (network slack).",
+      ),
+    submitted_at: zod.string().nullable(),
+    pass_mark_pct: zod.int(),
+    score_pct: zod.int().nullable(),
+    passed: zod.boolean().nullable(),
+    timed_out: zod.boolean(),
+    questions: zod.array(
+      zod.object({
+        id: zod.string(),
+        type: zod.string(),
+        prompt: zod.string(),
+        points: zod.int(),
+        options: zod.array(
+          zod.object({
+            id: zod.string(),
+            text: zod.string(),
+          }),
+        ),
+        chosen: zod.array(zod.string()).nullable(),
+        correct: zod.array(zod.string()).nullable(),
+        explanation: zod.string().nullable(),
+      }),
+    ),
+  }),
+});
 
 /**
  * @summary Submits answers: score, pass/fail, and the corrections with explanations
@@ -140,20 +173,20 @@ export const QuizAttemptsSubmitResponse = zod.object({
     passed: zod.boolean().nullable(),
     timed_out: zod.boolean(),
     questions: zod.array(
-      zod.looseObject({
-        id: zod.union([zod.string(), zod.unknown()]),
-        type: zod.union([zod.string(), zod.unknown()]),
-        prompt: zod.union([zod.string(), zod.unknown()]),
-        points: zod.union([zod.int(), zod.unknown()]),
-        options: zod.union([
-          zod.array(
-            zod.object({
-              id: zod.string(),
-              text: zod.string(),
-            }),
-          ),
-          zod.unknown(),
-        ]),
+      zod.object({
+        id: zod.string(),
+        type: zod.string(),
+        prompt: zod.string(),
+        points: zod.int(),
+        options: zod.array(
+          zod.object({
+            id: zod.string(),
+            text: zod.string(),
+          }),
+        ),
+        chosen: zod.array(zod.string()).nullable(),
+        correct: zod.array(zod.string()).nullable(),
+        explanation: zod.string().nullable(),
       }),
     ),
   }),

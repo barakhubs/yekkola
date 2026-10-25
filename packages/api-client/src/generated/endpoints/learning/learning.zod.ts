@@ -123,7 +123,7 @@ export const MeCoursesShowResponse = zod.object({
     progress_pct: zod.int(),
     completed_at: zod.string().nullable(),
     continue_lesson_uid: zod.string().nullable(),
-    next_lesson_uid: zod.null(),
+    next_lesson_uid: zod.string().nullable(),
     certificate: zod
       .object({
         id: zod.string(),

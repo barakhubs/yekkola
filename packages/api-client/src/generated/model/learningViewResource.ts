@@ -16,7 +16,7 @@ export interface LearningViewResource {
   /** @nullable */
   continue_lesson_uid: string | null;
   /** @nullable */
-  next_lesson_uid: null;
+  next_lesson_uid: string | null;
   /** @nullable */
   certificate: LearningViewResourceCertificate;
   has_reviewed: boolean;

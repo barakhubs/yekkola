@@ -46,17 +46,14 @@ final class LearningViewResource extends JsonResource
     public function toArray(Request $request): array
     {
         $live = $this->liveVersion;
-        $next = null;
+        $next = $this->firstIncompleteLesson();
 
-        $sections = $live->sections->map(function (Section $section) use (&$next): array {
+        $sections = $live->sections->map(function (Section $section): array {
             return [
                 'id' => $section->id,
                 'title' => $section->title,
-                'lessons' => $section->lessons->map(function (Lesson $lesson) use (&$next): array {
+                'lessons' => $section->lessons->map(function (Lesson $lesson): array {
                     $mine = $this->progress->get($lesson->uid);
-                    if ($next === null && ! $mine?->isCompleted()) {
-                        $next = $lesson->uid;
-                    }
 
                     return [
                         'uid' => $lesson->uid,
@@ -88,6 +85,20 @@ final class LearningViewResource extends JsonResource
             'has_reviewed' => $this->reviewed,
             'sections' => $sections,
         ];
+    }
+
+    /** The first lesson of the live curriculum I haven't completed, in course order. */
+    private function firstIncompleteLesson(): ?string
+    {
+        foreach ($this->liveVersion->sections as $section) {
+            foreach ($section->lessons as $lesson) {
+                if (! $this->progress->get($lesson->uid)?->isCompleted()) {
+                    return (string) $lesson->uid;
+                }
+            }
+        }
+
+        return null;
     }
 
     private function isLive(?string $uid): bool
