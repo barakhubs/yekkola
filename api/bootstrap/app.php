@@ -34,6 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.
         $middleware->statefulApi();
+        // The fake video driver's upload URL stands in for the provider's, which the browser calls without a
+        // CSRF token; it accepts nothing but file bytes for an upload id it issued, and 404s with real drivers.
+        $middleware->validateCsrfTokens(except: ['api/v1/_fake/*']);
         // Global so every response — including 404s for unknown routes — is localised.
         $middleware->prepend(SetLocaleFromHeader::class);
         $middleware->alias([
