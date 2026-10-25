@@ -60,6 +60,11 @@ export function configureApiClient(next: Partial<ClientConfig>): void {
   Object.assign(config, next);
 }
 
+/** Absolute API URL for links the browser opens itself (e.g. a PDF download that carries the session cookie). */
+export function apiUrl(path: string): string {
+  return `${config.baseUrl.replace(/\/$/, "")}${path}`;
+}
+
 const isBrowser = (): boolean => typeof window !== "undefined";
 
 function readCookie(name: string): string | undefined {

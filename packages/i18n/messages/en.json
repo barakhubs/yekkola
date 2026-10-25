@@ -27,7 +27,8 @@
       "courses": "Courses",
       "teach": "Teach on Yekkola",
       "signIn": "Sign in",
-      "myCourses": "My courses"
+      "myCourses": "My courses",
+      "orders": "My orders"
     },
     "home": {
       "title": "Learn from Congo’s best teachers",
@@ -213,8 +214,7 @@
     },
     "enroll": {
       "enrolling": "Enrolling…",
-      "continueLearning": "Continue the course",
-      "paymentSoon": "Mobile money payment is coming to Yekkola very soon."
+      "continueLearning": "Continue the course"
     },
     "learn": {
       "curriculum": "Curriculum",
@@ -280,6 +280,66 @@
         "send": "Post my review",
         "thanks": "Thanks for your review!"
       }
+    },
+    "checkout": {
+      "title": "Checkout",
+      "summary": "Your order",
+      "discount": "Discount",
+      "total": "Total to pay",
+      "coupon": "Promo code",
+      "applyCoupon": "Apply",
+      "couponApplied": "Code {code} applied",
+      "removeCoupon": "Remove",
+      "operator": "Mobile money operator",
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "railUnavailable": "unavailable right now",
+      "payer": "Paying number",
+      "payerHint": "The mobile money number that will get the payment request.",
+      "pay": "Pay {amount}",
+      "getFree": "Get the course",
+      "creating": "Preparing…",
+      "alreadyOwned": "You already have access to this course.",
+      "goToCourse": "Go to the course",
+      "noRails": "No operator is available right now. Please try again in a few minutes.",
+      "secure": "You confirm the payment on your phone with your PIN. Yekkola never sees it.",
+      "waitingTitle": "Approve the payment on your phone",
+      "waitingBody": "{operator} is sending a payment request for {amount} to {phone}. Enter your PIN to approve it.",
+      "waitingHint": "No message? Check your signal; the request can take up to a minute.",
+      "expiresIn": "The order expires in {time}",
+      "checking": "Checking the payment…",
+      "paidTitle": "Payment confirmed!",
+      "paidBody": "You now have access to your course.",
+      "startLearning": "Start the course",
+      "receipt": "Download the receipt",
+      "failedTitle": "The payment didn’t go through",
+      "chooseTitle": "Choose your operator to pay",
+      "retry": "Try again",
+      "retryOther": "You can try again with the same operator or choose another one.",
+      "expiredTitle": "The order has expired",
+      "expiredBody": "The time to pay has run out. Please start your order again.",
+      "startOver": "Start again",
+      "unknownOrder": "This order can’t be found."
+    },
+    "orders": {
+      "title": "My orders",
+      "empty": "You haven’t placed any orders yet.",
+      "number": "Order {number}",
+      "status": {
+        "pending": "Pending",
+        "awaiting_payment": "Awaiting payment",
+        "paid": "Paid",
+        "expired": "Expired",
+        "cancelled": "Cancelled",
+        "reversed": "Reversed by the operator",
+        "refunded": "Refunded",
+        "partially_refunded": "Partly refunded"
+      },
+      "receipt": "Receipt (PDF)",
+      "continuePayment": "Continue paying"
     }
   },
   "admin": {

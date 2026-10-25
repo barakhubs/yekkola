@@ -72,14 +72,10 @@ export function EnrollButton({ courseId, slug, isFree }: EnrollButtonProps) {
   }
 
   if (!isFree) {
-    // Paid checkout lands in milestone step 6 (PRD-05).
     return (
-      <div className="grid gap-2">
-        <Button size="lg" disabled>
-          {t("course.buy")}
-        </Button>
-        <p className="text-xs text-muted-foreground">{t("enroll.paymentSoon")}</p>
-      </div>
+      <Button asChild size="lg">
+        <Link href={`/checkout?course=${courseId}`}>{t("course.buy")}</Link>
+      </Button>
     );
   }
 
