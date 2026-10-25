@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-03-web-studio` (web milestone 1 step 7)
+- **Current branch:** `feature/prd-03-web-studio` (web milestone 1 step 7, PR #22 open — waiting for merge)
 - **Next up:** minimal back office (2.2) — web milestone 1 step 8
 
 ## Legend
@@ -379,10 +379,10 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 - [ ] Application flow + status
 - [ ] Onboarding checklist, profile, KYC upload, payout method
-- [x] Course list + course editor (details, cover, category/level/audience, curriculum DnD with keyboard, pricing, status banner) — #PR
-- [x] Video/audio uploader (chunked, resumes offline, survives tab changes) + processing status — #PR
-- [x] Document upload, quiz builder — #PR
-- [x] Submit / withdraw, reviewer notes, start new draft, unpublish / republish / archive / delete — #PR
+- [x] Course list + course editor (details, cover, category/level/audience, curriculum DnD with keyboard, pricing, status banner) — #22
+- [x] Video/audio uploader (chunked, resumes offline, survives tab changes) + processing status — #22
+- [x] Document upload, quiz builder — #22
+- [x] Submit / withdraw, reviewer notes, start new draft, unpublish / republish / archive / delete — #22
 - [ ] Version diff view “changes since live” (PRD-03 FR-14, needs an API diff endpoint)
 - [ ] Course preview as a student from the studio (PRD-03 FR-19)
 - [ ] Rich-text course description (PRD-03 FR-02 asks for rich text; plain text today) and quiz bulk paste (§6, Should)
@@ -396,7 +396,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Analytics dashboard
 - [ ] Earnings, statement, payouts
 - [ ] Reviews + Q&A inbox, coupons
-- [ ] Playwright: create course → submit (a local script covered it for #PR: details, cover, chunked video, PDF, quiz, keyboard reorder, price, submit)
+- [ ] Playwright: create course → submit (a local script covered it for #22: details, cover, chunked video, PDF, quiz, keyboard reorder, price, submit)
 
 ---
 
