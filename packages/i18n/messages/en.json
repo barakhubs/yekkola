@@ -604,7 +604,192 @@
     "title": "Yekkola — Back office",
     "home": {
       "title": "Back office",
-      "subtitle": "Professor and course approval, orders, finance and settings."
+      "subtitle": "Professor and course approval, orders, finance and settings.",
+      "queuesTitle": "Needs attention",
+      "pendingApplications": "Pending applications",
+      "versionsInReview": "Courses in review",
+      "nothingForYou": "No queues for your role yet."
+    },
+    "brand": "Yekkola · Back office",
+    "notStaffTitle": "For the Yekkola team only",
+    "notStaffBody": "This account can’t use the back office. Sign out and use your team account.",
+    "nav": {
+      "label": "Back-office sections",
+      "home": "Home",
+      "applications": "Applications",
+      "courseReviews": "Course reviews"
+    },
+    "auth": {
+      "title": "Team sign-in",
+      "subtitle": "Enter your number: we’ll send you a code by SMS.",
+      "phoneLabel": "Phone number",
+      "phoneHint": "Example: 0812 345 678",
+      "sendCode": "Get the code",
+      "codeSentTo": "Code sent to {phone}.",
+      "codeLabel": "6-digit code",
+      "verify": "Confirm",
+      "changeNumber": "Change number",
+      "signOut": "Sign out"
+    },
+    "table": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {total}",
+      "pagination": "Pagination"
+    },
+    "applications": {
+      "title": "Professor applications",
+      "detailTitle": "Application",
+      "intro": "Check each application, then approve, reject or ask for more information.",
+      "filterStatus": "Status",
+      "allStatuses": "All statuses",
+      "empty": "No applications for this filter.",
+      "unnamed": "No name",
+      "notFound": "This application can’t be found.",
+      "years": "{count, plural, =0 {Under a year} one {# year} other {# years}}",
+      "columns": {
+        "name": "Applicant",
+        "subjects": "Subjects",
+        "experience": "Experience",
+        "status": "Status",
+        "submitted": "Submitted"
+      },
+      "status": {
+        "submitted": "Waiting",
+        "under_review": "Under review",
+        "needs_info": "More info requested",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "expired": "Expired"
+      },
+      "levels": {
+        "secondary": "Secondary",
+        "exetat": "State exam (Exetat)",
+        "university": "University",
+        "professional": "Professional"
+      },
+      "submittedOn": "Submitted on {date}",
+      "decisionTitle": "Decision",
+      "startReview": "Take it on",
+      "approve": "Approve",
+      "approveConfirm": "Approve {name}’s application?",
+      "approveHint": "A professor profile is created and the applicant is told. They can then create courses.",
+      "requestInfo": "Ask for more information",
+      "requestInfoConfirm": "Ask for more information?",
+      "requestInfoHint": "The applicant gets your message and can update the application before sending it again.",
+      "reject": "Reject",
+      "rejectConfirm": "Reject {name}’s application?",
+      "rejectHint": "The applicant gets your message. This decision is final.",
+      "noteToApplicant": "Message to the applicant",
+      "applicantTitle": "Applicant",
+      "teachingTitle": "Teaching",
+      "filesTitle": "Supporting documents",
+      "noFiles": "No documents sent.",
+      "historyTitle": "History",
+      "fields": {
+        "name": "Name",
+        "phone": "Phone",
+        "province": "Province",
+        "subjects": "Subjects",
+        "levels": "Levels",
+        "experience": "Experience",
+        "institutions": "Institutions",
+        "credentials": "Degrees and titles",
+        "sample": "Sample lesson",
+        "motivation": "Motivation",
+        "reviewStarted": "Review started",
+        "infoRequest": "Information requested",
+        "decisionNote": "Decision note",
+        "decided": "Decided"
+      }
+    },
+    "reviews": {
+      "title": "Course reviews",
+      "detailTitle": "Review",
+      "intro": "Every version is reviewed before students can see it.",
+      "filterState": "State",
+      "allStates": "All states",
+      "empty": "No courses for this filter.",
+      "untitled": "Untitled course",
+      "notFound": "This version can’t be found.",
+      "verified": "Verified professor",
+      "versionNumber": "Version {number}",
+      "update": "Update",
+      "firstVersion": "First version",
+      "columns": {
+        "course": "Course",
+        "professor": "Professor",
+        "kind": "Kind",
+        "state": "State",
+        "submitted": "Submitted"
+      },
+      "state": {
+        "in_review": "In review",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "superseded": "Superseded"
+      },
+      "byProfessor": "by {name}",
+      "submittedOn": "submitted on {date}",
+      "decisionTitle": "Decision",
+      "approve": "Approve",
+      "approveConfirm": "Approve “{title}”?",
+      "approveHint": "The course is published and students can see it.",
+      "approveUpdateHint": "This version replaces the live one; students see the changes at once.",
+      "approvePaused": "The professor is suspended: approval is paused, rejecting is still possible.",
+      "reject": "Reject",
+      "rejectConfirm": "Reject “{title}”?",
+      "rejectHint": "The professor gets your notes and can fix the course and send it again.",
+      "notesToProfessor": "Notes for the professor",
+      "notesTitle": "Reviewer’s notes",
+      "changesTitle": "Changes since the live version",
+      "changelog": "Professor’s notes",
+      "changes": {
+        "added": "{count, plural, =0 {No lessons added} one {# lesson added} other {# lessons added}}",
+        "changed": "{count, plural, =0 {No lessons changed} one {# lesson changed} other {# lessons changed}}",
+        "removed": "{count, plural, =0 {No lessons removed} one {# lesson removed} other {# lessons removed}}"
+      },
+      "detailsTitle": "Overview",
+      "coverAlt": "Course cover",
+      "free": "Free",
+      "fields": {
+        "subtitle": "Subtitle",
+        "category": "Category",
+        "language": "Language",
+        "level": "Level",
+        "price": "Price",
+        "description": "Description",
+        "outcomes": "Outcomes",
+        "requirements": "Requirements"
+      },
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
+        "all": "All levels"
+      },
+      "curriculumTitle": "Curriculum",
+      "sectionNumber": "Section {number}: {title}",
+      "lessonTypes": {
+        "video": "Video",
+        "audio": "Audio",
+        "document": "Document",
+        "quiz": "Quiz"
+      },
+      "preview": "Free preview",
+      "contentMissing": "Content missing",
+      "mediaStatus": "File: {status}",
+      "mediaStatuses": {
+        "waiting_upload": "waiting for upload",
+        "processing": "processing",
+        "ready": "ready",
+        "errored": "failed",
+        "cancelled": "cancelled"
+      },
+      "quizSummary": "{count, plural, one {# question} other {# questions}} · pass at {pass}%",
+      "correct": "Right answer",
+      "incorrect": "Wrong answer",
+      "explanation": "Explanation: {text}"
     }
   }
 }

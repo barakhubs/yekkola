@@ -604,7 +604,192 @@
     "title": "Yekkola — Administration",
     "home": {
       "title": "Back office",
-      "subtitle": "Validation des professeurs et des cours, commandes, finances et réglages."
+      "subtitle": "Validation des professeurs et des cours, commandes, finances et réglages.",
+      "queuesTitle": "À traiter",
+      "pendingApplications": "Candidatures en attente",
+      "versionsInReview": "Cours en relecture",
+      "nothingForYou": "Aucune file d’attente pour votre rôle pour l’instant."
+    },
+    "brand": "Yekkola · Back office",
+    "notStaffTitle": "Accès réservé à l’équipe Yekkola",
+    "notStaffBody": "Ce compte n’a pas accès au back office. Déconnectez-vous et utilisez votre compte d’équipe.",
+    "nav": {
+      "label": "Sections du back office",
+      "home": "Accueil",
+      "applications": "Candidatures",
+      "courseReviews": "Relecture des cours"
+    },
+    "auth": {
+      "title": "Connexion de l’équipe",
+      "subtitle": "Saisissez votre numéro : vous recevrez un code par SMS.",
+      "phoneLabel": "Numéro de téléphone",
+      "phoneHint": "Exemple : 0812 345 678",
+      "sendCode": "Recevoir le code",
+      "codeSentTo": "Code envoyé au {phone}.",
+      "codeLabel": "Code à 6 chiffres",
+      "verify": "Valider",
+      "changeNumber": "Changer de numéro",
+      "signOut": "Se déconnecter"
+    },
+    "table": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {total}",
+      "pagination": "Pagination"
+    },
+    "applications": {
+      "title": "Candidatures professeurs",
+      "detailTitle": "Candidature",
+      "intro": "Vérifiez chaque dossier, puis acceptez, refusez ou demandez des compléments.",
+      "filterStatus": "Statut",
+      "allStatuses": "Tous les statuts",
+      "empty": "Aucune candidature pour ce filtre.",
+      "unnamed": "Sans nom",
+      "notFound": "Cette candidature est introuvable.",
+      "years": "{count, plural, =0 {Moins d’un an} one {# an} other {# ans}}",
+      "columns": {
+        "name": "Candidat",
+        "subjects": "Matières",
+        "experience": "Expérience",
+        "status": "Statut",
+        "submitted": "Envoyée le"
+      },
+      "status": {
+        "submitted": "En attente",
+        "under_review": "En cours d’examen",
+        "needs_info": "Compléments demandés",
+        "approved": "Acceptée",
+        "rejected": "Refusée",
+        "expired": "Expirée"
+      },
+      "levels": {
+        "secondary": "Secondaire",
+        "exetat": "Examen d’État",
+        "university": "Université",
+        "professional": "Professionnel"
+      },
+      "submittedOn": "Envoyée le {date}",
+      "decisionTitle": "Décision",
+      "startReview": "Prendre en charge",
+      "approve": "Accepter",
+      "approveConfirm": "Accepter la candidature de {name} ?",
+      "approveHint": "Un profil professeur est créé et le candidat est prévenu. Il pourra créer ses cours.",
+      "requestInfo": "Demander des compléments",
+      "requestInfoConfirm": "Demander des compléments ?",
+      "requestInfoHint": "Le candidat reçoit votre message et peut modifier son dossier avant de le renvoyer.",
+      "reject": "Refuser",
+      "rejectConfirm": "Refuser la candidature de {name} ?",
+      "rejectHint": "Le candidat reçoit votre message. Cette décision est définitive.",
+      "noteToApplicant": "Message au candidat",
+      "applicantTitle": "Candidat",
+      "teachingTitle": "Enseignement",
+      "filesTitle": "Justificatifs",
+      "noFiles": "Aucun justificatif envoyé.",
+      "historyTitle": "Suivi",
+      "fields": {
+        "name": "Nom",
+        "phone": "Téléphone",
+        "province": "Province",
+        "subjects": "Matières",
+        "levels": "Niveaux",
+        "experience": "Expérience",
+        "institutions": "Établissements",
+        "credentials": "Diplômes et titres",
+        "sample": "Exemple de cours",
+        "motivation": "Motivation",
+        "reviewStarted": "Examen commencé le",
+        "infoRequest": "Compléments demandés",
+        "decisionNote": "Note de décision",
+        "decided": "Décidée le"
+      }
+    },
+    "reviews": {
+      "title": "Relecture des cours",
+      "detailTitle": "Relecture",
+      "intro": "Chaque version est relue avant d’être visible des étudiants.",
+      "filterState": "État",
+      "allStates": "Tous les états",
+      "empty": "Aucun cours pour ce filtre.",
+      "untitled": "Cours sans titre",
+      "notFound": "Cette version est introuvable.",
+      "verified": "Professeur vérifié",
+      "versionNumber": "Version {number}",
+      "update": "Mise à jour",
+      "firstVersion": "Première version",
+      "columns": {
+        "course": "Cours",
+        "professor": "Professeur",
+        "kind": "Type",
+        "state": "État",
+        "submitted": "Envoyé le"
+      },
+      "state": {
+        "in_review": "En relecture",
+        "approved": "Approuvée",
+        "rejected": "Refusée",
+        "superseded": "Remplacée"
+      },
+      "byProfessor": "par {name}",
+      "submittedOn": "envoyé le {date}",
+      "decisionTitle": "Décision",
+      "approve": "Approuver",
+      "approveConfirm": "Approuver « {title} » ?",
+      "approveHint": "Le cours est publié et visible des étudiants.",
+      "approveUpdateHint": "Cette version remplace la version en ligne ; les étudiants voient les changements tout de suite.",
+      "approvePaused": "Le professeur est suspendu : l’approbation est en pause, le refus reste possible.",
+      "reject": "Refuser",
+      "rejectConfirm": "Refuser « {title} » ?",
+      "rejectHint": "Le professeur reçoit vos remarques et peut corriger puis renvoyer le cours.",
+      "notesToProfessor": "Remarques pour le professeur",
+      "notesTitle": "Remarques de la relecture",
+      "changesTitle": "Changements depuis la version en ligne",
+      "changelog": "Notes du professeur",
+      "changes": {
+        "added": "{count, plural, =0 {Aucune leçon ajoutée} one {# leçon ajoutée} other {# leçons ajoutées}}",
+        "changed": "{count, plural, =0 {Aucune leçon modifiée} one {# leçon modifiée} other {# leçons modifiées}}",
+        "removed": "{count, plural, =0 {Aucune leçon retirée} one {# leçon retirée} other {# leçons retirées}}"
+      },
+      "detailsTitle": "Présentation",
+      "coverAlt": "Couverture du cours",
+      "free": "Gratuit",
+      "fields": {
+        "subtitle": "Sous-titre",
+        "category": "Catégorie",
+        "language": "Langue",
+        "level": "Niveau",
+        "price": "Prix",
+        "description": "Description",
+        "outcomes": "Objectifs",
+        "requirements": "Prérequis"
+      },
+      "levels": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "advanced": "Avancé",
+        "all": "Tous niveaux"
+      },
+      "curriculumTitle": "Programme",
+      "sectionNumber": "Section {number} : {title}",
+      "lessonTypes": {
+        "video": "Vidéo",
+        "audio": "Audio",
+        "document": "Document",
+        "quiz": "Quiz"
+      },
+      "preview": "Aperçu gratuit",
+      "contentMissing": "Contenu manquant",
+      "mediaStatus": "Fichier : {status}",
+      "mediaStatuses": {
+        "waiting_upload": "en attente d’envoi",
+        "processing": "en traitement",
+        "ready": "prêt",
+        "errored": "en erreur",
+        "cancelled": "annulé"
+      },
+      "quizSummary": "{count, plural, one {# question} other {# questions}} · réussite à {pass} %",
+      "correct": "Bonne réponse",
+      "incorrect": "Mauvaise réponse",
+      "explanation": "Explication : {text}"
     }
   }
 }

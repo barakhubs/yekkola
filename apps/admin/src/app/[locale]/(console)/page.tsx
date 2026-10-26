@@ -1,15 +1,24 @@
 import type { Locale } from "@yekkola/i18n";
-import { PageHeader } from "@yekkola/ui/blocks/page-header";
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export default async function ConsoleHomePage({ params }: { params: Promise<{ locale: string }> }) {
+import { HomeQueues } from "@/features/home/home-queues";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale: locale as Locale, namespace: "admin" });
+
+  return { title: t("home.title") };
+}
+
+/** Back-office home: queues needing attention. */
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
-  const t = await getTranslations("admin.home");
 
-  return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <PageHeader title={t("title")} description={t("subtitle")} />
-    </main>
-  );
+  return <HomeQueues />;
 }
