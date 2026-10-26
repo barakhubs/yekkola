@@ -117,7 +117,7 @@ final class DraftController extends Controller
         $result = $content->createMediaUpload($this->course($request, $course), $lesson, $origin);
 
         return new JsonResponse(['data' => [
-            'media' => (new MediaAssetResource($result['asset']))->resolve($request),
+            'media' => new MediaAssetResource($result['asset']),
             'upload_url' => $result['upload_url'],
         ]], 201);
     }

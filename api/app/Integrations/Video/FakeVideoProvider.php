@@ -53,6 +53,12 @@ final class FakeVideoProvider implements VideoProvider
         return new DirectUpload($uploadId, rtrim((string) config('app.url'), '/').'/api/v1/_fake/video-uploads/'.$uploadId);
     }
 
+    /** Whether a direct upload is still waiting for its file (for chunked PUTs before the last one). */
+    public function hasPendingUpload(string $uploadId): bool
+    {
+        return $this->cache->has(self::PREFIX.'upload:'.$uploadId);
+    }
+
     public function getAsset(string $assetId): VideoAsset
     {
         /** @var array{status: string, playback_id: string, passthrough: string}|null $state */

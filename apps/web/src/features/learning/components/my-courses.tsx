@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger, parseAsStringLiteral, useQueryState } from "nuqs";
 
+import { useSession } from "@/features/auth/hooks/use-session";
 import { Link } from "@/i18n/navigation";
 
 const STATES = ["all", "in_progress", "completed"] as const;
@@ -25,6 +26,7 @@ export function MyCourses() {
   const pagination = useTranslations("web.pagination");
   const nav = useTranslations("web.nav");
   const locale = useLocale() as Locale;
+  const { user } = useSession();
   const [state, setState] = useQueryState("state", parseAsStringLiteral(STATES).withDefault("all"));
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const result = useMeEnrollmentsIndex(
@@ -39,9 +41,17 @@ export function MyCourses() {
       <PageHeader
         title={t("title")}
         actions={
-          <Button asChild variant="outline" size="sm">
-            <Link href="/orders">{nav("orders")}</Link>
-          </Button>
+          <>
+            {/* The header's Studio button is hidden on phones; professors find it here. */}
+            {user?.roles.includes("professor") ? (
+              <Button asChild variant="outline" size="sm" className="sm:hidden">
+                <Link href="/studio/courses">{nav("studio")}</Link>
+              </Button>
+            ) : null}
+            <Button asChild variant="outline" size="sm">
+              <Link href="/orders">{nav("orders")}</Link>
+            </Button>
+          </>
         }
       />
       <div role="tablist" aria-label={t("title")} className="flex gap-2">

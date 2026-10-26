@@ -47,7 +47,7 @@
                     │ (Horizon)          │──► Payment gateway (collect, disburse)
                     │                    │──► SMS gateway, email, FCM
                     └────────────────────┘
-   Inbound webhooks: Mux ──► /webhooks/mux   Gateway ──► /webhooks/payments/{gateway}
+   Inbound webhooks: Mux ──► /webhooks/video  Gateway ──► /webhooks/payments/{gateway}
    Media delivery:   Mux CDN ──► players directly (never through the API)
 ```
 
@@ -76,9 +76,9 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 2. `POST /auth/otp/verify` → verify hash, attempts ≤ 5 → find-or-create `User` → web: session cookie via Sanctum; mobile: register/refresh `Device`, issue a token bound to that device.
 
 **B. Video upload (professor)**
-1. Studio calls `POST /professor/media/uploads` → API calls Mux "create direct upload" (with burned-in watermark overlay + DRM playback policy) → returns upload URL + `MediaAsset` (status `waiting_upload`).
-2. Browser uploads the file **directly to Mux** (resumable, chunked).
-3. Mux webhook `video.asset.ready` → `/webhooks/mux` → dedupe by event ID → queue → update `MediaAsset` (`ready`, duration, playback ID).
+1. Studio calls `POST /professor/courses/{id}/draft/lessons/{lid}/media` → API calls Mux "create direct upload" (with burned-in watermark overlay + DRM playback policy) → returns upload URL + `MediaAsset` (status `waiting_upload`).
+2. Browser uploads the file **directly to Mux** (UpChunk: 5 MB chunks, retried, paused while offline; a fresh upload URL per attempt).
+3. Mux webhook `video.asset.ready` → `/webhooks/video` → dedupe by event ID → queue → update `MediaAsset` (`ready`, duration, playback ID).
 4. Studio polls `GET /professor/media/{id}` (or listens via notifications) to show status.
 
 **C. Paid purchase (mobile money)**
@@ -87,7 +87,7 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 3. `POST /orders/{id}/payments {rail, msisdn}` → `PaymentGateway::collect()` → `Payment(pending)`; student approves the USSD prompt on their phone.
 4. Gateway webhook → `/webhooks/payments/{gateway}` → verify signature → dedupe by event id → re-query the gateway **by our payment reference** (never trust the webhook body alone) → compare the confirmed amount/currency with the payment → `Payment(succeeded)`. A start call that times out (`GatewayOutcomeUnknown`) stays pending and is reconciled the same way — never retried under a new reference.
 5. `PaymentLifecycle::apply()` (one transaction, order + payment locked, safe to replay) → `Order(paid)` → `Enrollment` per item → ledger `sale` transaction (gateway clearing ↔ professor held + platform revenue) → `OrderPaid` event (receipt notification, PRD-10). Access and the sale are per item: only courses newly granted are sold. Money collected that buys nothing (a confirmed amount that differs, a second success, items already owned) is posted as `unapplied_receipt` (gateway clearing ↔ refunds payable) and flagged for staff; an amount mismatch blocks further attempts on the order. A reversal revokes the access that payment granted and mirrors its postings. One open order per course and buyer.
-6. Client polls `GET /orders/{id}` until terminal state; an in-flight payment is re-checked with the gateway at most every 10 s. `commerce:reconcile` (every 5 min) expires orders past the payment timeout, re-queries payments in flight > 2 min, and checks failed/expired ones hourly for 24 h (late success → access granted, order flagged `late_success`). Each row is isolated: one failure never stops the run.
+6. Client polls `GET /orders/{id}` until terminal state; an in-flight payment is re-checked with the gateway at most every 10 s, and an order past its payment deadline is expired on that poll (after the re-check, so a last-second success still wins). `commerce:reconcile` (every 5 min) expires orders past the payment timeout, re-queries payments in flight > 2 min, and checks failed/expired ones hourly for 24 h (late success → access granted, order flagged `late_success`). Each row is isolated: one failure never stops the run.
 
 **D. Playback (streaming)**
 1. Player requests `POST /lessons/{uid}/playback`.
@@ -323,7 +323,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 - IDs: ULIDs; public pages use slugs.
 - Lists: `?page=&per_page=` (offset, per_page 1–100, default 25) for admin tables; `?cursor=` for infinite feeds and large tables. Filters `?filter[status]=…`, sorting `?sort=-created_at`, includes `?include=professor`.
 - Envelope: `{ "data": …, "meta": { pagination… }, "links": {…} }`.
-- Errors: RFC 9457-style `{ "type", "title", "status", "detail", "code", "errors": { field: [msg] } }` with a stable machine `code` (e.g. `otp.expired`, `enrollment.required`, `device.limit_reached`).
+- Errors: RFC 9457-style `{ "type", "title", "status", "detail", "code", "errors": { field: [msg] } }` with a stable machine `code` (e.g. `otp.expired`, `enrollment.required`, `device.limit_reached`). `title` is translated per `Accept-Language` and shown to people as is (web: `ApiError.title`); clients branch on `code`, never on text.
 - Idempotency: `Idempotency-Key` header required on `POST /orders`, `POST /orders/{id}/payments`, payout approvals; replays return the original response.
 - Rate limits (per user/IP/phone): OTP request 3/10 min per phone, 10/h per IP, 60 s cooldown, global hourly SMS budget; OTP verify 5 attempts per challenge and 15 wrong codes per number per day, plus 30/10 min per IP; profile updates 10/min per user; data export 1/day; payments 10/h per user; default 120/min per user. Limits use atomic increments (hit, then compare).
 - Webhooks: signature-verified, deduplicated by event ID, acknowledged fast (`2xx`), processed on the queue.
@@ -419,8 +419,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST / PUT | /professor/payout-method[/otp] | Code to own number / set rail + number (48 h hold on change) |
 | GET / POST / PATCH {id} | /professor/coupons | Own professor-funded coupons (own courses); staff coupons are not visible here |
 | GET / POST / PATCH {id} | /professor/bundles | Own bundles (own courses) |
-| GET / POST | /professor/courses | List / create (creates draft v1) |
-| GET / PATCH / DELETE | /professor/courses/{id} | Settings (category, language, level, audience, price/free — immediate) / delete if never published |
+| GET | /professor/authoring-options | Choices and limits for the studio (enabled currencies + price limits/steps, preview limit, upload sizes, default pass mark, languages, levels, audiences) |
+| GET / POST | /professor/courses | List (`filter[status]`, paging) / create (creates draft v1) |
+| GET / PATCH / DELETE | /professor/courses/{id} | Settings (category, language, level, audience, price/free — immediate) / delete if never published. Includes `can` (start_draft, submit, withdraw, unpublish, republish, archive, delete) from the actions' own rules, so the studio offers only what applies |
 | POST | /professor/courses/{id}/draft | Start a draft from the live version |
 | POST | /professor/courses/{id}/(submit\|withdraw) | Review submission |
 | POST | /professor/courses/{id}/(unpublish\|republish\|archive) | Visibility |
@@ -482,7 +483,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | Method | Path |
 |---|---|
 | POST | /webhooks/video | Video provider (Mux) |
-| PUT | /_fake/video-uploads/{upload} | Fake video driver only: stands in for the upload URL (local, staging) |
+| PUT | /_fake/video-uploads/{upload} | Fake video driver only: stands in for the upload URL (local, staging); accepts chunked PUTs (`Content-Range`), completes on the last; exempt from CSRF |
 | POST | /webhooks/payments/{gateway} | Payment gateway (`fake` until the aggregator is integrated) |
 | POST | /webhooks/sms/{provider} (delivery reports) |
 

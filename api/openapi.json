@@ -220,6 +220,124 @@
                 }
             }
         },
+        "/professor/authoring-options": {
+            "get": {
+                "operationId": "professor.authoring-options",
+                "tags": [
+                    "AuthoringOptions"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "currencies": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "code": {
+                                                                "type": "string"
+                                                            },
+                                                            "min_minor": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "max_minor": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "step_minor": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "code",
+                                                            "min_minor",
+                                                            "max_minor",
+                                                            "step_minor"
+                                                        ]
+                                                    }
+                                                },
+                                                "default_currency": {
+                                                    "type": "string"
+                                                },
+                                                "max_preview_lessons": {
+                                                    "type": "integer"
+                                                },
+                                                "default_pass_mark_pct": {
+                                                    "type": "integer"
+                                                },
+                                                "upload_limits_mb": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "video": {
+                                                            "type": "integer"
+                                                        },
+                                                        "audio": {
+                                                            "type": "integer"
+                                                        },
+                                                        "document": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "video",
+                                                        "audio",
+                                                        "document"
+                                                    ]
+                                                },
+                                                "languages": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "levels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "audiences": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "currencies",
+                                                "default_currency",
+                                                "max_preview_lessons",
+                                                "default_pass_mark_pct",
+                                                "upload_limits_mb",
+                                                "languages",
+                                                "levels",
+                                                "audiences"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bundles/{slug}": {
             "get": {
                 "operationId": "bundles.show",
@@ -2232,8 +2350,34 @@
         "/professor/courses": {
             "get": {
                 "operationId": "professor.courses.index",
+                "summary": "My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`",
                 "tags": [
                     "Course"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3865,8 +4009,7 @@
                                             "type": "object",
                                             "properties": {
                                                 "media": {
-                                                    "type": "array",
-                                                    "items": {}
+                                                    "$ref": "#/components/schemas/MediaAssetResource"
                                                 },
                                                 "upload_url": {
                                                     "type": "string"
@@ -10535,7 +10678,9 @@
                                 },
                                 "lessons": {
                                     "type": "array",
-                                    "items": {}
+                                    "items": {
+                                        "$ref": "#/components/schemas/StudioLessonResource"
+                                    }
                                 }
                             },
                             "required": [
@@ -10547,13 +10692,20 @@
                         }
                     },
                     "checklist": {
-                        "type": "object",
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere.",
                         "properties": {
                             "ready": {
                                 "type": "boolean"
                             },
                             "missing": {
-                                "type": "null"
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "required": [
@@ -13189,6 +13341,41 @@
                     },
                     "created_at": {
                         "type": "string"
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "start_draft": {
+                                "type": "string"
+                            },
+                            "submit": {
+                                "type": "string"
+                            },
+                            "withdraw": {
+                                "type": "string"
+                            },
+                            "unpublish": {
+                                "type": "string"
+                            },
+                            "republish": {
+                                "type": "string"
+                            },
+                            "archive": {
+                                "type": "string"
+                            },
+                            "delete": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "start_draft",
+                            "submit",
+                            "withdraw",
+                            "unpublish",
+                            "republish",
+                            "archive",
+                            "delete"
+                        ]
                     }
                 },
                 "required": [
@@ -13208,7 +13395,8 @@
                     "total_duration_seconds",
                     "enrollment_count",
                     "published_at",
-                    "created_at"
+                    "created_at",
+                    "can"
                 ],
                 "title": "StudioCourseResource"
             },
@@ -13270,13 +13458,13 @@
                             "name": {
                                 "type": "string"
                             },
-                            "size": {
-                                "type": "string"
+                            "size_bytes": {
+                                "type": "integer"
                             }
                         },
                         "required": [
                             "name",
-                            "size"
+                            "size_bytes"
                         ]
                     },
                     "quiz": {

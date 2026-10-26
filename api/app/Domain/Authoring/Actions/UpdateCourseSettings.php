@@ -7,6 +7,8 @@ namespace App\Domain\Authoring\Actions;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Platform\Settings\CommerceSettings;
 use App\Domain\Shared\Enums\Currency;
+use App\Domain\Shared\MoneyFormatter;
+use App\Domain\Shared\ValueObjects\Money;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Validation\ValidationException;
 
@@ -70,13 +72,16 @@ final class UpdateCourseSettings
 
         if ($limits !== null && ($priceMinor < $limits['min'] || $priceMinor > $limits['max'])) {
             throw ValidationException::withMessages(['price_minor' => __('validation.between.numeric', [
-                'attribute' => __('validation.attributes.price'), 'min' => $limits['min'], 'max' => $limits['max'],
+                'attribute' => __('validation.attributes.price'),
+                'min' => MoneyFormatter::format(Money::of($limits['min'], $currency), app()->getLocale()),
+                'max' => MoneyFormatter::format(Money::of($limits['max'], $currency), app()->getLocale()),
             ])]);
         }
 
         if ($priceMinor % $currency->collectionStepMinor() !== 0) {
             throw ValidationException::withMessages(['price_minor' => __('validation.multiple_of', [
-                'attribute' => __('validation.attributes.price'), 'value' => $currency->collectionStepMinor(),
+                'attribute' => __('validation.attributes.price'),
+                'value' => MoneyFormatter::format(Money::of($currency->collectionStepMinor(), $currency), app()->getLocale()),
             ])]);
         }
     }

@@ -51,7 +51,7 @@ function useErrorMessage() {
   return (error: unknown): string => {
     if (error instanceof ApiError) {
       const fields = error.fieldErrors();
-      return fields.phone ?? fields.code ?? fields.name ?? error.body.message ?? t("generic");
+      return fields.phone ?? fields.code ?? fields.name ?? error.title ?? t("generic");
     }
     return t("network");
   };

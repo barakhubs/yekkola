@@ -5,8 +5,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere.
+ * @nullable
+ */
 export type CourseVersionResourceChecklist = {
   ready: boolean;
-  /** @nullable */
-  missing: null;
-};
+  missing: string[];
+} | null;

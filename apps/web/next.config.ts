@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
     })),
     // Small, modern formats for slow connections.
     formats: ["image/avif", "image/webp"],
+    // Locally the API is on localhost, which the optimizer refuses by default (SSRF guard); never in production.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
   },
 };
 

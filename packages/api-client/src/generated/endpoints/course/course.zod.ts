@@ -413,6 +413,18 @@ export const FeaturedResponse = zod.object({
   }),
 });
 
+/**
+ * @summary My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`
+ */
+export const professorCoursesIndexQueryPageDefault = 1;
+export const professorCoursesIndexQueryPerPageDefault = 15;
+
+export const ProfessorCoursesIndexQueryParams = zod.object({
+  page: zod.int().default(professorCoursesIndexQueryPageDefault),
+  per_page: zod.int().default(professorCoursesIndexQueryPerPageDefault),
+  "filter[status]": zod.string().optional(),
+});
+
 export const professorCoursesIndexResponseMetaPerPageMin = 0;
 
 export const professorCoursesIndexResponseMetaTotalMin = 0;
@@ -463,6 +475,15 @@ export const ProfessorCoursesIndexResponse = zod.object({
       enrollment_count: zod.int(),
       published_at: zod.string().nullable(),
       created_at: zod.string(),
+      can: zod.object({
+        start_draft: zod.string(),
+        submit: zod.string(),
+        withdraw: zod.string(),
+        unpublish: zod.string(),
+        republish: zod.string(),
+        archive: zod.string(),
+        delete: zod.string(),
+      }),
     }),
   ),
   links: zod.object({
@@ -551,6 +572,15 @@ export const ProfessorCoursesStoreResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -603,6 +633,15 @@ export const ProfessorCoursesShowResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -691,6 +730,15 @@ export const ProfessorCoursesUpdateResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -732,13 +780,69 @@ export const ProfessorCoursesDraftStartResponse = zod.object({
         id: zod.string(),
         title: zod.string(),
         position: zod.int(),
-        lessons: zod.array(zod.unknown()),
+        lessons: zod.array(
+          zod.object({
+            id: zod.string(),
+            uid: zod.string(),
+            section_id: zod.string(),
+            type: zod.string(),
+            title: zod.string(),
+            description: zod.string().nullable(),
+            position: zod.int(),
+            is_preview: zod.boolean(),
+            duration_seconds: zod.int().nullable(),
+            is_content_ready: zod.boolean(),
+            media: zod.union([
+              zod.object({
+                id: zod.string(),
+                kind: zod.string(),
+                status: zod.string(),
+                duration_seconds: zod.int().nullable(),
+                error: zod.string().nullable(),
+              }),
+              zod.null(),
+            ]),
+            document: zod
+              .object({
+                name: zod.string(),
+                size_bytes: zod.int(),
+              })
+              .nullable(),
+            quiz: zod
+              .object({
+                pass_mark_pct: zod.int(),
+                time_limit_seconds: zod.int().nullable(),
+                max_attempts: zod.int().nullable(),
+                shuffle_questions: zod.boolean(),
+                questions: zod.array(
+                  zod.object({
+                    id: zod.string(),
+                    type: zod.string(),
+                    prompt: zod.string(),
+                    explanation: zod.string().nullable(),
+                    points: zod.int(),
+                    options: zod.array(
+                      zod.object({
+                        id: zod.string(),
+                        text: zod.string(),
+                        is_correct: zod.boolean(),
+                      }),
+                    ),
+                  }),
+                ),
+              })
+              .nullable(),
+          }),
+        ),
       }),
     ),
-    checklist: zod.object({
-      ready: zod.boolean(),
-      missing: zod.null(),
-    }),
+    checklist: zod
+      .object({
+        ready: zod.boolean(),
+        missing: zod.array(zod.string()),
+      })
+      .nullable()
+      .describe("Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere."),
   }),
 });
 
@@ -768,13 +872,69 @@ export const ProfessorCoursesSubmitResponse = zod.object({
         id: zod.string(),
         title: zod.string(),
         position: zod.int(),
-        lessons: zod.array(zod.unknown()),
+        lessons: zod.array(
+          zod.object({
+            id: zod.string(),
+            uid: zod.string(),
+            section_id: zod.string(),
+            type: zod.string(),
+            title: zod.string(),
+            description: zod.string().nullable(),
+            position: zod.int(),
+            is_preview: zod.boolean(),
+            duration_seconds: zod.int().nullable(),
+            is_content_ready: zod.boolean(),
+            media: zod.union([
+              zod.object({
+                id: zod.string(),
+                kind: zod.string(),
+                status: zod.string(),
+                duration_seconds: zod.int().nullable(),
+                error: zod.string().nullable(),
+              }),
+              zod.null(),
+            ]),
+            document: zod
+              .object({
+                name: zod.string(),
+                size_bytes: zod.int(),
+              })
+              .nullable(),
+            quiz: zod
+              .object({
+                pass_mark_pct: zod.int(),
+                time_limit_seconds: zod.int().nullable(),
+                max_attempts: zod.int().nullable(),
+                shuffle_questions: zod.boolean(),
+                questions: zod.array(
+                  zod.object({
+                    id: zod.string(),
+                    type: zod.string(),
+                    prompt: zod.string(),
+                    explanation: zod.string().nullable(),
+                    points: zod.int(),
+                    options: zod.array(
+                      zod.object({
+                        id: zod.string(),
+                        text: zod.string(),
+                        is_correct: zod.boolean(),
+                      }),
+                    ),
+                  }),
+                ),
+              })
+              .nullable(),
+          }),
+        ),
       }),
     ),
-    checklist: zod.object({
-      ready: zod.boolean(),
-      missing: zod.null(),
-    }),
+    checklist: zod
+      .object({
+        ready: zod.boolean(),
+        missing: zod.array(zod.string()),
+      })
+      .nullable()
+      .describe("Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere."),
   }),
 });
 
@@ -804,13 +964,69 @@ export const ProfessorCoursesWithdrawResponse = zod.object({
         id: zod.string(),
         title: zod.string(),
         position: zod.int(),
-        lessons: zod.array(zod.unknown()),
+        lessons: zod.array(
+          zod.object({
+            id: zod.string(),
+            uid: zod.string(),
+            section_id: zod.string(),
+            type: zod.string(),
+            title: zod.string(),
+            description: zod.string().nullable(),
+            position: zod.int(),
+            is_preview: zod.boolean(),
+            duration_seconds: zod.int().nullable(),
+            is_content_ready: zod.boolean(),
+            media: zod.union([
+              zod.object({
+                id: zod.string(),
+                kind: zod.string(),
+                status: zod.string(),
+                duration_seconds: zod.int().nullable(),
+                error: zod.string().nullable(),
+              }),
+              zod.null(),
+            ]),
+            document: zod
+              .object({
+                name: zod.string(),
+                size_bytes: zod.int(),
+              })
+              .nullable(),
+            quiz: zod
+              .object({
+                pass_mark_pct: zod.int(),
+                time_limit_seconds: zod.int().nullable(),
+                max_attempts: zod.int().nullable(),
+                shuffle_questions: zod.boolean(),
+                questions: zod.array(
+                  zod.object({
+                    id: zod.string(),
+                    type: zod.string(),
+                    prompt: zod.string(),
+                    explanation: zod.string().nullable(),
+                    points: zod.int(),
+                    options: zod.array(
+                      zod.object({
+                        id: zod.string(),
+                        text: zod.string(),
+                        is_correct: zod.boolean(),
+                      }),
+                    ),
+                  }),
+                ),
+              })
+              .nullable(),
+          }),
+        ),
       }),
     ),
-    checklist: zod.object({
-      ready: zod.boolean(),
-      missing: zod.null(),
-    }),
+    checklist: zod
+      .object({
+        ready: zod.boolean(),
+        missing: zod.array(zod.string()),
+      })
+      .nullable()
+      .describe("Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere."),
   }),
 });
 
@@ -863,6 +1079,15 @@ export const ProfessorCoursesUnpublishResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -915,6 +1140,15 @@ export const ProfessorCoursesRepublishResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });
 
@@ -967,5 +1201,14 @@ export const ProfessorCoursesArchiveResponse = zod.object({
     enrollment_count: zod.int(),
     published_at: zod.string().nullable(),
     created_at: zod.string(),
+    can: zod.object({
+      start_draft: zod.string(),
+      submit: zod.string(),
+      withdraw: zod.string(),
+      unpublish: zod.string(),
+      republish: zod.string(),
+      archive: zod.string(),
+      delete: zod.string(),
+    }),
   }),
 });

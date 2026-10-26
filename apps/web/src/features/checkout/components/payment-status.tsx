@@ -225,9 +225,7 @@ function RetryPayment({ order, onSent }: { order: OrderResource; onSent: () => v
       <PayerInput id="retry-payer" value={payer ?? user?.phone ?? ""} onChange={setPayer} />
       {retry.isError ? (
         <p role="alert" className="text-sm text-destructive">
-          {retry.error instanceof ApiError
-            ? (retry.error.body.message ?? errors("generic"))
-            : errors("network")}
+          {retry.error instanceof ApiError ? (retry.error.title ?? errors("generic")) : errors("network")}
         </p>
       ) : null}
       <div>

@@ -92,9 +92,7 @@ export function EnrollButton({ courseId, slug, isFree }: EnrollButtonProps) {
       </Button>
       {enroll.isError ? (
         <p role="alert" className="text-sm text-destructive">
-          {enroll.error instanceof ApiError
-            ? (enroll.error.body.message ?? errors("generic"))
-            : errors("network")}
+          {enroll.error instanceof ApiError ? (enroll.error.title ?? errors("generic")) : errors("network")}
         </p>
       ) : null}
     </div>

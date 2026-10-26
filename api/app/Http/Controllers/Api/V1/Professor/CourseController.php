@@ -28,6 +28,12 @@ use Spatie\QueryBuilder\QueryBuilder;
  */
 final class CourseController extends Controller
 {
+    /**
+     * My courses, newest first. Filter by `filter[status]`; sort by `created_at` or `published_at`.
+     */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $courses = QueryBuilder::for(Course::query()

@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\V1\Learning\LearningController;
 use App\Http\Controllers\Api\V1\Learning\QuizAttemptController;
 use App\Http\Controllers\Api\V1\Learning\ReviewController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
+use App\Http\Controllers\Api\V1\Professor\AuthoringOptionsController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
 use App\Http\Controllers\Api\V1\Professor\CouponController as StudioCouponController;
 use App\Http\Controllers\Api\V1\Professor\CourseController;
@@ -175,6 +176,7 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
     Route::post('/reviews/{review}/reply', [StudioReviewController::class, 'reply'])->middleware('throttle:reviews')->name('reviews.reply');
 
     // Courses (PRD-03)
+    Route::get('/authoring-options', AuthoringOptionsController::class)->name('authoring-options');
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
     Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');

@@ -51,7 +51,7 @@ export function QuizLesson({ lessonUid, facts, onSubmitted }: QuizLessonProps) {
   });
 
   const errorText = (error: unknown) =>
-    error instanceof ApiError ? (error.body.message ?? errors("generic")) : errors("network");
+    error instanceof ApiError ? (error.title ?? errors("generic")) : errors("network");
 
   // Before (or between) attempts: the quiz facts and the action the API allows.
   if (!attempt) {

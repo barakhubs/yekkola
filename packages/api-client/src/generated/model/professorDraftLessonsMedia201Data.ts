@@ -4,8 +4,9 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { MediaAssetResource } from "./mediaAssetResource";
 
 export type ProfessorDraftLessonsMedia201Data = {
-  media: unknown[];
+  media: MediaAssetResource;
   upload_url: string;
 };

@@ -64,7 +64,7 @@ export function DocumentLesson({ lessonUid, title, completed, onDone }: Document
       <EmptyState
         title={
           document.error instanceof ApiError
-            ? (document.error.body.message ?? learn("lessonError"))
+            ? (document.error.title ?? learn("lessonError"))
             : learn("lessonError")
         }
         action={

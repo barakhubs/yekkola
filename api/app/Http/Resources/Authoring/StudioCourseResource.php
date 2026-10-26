@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Authoring;
 
+use App\Domain\Authoring\Actions\CourseLifecycle;
+use App\Domain\Authoring\Actions\StartDraftFromLive;
+use App\Domain\Authoring\Enums\VersionState;
 use App\Domain\Authoring\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -56,6 +59,29 @@ final class StudioCourseResource extends JsonResource
             'enrollment_count' => $this->enrollment_count,
             'published_at' => $this->published_at?->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
+            'can' => $this->can(),
+        ];
+    }
+
+    /**
+     * Which lifecycle actions the API would accept now, so the studio offers only those (the rules live in the
+     * actions; submitting also needs the draft checklist, which the builder's GET returns).
+     *
+     * @return array{start_draft: bool, submit: bool, withdraw: bool, unpublish: bool, republish: bool, archive: bool, delete: bool}
+     */
+    private function can(): array
+    {
+        $lifecycle = app(CourseLifecycle::class);
+        $draft = $this->draftVersion;
+
+        return [
+            'start_draft' => app(StartDraftFromLive::class)->canStart($this->resource),
+            'submit' => $draft !== null && $draft->isEditable(),
+            'withdraw' => $draft !== null && $draft->state === VersionState::InReview,
+            'unpublish' => $lifecycle->canUnpublish($this->resource),
+            'republish' => $lifecycle->canRepublish($this->resource),
+            'archive' => $lifecycle->canArchive($this->resource),
+            'delete' => $lifecycle->canDelete($this->resource),
         ];
     }
 }

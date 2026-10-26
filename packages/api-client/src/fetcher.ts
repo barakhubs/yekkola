@@ -11,10 +11,16 @@
 const API_PREFIX = "/api/v1";
 const UNSAFE = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
-/** The API's error envelope (architecture §4.1): stable `code`, translated `message`, field `errors`. */
+/**
+ * The API's error envelope (architecture §4.1, RFC 9457 style): stable machine `code`, translated `title`
+ * (in the request's `Accept-Language`), field `errors`, plus extra keys some errors carry (e.g. `order_id`).
+ */
 export interface ApiErrorBody {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
   code?: string;
-  message?: string;
   errors?: Record<string, string[]>;
   [key: string]: unknown;
 }
@@ -24,12 +30,17 @@ export class ApiError extends Error {
     readonly status: number,
     readonly body: ApiErrorBody,
   ) {
-    super(body.message ?? `HTTP ${status}`);
+    super(body.title ?? `HTTP ${status}`);
     this.name = "ApiError";
   }
 
   get code(): string | undefined {
     return this.body.code;
+  }
+
+  /** The API's translated summary, ready to show people; undefined when the response had none. */
+  get title(): string | undefined {
+    return typeof this.body.title === "string" && this.body.title !== "" ? this.body.title : undefined;
   }
 
   /** First validation message per field — for React Hook Form `setError`. */
