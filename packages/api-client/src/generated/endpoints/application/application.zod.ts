@@ -10,8 +10,8 @@ import * as zod from "zod";
  * @summary The user's open application, or their latest one (to show a decision)
  */
 export const ProfessorApplicationShowResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -29,7 +29,6 @@ export const ProfessorApplicationShowResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -45,52 +44,8 @@ export const ProfessorApplicationShowResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
-      applicant: zod.object({
-        id: zod.string(),
-        name: zod.string().nullable(),
-        phone: zod.string().nullable(),
-        anonymised: zod.boolean(),
-      }),
-      reviewer_id: zod.string().nullable(),
-      review_started_at: zod.string().nullable(),
-      terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+    })
+    .and(zod.looseObject({})),
 });
 
 /**
@@ -157,8 +112,8 @@ export const ProfessorApplicationSaveBody = zod
   );
 
 export const ProfessorApplicationSaveResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -176,7 +131,6 @@ export const ProfessorApplicationSaveResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -192,52 +146,8 @@ export const ProfessorApplicationSaveResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
-      applicant: zod.object({
-        id: zod.string(),
-        name: zod.string().nullable(),
-        phone: zod.string().nullable(),
-        anonymised: zod.boolean(),
-      }),
-      reviewer_id: zod.string().nullable(),
-      review_started_at: zod.string().nullable(),
-      terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+    })
+    .and(zod.looseObject({})),
 });
 
 /**
@@ -248,8 +158,8 @@ export const ProfessorApplicationSubmitBody = zod.object({
 });
 
 export const ProfessorApplicationSubmitResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -267,7 +177,6 @@ export const ProfessorApplicationSubmitResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -283,52 +192,8 @@ export const ProfessorApplicationSubmitResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
-      applicant: zod.object({
-        id: zod.string(),
-        name: zod.string().nullable(),
-        phone: zod.string().nullable(),
-        anonymised: zod.boolean(),
-      }),
-      reviewer_id: zod.string().nullable(),
-      review_started_at: zod.string().nullable(),
-      terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+    })
+    .and(zod.looseObject({})),
 });
 
 /**
@@ -341,8 +206,8 @@ export const ProfessorApplicationCredentialsStoreBody = zod
   .describe("A single credential file (PDF or image) for an application.");
 
 export const ProfessorApplicationCredentialsStoreResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -360,7 +225,6 @@ export const ProfessorApplicationCredentialsStoreResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -376,52 +240,8 @@ export const ProfessorApplicationCredentialsStoreResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
-      applicant: zod.object({
-        id: zod.string(),
-        name: zod.string().nullable(),
-        phone: zod.string().nullable(),
-        anonymised: zod.boolean(),
-      }),
-      reviewer_id: zod.string().nullable(),
-      review_started_at: zod.string().nullable(),
-      terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+    })
+    .and(zod.looseObject({})),
 });
 
 /**

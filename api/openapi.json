@@ -52,7 +52,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -88,7 +98,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -138,7 +158,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -180,7 +210,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -2987,8 +3027,42 @@
         "/admin/course-versions": {
             "get": {
                 "operationId": "admin.course-versions.index",
+                "summary": "Review queue (PRD-09 FR-07): versions submitted or decided, oldest submissions first by default",
                 "tags": [
                     "CourseVersion"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[state]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`submitted_at` or `reviewed_at`; prefix `-` for newest first.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -3155,14 +3229,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`AdminCourseVersionResource`",
+                        "description": "`AdminCourseVersionDetailResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/AdminCourseVersionResource"
+                                            "$ref": "#/components/schemas/AdminCourseVersionDetailResource"
                                         }
                                     },
                                     "required": [
@@ -3210,14 +3284,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`AdminCourseVersionResource`",
+                        "description": "`AdminCourseVersionDetailResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/AdminCourseVersionResource"
+                                            "$ref": "#/components/schemas/AdminCourseVersionDetailResource"
                                         }
                                     },
                                     "required": [
@@ -3268,14 +3342,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`AdminCourseVersionResource`",
+                        "description": "`AdminCourseVersionDetailResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/AdminCourseVersionResource"
+                                            "$ref": "#/components/schemas/AdminCourseVersionDetailResource"
                                         }
                                     },
                                     "required": [
@@ -6449,9 +6523,49 @@
                 "tags": [
                     "ProfessorApplication"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[subject]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`submitted_at`, `decided_at` or `created_at`; prefix `-` for newest first.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Paginated set of `ProfessorApplicationResource`",
+                        "description": "Paginated set of `AdminProfessorApplicationResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6460,7 +6574,17 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/AdminProfessorApplicationResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "province"
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         },
                                         "links": {
@@ -6614,14 +6738,24 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`ProfessorApplicationResource`",
+                        "description": "`AdminProfessorApplicationResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AdminProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -6659,14 +6793,24 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`ProfessorApplicationResource`",
+                        "description": "`AdminProfessorApplicationResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AdminProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -6772,14 +6916,24 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`ProfessorApplicationResource`",
+                        "description": "`AdminProfessorApplicationResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AdminProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -6830,14 +6984,24 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`ProfessorApplicationResource`",
+                        "description": "`AdminProfessorApplicationResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/ProfessorApplicationResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/AdminProfessorApplicationResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "province"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -9255,170 +9419,375 @@
     },
     "components": {
         "schemas": {
-            "AdminCourseVersionResource": {
-                "anyOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "number": {
-                                "type": "integer"
-                            },
-                            "state": {
-                                "type": "string"
-                            },
-                            "title": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "submitted_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "is_update": {
-                                "type": "string"
-                            },
-                            "course": {
-                                "type": "array",
-                                "items": {}
-                            },
-                            "professor": {
-                                "type": "object",
-                                "properties": {
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "display_name": {
-                                        "type": "string"
-                                    },
-                                    "slug": {
-                                        "type": "string"
-                                    },
-                                    "is_verified": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "id",
-                                    "display_name",
-                                    "slug",
-                                    "is_verified"
-                                ]
-                            },
-                            "version": {
-                                "type": "array",
-                                "items": {}
-                            },
-                            "changes": {
-                                "type": [
-                                    "object",
-                                    "null"
-                                ],
-                                "properties": {
-                                    "added": {
-                                        "type": "string"
-                                    },
-                                    "removed": {
-                                        "type": "string"
-                                    },
-                                    "changed": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "added",
-                                    "removed",
-                                    "changed"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "id",
-                            "number",
-                            "state",
-                            "title",
-                            "submitted_at",
-                            "is_update",
-                            "course",
-                            "professor",
-                            "version",
-                            "changes"
+            "AdminCourseVersionDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "integer"
+                    },
+                    "state": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
                         ]
                     },
-                    {
+                    "submitted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_update": {
+                        "type": "boolean"
+                    },
+                    "course": {
+                        "$ref": "#/components/schemas/StudioCourseResource"
+                    },
+                    "professor": {
                         "type": "object",
                         "properties": {
                             "id": {
                                 "type": "string"
                             },
-                            "number": {
-                                "type": "integer"
-                            },
-                            "state": {
+                            "display_name": {
                                 "type": "string"
                             },
-                            "title": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "submitted_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "is_update": {
+                            "slug": {
                                 "type": "string"
                             },
-                            "course": {
-                                "type": "array",
-                                "items": {}
-                            },
-                            "professor": {
-                                "type": "object",
-                                "properties": {
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "display_name": {
-                                        "type": "string"
-                                    },
-                                    "slug": {
-                                        "type": "string"
-                                    },
-                                    "is_verified": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "id",
-                                    "display_name",
-                                    "slug",
-                                    "is_verified"
-                                ]
+                            "is_verified": {
+                                "type": "boolean"
                             }
                         },
                         "required": [
                             "id",
-                            "number",
-                            "state",
-                            "title",
-                            "submitted_at",
-                            "is_update",
-                            "course",
-                            "professor"
+                            "display_name",
+                            "slug",
+                            "is_verified"
+                        ]
+                    },
+                    "version": {
+                        "$ref": "#/components/schemas/CourseVersionResource"
+                    },
+                    "changes": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "added": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "removed": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "changed": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "added",
+                            "removed",
+                            "changed"
                         ]
                     }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "state",
+                    "title",
+                    "submitted_at",
+                    "is_update",
+                    "course",
+                    "professor",
+                    "version",
+                    "changes"
+                ],
+                "title": "AdminCourseVersionDetailResource"
+            },
+            "AdminCourseVersionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "integer"
+                    },
+                    "state": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "submitted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_update": {
+                        "type": "boolean"
+                    },
+                    "course": {
+                        "$ref": "#/components/schemas/StudioCourseResource"
+                    },
+                    "professor": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "display_name": {
+                                "type": "string"
+                            },
+                            "slug": {
+                                "type": "string"
+                            },
+                            "is_verified": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "display_name",
+                            "slug",
+                            "is_verified"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "state",
+                    "title",
+                    "submitted_at",
+                    "is_update",
+                    "course",
+                    "professor"
                 ],
                 "title": "AdminCourseVersionResource"
+            },
+            "AdminProfessorApplicationResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "levels": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "years_experience": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "institutions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "credentials": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sample_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "motivation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "province": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ProvinceResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "credential_files": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "mime_type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "size": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name",
+                                "mime_type",
+                                "size"
+                            ]
+                        }
+                    },
+                    "is_editable": {
+                        "type": "boolean"
+                    },
+                    "info_request_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "decision_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "submitted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "decided_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "applicant": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "anonymised": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name",
+                            "phone",
+                            "anonymised"
+                        ]
+                    },
+                    "reviewer_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "review_started_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "terms_version": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "full_name",
+                    "subjects",
+                    "levels",
+                    "years_experience",
+                    "institutions",
+                    "credentials",
+                    "sample_url",
+                    "motivation",
+                    "credential_files",
+                    "is_editable",
+                    "info_request_note",
+                    "decision_note",
+                    "submitted_at",
+                    "decided_at",
+                    "created_at",
+                    "applicant",
+                    "reviewer_id",
+                    "review_started_at",
+                    "terms_version"
+                ],
+                "title": "AdminProfessorApplicationResource"
             },
             "AdminProfessorResource": {
                 "type": "object",
@@ -11752,366 +12121,153 @@
                 "title": "PlaybackResource"
             },
             "ProfessorApplicationResource": {
-                "anyOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "status": {
-                                "type": "string"
-                            },
-                            "full_name": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "subjects": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "levels": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "years_experience": {
-                                "type": [
-                                    "integer",
-                                    "null"
-                                ]
-                            },
-                            "institutions": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "credentials": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "sample_url": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "motivation": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "province": {
-                                "anyOf": [
-                                    {
-                                        "$ref": "#/components/schemas/ProvinceResource"
-                                    },
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "object"
-                                    }
-                                ]
-                            },
-                            "credential_files": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "mime_type": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "size": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "mime_type",
-                                        "size"
-                                    ]
-                                }
-                            },
-                            "is_editable": {
-                                "type": "boolean"
-                            },
-                            "info_request_note": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "decision_note": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "submitted_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "decided_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "created_at": {
-                                "type": "string"
-                            },
-                            "applicant": {
-                                "type": "object",
-                                "properties": {
-                                    "id": {
-                                        "type": "string"
-                                    },
-                                    "name": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "phone": {
-                                        "type": [
-                                            "string",
-                                            "null"
-                                        ]
-                                    },
-                                    "anonymised": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "id",
-                                    "name",
-                                    "phone",
-                                    "anonymised"
-                                ]
-                            },
-                            "reviewer_id": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "review_started_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "terms_version": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "id",
-                            "status",
-                            "full_name",
-                            "subjects",
-                            "levels",
-                            "years_experience",
-                            "institutions",
-                            "credentials",
-                            "sample_url",
-                            "motivation",
-                            "province",
-                            "credential_files",
-                            "is_editable",
-                            "info_request_note",
-                            "decision_note",
-                            "submitted_at",
-                            "decided_at",
-                            "created_at",
-                            "applicant",
-                            "reviewer_id",
-                            "review_started_at",
-                            "terms_version"
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "type": [
+                            "string",
+                            "null"
                         ]
                     },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "string"
-                            },
-                            "status": {
-                                "type": "string"
-                            },
-                            "full_name": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "subjects": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "levels": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "years_experience": {
-                                "type": [
-                                    "integer",
-                                    "null"
-                                ]
-                            },
-                            "institutions": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "credentials": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "sample_url": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "motivation": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "province": {
-                                "anyOf": [
-                                    {
-                                        "$ref": "#/components/schemas/ProvinceResource"
-                                    },
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "object"
-                                    }
-                                ]
-                            },
-                            "credential_files": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "name": {
-                                            "type": "string"
-                                        },
-                                        "mime_type": {
-                                            "type": [
-                                                "string",
-                                                "null"
-                                            ]
-                                        },
-                                        "size": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "name",
-                                        "mime_type",
-                                        "size"
-                                    ]
-                                }
-                            },
-                            "is_editable": {
-                                "type": "boolean"
-                            },
-                            "info_request_note": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "decision_note": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "submitted_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "decided_at": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "created_at": {
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "id",
-                            "status",
-                            "full_name",
-                            "subjects",
-                            "levels",
-                            "years_experience",
-                            "institutions",
-                            "credentials",
-                            "sample_url",
-                            "motivation",
-                            "province",
-                            "credential_files",
-                            "is_editable",
-                            "info_request_note",
-                            "decision_note",
-                            "submitted_at",
-                            "decided_at",
-                            "created_at"
+                    "subjects": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "levels": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "years_experience": {
+                        "type": [
+                            "integer",
+                            "null"
                         ]
+                    },
+                    "institutions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "credentials": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sample_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "motivation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "province": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ProvinceResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "credential_files": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "mime_type": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "size": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "name",
+                                "mime_type",
+                                "size"
+                            ]
+                        }
+                    },
+                    "is_editable": {
+                        "type": "boolean"
+                    },
+                    "info_request_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "decision_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "submitted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "decided_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
                     }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "full_name",
+                    "subjects",
+                    "levels",
+                    "years_experience",
+                    "institutions",
+                    "credentials",
+                    "sample_url",
+                    "motivation",
+                    "credential_files",
+                    "is_editable",
+                    "info_request_note",
+                    "decision_note",
+                    "submitted_at",
+                    "decided_at",
+                    "created_at"
                 ],
                 "title": "ProfessorApplicationResource"
             },
@@ -14026,6 +14182,13 @@
                             "type": "string"
                         }
                     },
+                    "permissions": {
+                        "type": "array",
+                        "description": "What the back office may show (it hides what the API would refuse; the API still checks).",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
                     "deletion_requested_at": {
                         "type": [
                             "string",
@@ -14046,6 +14209,7 @@
                     "city",
                     "status",
                     "roles",
+                    "permissions",
                     "deletion_requested_at",
                     "created_at"
                 ],

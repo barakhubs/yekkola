@@ -53,6 +53,11 @@ export const MePhoneUpdateResponse = zod.object({
       city: zod.string().nullable(),
       status: zod.string(),
       roles: zod.array(zod.string()),
+      permissions: zod
+        .array(zod.string())
+        .describe(
+          "What the back office may show (it hides what the API would refuse; the API still checks).",
+        ),
       deletion_requested_at: zod.string().nullable(),
       created_at: zod.string(),
     })

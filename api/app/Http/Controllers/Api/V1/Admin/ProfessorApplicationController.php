@@ -11,8 +11,8 @@ use App\Domain\Professors\Enums\ApplicationStatus;
 use App\Domain\Professors\Models\ProfessorApplication;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StaffNoteRequest;
+use App\Http\Resources\Admin\AdminProfessorApplicationResource;
 use App\Http\Resources\Admin\AdminProfessorResource;
-use App\Http\Resources\ProfessorApplicationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -28,6 +28,11 @@ final class ProfessorApplicationController extends Controller
     /**
      * Queue: filter by status/subject/date, oldest submissions first by default.
      */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[subject]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`submitted_at`, `decided_at` or `created_at`; prefix `-` for newest first.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $applications = QueryBuilder::for(ProfessorApplication::query()->where('status', '!=', ApplicationStatus::Draft)->with('user', 'province', 'media'))
@@ -42,22 +47,19 @@ final class ProfessorApplicationController extends Controller
             ->paginate($this->perPage($request))
             ->appends($request->query());
 
-        $collection = ProfessorApplicationResource::collection($applications);
-        $collection->collection->each(fn (ProfessorApplicationResource $r) => $r->forStaff());
-
-        return $collection;
+        return AdminProfessorApplicationResource::collection($applications);
     }
 
-    public function show(ProfessorApplication $application): ProfessorApplicationResource
+    public function show(ProfessorApplication $application): AdminProfessorApplicationResource
     {
         abort_if($application->status === ApplicationStatus::Draft, 404);
 
-        return (new ProfessorApplicationResource($application->load('user', 'province')))->forStaff();
+        return new AdminProfessorApplicationResource($application->load('user', 'province'));
     }
 
-    public function startReview(Request $request, ProfessorApplication $application, ReviewApplication $review): ProfessorApplicationResource
+    public function startReview(Request $request, ProfessorApplication $application, ReviewApplication $review): AdminProfessorApplicationResource
     {
-        return (new ProfessorApplicationResource($review->startReview($application, $this->staff($request))->load('user', 'province')))->forStaff();
+        return new AdminProfessorApplicationResource($review->startReview($application, $this->staff($request))->load('user', 'province'));
     }
 
     public function approve(StaffNoteRequest $request, ProfessorApplication $application, ReviewApplication $review): AdminProfessorResource
@@ -65,14 +67,14 @@ final class ProfessorApplicationController extends Controller
         return new AdminProfessorResource($review->approve($application, $this->staff($request), $request->note())->load('user', 'province'));
     }
 
-    public function reject(StaffNoteRequest $request, ProfessorApplication $application, ReviewApplication $review): ProfessorApplicationResource
+    public function reject(StaffNoteRequest $request, ProfessorApplication $application, ReviewApplication $review): AdminProfessorApplicationResource
     {
-        return (new ProfessorApplicationResource($review->reject($application, $this->staff($request), (string) $request->note())->load('user', 'province')))->forStaff();
+        return new AdminProfessorApplicationResource($review->reject($application, $this->staff($request), (string) $request->note())->load('user', 'province'));
     }
 
-    public function requestInfo(StaffNoteRequest $request, ProfessorApplication $application, ReviewApplication $review): ProfessorApplicationResource
+    public function requestInfo(StaffNoteRequest $request, ProfessorApplication $application, ReviewApplication $review): AdminProfessorApplicationResource
     {
-        return (new ProfessorApplicationResource($review->requestInfo($application, $this->staff($request), (string) $request->note())->load('user', 'province')))->forStaff();
+        return new AdminProfessorApplicationResource($review->requestInfo($application, $this->staff($request), (string) $request->note())->load('user', 'province'));
     }
 
     /**

@@ -20,6 +20,7 @@ import type {
 import type {
   AdminCourseVersionsApprove200,
   AdminCourseVersionsIndex200,
+  AdminCourseVersionsIndexParams,
   AdminCourseVersionsReject200,
   AdminCourseVersionsShow200,
   AuthorizationExceptionResponse,
@@ -68,36 +69,55 @@ export type adminCourseVersionsIndexResponseError = adminCourseVersionsIndexResp
 export type adminCourseVersionsIndexResponse =
   adminCourseVersionsIndexResponseSuccess | adminCourseVersionsIndexResponseError;
 
-export const getAdminCourseVersionsIndexUrl = () => {
-  return `/admin/course-versions`;
+export const getAdminCourseVersionsIndexUrl = (params?: AdminCourseVersionsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/admin/course-versions?${stringifiedParams}`
+    : `/admin/course-versions`;
 };
 
+/**
+ * @summary Review queue (PRD-09 FR-07): versions submitted or decided, oldest submissions first by default
+ */
 export const adminCourseVersionsIndex = async (
+  params?: AdminCourseVersionsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminCourseVersionsIndexResponse> => {
-  return apiFetch<adminCourseVersionsIndexResponse>(getAdminCourseVersionsIndexUrl(), {
+  return apiFetch<adminCourseVersionsIndexResponse>(getAdminCourseVersionsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminCourseVersionsIndexQueryKey = () => {
-  return [`/admin/course-versions`] as const;
+export const getAdminCourseVersionsIndexQueryKey = (params?: AdminCourseVersionsIndexParams) => {
+  return [`/admin/course-versions`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminCourseVersionsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminCourseVersionsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminCourseVersionsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminCourseVersionsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCourseVersionsIndex>>> = ({ signal }) =>
-    adminCourseVersionsIndex({ signal, ...requestOptions });
+    adminCourseVersionsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
@@ -115,6 +135,7 @@ export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminCourseVersionsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>> &
       Pick<
@@ -133,6 +154,7 @@ export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminCourseVersionsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>> &
       Pick<
@@ -151,24 +173,29 @@ export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminCourseVersionsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Review queue (PRD-09 FR-07): versions submitted or decided, oldest submissions first by default
+ */
 
 export function useAdminCourseVersionsIndex<
   TData = Awaited<ReturnType<typeof adminCourseVersionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminCourseVersionsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCourseVersionsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminCourseVersionsIndexQueryOptions(options);
+  const queryOptions = getAdminCourseVersionsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

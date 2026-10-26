@@ -4,8 +4,8 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { ProfessorApplicationResource } from "./professorApplicationResource";
+import type { ProfessorApplicationShow200Data } from "./professorApplicationShow200Data";
 
 export type ProfessorApplicationShow200 = {
-  data: ProfessorApplicationResource;
+  data: ProfessorApplicationShow200Data;
 };

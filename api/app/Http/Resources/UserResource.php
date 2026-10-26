@@ -31,8 +31,18 @@ final class UserResource extends JsonResource
             'city' => $this->city,
             'status' => $this->status->value,
             'roles' => $this->getRoleNames()->values()->all(),
+            // What the back office may show (it hides what the API would refuse; the API still checks).
+            'permissions' => $this->permissionNames(),
             'deletion_requested_at' => $this->deletion_requested_at?->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function permissionNames(): array
+    {
+        return $this->getAllPermissions()->map(fn ($permission): string => (string) $permission->name)->sort()->values()->all();
     }
 }

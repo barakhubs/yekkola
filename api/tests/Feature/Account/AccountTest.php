@@ -33,6 +33,14 @@ it('returns and updates the profile', function () {
         ->assertJsonPath('data.locale', 'en');
 });
 
+it('lists the permissions the back office may show', function () {
+    Laravel\Sanctum\Sanctum::actingAs(actingAsStaff()->refresh()); // all columns loaded, as on a real sign-in
+
+    $permissions = $this->getJson('/api/v1/me')->assertOk()->json('data.permissions');
+
+    expect($permissions)->toContain('moderation.review')->not->toContain('finance.payouts');
+});
+
 it('validates profile fields', function (array $payload, string $field) {
     $token = signInMobile()->json('data.token');
 
