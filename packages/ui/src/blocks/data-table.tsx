@@ -173,7 +173,8 @@ function DataTable<TData extends RowData>({
           </TableBody>
         </Table>
       </div>
-      {pageCount > 1 ? (
+      {/* Also past the last page (e.g. after deciding the last item of a page), so there's a way back. */}
+      {pageCount > 1 || page > 1 ? (
         <nav aria-label={labels.pagination} className="flex items-center justify-between gap-4">
           <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
             {labels.previous}

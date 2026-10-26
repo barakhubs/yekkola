@@ -25,6 +25,10 @@ interface ConfirmDialogProps {
   /** Destructive and financial actions ask for a typed reason, stored in the audit log by the API. */
   reason?: { label: React.ReactNode; minLength?: number };
   destructive?: boolean;
+  /** Why the last confirm failed (the dialog stays open): shown inside the dialog, where it can be seen and heard. */
+  error?: React.ReactNode;
+  /** E.g. to clear an earlier error when the dialog is opened again. */
+  onOpenChange?: (open: boolean) => void;
   /** Resolve to close the dialog; reject (or throw) to keep it open, e.g. on a validation error. */
   onConfirm: (reason: string) => Promise<void> | void;
 }
@@ -39,6 +43,8 @@ function ConfirmDialog({
   reason,
   destructive = false,
   onConfirm,
+  error,
+  onOpenChange,
 }: ConfirmDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [text, setText] = React.useState("");
@@ -66,6 +72,7 @@ function ConfirmDialog({
         if (pending) return;
         setOpen(next);
         if (!next) setText("");
+        onOpenChange?.(next);
       }}
     >
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
@@ -79,6 +86,11 @@ function ConfirmDialog({
             <Label htmlFor={reasonId}>{reason.label}</Label>
             <Textarea id={reasonId} value={text} onChange={(e) => setText(e.target.value)} maxLength={500} />
           </div>
+        ) : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
         ) : null}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={pending}>{cancelLabel}</AlertDialogCancel>
