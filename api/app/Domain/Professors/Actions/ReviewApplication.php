@@ -35,6 +35,18 @@ final class ReviewApplication
         private readonly ProfessorSlugs $slugs,
     ) {}
 
+    /** Not their own application, and still waiting to be picked up. */
+    public function canStartReview(ProfessorApplication $application, User $staff): bool
+    {
+        return $this->allows($application, $staff, [ApplicationStatus::Submitted]);
+    }
+
+    /** Not their own application, and submitted or under review (approve, reject, ask for more information). */
+    public function canDecide(ProfessorApplication $application, User $staff): bool
+    {
+        return $this->allows($application, $staff, self::DECIDABLE);
+    }
+
     public function startReview(ProfessorApplication $application, User $staff): ProfessorApplication
     {
         return $this->transition($application, $staff, [ApplicationStatus::Submitted], function (ProfessorApplication $locked) use ($staff): ProfessorApplication {
@@ -113,6 +125,14 @@ final class ReviewApplication
 
             return $locked;
         });
+    }
+
+    /**
+     * @param  list<ApplicationStatus>  $allowed
+     */
+    private function allows(ProfessorApplication $application, User $staff, array $allowed): bool
+    {
+        return $application->user_id !== $staff->id && in_array($application->status, $allowed, true);
     }
 
     /**

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Admin;
 
+use App\Domain\Authoring\Actions\CourseReview;
 use App\Domain\Authoring\Models\CourseVersion;
 use App\Domain\Authoring\Models\Lesson;
+use App\Domain\Identity\Models\User;
 use App\Http\Resources\Authoring\CourseVersionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -27,6 +29,23 @@ final class AdminCourseVersionDetailResource extends JsonResource
             ...(new AdminCourseVersionResource($this->resource))->toArray($request),
             'version' => new CourseVersionResource($this->resource),
             'changes' => $this->changesSinceLive(),
+            'can' => $this->can($request),
+        ];
+    }
+
+    /**
+     * What the signed-in staff member may do with it now (the rules live in CourseReview).
+     *
+     * @return array{approve: bool, reject: bool}
+     */
+    private function can(Request $request): array
+    {
+        $staff = $request->user();
+        $review = app(CourseReview::class);
+
+        return [
+            'approve' => $staff instanceof User && $review->canApprove($this->resource, $staff),
+            'reject' => $staff instanceof User && $review->canDecide($this->resource, $staff),
         ];
     }
 

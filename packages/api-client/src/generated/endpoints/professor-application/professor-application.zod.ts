@@ -72,6 +72,10 @@ export const AdminProfessorApplicationsIndexResponse = zod.object({
         reviewer_id: zod.string().nullable(),
         review_started_at: zod.string().nullable(),
         terms_version: zod.string().nullable(),
+        can: zod.object({
+          start_review: zod.string(),
+          decide: zod.string(),
+        }),
       })
       .and(zod.looseObject({})),
   ),
@@ -155,6 +159,10 @@ export const AdminProfessorApplicationsShowResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
     })
     .and(zod.looseObject({})),
 });
@@ -207,6 +215,10 @@ export const AdminProfessorApplicationsStartReviewResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
     })
     .and(zod.looseObject({})),
 });
@@ -380,6 +392,10 @@ export const AdminProfessorApplicationsRejectResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
     })
     .and(zod.looseObject({})),
 });
@@ -446,6 +462,10 @@ export const AdminProfessorApplicationsRequestInfoResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
     })
     .and(zod.looseObject({})),
 });

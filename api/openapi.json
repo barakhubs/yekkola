@@ -9505,6 +9505,21 @@
                             "removed",
                             "changed"
                         ]
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "approve": {
+                                "type": "string"
+                            },
+                            "reject": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "approve",
+                            "reject"
+                        ]
                     }
                 },
                 "required": [
@@ -9517,7 +9532,8 @@
                     "course",
                     "professor",
                     "version",
-                    "changes"
+                    "changes",
+                    "can"
                 ],
                 "title": "AdminCourseVersionDetailResource"
             },
@@ -9762,6 +9778,21 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "start_review": {
+                                "type": "string"
+                            },
+                            "decide": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "start_review",
+                            "decide"
+                        ]
                     }
                 },
                 "required": [
@@ -9785,7 +9816,8 @@
                     "applicant",
                     "reviewer_id",
                     "review_started_at",
-                    "terms_version"
+                    "terms_version",
+                    "can"
                 ],
                 "title": "AdminProfessorApplicationResource"
             },

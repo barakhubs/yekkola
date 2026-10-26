@@ -290,6 +290,10 @@ export const AdminCourseVersionsShowResponse = zod.object({
         changed: zod.array(zod.string()),
       })
       .nullable(),
+    can: zod.object({
+      approve: zod.string(),
+      reject: zod.string(),
+    }),
   }),
 });
 
@@ -468,6 +472,10 @@ export const AdminCourseVersionsApproveResponse = zod.object({
         changed: zod.array(zod.string()),
       })
       .nullable(),
+    can: zod.object({
+      approve: zod.string(),
+      reject: zod.string(),
+    }),
   }),
 });
 
@@ -646,5 +654,9 @@ export const AdminCourseVersionsRejectResponse = zod.object({
         changed: zod.array(zod.string()),
       })
       .nullable(),
+    can: zod.object({
+      approve: zod.string(),
+      reject: zod.string(),
+    }),
   }),
 });

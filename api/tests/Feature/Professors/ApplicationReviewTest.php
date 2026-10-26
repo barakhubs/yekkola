@@ -108,6 +108,22 @@ it('forbids staff from deciding on their own application', function () {
         ->assertJsonPath('code', 'application.own_application');
 });
 
+it('tells staff which decisions apply', function () {
+    $staff = actingAsStaff();
+    $can = fn () => $this->getJson("/api/v1/admin/professor-applications/{$this->application->id}")->json('data.can');
+
+    expect($can())->toBe(['start_review' => true, 'decide' => true]);
+
+    $this->postJson("/api/v1/admin/professor-applications/{$this->application->id}/start-review")->assertOk();
+    expect($can())->toBe(['start_review' => false, 'decide' => true]);
+
+    $this->postJson("/api/v1/admin/professor-applications/{$this->application->id}/reject", ['note' => 'Dossier incomplet.'])->assertOk();
+    expect($can())->toBe(['start_review' => false, 'decide' => false]);
+
+    $this->application->update(['status' => ApplicationStatus::Submitted, 'user_id' => $staff->id]);
+    expect($can())->toBe(['start_review' => false, 'decide' => false]); // never their own
+});
+
 it('hides drafts from staff', function () {
     $this->application->update(['status' => ApplicationStatus::Draft]);
     actingAsStaff();

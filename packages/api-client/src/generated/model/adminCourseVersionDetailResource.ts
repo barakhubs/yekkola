@@ -4,6 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminCourseVersionDetailResourceCan } from "./adminCourseVersionDetailResourceCan";
 import type { AdminCourseVersionDetailResourceChanges } from "./adminCourseVersionDetailResourceChanges";
 import type { AdminCourseVersionDetailResourceProfessor } from "./adminCourseVersionDetailResourceProfessor";
 import type { CourseVersionResource } from "./courseVersionResource";
@@ -23,4 +24,5 @@ export interface AdminCourseVersionDetailResource {
   version: CourseVersionResource;
   /** @nullable */
   changes: AdminCourseVersionDetailResourceChanges;
+  can: AdminCourseVersionDetailResourceCan;
 }

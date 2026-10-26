@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AdminProfessorApplicationResourceApplicant } from "./adminProfessorApplicationResourceApplicant";
+import type { AdminProfessorApplicationResourceCan } from "./adminProfessorApplicationResourceCan";
 import type { AdminProfessorApplicationResourceCredentialFilesItem } from "./adminProfessorApplicationResourceCredentialFilesItem";
 import type { ProvinceResource } from "./provinceResource";
 
@@ -44,4 +45,5 @@ export interface AdminProfessorApplicationResource {
   review_started_at: string | null;
   /** @nullable */
   terms_version: string | null;
+  can: AdminProfessorApplicationResourceCan;
 }

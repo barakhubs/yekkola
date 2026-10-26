@@ -161,6 +161,19 @@ final class CourseReview
         ]));
     }
 
+    /** In review, and not the reviewer's own course (reject; approving also needs an active professor). */
+    public function canDecide(CourseVersion $version, User $staff): bool
+    {
+        return $version->course !== null
+            && $version->course->professor->user_id !== $staff->id
+            && $version->state === VersionState::InReview;
+    }
+
+    public function canApprove(CourseVersion $version, User $staff): bool
+    {
+        return $this->canDecide($version, $staff) && $version->course?->professor->isActive() === true;
+    }
+
     /**
      * @param  Closure(Course, CourseVersion): CourseVersion  $apply
      */
