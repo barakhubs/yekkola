@@ -4,12 +4,12 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminProfessorApplicationsIndex200DataItem } from "./adminProfessorApplicationsIndex200DataItem";
 import type { AdminProfessorApplicationsIndex200Links } from "./adminProfessorApplicationsIndex200Links";
 import type { AdminProfessorApplicationsIndex200Meta } from "./adminProfessorApplicationsIndex200Meta";
-import type { ProfessorApplicationResource } from "./professorApplicationResource";
 
 export type AdminProfessorApplicationsIndex200 = {
-  data: ProfessorApplicationResource[];
+  data: AdminProfessorApplicationsIndex200DataItem[];
   links: AdminProfessorApplicationsIndex200Links;
   meta: AdminProfessorApplicationsIndex200Meta;
 };

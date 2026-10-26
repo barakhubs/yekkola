@@ -41,6 +41,20 @@ it('queues versions in review for moderators', function () {
         ->assertJsonPath('data.version.sections.0.lessons.1.quiz.questions.0.options.0.is_correct', true);
 });
 
+it('tells staff whether they can approve or reject', function () {
+    actingAsStaff();
+    $can = fn () => $this->getJson("/api/v1/admin/course-versions/{$this->version->id}")->json('data.can');
+
+    expect($can())->toBe(['approve' => true, 'reject' => true]);
+
+    $this->professor->update(['status' => 'suspended']);
+    expect($can())->toBe(['approve' => false, 'reject' => true]); // review is paused while suspended
+
+    $this->professor->update(['status' => 'active']);
+    $this->postJson("/api/v1/admin/course-versions/{$this->version->id}/approve")->assertOk();
+    expect($can())->toBe(['approve' => false, 'reject' => false]);
+});
+
 it('approves: the version goes live and the course is published, audited', function () {
     $staff = actingAsStaff();
 

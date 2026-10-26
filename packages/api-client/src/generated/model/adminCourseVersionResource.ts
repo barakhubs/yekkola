@@ -4,46 +4,18 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminCourseVersionResourceProfessor } from "./adminCourseVersionResourceProfessor";
+import type { StudioCourseResource } from "./studioCourseResource";
 
-export type AdminCourseVersionResource =
-  | {
-      id: string;
-      number: number;
-      state: string;
-      /** @nullable */
-      title: string | null;
-      /** @nullable */
-      submitted_at: string | null;
-      is_update: string;
-      course: unknown[];
-      professor: {
-        id: string;
-        display_name: string;
-        slug: string;
-        is_verified: boolean;
-      };
-      version: unknown[];
-      /** @nullable */
-      changes: {
-        added: string;
-        removed: string;
-        changed: string;
-      } | null;
-    }
-  | {
-      id: string;
-      number: number;
-      state: string;
-      /** @nullable */
-      title: string | null;
-      /** @nullable */
-      submitted_at: string | null;
-      is_update: string;
-      course: unknown[];
-      professor: {
-        id: string;
-        display_name: string;
-        slug: string;
-        is_verified: boolean;
-      };
-    };
+export interface AdminCourseVersionResource {
+  id: string;
+  number: number;
+  state: string;
+  /** @nullable */
+  title: string | null;
+  /** @nullable */
+  submitted_at: string | null;
+  is_update: boolean;
+  course: StudioCourseResource;
+  professor: AdminCourseVersionResourceProfessor;
+}

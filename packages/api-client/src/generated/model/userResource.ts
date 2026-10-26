@@ -20,6 +20,9 @@ export interface UserResource {
   city: string | null;
   status: string;
   roles: string[];
+  /** What the back office may show (it hides what the API would refuse; the API still checks). */
+  is_staff: boolean;
+  permissions: string[];
   /** @nullable */
   deletion_requested_at: string | null;
   created_at: string;

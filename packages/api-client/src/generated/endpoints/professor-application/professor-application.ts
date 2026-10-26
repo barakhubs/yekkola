@@ -21,6 +21,7 @@ import type {
   AdminProfessorApplicationsApprove200,
   AdminProfessorApplicationsCredential200,
   AdminProfessorApplicationsIndex200,
+  AdminProfessorApplicationsIndexParams,
   AdminProfessorApplicationsReject200,
   AdminProfessorApplicationsRequestInfo200,
   AdminProfessorApplicationsShow200,
@@ -71,41 +72,59 @@ export type adminProfessorApplicationsIndexResponseError = adminProfessorApplica
 export type adminProfessorApplicationsIndexResponse =
   adminProfessorApplicationsIndexResponseSuccess | adminProfessorApplicationsIndexResponseError;
 
-export const getAdminProfessorApplicationsIndexUrl = () => {
-  return `/admin/professor-applications`;
+export const getAdminProfessorApplicationsIndexUrl = (params?: AdminProfessorApplicationsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/admin/professor-applications?${stringifiedParams}`
+    : `/admin/professor-applications`;
 };
 
 /**
  * @summary Queue: filter by status/subject/date, oldest submissions first by default
  */
 export const adminProfessorApplicationsIndex = async (
+  params?: AdminProfessorApplicationsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminProfessorApplicationsIndexResponse> => {
-  return apiFetch<adminProfessorApplicationsIndexResponse>(getAdminProfessorApplicationsIndexUrl(), {
+  return apiFetch<adminProfessorApplicationsIndexResponse>(getAdminProfessorApplicationsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminProfessorApplicationsIndexQueryKey = () => {
-  return [`/admin/professor-applications`] as const;
+export const getAdminProfessorApplicationsIndexQueryKey = (
+  params?: AdminProfessorApplicationsIndexParams,
+) => {
+  return [`/admin/professor-applications`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminProfessorApplicationsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminProfessorApplicationsIndexParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminProfessorApplicationsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminProfessorApplicationsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>> = ({ signal }) =>
-    adminProfessorApplicationsIndex({ signal, ...requestOptions });
+    adminProfessorApplicationsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
@@ -123,6 +142,7 @@ export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminProfessorApplicationsIndexParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
@@ -143,6 +163,7 @@ export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminProfessorApplicationsIndexParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
@@ -163,6 +184,7 @@ export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminProfessorApplicationsIndexParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
@@ -179,6 +201,7 @@ export function useAdminProfessorApplicationsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminProfessorApplicationsIndexParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof adminProfessorApplicationsIndex>>, TError, TData>
@@ -187,7 +210,7 @@ export function useAdminProfessorApplicationsIndex<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminProfessorApplicationsIndexQueryOptions(options);
+  const queryOptions = getAdminProfessorApplicationsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

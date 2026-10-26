@@ -6,52 +6,93 @@
  */
 import * as zod from "zod";
 
+/**
+ * @summary Review queue (PRD-09 FR-07): versions submitted or decided, oldest submissions first by default
+ */
+export const adminCourseVersionsIndexQueryPageDefault = 1;
+export const adminCourseVersionsIndexQueryPerPageDefault = 15;
+
+export const AdminCourseVersionsIndexQueryParams = zod.object({
+  page: zod.int().default(adminCourseVersionsIndexQueryPageDefault),
+  per_page: zod.int().default(adminCourseVersionsIndexQueryPerPageDefault),
+  "filter[state]": zod.string().optional(),
+  sort: zod.string().optional().describe("`submitted_at` or `reviewed_at`; prefix `-` for newest first."),
+});
+
 export const adminCourseVersionsIndexResponseMetaPerPageMin = 0;
 
 export const adminCourseVersionsIndexResponseMetaTotalMin = 0;
 
 export const AdminCourseVersionsIndexResponse = zod.object({
   data: zod.array(
-    zod.union([
-      zod.object({
+    zod.object({
+      id: zod.string(),
+      number: zod.int(),
+      state: zod.string(),
+      title: zod.string().nullable(),
+      submitted_at: zod.string().nullable(),
+      is_update: zod.boolean(),
+      course: zod.object({
         id: zod.string(),
-        number: zod.int(),
-        state: zod.string(),
+        slug: zod.string(),
+        status: zod.string(),
         title: zod.string().nullable(),
-        submitted_at: zod.string().nullable(),
-        is_update: zod.string(),
-        course: zod.array(zod.unknown()),
-        professor: zod.object({
-          id: zod.string(),
-          display_name: zod.string(),
-          slug: zod.string(),
-          is_verified: zod.boolean(),
-        }),
-        version: zod.array(zod.unknown()),
-        changes: zod
+        category: zod
           .object({
-            added: zod.string(),
-            removed: zod.string(),
-            changed: zod.string(),
+            id: zod.string(),
+            slug: zod.string(),
+            name: zod.string(),
           })
           .nullable(),
-      }),
-      zod.object({
-        id: zod.string(),
-        number: zod.int(),
-        state: zod.string(),
-        title: zod.string().nullable(),
-        submitted_at: zod.string().nullable(),
-        is_update: zod.string(),
-        course: zod.array(zod.unknown()),
-        professor: zod.object({
-          id: zod.string(),
-          display_name: zod.string(),
-          slug: zod.string(),
-          is_verified: zod.boolean(),
+        language: zod.string(),
+        level: zod.string(),
+        audience: zod.array(zod.string()),
+        is_free: zod.boolean(),
+        price: zod
+          .object({
+            amount_minor: zod.int(),
+            currency: zod.string(),
+          })
+          .nullable(),
+        revenue_share_bps: zod.int().nullable(),
+        live_version: zod
+          .object({
+            id: zod.string(),
+            number: zod.int(),
+            title: zod.string().nullable(),
+            approved_at: zod.string().nullable(),
+          })
+          .nullable(),
+        draft_version: zod
+          .object({
+            id: zod.string(),
+            number: zod.int(),
+            state: zod.string(),
+            submitted_at: zod.string().nullable(),
+            review_notes: zod.string().nullable(),
+          })
+          .nullable(),
+        total_duration_seconds: zod.int(),
+        enrollment_count: zod.int(),
+        published_at: zod.string().nullable(),
+        created_at: zod.string(),
+        can: zod.object({
+          start_draft: zod.string(),
+          submit: zod.string(),
+          withdraw: zod.string(),
+          unpublish: zod.string(),
+          republish: zod.string(),
+          archive: zod.string(),
+          delete: zod.string(),
         }),
       }),
-    ]),
+      professor: zod.object({
+        id: zod.string(),
+        display_name: zod.string(),
+        slug: zod.string(),
+        is_verified: zod.boolean(),
+      }),
+    }),
   ),
   links: zod.object({
     first: zod.string().nullable(),
@@ -90,46 +131,170 @@ export const AdminCourseVersionsShowParams = zod.object({
 });
 
 export const AdminCourseVersionsShowResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod.object({
+    id: zod.string(),
+    number: zod.int(),
+    state: zod.string(),
+    title: zod.string().nullable(),
+    submitted_at: zod.string().nullable(),
+    is_update: zod.boolean(),
+    course: zod.object({
       id: zod.string(),
-      number: zod.int(),
-      state: zod.string(),
+      slug: zod.string(),
+      status: zod.string(),
       title: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      is_update: zod.string(),
-      course: zod.array(zod.unknown()),
-      professor: zod.object({
-        id: zod.string(),
-        display_name: zod.string(),
-        slug: zod.string(),
-        is_verified: zod.boolean(),
-      }),
-      version: zod.array(zod.unknown()),
-      changes: zod
+      category: zod
         .object({
-          added: zod.string(),
-          removed: zod.string(),
-          changed: zod.string(),
+          id: zod.string(),
+          slug: zod.string(),
+          name: zod.string(),
         })
         .nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      number: zod.int(),
-      state: zod.string(),
-      title: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      is_update: zod.string(),
-      course: zod.array(zod.unknown()),
-      professor: zod.object({
-        id: zod.string(),
-        display_name: zod.string(),
-        slug: zod.string(),
-        is_verified: zod.boolean(),
+      language: zod.string(),
+      level: zod.string(),
+      audience: zod.array(zod.string()),
+      is_free: zod.boolean(),
+      price: zod
+        .object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        })
+        .nullable(),
+      revenue_share_bps: zod.int().nullable(),
+      live_version: zod
+        .object({
+          id: zod.string(),
+          number: zod.int(),
+          title: zod.string().nullable(),
+          approved_at: zod.string().nullable(),
+        })
+        .nullable(),
+      draft_version: zod
+        .object({
+          id: zod.string(),
+          number: zod.int(),
+          state: zod.string(),
+          submitted_at: zod.string().nullable(),
+          review_notes: zod.string().nullable(),
+        })
+        .nullable(),
+      total_duration_seconds: zod.int(),
+      enrollment_count: zod.int(),
+      published_at: zod.string().nullable(),
+      created_at: zod.string(),
+      can: zod.object({
+        start_draft: zod.string(),
+        submit: zod.string(),
+        withdraw: zod.string(),
+        unpublish: zod.string(),
+        republish: zod.string(),
+        archive: zod.string(),
+        delete: zod.string(),
       }),
     }),
-  ]),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+      slug: zod.string(),
+      is_verified: zod.boolean(),
+    }),
+    version: zod.object({
+      id: zod.string(),
+      course_id: zod.string(),
+      number: zod.int(),
+      state: zod.string(),
+      is_editable: zod.boolean(),
+      title: zod.string().nullable(),
+      subtitle: zod.string().nullable(),
+      description: zod.string().nullable(),
+      outcomes: zod.array(zod.string()),
+      requirements: zod.array(zod.string()),
+      changelog: zod.string().nullable(),
+      cover_url: zod.string().nullable(),
+      submitted_at: zod.string().nullable(),
+      reviewed_at: zod.string().nullable(),
+      review_notes: zod.string().nullable(),
+      sections: zod.array(
+        zod.object({
+          id: zod.string(),
+          title: zod.string(),
+          position: zod.int(),
+          lessons: zod.array(
+            zod.object({
+              id: zod.string(),
+              uid: zod.string(),
+              section_id: zod.string(),
+              type: zod.string(),
+              title: zod.string(),
+              description: zod.string().nullable(),
+              position: zod.int(),
+              is_preview: zod.boolean(),
+              duration_seconds: zod.int().nullable(),
+              is_content_ready: zod.boolean(),
+              media: zod.union([
+                zod.object({
+                  id: zod.string(),
+                  kind: zod.string(),
+                  status: zod.string(),
+                  duration_seconds: zod.int().nullable(),
+                  error: zod.string().nullable(),
+                }),
+                zod.null(),
+              ]),
+              document: zod
+                .object({
+                  name: zod.string(),
+                  size_bytes: zod.int(),
+                })
+                .nullable(),
+              quiz: zod
+                .object({
+                  pass_mark_pct: zod.int(),
+                  time_limit_seconds: zod.int().nullable(),
+                  max_attempts: zod.int().nullable(),
+                  shuffle_questions: zod.boolean(),
+                  questions: zod.array(
+                    zod.object({
+                      id: zod.string(),
+                      type: zod.string(),
+                      prompt: zod.string(),
+                      explanation: zod.string().nullable(),
+                      points: zod.int(),
+                      options: zod.array(
+                        zod.object({
+                          id: zod.string(),
+                          text: zod.string(),
+                          is_correct: zod.boolean(),
+                        }),
+                      ),
+                    }),
+                  ),
+                })
+                .nullable(),
+            }),
+          ),
+        }),
+      ),
+      checklist: zod
+        .object({
+          ready: zod.boolean(),
+          missing: zod.array(zod.string()),
+        })
+        .nullable()
+        .describe("Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere."),
+    }),
+    changes: zod
+      .object({
+        added: zod.array(zod.string()),
+        removed: zod.array(zod.string()),
+        changed: zod.array(zod.string()),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.string(),
+      reject: zod.string(),
+    }),
+  }),
 });
 
 export const AdminCourseVersionsApproveParams = zod.object({
@@ -148,46 +313,170 @@ export const AdminCourseVersionsApproveBody = zod
   );
 
 export const AdminCourseVersionsApproveResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod.object({
+    id: zod.string(),
+    number: zod.int(),
+    state: zod.string(),
+    title: zod.string().nullable(),
+    submitted_at: zod.string().nullable(),
+    is_update: zod.boolean(),
+    course: zod.object({
       id: zod.string(),
-      number: zod.int(),
-      state: zod.string(),
+      slug: zod.string(),
+      status: zod.string(),
       title: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      is_update: zod.string(),
-      course: zod.array(zod.unknown()),
-      professor: zod.object({
-        id: zod.string(),
-        display_name: zod.string(),
-        slug: zod.string(),
-        is_verified: zod.boolean(),
-      }),
-      version: zod.array(zod.unknown()),
-      changes: zod
+      category: zod
         .object({
-          added: zod.string(),
-          removed: zod.string(),
-          changed: zod.string(),
+          id: zod.string(),
+          slug: zod.string(),
+          name: zod.string(),
         })
         .nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      number: zod.int(),
-      state: zod.string(),
-      title: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      is_update: zod.string(),
-      course: zod.array(zod.unknown()),
-      professor: zod.object({
-        id: zod.string(),
-        display_name: zod.string(),
-        slug: zod.string(),
-        is_verified: zod.boolean(),
+      language: zod.string(),
+      level: zod.string(),
+      audience: zod.array(zod.string()),
+      is_free: zod.boolean(),
+      price: zod
+        .object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        })
+        .nullable(),
+      revenue_share_bps: zod.int().nullable(),
+      live_version: zod
+        .object({
+          id: zod.string(),
+          number: zod.int(),
+          title: zod.string().nullable(),
+          approved_at: zod.string().nullable(),
+        })
+        .nullable(),
+      draft_version: zod
+        .object({
+          id: zod.string(),
+          number: zod.int(),
+          state: zod.string(),
+          submitted_at: zod.string().nullable(),
+          review_notes: zod.string().nullable(),
+        })
+        .nullable(),
+      total_duration_seconds: zod.int(),
+      enrollment_count: zod.int(),
+      published_at: zod.string().nullable(),
+      created_at: zod.string(),
+      can: zod.object({
+        start_draft: zod.string(),
+        submit: zod.string(),
+        withdraw: zod.string(),
+        unpublish: zod.string(),
+        republish: zod.string(),
+        archive: zod.string(),
+        delete: zod.string(),
       }),
     }),
-  ]),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+      slug: zod.string(),
+      is_verified: zod.boolean(),
+    }),
+    version: zod.object({
+      id: zod.string(),
+      course_id: zod.string(),
+      number: zod.int(),
+      state: zod.string(),
+      is_editable: zod.boolean(),
+      title: zod.string().nullable(),
+      subtitle: zod.string().nullable(),
+      description: zod.string().nullable(),
+      outcomes: zod.array(zod.string()),
+      requirements: zod.array(zod.string()),
+      changelog: zod.string().nullable(),
+      cover_url: zod.string().nullable(),
+      submitted_at: zod.string().nullable(),
+      reviewed_at: zod.string().nullable(),
+      review_notes: zod.string().nullable(),
+      sections: zod.array(
+        zod.object({
+          id: zod.string(),
+          title: zod.string(),
+          position: zod.int(),
+          lessons: zod.array(
+            zod.object({
+              id: zod.string(),
+              uid: zod.string(),
+              section_id: zod.string(),
+              type: zod.string(),
+              title: zod.string(),
+              description: zod.string().nullable(),
+              position: zod.int(),
+              is_preview: zod.boolean(),
+              duration_seconds: zod.int().nullable(),
+              is_content_ready: zod.boolean(),
+              media: zod.union([
+                zod.object({
+                  id: zod.string(),
+                  kind: zod.string(),
+                  status: zod.string(),
+                  duration_seconds: zod.int().nullable(),
+                  error: zod.string().nullable(),
+                }),
+                zod.null(),
+              ]),
+              document: zod
+                .object({
+                  name: zod.string(),
+                  size_bytes: zod.int(),
+                })
+                .nullable(),
+              quiz: zod
+                .object({
+                  pass_mark_pct: zod.int(),
+                  time_limit_seconds: zod.int().nullable(),
+                  max_attempts: zod.int().nullable(),
+                  shuffle_questions: zod.boolean(),
+                  questions: zod.array(
+                    zod.object({
+                      id: zod.string(),
+                      type: zod.string(),
+                      prompt: zod.string(),
+                      explanation: zod.string().nullable(),
+                      points: zod.int(),
+                      options: zod.array(
+                        zod.object({
+                          id: zod.string(),
+                          text: zod.string(),
+                          is_correct: zod.boolean(),
+                        }),
+                      ),
+                    }),
+                  ),
+                })
+                .nullable(),
+            }),
+          ),
+        }),
+      ),
+      checklist: zod
+        .object({
+          ready: zod.boolean(),
+          missing: zod.array(zod.string()),
+        })
+        .nullable()
+        .describe("Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere."),
+    }),
+    changes: zod
+      .object({
+        added: zod.array(zod.string()),
+        removed: zod.array(zod.string()),
+        changed: zod.array(zod.string()),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.string(),
+      reject: zod.string(),
+    }),
+  }),
 });
 
 export const AdminCourseVersionsRejectParams = zod.object({
@@ -206,44 +495,168 @@ export const AdminCourseVersionsRejectBody = zod
   );
 
 export const AdminCourseVersionsRejectResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod.object({
+    id: zod.string(),
+    number: zod.int(),
+    state: zod.string(),
+    title: zod.string().nullable(),
+    submitted_at: zod.string().nullable(),
+    is_update: zod.boolean(),
+    course: zod.object({
       id: zod.string(),
-      number: zod.int(),
-      state: zod.string(),
+      slug: zod.string(),
+      status: zod.string(),
       title: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      is_update: zod.string(),
-      course: zod.array(zod.unknown()),
-      professor: zod.object({
-        id: zod.string(),
-        display_name: zod.string(),
-        slug: zod.string(),
-        is_verified: zod.boolean(),
-      }),
-      version: zod.array(zod.unknown()),
-      changes: zod
+      category: zod
         .object({
-          added: zod.string(),
-          removed: zod.string(),
-          changed: zod.string(),
+          id: zod.string(),
+          slug: zod.string(),
+          name: zod.string(),
         })
         .nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      number: zod.int(),
-      state: zod.string(),
-      title: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      is_update: zod.string(),
-      course: zod.array(zod.unknown()),
-      professor: zod.object({
-        id: zod.string(),
-        display_name: zod.string(),
-        slug: zod.string(),
-        is_verified: zod.boolean(),
+      language: zod.string(),
+      level: zod.string(),
+      audience: zod.array(zod.string()),
+      is_free: zod.boolean(),
+      price: zod
+        .object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        })
+        .nullable(),
+      revenue_share_bps: zod.int().nullable(),
+      live_version: zod
+        .object({
+          id: zod.string(),
+          number: zod.int(),
+          title: zod.string().nullable(),
+          approved_at: zod.string().nullable(),
+        })
+        .nullable(),
+      draft_version: zod
+        .object({
+          id: zod.string(),
+          number: zod.int(),
+          state: zod.string(),
+          submitted_at: zod.string().nullable(),
+          review_notes: zod.string().nullable(),
+        })
+        .nullable(),
+      total_duration_seconds: zod.int(),
+      enrollment_count: zod.int(),
+      published_at: zod.string().nullable(),
+      created_at: zod.string(),
+      can: zod.object({
+        start_draft: zod.string(),
+        submit: zod.string(),
+        withdraw: zod.string(),
+        unpublish: zod.string(),
+        republish: zod.string(),
+        archive: zod.string(),
+        delete: zod.string(),
       }),
     }),
-  ]),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+      slug: zod.string(),
+      is_verified: zod.boolean(),
+    }),
+    version: zod.object({
+      id: zod.string(),
+      course_id: zod.string(),
+      number: zod.int(),
+      state: zod.string(),
+      is_editable: zod.boolean(),
+      title: zod.string().nullable(),
+      subtitle: zod.string().nullable(),
+      description: zod.string().nullable(),
+      outcomes: zod.array(zod.string()),
+      requirements: zod.array(zod.string()),
+      changelog: zod.string().nullable(),
+      cover_url: zod.string().nullable(),
+      submitted_at: zod.string().nullable(),
+      reviewed_at: zod.string().nullable(),
+      review_notes: zod.string().nullable(),
+      sections: zod.array(
+        zod.object({
+          id: zod.string(),
+          title: zod.string(),
+          position: zod.int(),
+          lessons: zod.array(
+            zod.object({
+              id: zod.string(),
+              uid: zod.string(),
+              section_id: zod.string(),
+              type: zod.string(),
+              title: zod.string(),
+              description: zod.string().nullable(),
+              position: zod.int(),
+              is_preview: zod.boolean(),
+              duration_seconds: zod.int().nullable(),
+              is_content_ready: zod.boolean(),
+              media: zod.union([
+                zod.object({
+                  id: zod.string(),
+                  kind: zod.string(),
+                  status: zod.string(),
+                  duration_seconds: zod.int().nullable(),
+                  error: zod.string().nullable(),
+                }),
+                zod.null(),
+              ]),
+              document: zod
+                .object({
+                  name: zod.string(),
+                  size_bytes: zod.int(),
+                })
+                .nullable(),
+              quiz: zod
+                .object({
+                  pass_mark_pct: zod.int(),
+                  time_limit_seconds: zod.int().nullable(),
+                  max_attempts: zod.int().nullable(),
+                  shuffle_questions: zod.boolean(),
+                  questions: zod.array(
+                    zod.object({
+                      id: zod.string(),
+                      type: zod.string(),
+                      prompt: zod.string(),
+                      explanation: zod.string().nullable(),
+                      points: zod.int(),
+                      options: zod.array(
+                        zod.object({
+                          id: zod.string(),
+                          text: zod.string(),
+                          is_correct: zod.boolean(),
+                        }),
+                      ),
+                    }),
+                  ),
+                })
+                .nullable(),
+            }),
+          ),
+        }),
+      ),
+      checklist: zod
+        .object({
+          ready: zod.boolean(),
+          missing: zod.array(zod.string()),
+        })
+        .nullable()
+        .describe("Only on the builder's GET (the submit checklist, PRD-03 FR-10); null elsewhere."),
+    }),
+    changes: zod
+      .object({
+        added: zod.array(zod.string()),
+        removed: zod.array(zod.string()),
+        changed: zod.array(zod.string()),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.string(),
+      reject: zod.string(),
+    }),
+  }),
 });

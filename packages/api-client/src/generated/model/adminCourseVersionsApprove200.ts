@@ -4,8 +4,8 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { AdminCourseVersionResource } from "./adminCourseVersionResource";
+import type { AdminCourseVersionDetailResource } from "./adminCourseVersionDetailResource";
 
 export type AdminCourseVersionsApprove200 = {
-  data: AdminCourseVersionResource;
+  data: AdminCourseVersionDetailResource;
 };

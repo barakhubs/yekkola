@@ -45,6 +45,8 @@ it('filters the queue by status', function () {
 
     $this->getJson('/api/v1/admin/professor-applications?filter[status]=approved')->assertOk()->assertJsonCount(0, 'data');
     $this->getJson('/api/v1/admin/professor-applications?filter[status]=submitted')->assertOk()->assertJsonCount(1, 'data');
+    $this->application->update(['status' => ApplicationStatus::UnderReview]);
+    $this->getJson('/api/v1/admin/professor-applications?filter[status]=submitted,under_review')->assertOk()->assertJsonCount(1, 'data');
 });
 
 it('approves: creates the profile and professor role, audited', function () {
@@ -106,6 +108,22 @@ it('forbids staff from deciding on their own application', function () {
     $this->postJson("/api/v1/admin/professor-applications/{$this->application->id}/approve")
         ->assertForbidden()
         ->assertJsonPath('code', 'application.own_application');
+});
+
+it('tells staff which decisions apply', function () {
+    $staff = actingAsStaff();
+    $can = fn () => $this->getJson("/api/v1/admin/professor-applications/{$this->application->id}")->json('data.can');
+
+    expect($can())->toBe(['start_review' => true, 'decide' => true]);
+
+    $this->postJson("/api/v1/admin/professor-applications/{$this->application->id}/start-review")->assertOk();
+    expect($can())->toBe(['start_review' => false, 'decide' => true]);
+
+    $this->postJson("/api/v1/admin/professor-applications/{$this->application->id}/reject", ['note' => 'Dossier incomplet.'])->assertOk();
+    expect($can())->toBe(['start_review' => false, 'decide' => false]);
+
+    $this->application->update(['status' => ApplicationStatus::Submitted, 'user_id' => $staff->id]);
+    expect($can())->toBe(['start_review' => false, 'decide' => false]); // never their own
 });
 
 it('hides drafts from staff', function () {

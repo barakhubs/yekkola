@@ -17,21 +17,12 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  */
 final class ProfessorApplicationResource extends JsonResource
 {
-    private bool $forStaff = false;
-
-    public function forStaff(): self
-    {
-        $this->forStaff = true;
-
-        return $this;
-    }
-
     /**
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
-        $data = [
+        return [
             'id' => $this->id,
             'status' => $this->status->value,
             'full_name' => $this->full_name,
@@ -56,22 +47,5 @@ final class ProfessorApplicationResource extends JsonResource
             'decided_at' => $this->decided_at?->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
         ];
-
-        if (! $this->forStaff) {
-            return $data;
-        }
-
-        return array_merge($data, [
-            'applicant' => [
-                'id' => $this->user_id,
-                'name' => $this->user?->name,
-                'phone' => $this->user?->maskedPhone(),
-                'anonymised' => $this->user?->isAnonymised() ?? true,
-            ],
-            'decision_note' => $this->decision_note,
-            'reviewer_id' => $this->reviewer_id,
-            'review_started_at' => $this->review_started_at?->toIso8601String(),
-            'terms_version' => $this->terms_version,
-        ]);
     }
 }

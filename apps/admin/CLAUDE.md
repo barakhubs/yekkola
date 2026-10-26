@@ -22,3 +22,7 @@ For admins, moderators, and finance staff. Requirements: `docs/prd/09-back-offic
 - Locale routing: next-intl with `localePrefix: "as-needed"` — French at `/`, English at `/en`; `src/proxy.ts` (Next 16 middleware) negotiates it. Use `Link`/`redirect`/`useRouter` from `@/i18n/navigation`.
 - Every layout and page that renders text calls `setRequestLocale(locale)` so pages stay static.
 - Providers (`src/lib/providers.tsx`): TanStack Query (no retries on 4xx), nuqs, API client locale.
+- Sign-in (`/login`, `features/auth`): phone + SMS code like everyone (PRD-01), Turnstile (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, empty locally), back to `?next=`. `ConsoleShell` (`features/shell`) guards `(console)`: visitors → `/login?next=`; signed-in non-staff (`/me` `is_staff` false) see why and can sign out.
+- Navigation and actions follow the API: sidebar items need the permission their routes require (`useSession().can(…)` from `/me` `permissions`); detail screens render decisions from the resource's `can` (e.g. `can.decide`, `can.approve`), never from status rules in the UI.
+- Lists: `DataTable` from `@yekkola/ui/blocks/data-table` with `dataTableColumns<Row>().columns([...])`; page, filters and `sort` (`-field` for descending) in the URL via nuqs.
+- Screens so far: home queues (`/`), professor applications (`/applications`, `/applications/[id]`), course reviews (`/moderation/courses`, `/moderation/courses/[id]`).

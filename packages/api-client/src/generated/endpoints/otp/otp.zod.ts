@@ -89,6 +89,12 @@ export const AuthOtpVerifyResponse = zod.object({
       city: zod.string().nullable(),
       status: zod.string(),
       roles: zod.array(zod.string()),
+      is_staff: zod
+        .boolean()
+        .describe(
+          "What the back office may show (it hides what the API would refuse; the API still checks).",
+        ),
+      permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       created_at: zod.string(),
     }),

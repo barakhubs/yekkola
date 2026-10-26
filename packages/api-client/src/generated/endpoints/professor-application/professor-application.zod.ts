@@ -9,6 +9,24 @@ import * as zod from "zod";
 /**
  * @summary Queue: filter by status/subject/date, oldest submissions first by default
  */
+export const adminProfessorApplicationsIndexQueryPageDefault = 1;
+export const adminProfessorApplicationsIndexQueryPerPageDefault = 15;
+
+export const AdminProfessorApplicationsIndexQueryParams = zod.object({
+  page: zod.int().default(adminProfessorApplicationsIndexQueryPageDefault),
+  per_page: zod.int().default(adminProfessorApplicationsIndexQueryPerPageDefault),
+  "filter[status]": zod
+    .string()
+    .optional()
+    .describe("One status or several, comma-separated (e.g. `submitted,under_review`)."),
+  "filter[subject]": zod.string().optional(),
+  "filter[submitted_from]": zod.iso.date().optional(),
+  "filter[submitted_to]": zod.iso.date().optional(),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`submitted_at`, `decided_at` or `created_at`; prefix `-` for newest first."),
+});
 
 export const adminProfessorApplicationsIndexResponseMetaPerPageMin = 0;
 
@@ -16,8 +34,8 @@ export const adminProfessorApplicationsIndexResponseMetaTotalMin = 0;
 
 export const AdminProfessorApplicationsIndexResponse = zod.object({
   data: zod.array(
-    zod.union([
-      zod.object({
+    zod
+      .object({
         id: zod.string(),
         status: zod.string(),
         full_name: zod.string().nullable(),
@@ -35,7 +53,6 @@ export const AdminProfessorApplicationsIndexResponse = zod.object({
             name: zod.string(),
           }),
           zod.null(),
-          zod.looseObject({}),
         ]),
         credential_files: zod.array(
           zod.object({
@@ -60,43 +77,12 @@ export const AdminProfessorApplicationsIndexResponse = zod.object({
         reviewer_id: zod.string().nullable(),
         review_started_at: zod.string().nullable(),
         terms_version: zod.string().nullable(),
-      }),
-      zod.object({
-        id: zod.string(),
-        status: zod.string(),
-        full_name: zod.string().nullable(),
-        subjects: zod.array(zod.string()),
-        levels: zod.array(zod.string()),
-        years_experience: zod.int().nullable(),
-        institutions: zod.string().nullable(),
-        credentials: zod.string().nullable(),
-        sample_url: zod.string().nullable(),
-        motivation: zod.string().nullable(),
-        province: zod.union([
-          zod.object({
-            id: zod.string(),
-            code: zod.string(),
-            name: zod.string(),
-          }),
-          zod.null(),
-          zod.looseObject({}),
-        ]),
-        credential_files: zod.array(
-          zod.object({
-            id: zod.string().nullable(),
-            name: zod.string(),
-            mime_type: zod.string().nullable(),
-            size: zod.int(),
-          }),
-        ),
-        is_editable: zod.boolean(),
-        info_request_note: zod.string().nullable(),
-        decision_note: zod.string().nullable(),
-        submitted_at: zod.string().nullable(),
-        decided_at: zod.string().nullable(),
-        created_at: zod.string(),
-      }),
-    ]),
+        can: zod.object({
+          start_review: zod.string(),
+          decide: zod.string(),
+        }),
+      })
+      .and(zod.looseObject({})),
   ),
   links: zod.object({
     first: zod.string().nullable(),
@@ -135,8 +121,8 @@ export const AdminProfessorApplicationsShowParams = zod.object({
 });
 
 export const AdminProfessorApplicationsShowResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -154,7 +140,6 @@ export const AdminProfessorApplicationsShowResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -179,43 +164,12 @@ export const AdminProfessorApplicationsShowResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
+    })
+    .and(zod.looseObject({})),
 });
 
 export const AdminProfessorApplicationsStartReviewParams = zod.object({
@@ -223,8 +177,8 @@ export const AdminProfessorApplicationsStartReviewParams = zod.object({
 });
 
 export const AdminProfessorApplicationsStartReviewResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -242,7 +196,6 @@ export const AdminProfessorApplicationsStartReviewResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -267,43 +220,12 @@ export const AdminProfessorApplicationsStartReviewResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
+    })
+    .and(zod.looseObject({})),
 });
 
 export const AdminProfessorApplicationsApproveParams = zod.object({
@@ -432,8 +354,8 @@ export const AdminProfessorApplicationsRejectBody = zod
   );
 
 export const AdminProfessorApplicationsRejectResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -451,7 +373,6 @@ export const AdminProfessorApplicationsRejectResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -476,43 +397,12 @@ export const AdminProfessorApplicationsRejectResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
+    })
+    .and(zod.looseObject({})),
 });
 
 export const AdminProfessorApplicationsRequestInfoParams = zod.object({
@@ -534,8 +424,8 @@ export const AdminProfessorApplicationsRequestInfoBody = zod
   );
 
 export const AdminProfessorApplicationsRequestInfoResponse = zod.object({
-  data: zod.union([
-    zod.object({
+  data: zod
+    .object({
       id: zod.string(),
       status: zod.string(),
       full_name: zod.string().nullable(),
@@ -553,7 +443,6 @@ export const AdminProfessorApplicationsRequestInfoResponse = zod.object({
           name: zod.string(),
         }),
         zod.null(),
-        zod.looseObject({}),
       ]),
       credential_files: zod.array(
         zod.object({
@@ -578,43 +467,12 @@ export const AdminProfessorApplicationsRequestInfoResponse = zod.object({
       reviewer_id: zod.string().nullable(),
       review_started_at: zod.string().nullable(),
       terms_version: zod.string().nullable(),
-    }),
-    zod.object({
-      id: zod.string(),
-      status: zod.string(),
-      full_name: zod.string().nullable(),
-      subjects: zod.array(zod.string()),
-      levels: zod.array(zod.string()),
-      years_experience: zod.int().nullable(),
-      institutions: zod.string().nullable(),
-      credentials: zod.string().nullable(),
-      sample_url: zod.string().nullable(),
-      motivation: zod.string().nullable(),
-      province: zod.union([
-        zod.object({
-          id: zod.string(),
-          code: zod.string(),
-          name: zod.string(),
-        }),
-        zod.null(),
-        zod.looseObject({}),
-      ]),
-      credential_files: zod.array(
-        zod.object({
-          id: zod.string().nullable(),
-          name: zod.string(),
-          mime_type: zod.string().nullable(),
-          size: zod.int(),
-        }),
-      ),
-      is_editable: zod.boolean(),
-      info_request_note: zod.string().nullable(),
-      decision_note: zod.string().nullable(),
-      submitted_at: zod.string().nullable(),
-      decided_at: zod.string().nullable(),
-      created_at: zod.string(),
-    }),
-  ]),
+      can: zod.object({
+        start_review: zod.string(),
+        decide: zod.string(),
+      }),
+    })
+    .and(zod.looseObject({})),
 });
 
 /**
