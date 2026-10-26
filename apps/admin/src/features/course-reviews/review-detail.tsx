@@ -44,7 +44,8 @@ export function ReviewDetail({ id }: { id: string }) {
   const decide = useMutation({
     mutationFn: async ({ approve, note }: { approve: boolean; note: string }) =>
       approve ? adminCourseVersionsApprove(id, { note }) : adminCourseVersionsReject(id, { note }),
-    onSuccess: () =>
+    // Refused too (e.g. already decided by someone else): read it again so state and actions are current.
+    onSettled: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: getAdminCourseVersionsShowQueryKey(id) }),
         queryClient.invalidateQueries({ queryKey: getAdminCourseVersionsIndexQueryKey() }),
@@ -127,6 +128,10 @@ export function ReviewDetail({ id }: { id: string }) {
                 onConfirm={async () => {
                   await decide.mutateAsync({ approve: true, note: "" });
                 }}
+                error={decide.isError && decide.variables?.approve ? errorText(decide.error) : undefined}
+                onOpenChange={(open) => {
+                  if (open) decide.reset();
+                }}
               />
             ) : null}
             {r.can.reject ? (
@@ -141,16 +146,17 @@ export function ReviewDetail({ id }: { id: string }) {
                 onConfirm={async (note) => {
                   await decide.mutateAsync({ approve: false, note });
                 }}
+                error={
+                  decide.isError && decide.variables?.approve === false ? errorText(decide.error) : undefined
+                }
+                onOpenChange={(open) => {
+                  if (open) decide.reset();
+                }}
               />
             ) : null}
           </div>
           {r.can.reject && !r.can.approve ? (
             <p className="text-sm text-muted-foreground">{t("approvePaused")}</p>
-          ) : null}
-          {decide.isError ? (
-            <p role="alert" className="text-sm text-destructive">
-              {errorText(decide.error)}
-            </p>
           ) : null}
         </section>
       ) : v.review_notes ? (

@@ -701,7 +701,8 @@
         "infoRequest": "Compléments demandés",
         "decisionNote": "Note de décision",
         "decided": "Décidée le"
-      }
+      },
+      "pendingStatuses": "À décider (en attente ou en cours)"
     },
     "reviews": {
       "title": "Relecture des cours",
@@ -790,6 +791,8 @@
       "correct": "Bonne réponse",
       "incorrect": "Mauvaise réponse",
       "explanation": "Explication : {text}"
-    }
+    },
+    "suspendedTitle": "Votre compte est suspendu",
+    "suspendedBody": "Le back office n’est pas accessible pendant une suspension. Contactez un administrateur."
   }
 }

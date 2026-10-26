@@ -71,8 +71,8 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
       <div className="mx-auto max-w-xl px-4 py-16">
         <EmptyState
           icon={<ShieldAlert />}
-          title={t("notStaffTitle")}
-          description={t("notStaffBody")}
+          title={session.user.is_staff ? t("suspendedTitle") : t("notStaffTitle")}
+          description={session.user.is_staff ? t("suspendedBody") : t("notStaffBody")}
           action={
             <Button variant="outline" onClick={() => signOut.mutate()} disabled={signOut.isPending}>
               {t("auth.signOut")}

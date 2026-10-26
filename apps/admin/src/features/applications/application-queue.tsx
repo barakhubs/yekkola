@@ -13,7 +13,12 @@ import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 
 import { useErrorText } from "@/features/common/errors";
 import { selectClass } from "@/features/common/styles";
-import { APPLICATION_STATUSES, APPLICATION_TONES, applicationStatusOf } from "@/features/common/status";
+import {
+  APPLICATION_STATUSES,
+  APPLICATION_TONES,
+  applicationStatusOf,
+  PENDING_STATUSES,
+} from "@/features/common/status";
 import { Link } from "@/i18n/navigation";
 
 const col = dataTableColumns<AdminProfessorApplicationResource>();
@@ -32,7 +37,8 @@ export function ApplicationQueue() {
   const table = useTranslations("admin.table");
   const locale = useLocale() as Locale;
   const errorText = useErrorText();
-  const [status, setStatus] = useQueryState("status", parseAsString.withDefault("submitted"));
+  // "pending" = not decided yet: waiting, or taken on by a reviewer (PRD-09 FR-01).
+  const [status, setStatus] = useQueryState("status", parseAsString.withDefault("pending"));
   const [sort, setSort] = useQueryState("sort", parseAsString);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
@@ -40,7 +46,7 @@ export function ApplicationQueue() {
     {
       page,
       per_page: 25,
-      ...(status === "all" ? {} : { "filter[status]": status }),
+      ...(status === "all" ? {} : { "filter[status]": status === "pending" ? PENDING_STATUSES : status }),
       ...(sort ? { sort } : {}),
     },
     { query: { select: (r) => success(r), placeholderData: (previous) => previous } },
@@ -105,6 +111,7 @@ export function ApplicationQueue() {
             void setPage(1);
           }}
         >
+          <option value="pending">{t("pendingStatuses")}</option>
           <option value="all">{t("allStatuses")}</option>
           {APPLICATION_STATUSES.map((value) => (
             <option key={value} value={value}>

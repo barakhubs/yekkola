@@ -701,7 +701,8 @@
         "infoRequest": "Information requested",
         "decisionNote": "Decision note",
         "decided": "Decided"
-      }
+      },
+      "pendingStatuses": "To decide (waiting or under review)"
     },
     "reviews": {
       "title": "Course reviews",
@@ -790,6 +791,8 @@
       "correct": "Right answer",
       "incorrect": "Wrong answer",
       "explanation": "Explanation: {text}"
-    }
+    },
+    "suspendedTitle": "Your account is suspended",
+    "suspendedBody": "The back office isn’t available while an account is suspended. Contact an administrator."
   }
 }

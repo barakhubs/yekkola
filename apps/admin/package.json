@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start --port 3001",
     "lint": "eslint .",
+    "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
     "@yekkola/config": "workspace:*",
     "eslint": "^9.39.5",
     "tailwindcss": "^4.3.3",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.12"
   }
 }

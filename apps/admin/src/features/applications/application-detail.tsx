@@ -48,7 +48,7 @@ export function ApplicationDetail({ id }: { id: string }) {
 
   const startReview = useMutation({
     mutationFn: () => adminProfessorApplicationsStartReview(id),
-    onSuccess: refresh,
+    onSettled: refresh,
   });
   const decide = useMutation({
     mutationFn: async ({ decision, note }: { decision: Decision; note: string }) => {
@@ -58,7 +58,8 @@ export function ApplicationDetail({ id }: { id: string }) {
       if (decision === "reject") return adminProfessorApplicationsReject(id, body);
       return adminProfessorApplicationsRequestInfo(id, body);
     },
-    onSuccess: refresh,
+    // Refused too (e.g. another reviewer decided first): read it again so status and actions are current.
+    onSettled: refresh,
   });
 
   if (application.isPending) {
@@ -86,6 +87,15 @@ export function ApplicationDetail({ id }: { id: string }) {
   const confirm = (decision: Decision) => async (note: string) => {
     await decide.mutateAsync({ decision, note });
   };
+  // Each dialog shows its own failure, inside the dialog (the page behind it is hidden from view and from
+  // screen readers while it is open); reopening starts clean.
+  const dialogProps = (decision: Decision) => ({
+    onConfirm: confirm(decision),
+    error: decide.isError && decide.variables?.decision === decision ? errorText(decide.error) : undefined,
+    onOpenChange: (open: boolean) => {
+      if (open) decide.reset();
+    },
+  });
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 sm:px-6">
@@ -135,7 +145,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                   description={t("approveHint")}
                   confirmLabel={t("approve")}
                   cancelLabel={common("cancel")}
-                  onConfirm={confirm("approve")}
+                  {...dialogProps("approve")}
                 />
                 <ConfirmDialog
                   trigger={<Button variant="outline">{t("requestInfo")}</Button>}
@@ -144,7 +154,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                   reason={{ label: t("noteToApplicant"), minLength: 3 }}
                   confirmLabel={t("requestInfo")}
                   cancelLabel={common("cancel")}
-                  onConfirm={confirm("request_info")}
+                  {...dialogProps("request_info")}
                 />
                 <ConfirmDialog
                   trigger={<Button variant="destructive">{t("reject")}</Button>}
@@ -154,14 +164,14 @@ export function ApplicationDetail({ id }: { id: string }) {
                   confirmLabel={t("reject")}
                   cancelLabel={common("cancel")}
                   destructive
-                  onConfirm={confirm("reject")}
+                  {...dialogProps("reject")}
                 />
               </>
             ) : null}
           </div>
-          {startReview.isError || decide.isError ? (
+          {startReview.isError ? (
             <p role="alert" className="text-sm text-destructive">
-              {errorText(startReview.error ?? decide.error)}
+              {errorText(startReview.error)}
             </p>
           ) : null}
         </section>

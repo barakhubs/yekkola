@@ -12,6 +12,9 @@ export const APPLICATION_TONES: Record<ApplicationStatus, StatusTone> = {
   expired: "neutral",
 };
 
+/** Not decided yet: waiting, or taken on by a reviewer (the API's `filter[status]` takes a comma list). */
+export const PENDING_STATUSES = "submitted,under_review";
+
 export const APPLICATION_STATUSES = Object.keys(APPLICATION_TONES) as ApplicationStatus[];
 
 export function applicationStatusOf(status: string): ApplicationStatus {

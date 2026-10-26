@@ -15,16 +15,12 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 
+import { safeNext } from "./safe-next";
 import { useSession } from "./session";
 import { Turnstile, type TurnstileHandle } from "./turnstile";
 
 /** Codes after which this challenge can't succeed: offer a new code straight away. */
 const DEAD_CHALLENGE = new Set(["otp.expired", "otp.too_many_attempts"]);
-
-/** Same-site paths only, never back to the sign-in page itself. */
-function safeNext(next: string | null): string {
-  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/";
-}
 
 function displayPhone(raw: string): string {
   const digits = raw.replace(/\D/g, "");

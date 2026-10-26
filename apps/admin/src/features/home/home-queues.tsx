@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { useSession } from "@/features/auth/session";
+import { PENDING_STATUSES } from "@/features/common/status";
 import { Link } from "@/i18n/navigation";
 
 /**
@@ -22,7 +23,7 @@ export function HomeQueues() {
   const canReview = session.can("moderation.review");
 
   const applications = useAdminProfessorApplicationsIndex(
-    { per_page: 1, "filter[status]": "submitted" },
+    { per_page: 1, "filter[status]": PENDING_STATUSES },
     { query: { enabled: canReview, select: (r) => success(r).meta.total } },
   );
   const versions = useAdminCourseVersionsIndex(
@@ -40,7 +41,7 @@ export function HomeQueues() {
           </h2>
           <ul className="grid gap-3 sm:grid-cols-2">
             <QueueCard
-              href="/applications?status=submitted"
+              href="/applications?status=pending"
               icon={<GraduationCap aria-hidden className="size-5" />}
               label={t("pendingApplications")}
               count={applications.data}
