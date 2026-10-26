@@ -8,8 +8,13 @@
 export type AdminProfessorApplicationsIndexParams = {
   page?: number;
   per_page?: number;
+  /**
+   * One status or several, comma-separated (e.g. `submitted,under_review`).
+   */
   "filter[status]"?: string;
   "filter[subject]"?: string;
+  "filter[submitted_from]"?: string;
+  "filter[submitted_to]"?: string;
   /**
    * `submitted_at`, `decided_at` or `created_at`; prefix `-` for newest first.
    */

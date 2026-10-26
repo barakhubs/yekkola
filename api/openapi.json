@@ -6543,6 +6543,7 @@
                     {
                         "name": "filter[status]",
                         "in": "query",
+                        "description": "One status or several, comma-separated (e.g. `submitted,under_review`).",
                         "schema": {
                             "type": "string"
                         }
@@ -6552,6 +6553,22 @@
                         "in": "query",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[submitted_from]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "filter[submitted_to]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
                         }
                     },
                     {

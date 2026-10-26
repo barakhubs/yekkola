@@ -15,8 +15,13 @@ export const adminProfessorApplicationsIndexQueryPerPageDefault = 15;
 export const AdminProfessorApplicationsIndexQueryParams = zod.object({
   page: zod.int().default(adminProfessorApplicationsIndexQueryPageDefault),
   per_page: zod.int().default(adminProfessorApplicationsIndexQueryPerPageDefault),
-  "filter[status]": zod.string().optional(),
+  "filter[status]": zod
+    .string()
+    .optional()
+    .describe("One status or several, comma-separated (e.g. `submitted,under_review`)."),
   "filter[subject]": zod.string().optional(),
+  "filter[submitted_from]": zod.iso.date().optional(),
+  "filter[submitted_to]": zod.iso.date().optional(),
   sort: zod
     .string()
     .optional()

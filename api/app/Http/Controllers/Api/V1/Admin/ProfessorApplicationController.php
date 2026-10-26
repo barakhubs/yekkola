@@ -30,8 +30,10 @@ final class ProfessorApplicationController extends Controller
      */
     #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
     #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
-    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: 'One status or several, comma-separated (e.g. `submitted,under_review`).', type: 'string')]
     #[\Dedoc\Scramble\Attributes\QueryParameter('filter[subject]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[submitted_from]', type: 'string', format: 'date')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[submitted_to]', type: 'string', format: 'date')]
     #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`submitted_at`, `decided_at` or `created_at`; prefix `-` for newest first.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
