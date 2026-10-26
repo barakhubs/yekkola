@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-10-25
+> Last updated: 2026-10-26
 
 ## Now
 
-- **Current branch:** `feature/prd-03-web-studio` (web milestone 1 step 7, PR #22 open — waiting for merge)
-- **Next up:** minimal back office (2.2) — web milestone 1 step 8
+- **Current branch:** `feature/prd-09-admin-review` (web milestone 1 step 8: minimal back office)
+- **Next up:** after milestone 1 — the rest of Phase 2 (student account, studio onboarding, back office)
 
 ## Legend
 
@@ -316,12 +316,15 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 ### 2.2 Back office (apps/admin) — PRD-09 (before the student web app)
 
-- [ ] App shell: auth, sidebar, command palette, locale switch
+- [x] App shell: staff sign-in, sidebar by permission, locale switch, sign-out, shared `DataTable` — #PR
+- [ ] Command palette (search users / courses / orders by ID or phone) and breadcrumbs
 - [ ] Dashboard (KPIs, charts, attention queues)
 - [ ] Users (list, detail, actions)
-- [ ] Professor applications queue + decision
+- [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #PR
 - [ ] Professors + KYC viewer
-- [ ] Content review screen (diff, preview, approve/reject)
+- [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #PR
+- [ ] Lesson preview with the player in the review screen (needs an admin playback/document endpoint)
+- [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [ ] Courses, categories (tree + ordering), featured
 - [ ] Moderation (reports, reviews, Q&A)
 - [ ] Orders, payments (timeline, recheck), refunds

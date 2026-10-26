@@ -337,7 +337,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /auth/otp/request | Send OTP to phone |
 | POST | /auth/otp/verify | Verify OTP → `{user, is_new_user, token, device}`: session cookie on web (`token`/`device` null), token on mobile (with device payload) |
 | POST | /auth/logout | End session / revoke current token |
-| GET / PATCH | /me | Profile (name, email, locale, province) |
+| GET / PATCH | /me | Profile (name, email, locale, province); GET also says `is_staff` and lists `permissions`, so the back office hides what the API would refuse |
 | POST | /me/phone/otp | Send a code to the new number |
 | PUT | /me/phone | Confirm the new number (signs out other sessions/devices) |
 | GET | /me/devices | List registered devices |
@@ -449,7 +449,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/dashboard | KPIs + charts |
 | GET / PATCH | /admin/users[/{id}] | Search, view, suspend/ban/reactivate |
 | POST | /admin/users/{id}/enrollments | Grant enrollment |
-| GET | /admin/professor-applications[/{id}] | Queue (`moderation.review`) |
+| GET | /admin/professor-applications[/{id}] | Queue (`moderation.review`; `filter[status]`, `filter[subject]`, `sort`); each item has `can` (start_review, decide) for the signed-in staff member |
 | POST | /admin/professor-applications/{id}/(start-review\|approve\|reject\|request-info) | Decide (note required except approve) |
 | GET | /admin/professor-applications/{id}/credentials/{file} | Stream a credential file (audited) |
 | GET | /admin/kyc-submissions[/{id}] | Identity checks (`kyc.view`) |
@@ -457,7 +457,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/kyc-submissions/{id}/(verify\|reject) | Decide (`kyc.review`) |
 | GET / PATCH | /admin/professors[/{id}] | List/search; revenue-share override with note (`professors.manage`) |
 | POST | /admin/professors/{id}/(suspend\|reinstate) | With reason |
-| GET | /admin/course-versions[/{id}] | Review queue (`?filter[state]=in_review`); detail with curriculum + changes since live |
+| GET | /admin/course-versions[/{id}] | Review queue (`?filter[state]=in_review`, `sort`); detail with curriculum + changes since live and `can` (approve, reject) |
 | POST | /admin/course-versions/{id}/(approve\|reject) | Decide (note required to reject) |
 | GET / PUT | /admin/featured-courses | Featured rail: full ordered list of listed course ids (`catalog.manage`, audited) |
 | GET / PATCH | /admin/courses[/{id}] | Unpublish, takedown |
