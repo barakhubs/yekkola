@@ -28,6 +28,8 @@ it('returns and updates the profile', function () {
     ], bearer($token))
         ->assertOk()
         ->assertJsonPath('data.name', 'Amani Byamungu')
+        ->assertJsonPath('data.is_staff', false)
+        ->assertJsonPath('data.permissions', [])
         ->assertJsonPath('data.email_verified', false)
         ->assertJsonPath('data.province.name', 'Sud-Kivu')
         ->assertJsonPath('data.locale', 'en');
@@ -36,9 +38,9 @@ it('returns and updates the profile', function () {
 it('lists the permissions the back office may show', function () {
     Laravel\Sanctum\Sanctum::actingAs(actingAsStaff()->refresh()); // all columns loaded, as on a real sign-in
 
-    $permissions = $this->getJson('/api/v1/me')->assertOk()->json('data.permissions');
+    $me = $this->getJson('/api/v1/me')->assertOk()->assertJsonPath('data.is_staff', true);
 
-    expect($permissions)->toContain('moderation.review')->not->toContain('finance.payouts');
+    expect($me->json('data.permissions'))->toContain('moderation.review')->not->toContain('finance.payouts');
 });
 
 it('validates profile fields', function (array $payload, string $field) {

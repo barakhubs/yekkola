@@ -14182,9 +14182,12 @@
                             "type": "string"
                         }
                     },
+                    "is_staff": {
+                        "type": "boolean",
+                        "description": "What the back office may show (it hides what the API would refuse; the API still checks)."
+                    },
                     "permissions": {
                         "type": "array",
-                        "description": "What the back office may show (it hides what the API would refuse; the API still checks).",
                         "items": {
                             "type": "string"
                         }
@@ -14209,6 +14212,7 @@
                     "city",
                     "status",
                     "roles",
+                    "is_staff",
                     "permissions",
                     "deletion_requested_at",
                     "created_at"

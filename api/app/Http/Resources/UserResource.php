@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -32,6 +33,7 @@ final class UserResource extends JsonResource
             'status' => $this->status->value,
             'roles' => $this->getRoleNames()->values()->all(),
             // What the back office may show (it hides what the API would refuse; the API still checks).
+            'is_staff' => $this->isStaff(),
             'permissions' => $this->permissionNames(),
             'deletion_requested_at' => $this->deletion_requested_at?->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
@@ -44,5 +46,14 @@ final class UserResource extends JsonResource
     private function permissionNames(): array
     {
         return $this->getAllPermissions()->map(fn ($permission): string => (string) $permission->name)->sort()->values()->all();
+    }
+
+    /** Same rule as the `staff` middleware: any staff role. */
+    private function isStaff(): bool
+    {
+        return $this->hasAnyRole(array_values(array_map(
+            fn (Role $role): string => $role->value,
+            array_filter(Role::cases(), fn (Role $role): bool => $role->isStaff()),
+        )));
     }
 }
