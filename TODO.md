@@ -260,8 +260,9 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 ### 1.11 Admin API — PRD-09
 
 - [ ] Dashboard stats + rollup jobs (`course_daily_stats`, `platform_daily_stats`)
-- [ ] Users, applications, professors, KYC endpoints
-- [ ] Content review queue + version diff data
+- [x] Professor applications, professors, KYC endpoints — #7; staff-typed applications with `can` — #23
+- [ ] Users endpoints (list, detail, suspend/ban, sign out everywhere)
+- [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
 - [ ] Courses, categories, featured, takedown
 - [ ] Moderation (reports, reviews, threads)
 - [ ] Orders, payments (recheck), refunds
@@ -306,7 +307,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] pnpm workspace + Turborepo at repo root — #16
 - [x] `packages/config` (tsconfig, ESLint, Prettier; Tailwind v4 theme lives in `packages/ui` CSS instead of a preset) — #16
 - [x] `packages/ui`: shadcn/ui setup, brand tokens (light/dark), primitives, blocks (KpiCard, PageHeader, EmptyState, ConfirmDialog, StatusBadge, MoneyText) — #16
-- [ ] `packages/ui`: DataTable (TanStack Table + nuqs), ChartCard, FileUpload — with the first screen that needs each (2.2 / 2.5)
+- [x] `packages/ui`: DataTable (TanStack Table v9, server paging/sorting; apps keep state in the URL with nuqs) — #23
+- [ ] `packages/ui`: ChartCard, FileUpload — with the first screen that needs each (dashboard, KYC)
 - [x] `packages/i18n`: fr/en catalogues + money/date/phone/duration formatters — #16
 - [x] `packages/api-client`: Orval config + generation script, fetcher (Sanctum cookies + XSRF, locale, error envelope) — #16
 - [x] CI: `web.yml` (lint, typecheck, tests, build, audit) + `contract.yml` (client drift check) — #16
@@ -340,7 +342,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Category pages + filters (GET forms: no JS needed, state in the URL) — #18
 - [x] Search page (`/courses?q=`) — #18
 - [x] Course page (JSON-LD, preview playback with Mux Player loaded on demand, share, reviews) — #18
-- [ ] Course page: buy/enrol button works (now links to sign-in) — with 2.4
+- [x] Course page: buy/enrol button works (free enrol, paid → checkout) — #19, #21
 - [ ] Course page: "more reviews" pagination (first 10 shown)
 - [ ] Home: "by category" rails (PRD-04 FR-01; category chips for now)
 - [x] Sign-in page: accept `?next=` only for same-origin paths starting with a single `/` (`safeNext`, unit-tested) — #19
