@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-review` (web milestone 1 step 8: minimal back office)
+- **Current branch:** `feature/prd-09-admin-review` (web milestone 1 step 8, PR #23 open — waiting for merge)
 - **Next up:** after milestone 1 — the rest of Phase 2 (student account, studio onboarding, back office)
 
 ## Legend
@@ -316,13 +316,13 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 ### 2.2 Back office (apps/admin) — PRD-09 (before the student web app)
 
-- [x] App shell: staff sign-in, sidebar by permission, locale switch, sign-out, shared `DataTable` — #PR
+- [x] App shell: staff sign-in, sidebar by permission, locale switch, sign-out, shared `DataTable` — #23
 - [ ] Command palette (search users / courses / orders by ID or phone) and breadcrumbs
 - [ ] Dashboard (KPIs, charts, attention queues)
 - [ ] Users (list, detail, actions)
-- [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #PR
+- [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #23
 - [ ] Professors + KYC viewer
-- [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #PR
+- [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #23
 - [ ] Lesson preview with the player in the review screen (needs an admin playback/document endpoint)
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [ ] Courses, categories (tree + ordering), featured
