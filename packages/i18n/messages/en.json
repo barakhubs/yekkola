@@ -597,7 +597,149 @@
       "fixItNamed": "Complete: {item}",
       "editLessonNamed": "Edit lesson “{title}”",
       "viewLessonNamed": "View lesson “{title}”",
-      "foldToMove": "Fold the lesson to move it"
+      "foldToMove": "Fold the lesson to move it",
+      "applyCta": "Apply to teach"
+    },
+    "teach": {
+      "metaTitle": "Teach on Yekkola",
+      "title": "Share what you know with all of Congo",
+      "subtitle": "Create courses with video, audio, documents and quizzes. Students follow you from any province, even on little data.",
+      "cta": "Apply to teach",
+      "whyTitle": "Why teach on Yekkola",
+      "benefits": {
+        "reach": {
+          "title": "Students everywhere",
+          "body": "Your courses reach every province, online or downloaded to a phone."
+        },
+        "earn": {
+          "title": "You set your prices",
+          "body": "Free or paid courses; students pay with mobile money and you are paid the same way."
+        },
+        "protect": {
+          "title": "Your content protected",
+          "body": "Encrypted videos, documents stamped with each student’s name: your work stays yours."
+        },
+        "trust": {
+          "title": "Chosen teachers",
+          "body": "Every professor and every course is reviewed, so students know they can trust you."
+        }
+      },
+      "howTitle": "How it works",
+      "steps": {
+        "apply": {
+          "title": "Apply",
+          "body": "Tell us your subjects, experience and a sample lesson. About 10 minutes."
+        },
+        "review": {
+          "title": "We review",
+          "body": "The Yekkola team looks at every application and answers, or asks for more information."
+        },
+        "create": {
+          "title": "Create your courses",
+          "body": "The studio guides you: sections, lessons, quizzes, prices."
+        },
+        "publish": {
+          "title": "Publish",
+          "body": "After review, your course goes live and students can enrol."
+        }
+      },
+      "needTitle": "What you need",
+      "requirements": {
+        "expertise": "Real command of the subjects you teach.",
+        "experience": "Teaching experience (school, university, private lessons, professional training).",
+        "material": "Something to record with: a phone is enough to start.",
+        "phone": "A Yekkola account (phone number) and a mobile money account to be paid."
+      },
+      "finalTitle": "Ready to teach?",
+      "finalBody": "Applying is free and works from your phone."
+    },
+    "apply": {
+      "title": "Professor application",
+      "intro": "Four short steps. Your draft is saved as you go.",
+      "retry": "Try again",
+      "progressLabel": "Application steps",
+      "stepOf": "Step {step} of {total}",
+      "steps": {
+        "about": "You",
+        "teaching": "Teaching",
+        "credentials": "Credentials and sample",
+        "motivation": "Motivation and send"
+      },
+      "fields": {
+        "fullName": "Full name",
+        "province": "Province (optional)",
+        "subjects": "Subjects you teach",
+        "levels": "Levels you teach",
+        "years": "Years of experience",
+        "institutions": "Current or past institutions",
+        "credentials": "Degrees and titles",
+        "files": "Supporting documents (optional)",
+        "sample": "Sample lesson (link)",
+        "motivation": "Why do you want to teach on Yekkola?"
+      },
+      "hints": {
+        "fullName": "The name shown on your profile and courses.",
+        "province": "Helps students place you; you teach everywhere whatever your province.",
+        "subjects": "Add each subject (up to 10).",
+        "institutions": "Schools, universities, training centres…",
+        "credentials": "Your degrees, certifications, awards…",
+        "files": "PDF, JPEG or PNG, up to 5 files.",
+        "sample": "An https link to a short video of you teaching (YouTube, Google Drive…).",
+        "motivation": "A few sentences: what you want to pass on, and to whom."
+      },
+      "provinceNone": "I’d rather not say",
+      "levels": {
+        "secondary": "Secondary",
+        "exetat": "State exam (Exetat)",
+        "university": "University",
+        "professional": "Professional training"
+      },
+      "addSubject": "Add",
+      "removeSubject": "Remove {subject}",
+      "removeFile": "Remove {name}",
+      "uploading": "Uploading the file…",
+      "back": "Back",
+      "next": "Continue",
+      "submit": "Send my application",
+      "resubmit": "Send my application again",
+      "saving": "Saving…",
+      "savedDraft": "Draft saved.",
+      "fixErrors": "Please fix the highlighted fields.",
+      "missingTitle": "To complete before sending:",
+      "fieldNames": {
+        "full_name": "Full name",
+        "subjects": "Subjects",
+        "levels": "Levels",
+        "years_experience": "Experience",
+        "motivation": "Motivation",
+        "institutions": "Institutions",
+        "credentials": "Degrees",
+        "sample_url": "Sample lesson",
+        "province_id": "Province"
+      },
+      "acceptTerms": "I accept the Yekkola professor agreement (I own my content and license Yekkola to distribute it).",
+      "needsInfoTitle": "The Yekkola team needs more information",
+      "expiredNotice": "Your previous application expired without an answer. You can start a new one.",
+      "status": {
+        "submitted": "Application sent",
+        "under_review": "Application under review"
+      },
+      "pendingBody": "You can follow its progress on this page; the decision will show here.",
+      "submittedOn": "Sent on {date}",
+      "timeline": {
+        "submitted": "Sent",
+        "under_review": "Under review",
+        "decision": "Decision"
+      },
+      "approvedTitle": "Welcome to the Yekkola professors!",
+      "approvedBody": "Your application is approved. The studio is open: create your first course.",
+      "openStudio": "Open the studio",
+      "rejectedTitle": "Your application wasn’t accepted",
+      "reviewerNote": "Message from the team",
+      "reapplyOn": "You can apply again from {date}.",
+      "applyAgain": "Apply again",
+      "backToLearning": "Back to my courses",
+      "subjectsAdded": "Subjects added"
     }
   },
   "admin": {
