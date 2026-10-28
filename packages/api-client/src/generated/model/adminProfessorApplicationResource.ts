@@ -38,6 +38,13 @@ export interface AdminProfessorApplicationResource {
   /** @nullable */
   decided_at: string | null;
   created_at: string;
+  /** What still blocks submission (empty once submitted), and when a rejected applicant may apply again. */
+  missing: string[];
+  /**
+   * ISO 8601 date, only for a rejected application
+   * @nullable
+   */
+  reapply_at: string | null;
   applicant: AdminProfessorApplicationResourceApplicant;
   /** @nullable */
   reviewer_id: string | null;

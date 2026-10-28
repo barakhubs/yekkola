@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Domain\Platform\Settings\ModerationSettings;
+use App\Domain\Professors\Actions\SubmitApplication;
 use App\Domain\Professors\Enums\ApplicationStatus;
 use App\Domain\Professors\Models\ProfessorApplication;
 use Illuminate\Http\Request;
@@ -46,6 +48,26 @@ final class ProfessorApplicationResource extends JsonResource
             'submitted_at' => $this->submitted_at?->toIso8601String(),
             'decided_at' => $this->decided_at?->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
+            // What still blocks submission (empty once submitted), and when a rejected applicant may apply again.
+            'missing' => $this->missingFields(),
+            /** @var string|null ISO 8601 date, only for a rejected application */
+            'reapply_at' => $this->reapplyAt(),
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function missingFields(): array
+    {
+        return $this->status->isEditable() ? app(SubmitApplication::class)->missing($this->resource) : [];
+    }
+
+    private function reapplyAt(): ?string
+    {
+        $cooldown = app(ModerationSettings::class)->application_reapply_cooldown_days;
+        $at = $this->status === ApplicationStatus::Rejected ? $this->decided_at?->copy()->addDays($cooldown) : null;
+
+        return $at?->toIso8601String();
     }
 }

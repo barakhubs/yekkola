@@ -29,6 +29,16 @@ final class SubmitApplication
         private readonly Dispatcher $events,
     ) {}
 
+    /**
+     * Required fields still empty, in form order (the applicant sees what blocks submission).
+     *
+     * @return list<string>
+     */
+    public function missing(ProfessorApplication $application): array
+    {
+        return array_values(array_filter(self::REQUIRED, fn (string $field) => blank($application->{$field})));
+    }
+
     public function handle(User $user, bool $acceptsTerms, ?string $ip): ProfessorApplication
     {
         $application = $this->drafts->openApplication($user) ?? throw ProfessorException::applicationNotFound();
@@ -37,7 +47,7 @@ final class SubmitApplication
             throw ProfessorException::applicationLocked();
         }
 
-        $missing = array_values(array_filter(self::REQUIRED, fn (string $field) => blank($application->{$field})));
+        $missing = $this->missing($application);
         if ($missing !== []) {
             throw ProfessorException::applicationIncomplete($missing);
         }
