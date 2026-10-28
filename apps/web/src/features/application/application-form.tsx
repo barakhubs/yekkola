@@ -10,7 +10,11 @@ import {
   professorApplicationSubmit,
 } from "@yekkola/api-client/endpoints/application";
 import { useProvincesIndex } from "@yekkola/api-client/endpoints/province";
-import type { ProfessorApplicationResource, TeachingLevel } from "@yekkola/api-client/model";
+import type {
+  ProfessorApplicationResource,
+  SaveApplicationRequest,
+  TeachingLevel,
+} from "@yekkola/api-client/model";
 import { formatBytes, type Locale } from "@yekkola/i18n";
 import { Button } from "@yekkola/ui/components/button";
 import { Input } from "@yekkola/ui/components/input";
@@ -19,7 +23,9 @@ import { Textarea } from "@yekkola/ui/components/textarea";
 import { cn } from "@yekkola/ui/lib/utils";
 import { FileText, Info, Loader2, Plus, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
+
+import { DraftSaver } from "./draft-saver";
 
 const STEPS = ["about", "teaching", "credentials", "motivation"] as const;
 type Step = (typeof STEPS)[number];
@@ -52,6 +58,33 @@ interface Fields {
   motivation: string;
 }
 
+/** Input ids per field, to focus the field a "missing" or error link points at. */
+const FIELD_INPUT: Record<string, string> = {
+  full_name: "full-name",
+  province_id: "province",
+  subjects: "subject",
+  levels: "level-secondary",
+  years_experience: "years",
+  institutions: "institutions",
+  credentials: "credentials",
+  sample_url: "sample",
+  motivation: "motivation",
+};
+
+function payloadOf(fields: Fields): SaveApplicationRequest {
+  return {
+    full_name: fields.full_name.trim() || null,
+    province_id: fields.province_id || null,
+    subjects: fields.subjects,
+    levels: fields.levels,
+    years_experience: fields.years_experience === "" ? null : Number(fields.years_experience),
+    institutions: fields.institutions.trim() || null,
+    credentials: fields.credentials.trim() || null,
+    sample_url: fields.sample_url.trim() || null,
+    motivation: fields.motivation.trim() || null,
+  };
+}
+
 function fieldsOf(a: ProfessorApplicationResource | null): Fields {
   return {
     full_name: a?.full_name ?? "",
@@ -78,63 +111,111 @@ export function ApplicationForm({ application }: { application: ProfessorApplica
   const [step, setStep] = useState<Step>("about");
   const [fields, setFields] = useState<Fields>(() => fieldsOf(application));
   const [dirty, setDirty] = useState(false);
+  const [saveError, setSaveError] = useState<unknown>(null);
   const [accept, setAccept] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const timer = useRef<number | null>(null);
   const current = application;
 
-  const store = (next: ProfessorApplicationResource) =>
-    queryClient.setQueryData(getProfessorApplicationShowQueryKey(), next);
+  const store = useCallback(
+    (next: ProfessorApplicationResource) =>
+      queryClient.setQueryData(getProfessorApplicationShowQueryKey(), next),
+    [queryClient],
+  );
+  // One save at a time; edits made during a save go out in the next one (see DraftSaver).
+  const [saver] = useState(
+    () =>
+      new DraftSaver(async (payload: SaveApplicationRequest) => {
+        const saved = success(await professorApplicationSave(payload)).data;
+        store(saved);
+        return saved;
+      }),
+  );
 
-  const save = useMutation({
-    mutationFn: async () =>
-      success(
-        await professorApplicationSave({
-          full_name: fields.full_name.trim() || null,
-          province_id: fields.province_id || null,
-          subjects: fields.subjects,
-          levels: fields.levels,
-          years_experience: fields.years_experience === "" ? null : Number(fields.years_experience),
-          institutions: fields.institutions.trim() || null,
-          credentials: fields.credentials.trim() || null,
-          sample_url: fields.sample_url.trim() || null,
-          motivation: fields.motivation.trim() || null,
-        }),
-      ).data,
-    onSuccess: (saved) => {
-      setDirty(false);
-      store(saved);
-    },
-  });
+  /** Sends everything not yet saved; reports the outcome, never throws (except to callers that need it). */
+  const flush = useCallback(async () => {
+    if (timer.current !== null) window.clearTimeout(timer.current);
+    timer.current = null;
+    try {
+      const saved = await saver.flush();
+      setSaveError(null);
+      return saved;
+    } catch (error) {
+      setSaveError(error);
+      throw error;
+    } finally {
+      setDirty(saver.dirty);
+    }
+  }, [saver]);
 
-  // Autosave a moment after the last change (FR-02).
+  // Leaving with unsaved edits asks first (the browser's own prompt).
   useEffect(() => {
-    if (!dirty || save.isPending) return;
-    const timer = window.setTimeout(() => save.mutate(), 1500);
-    return () => window.clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-arm on every edit
-  }, [fields, dirty]);
+    if (!dirty) return;
+    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  const update = <K extends keyof Fields>(key: K, value: Fields[K]) => {
+    const next = { ...fields, [key]: value };
+    setFields(next);
+    saver.change(payloadOf(next));
+    setDirty(true);
+    // Autosave a moment after the last change (FR-02).
+    if (timer.current !== null) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => void flush().catch(() => undefined), 1500);
+  };
+
+  /** The draft must exist before files can be attached: save it first (waiting for any save in progress). */
+  const ensureDraft = async (): Promise<ProfessorApplicationResource> => {
+    if (current) {
+      await flush().catch(() => undefined);
+      return current;
+    }
+    if (!saver.dirty) saver.change(payloadOf(fields));
+    const saved = await flush();
+    if (!saved) throw new Error("draft not created");
+    return saved;
+  };
 
   const submit = useMutation({
     mutationFn: async () => {
-      if (dirty || !current) await save.mutateAsync();
+      // Whatever was typed last goes in first, then the API checks it is complete.
+      if (!current && !saver.dirty) saver.change(payloadOf(fields));
+      await flush();
       return success(await professorApplicationSubmit({ accept_terms: true })).data;
     },
     onSuccess: store,
   });
 
-  const fieldErrors = save.error instanceof ApiError ? save.error.fieldErrors() : {};
-  const update = <K extends keyof Fields>(key: K, value: Fields[K]) => {
-    setFields((previous) => ({ ...previous, [key]: value }));
-    setDirty(true);
-  };
-  const go = (next: Step) => {
-    if (dirty) save.mutate();
+  const fieldErrors = saveError instanceof ApiError ? saveError.fieldErrors() : {};
+  const errorFields = Object.keys(fieldErrors).map((key) => key.split(".")[0] ?? key);
+  const go = (next: Step, focusId?: string) => {
+    void flush().catch(() => undefined);
     setStep(next);
-    requestAnimationFrame(() => heading.current?.focus());
+    requestAnimationFrame(() => (focusId ? document.getElementById(focusId) : heading.current)?.focus());
   };
   const index = STEPS.indexOf(step);
   // From the API (saved draft); before the first save there is nothing to report yet.
   const missing = current?.missing ?? [];
+  const fieldLinks = (list: string[]) => (
+    <ul className="flex flex-wrap gap-2">
+      {[...new Set(list)].map((field) => (
+        <li key={field}>
+          <button
+            type="button"
+            className="rounded-full border px-3 py-1 hover:bg-muted"
+            onClick={() => go(FIELD_STEP[field] ?? "about", FIELD_INPUT[field])}
+          >
+            {t("fieldOnStep", {
+              field: t(`fieldNames.${field as "full_name"}`),
+              step: STEPS.indexOf(FIELD_STEP[field] ?? "about") + 1,
+            })}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className="grid gap-5">
@@ -169,7 +250,9 @@ export function ApplicationForm({ application }: { application: ProfessorApplica
         ))}
       </ol>
 
+      {/* noValidate: the API checks the fields and its (translated) messages show next to them. */}
       <form
+        noValidate
         className="grid min-w-0 gap-5 rounded-xl border bg-background p-4 sm:p-6"
         onSubmit={(e: FormEvent) => {
           e.preventDefault();
@@ -191,7 +274,7 @@ export function ApplicationForm({ application }: { application: ProfessorApplica
             errors={fieldErrors}
             update={update}
             application={current}
-            ensureDraft={async () => (current ? current : await save.mutateAsync())}
+            ensureDraft={ensureDraft}
             onChanged={store}
           />
         ) : (
@@ -203,19 +286,7 @@ export function ApplicationForm({ application }: { application: ProfessorApplica
             {missing.length > 0 ? (
               <div className="grid gap-1 text-sm">
                 <p className="font-semibold">{t("missingTitle")}</p>
-                <ul className="flex flex-wrap gap-2">
-                  {missing.map((field) => (
-                    <li key={field}>
-                      <button
-                        type="button"
-                        className="rounded-full border px-3 py-1 hover:bg-muted"
-                        onClick={() => go(FIELD_STEP[field] ?? "about")}
-                      >
-                        {t(`fieldNames.${field as "full_name"}`)}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                {fieldLinks(missing)}
               </div>
             ) : null}
             <label className="flex items-start gap-2 text-sm">
@@ -242,29 +313,31 @@ export function ApplicationForm({ application }: { application: ProfessorApplica
             ) : (
               <Button
                 type="submit"
-                disabled={!accept || missing.length > 0 || submit.isPending}
+                // Unsaved edits may complete it: submitting saves them first and the API decides.
+                disabled={!accept || (missing.length > 0 && !dirty) || submit.isPending}
                 aria-busy={submit.isPending}
               >
                 {current?.status === "needs_info" ? t("resubmit") : t("submit")}
               </Button>
             )}
           </div>
-          <p role="status" className="text-xs text-muted-foreground">
-            {save.isPending ? t("saving") : dirty ? "" : current ? t("savedDraft") : ""}
+          {/* Not a live region: it changes on every autosave. Failures are announced below. */}
+          <p className="text-xs text-muted-foreground">
+            {!dirty && current && !saveError ? t("savedDraft") : ""}
           </p>
         </div>
 
-        {save.isError && Object.keys(fieldErrors).length === 0 ? (
+        {errorFields.length > 0 ? (
+          <div role="alert" className="grid gap-2 text-sm text-destructive">
+            <p>{t("fixErrors")}</p>
+            {fieldLinks(errorFields)}
+          </div>
+        ) : saveError ? (
           <p role="alert" className="text-sm text-destructive">
-            {save.error instanceof ApiError ? (save.error.title ?? errors("generic")) : errors("network")}
+            {saveError instanceof ApiError ? (saveError.title ?? errors("generic")) : errors("network")}
           </p>
         ) : null}
-        {Object.keys(fieldErrors).length > 0 ? (
-          <p role="alert" className="text-sm text-destructive">
-            {t("fixErrors")}
-          </p>
-        ) : null}
-        {submit.isError ? (
+        {submit.isError && !(submit.error instanceof ApiError && submit.error === saveError) ? (
           <p role="alert" className="text-sm text-destructive">
             {submit.error instanceof ApiError ? (submit.error.title ?? errors("generic")) : errors("network")}
           </p>
@@ -353,9 +426,7 @@ function TeachingStep({ fields, errors, update }: StepProps) {
   const [subject, setSubject] = useState("");
   const addSubject = () => {
     const value = subject.trim();
-    if (value.length >= 2 && !fields.subjects.includes(value) && fields.subjects.length < 10) {
-      update("subjects", [...fields.subjects, value]);
-    }
+    if (value && !fields.subjects.includes(value)) update("subjects", [...fields.subjects, value]);
     setSubject("");
   };
   const subjectErrors = Object.entries(errors).filter(
@@ -371,7 +442,8 @@ function TeachingStep({ fields, errors, update }: StepProps) {
             id="subject"
             value={subject}
             maxLength={60}
-            aria-describedby="subject-hint"
+            aria-invalid={subjectErrors.length > 0 ? true : undefined}
+            aria-describedby="subject-hint subject-errors"
             onChange={(e) => setSubject(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -380,12 +452,7 @@ function TeachingStep({ fields, errors, update }: StepProps) {
               }
             }}
           />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addSubject}
-            disabled={fields.subjects.length >= 10}
-          >
+          <Button type="button" variant="outline" onClick={addSubject}>
             <Plus aria-hidden />
             {t("addSubject")}
           </Button>
@@ -415,11 +482,13 @@ function TeachingStep({ fields, errors, update }: StepProps) {
             ))}
           </ul>
         ) : null}
-        {subjectErrors.map(([key, message]) => (
-          <p key={key} className="text-sm text-destructive">
-            {message}
-          </p>
-        ))}
+        <div id="subject-errors">
+          {subjectErrors.map(([key, message]) => (
+            <p key={key} className="text-sm text-destructive">
+              {message}
+            </p>
+          ))}
+        </div>
       </div>
 
       <fieldset className="grid gap-2">
@@ -428,8 +497,10 @@ function TeachingStep({ fields, errors, update }: StepProps) {
           {LEVELS.map((level) => (
             <label key={level} className="flex items-center gap-2 rounded-md border p-3 text-sm">
               <input
+                id={`level-${level}`}
                 type="checkbox"
                 className="size-4 accent-primary"
+                aria-describedby={errors.levels ? "levels-error" : undefined}
                 checked={fields.levels.includes(level)}
                 onChange={(e) =>
                   update(
@@ -442,7 +513,11 @@ function TeachingStep({ fields, errors, update }: StepProps) {
             </label>
           ))}
         </div>
-        {errors.levels ? <p className="text-sm text-destructive">{errors.levels}</p> : null}
+        {errors.levels ? (
+          <p id="levels-error" className="text-sm text-destructive">
+            {errors.levels}
+          </p>
+        ) : null}
       </fieldset>
 
       <Field id="years" label={t("fields.years")} error={errors.years_experience}>
@@ -498,16 +573,20 @@ function CredentialsStep({
   const fileInput = useId();
   const files = application?.credential_files ?? [];
 
+  const remove = useMutation({
+    mutationFn: (id: string) => {
+      upload.reset();
+      return professorApplicationCredentialsDestroy(id);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: getProfessorApplicationShowQueryKey() }),
+  });
   const upload = useMutation({
     mutationFn: async (file: File) => {
+      remove.reset();
       await ensureDraft();
       return success(await professorApplicationCredentialsStore({ file })).data;
     },
     onSuccess: onChanged,
-  });
-  const remove = useMutation({
-    mutationFn: (id: string) => professorApplicationCredentialsDestroy(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: getProfessorApplicationShowQueryKey() }),
   });
   const fileError = (error: unknown) =>
     error instanceof ApiError
@@ -585,9 +664,14 @@ function CredentialsStep({
             {t("uploading")}
           </p>
         ) : null}
-        {upload.isError || remove.isError ? (
+        {upload.isError ? (
           <p role="alert" className="text-sm text-destructive">
-            {fileError(upload.error ?? remove.error)}
+            {fileError(upload.error)}
+          </p>
+        ) : null}
+        {remove.isError ? (
+          <p role="alert" className="text-sm text-destructive">
+            {fileError(remove.error)}
           </p>
         ) : null}
       </div>

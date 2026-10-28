@@ -14,7 +14,7 @@ import { Button } from "@yekkola/ui/components/button";
 import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { useSession } from "@/features/auth/hooks/use-session";
 import { Link } from "@/i18n/navigation";
@@ -142,10 +142,16 @@ function Frame({ children }: { children: ReactNode }) {
 }
 
 function Outcome({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  // A new screen (e.g. right after submitting): move focus to its title so it is read out.
+  useEffect(() => heading.current?.focus(), [title]);
+
   return (
     <section className="grid justify-items-center gap-4 rounded-xl border bg-background p-6 text-center sm:p-10">
       {icon}
-      <h1 className="text-2xl font-extrabold">{title}</h1>
+      <h1 ref={heading} tabIndex={-1} className="text-2xl font-extrabold focus:outline-none">
+        {title}
+      </h1>
       {children}
     </section>
   );
@@ -207,7 +213,8 @@ function Rejected({
   const locale = useLocale() as Locale;
   const [now] = useState(() => Date.now());
   const reapplyAt = application.reapply_at;
-  const canReapply = reapplyAt !== null && new Date(reapplyAt).getTime() <= now;
+  // Without a date the API decides (it answers with the cooldown if there is one).
+  const canReapply = reapplyAt === null || new Date(reapplyAt).getTime() <= now;
 
   return (
     <Outcome icon={<XCircle aria-hidden className="size-10 text-destructive" />} title={t("rejectedTitle")}>

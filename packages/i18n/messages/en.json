@@ -609,7 +609,7 @@
       "benefits": {
         "reach": {
           "title": "Students everywhere",
-          "body": "Your courses reach every province, online or downloaded to a phone."
+          "body": "Your courses can be followed from every province, on a phone or a computer."
         },
         "earn": {
           "title": "You set your prices",
@@ -717,7 +717,7 @@
         "sample_url": "Sample lesson",
         "province_id": "Province"
       },
-      "acceptTerms": "I accept the Yekkola professor agreement (I own my content and license Yekkola to distribute it).",
+      "acceptTerms": "I accept the Yekkola professor agreement.",
       "needsInfoTitle": "The Yekkola team needs more information",
       "expiredNotice": "Your previous application expired without an answer. You can start a new one.",
       "status": {
@@ -739,7 +739,8 @@
       "reapplyOn": "You can apply again from {date}.",
       "applyAgain": "Apply again",
       "backToLearning": "Back to my courses",
-      "subjectsAdded": "Subjects added"
+      "subjectsAdded": "Subjects added",
+      "fieldOnStep": "{field} (step {step})"
     }
   },
   "admin": {

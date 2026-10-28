@@ -609,7 +609,7 @@
       "benefits": {
         "reach": {
           "title": "Des élèves partout",
-          "body": "Vos cours arrivent dans toutes les provinces, en ligne ou téléchargés sur téléphone."
+          "body": "Vos cours sont accessibles depuis toutes les provinces, sur téléphone comme sur ordinateur."
         },
         "earn": {
           "title": "Vous fixez vos prix",
@@ -717,7 +717,7 @@
         "sample_url": "Exemple de cours",
         "province_id": "Province"
       },
-      "acceptTerms": "J’accepte le contrat professeur Yekkola (propriété de mes contenus, licence de diffusion accordée à Yekkola).",
+      "acceptTerms": "J’accepte le contrat professeur Yekkola.",
       "needsInfoTitle": "L’équipe Yekkola vous demande des précisions",
       "expiredNotice": "Votre précédente candidature a expiré faute de réponse. Vous pouvez en commencer une nouvelle.",
       "status": {
@@ -739,7 +739,8 @@
       "reapplyOn": "Vous pourrez postuler à nouveau à partir du {date}.",
       "applyAgain": "Postuler à nouveau",
       "backToLearning": "Retour à mes cours",
-      "subjectsAdded": "Matières ajoutées"
+      "subjectsAdded": "Matières ajoutées",
+      "fieldOnStep": "{field} (étape {step})"
     }
   },
   "admin": {
