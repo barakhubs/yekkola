@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-02-web-application` (professor application on the web)
+- **Current branch:** `feature/prd-02-web-application` (PR #25 open — waiting for merge)
 - **Next up:** studio onboarding (profile, KYC, payout method) — 2.5
 
 ## Legend
@@ -349,7 +349,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Show a "try again" state when the API rate-limits a public page (429) instead of the error page
 - [x] Professor page — #18
 - [x] Certificate verification page (noindex) — #18
-- [x] "Teach on Yekkola" page (`/teach`, in the sitemap and footer) — #PR
+- [x] "Teach on Yekkola" page (`/teach`, in the sitemap and footer) — #25
 - [ ] Legal pages
 - [ ] Lighthouse CI budgets on public pages
 
@@ -382,7 +382,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 ### 2.5 Web app — professor studio — PRD-02, 03, 08
 
-- [x] Application flow + status: four steps with autosave, credential files, sample link, agreement, submitted / needs info / approved / rejected (with reapply date) / expired — #PR
+- [x] Application flow + status: four steps with autosave, credential files, sample link, agreement, submitted / needs info / approved / rejected (with reapply date) / expired — #25
 - [ ] Onboarding checklist, profile, KYC upload, payout method
 - [x] Course list + course editor (details, cover, category/level/audience, curriculum DnD with keyboard, pricing, status banner) — #22
 - [x] Video/audio uploader (chunked, resumes offline, survives tab changes) + processing status — #22
