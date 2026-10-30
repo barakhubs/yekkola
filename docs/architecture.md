@@ -485,7 +485,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
 | POST | /admin/payouts/{id}/exclude | Leave a line out of a draft batch `{note}` |
 | GET / PUT | /admin/settings | Platform settings (`settings.manage`): all six groups; PUT takes any groups, each whole. `UpdateSettings` checks rules across settings on the would-be result (default currency enabled; price limits and payout minimum for every enabled currency; earnings hold ≥ refund window), then saves in one transaction; `AuditSettingsChange` logs before/after |
-| GET | /admin/audit-log | Activity log |
+| GET | /admin/audit-log | Audit log (`audit.view`): newest first; filters event (or family, e.g. `refund`), causer, subject, dates; entries carry causer, subject, details (before/after, reason) and IP |
+| GET / POST / PUT / DELETE | /admin/staff[/{user}], /admin/staff/permissions | Staff (`staff.manage`): list; invite by phone `{phone, role, permissions}` (account created if needed); change role + extra permissions; end access (staff roles and extras removed, signed out everywhere). Never one's own access; anything touching a super admin needs `staff.roles`; audited (`staff.updated`, `staff.removed`) |
 | CRUD | /admin/staff | Staff accounts + roles |
 
 **Webhooks** (no auth; signature-verified)

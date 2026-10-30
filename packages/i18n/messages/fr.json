@@ -965,7 +965,9 @@
       "ledger": "Grand livre",
       "orders": "Commandes",
       "users": "Comptes",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "staff": "Personnel",
+      "audit": "Journal d’audit"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1433,7 +1435,7 @@
         "professor": "Professeur",
         "moderator": "Modérateur",
         "admin": "Admin",
-        "super_admin": "Super admin"
+        "super-admin": "Super admin"
       },
       "back": "Tous les comptes",
       "email": "E-mail",
@@ -1548,6 +1550,50 @@
         "course_review_sla_hours": "Délai cible de relecture d’un cours (heures)",
         "application_review_sla_hours": "Délai cible d’examen d’une candidature (heures)",
         "application_reapply_cooldown_days": "Attente avant une nouvelle candidature (jours)"
+      }
+    },
+    "audit": {
+      "title": "Journal d’audit",
+      "intro": "Chaque action du personnel et chaque changement de paramètres : qui, quoi, sur quoi, les détails et l’adresse IP. Rien ne s’y modifie.",
+      "columns": {
+        "date": "Date",
+        "event": "Événement",
+        "by": "Par",
+        "on": "Sur",
+        "details": "Détails"
+      },
+      "system": "Système",
+      "show": "Voir",
+      "record": "Identifiant d’un enregistrement",
+      "from": "Du",
+      "to": "Au",
+      "filter": "Filtrer",
+      "empty": "Aucune entrée."
+    },
+    "staff": {
+      "title": "Personnel",
+      "intro": "Qui a accès au back-office, avec son rôle et les permissions ajoutées (ex. finance).",
+      "invite": "Inviter",
+      "inviteTitle": "Inviter un membre du personnel",
+      "inviteHint": "Le compte est créé s’il n’existe pas ; la personne se connecte avec un code SMS.",
+      "change": "Modifier",
+      "changeTitle": "Accès de {name}",
+      "changeHint": "Le rôle donne un ensemble de permissions ; vous pouvez en ajouter.",
+      "phone": "Numéro de téléphone",
+      "role": "Rôle",
+      "extra": "Permissions ajoutées",
+      "extraHint": "En plus de celles du rôle (par exemple les permissions finance).",
+      "save": "Enregistrer",
+      "remove": "Retirer l’accès",
+      "removeConfirm": "Retirer l’accès de {name} ?",
+      "removeHint": "Le compte reste (comme étudiant) mais perd le back-office et est déconnecté partout.",
+      "you": "Vous",
+      "lastSeen": "Vu le {date}",
+      "neverSeen": "Jamais connecté",
+      "roles": {
+        "moderator": "Modérateur",
+        "admin": "Admin",
+        "super-admin": "Super admin"
       }
     }
   }

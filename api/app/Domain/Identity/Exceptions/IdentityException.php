@@ -145,4 +145,9 @@ final class IdentityException extends DomainException
     {
         return new self('user.staff_protected', 403);
     }
+
+    public static function notAStaffRole(): self
+    {
+        return new self('user.not_staff_role', 422);
+    }
 }

@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-settings` (back-office settings, PR #39 waiting for merge)
-- **Next up:** audit log + staff management (1.11 / 2.2)
+- **Current branch:** `feature/prd-09-audit-staff` (audit log + staff, PR #40 waiting for merge)
+- **Next up:** admin dashboard stats + rollups, then courses/categories/featured and moderation (1.11 / 2.2)
 
 ## Legend
 
@@ -275,7 +275,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
 - [x] Settings endpoints — invariants checked across groups, one transaction, audited — #39
-- [ ] Audit log + staff endpoints
+- [x] Audit log + staff endpoints — #40
 
 ### 1.12 Notifications — PRD-10
 
@@ -340,7 +340,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [x] Settings screen — #39
-- [ ] Audit log, staff
+- [x] Audit log, staff — #40
 - [ ] Playwright: admin approval journeys
 
 ### 2.3 Web app — public (apps/web) — PRD-04

@@ -965,7 +965,9 @@
       "ledger": "Ledger",
       "orders": "Orders",
       "users": "Accounts",
-      "settings": "Settings"
+      "settings": "Settings",
+      "staff": "Staff",
+      "audit": "Audit log"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1433,7 +1435,7 @@
         "professor": "Professor",
         "moderator": "Moderator",
         "admin": "Admin",
-        "super_admin": "Super admin"
+        "super-admin": "Super admin"
       },
       "back": "All accounts",
       "email": "Email",
@@ -1548,6 +1550,50 @@
         "course_review_sla_hours": "Course review target (hours)",
         "application_review_sla_hours": "Application review target (hours)",
         "application_reapply_cooldown_days": "Wait before reapplying (days)"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "intro": "Every staff action and settings change: who, what, on what, the details and the IP address. Nothing here can be changed.",
+      "columns": {
+        "date": "Date",
+        "event": "Event",
+        "by": "By",
+        "on": "On",
+        "details": "Details"
+      },
+      "system": "System",
+      "show": "Show",
+      "record": "Record id",
+      "from": "From",
+      "to": "To",
+      "filter": "Filter",
+      "empty": "No entries."
+    },
+    "staff": {
+      "title": "Staff",
+      "intro": "Who has back-office access, with their role and any added permissions (e.g. finance).",
+      "invite": "Invite",
+      "inviteTitle": "Invite a staff member",
+      "inviteHint": "The account is created if it doesn't exist; they sign in with an SMS code.",
+      "change": "Change",
+      "changeTitle": "{name}'s access",
+      "changeHint": "The role gives a set of permissions; you can add more.",
+      "phone": "Phone number",
+      "role": "Role",
+      "extra": "Added permissions",
+      "extraHint": "On top of the role's (e.g. the finance permissions).",
+      "save": "Save",
+      "remove": "Remove access",
+      "removeConfirm": "Remove {name}'s access?",
+      "removeHint": "The account stays (as a student) but loses the back office and is signed out everywhere.",
+      "you": "You",
+      "lastSeen": "Seen {date}",
+      "neverSeen": "Never signed in",
+      "roles": {
+        "moderator": "Moderator",
+        "admin": "Admin",
+        "super-admin": "Super admin"
       }
     }
   }

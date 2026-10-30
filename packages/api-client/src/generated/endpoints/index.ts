@@ -1,4 +1,5 @@
 export * from "./application/application";
+export * from "./audit-log/audit-log";
 export * from "./authoring-options/authoring-options";
 export * from "./bundle/bundle";
 export * from "./category/category";
@@ -40,6 +41,7 @@ export * from "./receipt/receipt";
 export * from "./refund/refund";
 export * from "./review/review";
 export * from "./settings/settings";
+export * from "./staff/staff";
 export * from "./studio-profile/studio-profile";
 export * from "./user/user";
 export * from "./video-webhook/video-webhook";

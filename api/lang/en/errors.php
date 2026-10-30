@@ -154,6 +154,7 @@ return [
     'user' => [
         'own_status' => 'You can\'t change your own account\'s status.',
         'staff_protected' => 'Only a staff manager can change a staff member\'s status.',
+        'not_staff_role' => 'Choose a staff role (moderator, admin or super admin).',
     ],
     'payout' => [
         'batch_open' => 'A payout batch is already open in this currency.',
