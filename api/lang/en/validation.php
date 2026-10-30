@@ -289,4 +289,11 @@ return [
         'work' => 'work',
         'year' => 'year',
     ],
+    'settings' => [
+        'default_currency' => 'The default currency must be an enabled currency.',
+        'price_limits_missing' => 'Set the minimum and maximum course price in :currency.',
+        'price_limits_invalid' => 'The :currency price limits don\'t add up (minimum above maximum, or an amount that can\'t be collected).',
+        'payout_minimum_missing' => 'Set the payout minimum in :currency.',
+        'hold_shorter_than_refund_window' => 'Earnings must be held at least :days days (the refund window).',
+    ],
 ];

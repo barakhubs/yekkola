@@ -39,6 +39,7 @@ export * from "./quiz-attempt/quiz-attempt.zod";
 export * from "./receipt/receipt.zod";
 export * from "./refund/refund.zod";
 export * from "./review/review.zod";
+export * from "./settings/settings.zod";
 export * from "./studio-profile/studio-profile.zod";
 export * from "./user/user.zod";
 export * from "./video-webhook/video-webhook.zod";

@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Api\V1\Admin\SettingsController;
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
@@ -273,6 +274,12 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/payout-batches/{batch}', [PayoutBatchController::class, 'show'])->name('payout-batches.show');
         Route::post('/payout-batches/{batch}/approve', [PayoutBatchController::class, 'approve'])->middleware('idempotent')->name('payout-batches.approve');
         Route::post('/payouts/{payout}/exclude', [PayoutBatchController::class, 'exclude'])->name('payouts.exclude');
+    });
+
+    // Platform settings (project-context "Platform settings")
+    Route::middleware('can:'.Permission::SettingsManage->value)->group(function () {
+        Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
+        Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
 
     // Accounts (PRD-09 FR-04)

@@ -10901,6 +10901,497 @@
                 }
             }
         },
+        "/admin/settings": {
+            "get": {
+                "operationId": "admin.settings.show",
+                "tags": [
+                    "Settings"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "commerce": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enabled_currencies": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "default_currency": {
+                                                            "type": "string"
+                                                        },
+                                                        "default_revenue_share_bps": {
+                                                            "type": "integer"
+                                                        },
+                                                        "enabled_gateways": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "enabled_rails": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "price_limits_minor": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "min": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "max": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "min",
+                                                                    "max"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "order_payment_timeout_minutes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "refund_window_days": {
+                                                            "type": "integer"
+                                                        },
+                                                        "refund_max_progress_pct": {
+                                                            "type": "integer"
+                                                        },
+                                                        "separate_payer_enabled": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enabled_currencies",
+                                                        "default_currency",
+                                                        "default_revenue_share_bps",
+                                                        "enabled_gateways",
+                                                        "enabled_rails",
+                                                        "price_limits_minor",
+                                                        "order_payment_timeout_minutes",
+                                                        "refund_window_days",
+                                                        "refund_max_progress_pct",
+                                                        "separate_payer_enabled"
+                                                    ]
+                                                },
+                                                "payouts": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "earnings_hold_days": {
+                                                            "type": "integer"
+                                                        },
+                                                        "schedule": {
+                                                            "type": "string"
+                                                        },
+                                                        "minimum_minor": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "platform_pays_disbursement_fees": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "payout_method_change_hold_hours": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "earnings_hold_days",
+                                                        "schedule",
+                                                        "minimum_minor",
+                                                        "platform_pays_disbursement_fees",
+                                                        "payout_method_change_hold_hours"
+                                                    ]
+                                                },
+                                                "protection": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "registered_device_limit": {
+                                                            "type": "integer"
+                                                        },
+                                                        "concurrent_web_streams": {
+                                                            "type": "integer"
+                                                        },
+                                                        "offline_license_days": {
+                                                            "type": "integer"
+                                                        },
+                                                        "playback_token_ttl_minutes": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "registered_device_limit",
+                                                        "concurrent_web_streams",
+                                                        "offline_license_days",
+                                                        "playback_token_ttl_minutes"
+                                                    ]
+                                                },
+                                                "catalog": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "free_course_limit": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "free_media_hours_limit": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "max_preview_lessons": {
+                                                            "type": "integer"
+                                                        },
+                                                        "max_video_upload_mb": {
+                                                            "type": "integer"
+                                                        },
+                                                        "max_audio_upload_mb": {
+                                                            "type": "integer"
+                                                        },
+                                                        "max_document_upload_mb": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "free_course_limit",
+                                                        "free_media_hours_limit",
+                                                        "max_preview_lessons",
+                                                        "max_video_upload_mb",
+                                                        "max_audio_upload_mb",
+                                                        "max_document_upload_mb"
+                                                    ]
+                                                },
+                                                "learning": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "certificate_min_completion_pct": {
+                                                            "type": "integer"
+                                                        },
+                                                        "certificate_requires_quizzes_passed": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "review_min_progress_pct": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "certificate_min_completion_pct",
+                                                        "certificate_requires_quizzes_passed",
+                                                        "review_min_progress_pct"
+                                                    ]
+                                                },
+                                                "moderation": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "course_review_sla_hours": {
+                                                            "type": "integer"
+                                                        },
+                                                        "application_review_sla_hours": {
+                                                            "type": "integer"
+                                                        },
+                                                        "application_reapply_cooldown_days": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "course_review_sla_hours",
+                                                        "application_review_sla_hours",
+                                                        "application_reapply_cooldown_days"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "commerce",
+                                                "payouts",
+                                                "protection",
+                                                "catalog",
+                                                "learning",
+                                                "moderation"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "admin.settings.update",
+                "summary": "Changes any of the groups (each sent whole) and answers with all settings as they now are. A 422 names the\nsetting at fault, including rules across groups (e.g. earnings held at least as long as the refund window)",
+                "tags": [
+                    "Settings"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSettingsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "commerce": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enabled_currencies": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "default_currency": {
+                                                            "type": "string"
+                                                        },
+                                                        "default_revenue_share_bps": {
+                                                            "type": "integer"
+                                                        },
+                                                        "enabled_gateways": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "enabled_rails": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "price_limits_minor": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "min": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "max": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "min",
+                                                                    "max"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "order_payment_timeout_minutes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "refund_window_days": {
+                                                            "type": "integer"
+                                                        },
+                                                        "refund_max_progress_pct": {
+                                                            "type": "integer"
+                                                        },
+                                                        "separate_payer_enabled": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enabled_currencies",
+                                                        "default_currency",
+                                                        "default_revenue_share_bps",
+                                                        "enabled_gateways",
+                                                        "enabled_rails",
+                                                        "price_limits_minor",
+                                                        "order_payment_timeout_minutes",
+                                                        "refund_window_days",
+                                                        "refund_max_progress_pct",
+                                                        "separate_payer_enabled"
+                                                    ]
+                                                },
+                                                "payouts": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "earnings_hold_days": {
+                                                            "type": "integer"
+                                                        },
+                                                        "schedule": {
+                                                            "type": "string"
+                                                        },
+                                                        "minimum_minor": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "platform_pays_disbursement_fees": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "payout_method_change_hold_hours": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "earnings_hold_days",
+                                                        "schedule",
+                                                        "minimum_minor",
+                                                        "platform_pays_disbursement_fees",
+                                                        "payout_method_change_hold_hours"
+                                                    ]
+                                                },
+                                                "protection": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "registered_device_limit": {
+                                                            "type": "integer"
+                                                        },
+                                                        "concurrent_web_streams": {
+                                                            "type": "integer"
+                                                        },
+                                                        "offline_license_days": {
+                                                            "type": "integer"
+                                                        },
+                                                        "playback_token_ttl_minutes": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "registered_device_limit",
+                                                        "concurrent_web_streams",
+                                                        "offline_license_days",
+                                                        "playback_token_ttl_minutes"
+                                                    ]
+                                                },
+                                                "catalog": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "free_course_limit": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "free_media_hours_limit": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "max_preview_lessons": {
+                                                            "type": "integer"
+                                                        },
+                                                        "max_video_upload_mb": {
+                                                            "type": "integer"
+                                                        },
+                                                        "max_audio_upload_mb": {
+                                                            "type": "integer"
+                                                        },
+                                                        "max_document_upload_mb": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "free_course_limit",
+                                                        "free_media_hours_limit",
+                                                        "max_preview_lessons",
+                                                        "max_video_upload_mb",
+                                                        "max_audio_upload_mb",
+                                                        "max_document_upload_mb"
+                                                    ]
+                                                },
+                                                "learning": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "certificate_min_completion_pct": {
+                                                            "type": "integer"
+                                                        },
+                                                        "certificate_requires_quizzes_passed": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "review_min_progress_pct": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "certificate_min_completion_pct",
+                                                        "certificate_requires_quizzes_passed",
+                                                        "review_min_progress_pct"
+                                                    ]
+                                                },
+                                                "moderation": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "course_review_sla_hours": {
+                                                            "type": "integer"
+                                                        },
+                                                        "application_review_sla_hours": {
+                                                            "type": "integer"
+                                                        },
+                                                        "application_reapply_cooldown_days": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "course_review_sla_hours",
+                                                        "application_review_sla_hours",
+                                                        "application_reapply_cooldown_days"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "commerce",
+                                                "payouts",
+                                                "protection",
+                                                "catalog",
+                                                "learning",
+                                                "moderation"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/professor/profile": {
             "get": {
                 "operationId": "professor.profile.show",
@@ -18052,6 +18543,226 @@
                     }
                 },
                 "title": "UpdateProfileRequest"
+            },
+            "UpdateSettingsRequest": {
+                "type": "object",
+                "description": "Any of the six settings groups, each sent whole (the back office saves one section at a time). Rules spanning\ngroups are checked by UpdateSettings.",
+                "properties": {
+                    "commerce": {
+                        "type": "object",
+                        "properties": {
+                            "enabled_currencies": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "USD",
+                                        "CDF"
+                                    ]
+                                },
+                                "minItems": 1,
+                                "uniqueItems": true
+                            },
+                            "default_currency": {
+                                "type": "string",
+                                "enum": [
+                                    "USD",
+                                    "CDF"
+                                ]
+                            },
+                            "default_revenue_share_bps": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 10000
+                            },
+                            "enabled_gateways": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "maxLength": 32
+                                },
+                                "uniqueItems": true
+                            },
+                            "enabled_rails": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/MobileMoneyRail"
+                                },
+                                "uniqueItems": true
+                            },
+                            "price_limits_minor": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "min": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "max": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        }
+                                    }
+                                }
+                            },
+                            "order_payment_timeout_minutes": {
+                                "type": "integer",
+                                "minimum": 2,
+                                "maximum": 120
+                            },
+                            "refund_window_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 90
+                            },
+                            "refund_max_progress_pct": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100
+                            },
+                            "separate_payer_enabled": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "payouts": {
+                        "type": "object",
+                        "properties": {
+                            "earnings_hold_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 120
+                            },
+                            "schedule": {
+                                "type": "string",
+                                "enum": [
+                                    "weekly",
+                                    "biweekly",
+                                    "monthly"
+                                ]
+                            },
+                            "minimum_minor": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                }
+                            },
+                            "platform_pays_disbursement_fees": {
+                                "type": "boolean"
+                            },
+                            "payout_method_change_hold_hours": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 720
+                            }
+                        }
+                    },
+                    "protection": {
+                        "type": "object",
+                        "properties": {
+                            "registered_device_limit": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 10
+                            },
+                            "concurrent_web_streams": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 10
+                            },
+                            "offline_license_days": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 60
+                            },
+                            "playback_token_ttl_minutes": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 1440
+                            }
+                        }
+                    },
+                    "catalog": {
+                        "type": "object",
+                        "properties": {
+                            "free_course_limit": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ],
+                                "minimum": 0
+                            },
+                            "free_media_hours_limit": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ],
+                                "minimum": 0
+                            },
+                            "max_preview_lessons": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 20
+                            },
+                            "max_video_upload_mb": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 20000
+                            },
+                            "max_audio_upload_mb": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 5000
+                            },
+                            "max_document_upload_mb": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 500
+                            }
+                        }
+                    },
+                    "learning": {
+                        "type": "object",
+                        "properties": {
+                            "certificate_min_completion_pct": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100
+                            },
+                            "certificate_requires_quizzes_passed": {
+                                "type": "boolean"
+                            },
+                            "review_min_progress_pct": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 100
+                            }
+                        }
+                    },
+                    "moderation": {
+                        "type": "object",
+                        "properties": {
+                            "course_review_sla_hours": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 720
+                            },
+                            "application_review_sla_hours": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 720
+                            },
+                            "application_reapply_cooldown_days": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 365
+                            }
+                        }
+                    }
+                },
+                "title": "UpdateSettingsRequest"
             },
             "UploadAvatarRequest": {
                 "type": "object",
