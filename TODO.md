@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-orders` (back-office orders & payments, PR #37 waiting for merge)
-- **Next up:** back-office users (list, detail, suspend/ban, sign out everywhere) — admin API + screens (1.11 / 2.2)
+- **Current branch:** `feature/prd-09-admin-users` (back-office accounts, PR #38 waiting for merge)
+- **Next up:** admin settings + audit log + staff (1.11 / 2.2)
 
 ## Legend
 
@@ -265,7 +265,9 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 
 - [ ] Dashboard stats + rollup jobs (`course_daily_stats`, `platform_daily_stats`)
 - [x] Professor applications, professors, KYC endpoints — #7; staff-typed applications with `can` — #23
-- [ ] Users endpoints (list, detail, suspend/ban, sign out everywhere)
+- [x] Users endpoints (list, detail, suspend/ban, sign out everywhere, remove device) — #38
+- [ ] Grant an enrollment from the back office (PRD-09 FR-04)
+- [ ] Notify the account when it is suspended or banned (with 1.12)
 - [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
 - [ ] Courses, categories, featured, takedown
 - [ ] Moderation (reports, reviews, threads)
@@ -325,7 +327,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] App shell: staff sign-in, sidebar by permission, locale switch, sign-out, shared `DataTable` — #23
 - [ ] Command palette (search users / courses / orders by ID or phone) and breadcrumbs
 - [ ] Dashboard (KPIs, charts, attention queues)
-- [ ] Users (list, detail, actions)
+- [x] Users (list, detail, actions) — #38
 - [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #23
 - [ ] Professors + KYC viewer
 - [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #23
