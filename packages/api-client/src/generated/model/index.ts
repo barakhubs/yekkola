@@ -128,6 +128,8 @@ export * from "./courseCardResourceCategory";
 export * from "./courseCardResourcePrice";
 export * from "./courseCardResourceProfessor";
 export * from "./courseDetailResource";
+export * from "./courseDetailResourceBundlesItem";
+export * from "./courseDetailResourceBundlesItemPrice";
 export * from "./courseDetailResourceCategory";
 export * from "./courseDetailResourceCategoryParent";
 export * from "./courseDetailResourcePrice";

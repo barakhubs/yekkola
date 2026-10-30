@@ -16,19 +16,19 @@ export async function generateMetadata({
   return { title: t("title") };
 }
 
-/** Checkout for one course: `/checkout?course={id}` (PRD-05). */
+/** Checkout for one course (`/checkout?course={id}`) or a bundle (`/checkout?bundle={id}`) (PRD-05). */
 export default async function CheckoutPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ course?: string | string[] }>;
+  searchParams: Promise<{ course?: string | string[]; bundle?: string | string[] }>;
 }) {
   setRequestLocale((await params).locale as Locale);
-  const course = (await searchParams).course;
-  if (typeof course !== "string" || !/^[0-9A-Za-z]{26}$/.test(course)) {
-    notFound();
-  }
+  const { course, bundle } = await searchParams;
+  const isId = (v: unknown): v is string => typeof v === "string" && /^[0-9A-Za-z]{26}$/.test(v);
+  if (isId(bundle)) return <CheckoutForm bundleId={bundle} />;
+  if (!isId(course)) notFound();
 
   return <CheckoutForm courseId={course} />;
 }

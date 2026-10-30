@@ -10944,6 +10944,44 @@
                     "can_buy_for_others": {
                         "type": "boolean",
                         "description": "Someone (a parent, signed in or not) may pay for a student's access (setting \"separate payer\", PRD-05 FR-14)."
+                    },
+                    "bundles": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "slug": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "price": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount_minor": {
+                                            "type": "integer"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount_minor",
+                                        "currency"
+                                    ]
+                                },
+                                "course_count": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "slug",
+                                "title",
+                                "price",
+                                "course_count"
+                            ]
+                        }
                     }
                 },
                 "required": [
@@ -10971,7 +11009,8 @@
                     "lesson_count",
                     "download_bytes",
                     "updated_at",
-                    "can_buy_for_others"
+                    "can_buy_for_others",
+                    "bundles"
                 ],
                 "title": "CourseDetailResource"
             },

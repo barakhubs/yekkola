@@ -330,7 +330,8 @@
       "forOther": "J’achète ce cours pour un autre élève",
       "studentPhone": "Numéro de téléphone de l’élève",
       "studentPhoneHint": "Le cours sera ajouté au compte Yekkola de ce numéro (créé s’il n’existe pas).",
-      "paidGiftBody": "Le cours a été ajouté au compte de l’élève."
+      "paidGiftBody": "Le cours a été ajouté au compte de l’élève.",
+      "ownedExcluded": "{count, plural, one {Un cours que tu as déjà est retiré, et le prix réduit d’autant.} other {# cours que tu as déjà sont retirés, et le prix réduit d’autant.}}"
     },
     "orders": {
       "title": "Mes commandes",
@@ -931,6 +932,14 @@
       "alreadyOwned": "Cet élève a déjà accès à ce cours.",
       "continue": "Continuer",
       "missingToken": "Ce lien de commande est incomplet. Ouvre le lien reçu au moment de la commande {order}."
+    },
+    "bundle": {
+      "eyebrow": "Pack de cours",
+      "insteadOf": "au lieu de",
+      "buy": "Acheter le pack",
+      "courses": "{count, plural, one {# cours} other {# cours}} dans ce pack",
+      "alsoIn": "Aussi dans ces packs",
+      "summary": "{count, plural, one {# cours} other {# cours}}"
     }
   },
   "admin": {

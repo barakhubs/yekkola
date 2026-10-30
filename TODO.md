@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-web-guest-checkout` (guest checkout, PR #30 waiting for merge)
-- **Next up:** bundles in the web checkout (PRD-05 FR-11) — 2.4
+- **Current branch:** `feature/prd-05-web-bundles` (bundles, PR #31 waiting for merge)
+- **Next up:** finance postings and payouts (1.10) — needed before professors can be paid
 
 ## Legend
 
@@ -366,7 +366,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Guest checkout: a parent without an account pays for a student (`/courses/[slug]/gift`, token in the link after `#`; PRD-05 FR-14) — #30
 - [ ] Guest receipt download (the API needs the order token header; a plain link can't send it)
 - [ ] Gift a course the buyer already owns (the quote is for the buyer, so checkout currently stops at "already owned")
-- [ ] Bundles in the web checkout (course page "bundle" offers, PRD-05 FR-11)
+- [x] Bundles: bundle page, "also in these bundles" on course pages, checkout with `?bundle=` (PRD-05 FR-13) — #31
+- [ ] Bundle pages in the sitemap
 - [ ] Operator-specific hints on the waiting screen (USSD code, "check *144#") once the real aggregator is chosen
 - [ ] Playwright journey: paid checkout on the fake gateway (success, insufficient funds `…0001` then retry)
 - [x] My courses (progress, last activity, in progress / completed filter, paging); suspended accounts see an explanation (FR-15) — #19

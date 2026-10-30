@@ -7,6 +7,7 @@ namespace App\Domain\Authoring\Models;
 use App\Domain\Authoring\Enums\CourseLevel;
 use App\Domain\Authoring\Enums\CourseStatus;
 use App\Domain\Catalog\Models\Category;
+use App\Domain\Commerce\Models\Bundle;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
@@ -85,6 +87,16 @@ final class Course extends Model
             'enrollment_count' => 'integer',
             'total_duration_seconds' => 'integer',
         ];
+    }
+
+    /**
+     * Bundles that include this course (PRD-05 FR-13).
+     *
+     * @return BelongsToMany<Bundle, $this>
+     */
+    public function bundles(): BelongsToMany
+    {
+        return $this->belongsToMany(Bundle::class, 'bundle_courses');
     }
 
     /**

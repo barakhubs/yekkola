@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { MoneyText } from "@yekkola/ui/blocks/money-text";
 
 import { PriceTag } from "@/features/catalog/components/price-tag";
 import { RatingStars } from "@/features/catalog/components/rating-stars";
@@ -240,6 +241,26 @@ export default async function CoursePage({ params }: Props) {
           <ProfessorSummary professor={course.professor} variant="card" />
           {course.professor.bio ? (
             <p className="line-clamp-6 text-sm whitespace-pre-line">{course.professor.bio}</p>
+          ) : null}
+          {course.bundles.length > 0 ? (
+            <section aria-labelledby="bundles" className="grid gap-3 rounded-xl border p-4">
+              <h2 id="bundles" className="font-bold">
+                {t("bundle.alsoIn")}
+              </h2>
+              <ul className="grid gap-2 text-sm">
+                {course.bundles.map((b) => (
+                  <li key={b.slug} className="flex flex-wrap items-center justify-between gap-2">
+                    <Link href={`/bundles/${b.slug}`} className="font-semibold text-primary underline">
+                      {b.title}
+                    </Link>
+                    <span className="text-muted-foreground">
+                      {t("bundle.summary", { count: b.course_count })} ·{" "}
+                      <MoneyText value={b.price} locale={locale} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ) : null}
         </aside>
       </div>

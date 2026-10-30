@@ -3,6 +3,7 @@ import "server-only";
 import "./api.server";
 
 import { ApiError, success } from "@yekkola/api-client";
+import { bundlesShow } from "@yekkola/api-client/endpoints/bundle";
 import { categoriesIndex } from "@yekkola/api-client/endpoints/category";
 import { certificatesVerify } from "@yekkola/api-client/endpoints/certificate";
 import { coursesIndex, coursesShow, featured } from "@yekkola/api-client/endpoints/course";
@@ -81,6 +82,12 @@ export async function getCourses(params: CoursesIndexParams, visitor: Record<str
 export async function getCourse(slug: string) {
   return (
     (await orNull(coursesShow(slug, cached(REVALIDATE.course, ["courses", `course:${slug}`]))))?.data ?? null
+  );
+}
+
+export async function getBundle(slug: string) {
+  return (
+    (await orNull(bundlesShow(slug, cached(REVALIDATE.course, ["courses", `bundle:${slug}`]))))?.data ?? null
   );
 }
 

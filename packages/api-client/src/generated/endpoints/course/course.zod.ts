@@ -263,6 +263,17 @@ export const CoursesShowResponse = zod.object({
       .describe(
         'Someone (a parent, signed in or not) may pay for a student\'s access (setting "separate payer", PRD-05 FR-14).',
       ),
+    bundles: zod.array(
+      zod.object({
+        slug: zod.string(),
+        title: zod.string(),
+        price: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        course_count: zod.int(),
+      }),
+    ),
   }),
 });
 
