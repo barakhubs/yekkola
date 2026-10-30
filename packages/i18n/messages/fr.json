@@ -963,7 +963,8 @@
       "refunds": "Remboursements",
       "payouts": "Versements",
       "ledger": "Grand livre",
-      "orders": "Commandes"
+      "orders": "Commandes",
+      "users": "Comptes"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1403,6 +1404,72 @@
         "refundRequested": "Remboursement demandé ({status})",
         "ledger": "Écriture comptable : {type}"
       }
+    },
+    "users": {
+      "title": "Comptes",
+      "intro": "Étudiants, professeurs et personnel. Recherchez par téléphone ou par nom.",
+      "search": "Rechercher",
+      "searchHint": "Téléphone ou nom",
+      "allStatuses": "Tous les statuts",
+      "allRoles": "Tous les rôles",
+      "empty": "Aucun compte.",
+      "noName": "Sans nom",
+      "columns": {
+        "name": "Nom",
+        "phone": "Téléphone",
+        "roles": "Rôles",
+        "status": "Statut",
+        "lastSeen": "Vu la dernière fois",
+        "created": "Créé le"
+      },
+      "status": {
+        "active": "Actif",
+        "suspended": "Suspendu",
+        "banned": "Banni"
+      },
+      "roles": {
+        "student": "Étudiant",
+        "professor": "Professeur",
+        "moderator": "Modérateur",
+        "admin": "Admin",
+        "super_admin": "Super admin"
+      },
+      "back": "Tous les comptes",
+      "email": "E-mail",
+      "place": "Lieu",
+      "lastLogin": "Dernière connexion",
+      "deletionRequested": "Suppression demandée le",
+      "reason": "Raison (gardée dans le journal d’audit)",
+      "confirmTitle": "{action} — {name} ?",
+      "reactivate": "Réactiver",
+      "reactivateHint": "Le compte peut de nouveau se connecter et suivre ses cours.",
+      "suspend": "Suspendre",
+      "suspendHint": "Le compte est déconnecté partout. Il peut se reconnecter pour lire pourquoi, mais plus suivre de cours.",
+      "ban": "Bannir",
+      "banHint": "Le compte est déconnecté partout et ne peut plus se connecter. Ses avis sont masqués.",
+      "signOut": "Déconnecter partout",
+      "signOutConfirm": "Déconnecter ce compte partout ?",
+      "signOutHint": "Toutes les sessions et les applications devront se reconnecter (téléphone perdu, par exemple).",
+      "devices": "Appareils",
+      "noDevices": "Aucun appareil enregistré.",
+      "removeDevice": "Retirer",
+      "removeDeviceConfirm": "Retirer cet appareil ?",
+      "removeDeviceHint": "Il est déconnecté et ses téléchargements s’arrêtent à sa prochaine synchronisation.",
+      "enrollments": "Inscriptions ({count})",
+      "noEnrollments": "Aucune inscription.",
+      "sources": {
+        "purchase": "Achat",
+        "free": "Gratuit",
+        "coupon": "Coupon",
+        "bundle": "Pack",
+        "admin": "Par l’équipe"
+      },
+      "access": {
+        "active": "accès actif",
+        "revoked": "accès retiré"
+      },
+      "orders": "Commandes récentes",
+      "noOrders": "Aucune commande."
     }
   }
 }
