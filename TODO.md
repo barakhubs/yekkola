@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-ledger-explorer` (ledger explorer + adjustment form, PR #36 waiting for merge)
-- **Next up:** back-office orders & payments (timeline, recheck) — admin API + screens (1.11 / 2.2)
+- **Current branch:** `feature/prd-09-admin-orders` (back-office orders & payments, PR #37 waiting for merge)
+- **Next up:** back-office users (list, detail, suspend/ban, sign out everywhere) — admin API + screens (1.11 / 2.2)
 
 ## Legend
 
@@ -269,7 +269,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
 - [ ] Courses, categories, featured, takedown
 - [ ] Moderation (reports, reviews, threads)
-- [ ] Orders, payments (recheck), refunds — refunds: staff resource with `policy` + `can` — #35
+- [x] Orders, payments (recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
 - [ ] Settings + audit log + staff endpoints — settings update action validates invariants (bps 0–10000, limits per enabled currency, hold ≥ refund window, schedule enum) and wraps save in a transaction
@@ -333,7 +333,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [ ] Courses, categories (tree + ordering), featured
 - [ ] Moderation (reports, reviews, Q&A)
-- [ ] Orders, payments (timeline, recheck) — refunds queue + decisions done in #35
+- [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [ ] Settings, audit log, staff
