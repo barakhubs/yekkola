@@ -295,7 +295,7 @@ PostgreSQL. Conventions:
 |---|---|---|
 | `ledger_accounts` | id, type, owner_type (`platform`/`professor`), owner_id (null for platform), currency, unique `(type, owner_type, owner_id, currency)` NULLS NOT DISTINCT | Types: `gateway_clearing`, `gateway_fees` (aggregator collection/disbursement fees), `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`, `payer_receivable` (money paid out twice to a payer). |
 | `ledger_transactions` | id, type (`sale`/`sale_reversal`/`unapplied_receipt`/`unapplied_receipt_reversal`/`release`/`refund`/`refund_paid`/`refund_reversal`/`refund_debt`/`refund_settled`/`refund_overpaid`/`refund_paid_reversal`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Unique `(type, reference_type, reference_id)`: a replay can never post twice. Append-only (DB triggers, incl. TRUNCATE). Written only by `PostLedgerTransaction`. |
-| `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor (> 0, CHECK), currency, created_at | Sum of debits = sum of credits per transaction (enforced in `PostLedgerTransaction`, checked in tests and by the integrity job). Append-only (DB trigger). |
+| `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor (> 0, CHECK), currency, created_at | Sum of debits = sum of credits per transaction (enforced in `PostLedgerTransaction`, checked in tests and by `finance:check-ledger` daily: unbalanced, mixed-currency or empty transactions, entries in another currency than their account → critical log, failed run). Append-only (DB trigger). |
 | `payout_batches` | id, status (`draft`/`processing`/`completed`/`partially_failed`), currency, created_by (null = scheduled), approved_by, approved_at | One open (`draft`/`processing`) batch per currency (partial unique index). |
 | `payouts` | id, payout_batch_id, professor_profile_id, amount_minor, currency, rail, msisdn (encrypted), name, reference (`P-{id}`, unique), status (`pending`/`excluded`/`processing`/`paid`/`failed`), gateway, gateway_reference, operator_reference, fee_minor, failure_code, failure_message, excluded_reason, checks, sent_at, last_checked_at, paid_at | Payout method snapshotted at build. |
 
@@ -439,8 +439,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /professor/media/{id} | Media processing status |
 | GET | /professor/analytics/overview | KPIs + time series |
 | GET | /professor/analytics/courses/{id} | Per-course stats, funnel, quiz performance |
-| GET | /professor/earnings | Balances (held/available/paid) |
-| GET | /professor/ledger | Earnings statement |
+| GET | /professor/earnings | Balances per currency (held/available from the ledger, paid out from payouts), monthly earnings (12 months), next payout run |
+| GET | /professor/ledger, /professor/ledger.csv | Statement lines (one per entry on the professor's accounts; `type`, `from`, `to`), or as CSV |
 | GET | /professor/payouts | Payout history |
 | GET | /professor/reviews | Reviews of my courses (`filter[course_id\|rating\|replied]`); `POST /professor/reviews/{id}/reply {reply\|null}` |
 | GET | /professor/threads | Q&A inbox |
@@ -474,7 +474,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET / POST / GET {id} / PATCH {id} | /admin/coupons | Coupons with usage — platform-funded only (`promotions.manage`, audited) |
 | GET / POST / PATCH {id} | /admin/bundles | Bundles (`promotions.manage`, audited); archiving never re-validates prices |
 | GET | /admin/ledger/accounts, /admin/ledger/transactions | Finance views |
-| POST | /admin/ledger/adjustments | Manual adjustment (finance, audited) |
+| POST | /admin/ledger/adjustments | Manual adjustment `{professor_profile_id, currency, amount_minor, direction, label, reason}`: platform revenue ↔ professor available (`finance.adjustments`, `Idempotency-Key`, reason audited, label on the statement) |
 | GET / POST | /admin/payout-batches | List / build |
 | GET | /admin/payout-batches/{id} | Batch with its lines |
 | POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
