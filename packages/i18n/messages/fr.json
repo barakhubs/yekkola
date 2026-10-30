@@ -597,7 +597,150 @@
       "fixItNamed": "Compléter : {item}",
       "editLessonNamed": "Modifier la leçon « {title} »",
       "viewLessonNamed": "Voir la leçon « {title} »",
-      "foldToMove": "Repliez la leçon pour la déplacer"
+      "foldToMove": "Repliez la leçon pour la déplacer",
+      "applyCta": "Postuler pour enseigner"
+    },
+    "teach": {
+      "metaTitle": "Enseigner sur Yekkola",
+      "title": "Partagez votre savoir avec tout le Congo",
+      "subtitle": "Créez vos cours en vidéo, audio, documents et quiz. Les élèves vous suivent depuis n’importe quelle province, même avec peu de données.",
+      "cta": "Postuler pour enseigner",
+      "whyTitle": "Pourquoi enseigner sur Yekkola",
+      "benefits": {
+        "reach": {
+          "title": "Des élèves partout",
+          "body": "Vos cours sont accessibles depuis toutes les provinces, sur téléphone comme sur ordinateur."
+        },
+        "earn": {
+          "title": "Vous fixez vos prix",
+          "body": "Cours gratuits ou payants ; les élèves paient par mobile money et vous êtes payé de la même façon."
+        },
+        "protect": {
+          "title": "Votre contenu protégé",
+          "body": "Vidéos chiffrées, documents marqués au nom de chaque élève : votre travail reste le vôtre."
+        },
+        "trust": {
+          "title": "Des profs choisis",
+          "body": "Chaque professeur et chaque cours sont relus : les élèves savent qu’ils peuvent vous faire confiance."
+        }
+      },
+      "howTitle": "Comment ça marche",
+      "steps": {
+        "apply": {
+          "title": "Postulez",
+          "body": "Présentez vos matières, votre expérience et un exemple de cours. Environ 10 minutes."
+        },
+        "review": {
+          "title": "Nous relisons",
+          "body": "L’équipe Yekkola examine chaque candidature et vous répond, ou vous demande des précisions."
+        },
+        "create": {
+          "title": "Créez vos cours",
+          "body": "Le studio vous guide : sections, leçons, quiz, prix."
+        },
+        "publish": {
+          "title": "Publiez",
+          "body": "Après relecture, votre cours est en ligne et les élèves peuvent s’inscrire."
+        }
+      },
+      "needTitle": "Ce qu’il vous faut",
+      "requirements": {
+        "expertise": "Une vraie maîtrise des matières que vous enseignez.",
+        "experience": "Une expérience d’enseignement (école, université, cours particuliers, formation professionnelle).",
+        "material": "De quoi enregistrer : un téléphone suffit pour commencer.",
+        "phone": "Un compte Yekkola (numéro de téléphone) et un compte mobile money pour être payé."
+      },
+      "finalTitle": "Prêt à enseigner ?",
+      "finalBody": "La candidature est gratuite et se fait depuis votre téléphone."
+    },
+    "apply": {
+      "title": "Candidature professeur",
+      "intro": "Quatre étapes courtes. Votre brouillon est enregistré au fur et à mesure.",
+      "retry": "Réessayer",
+      "progressLabel": "Étapes de la candidature",
+      "stepOf": "Étape {step} sur {total}",
+      "steps": {
+        "about": "Vous",
+        "teaching": "Enseignement",
+        "credentials": "Diplômes et exemple",
+        "motivation": "Motivation et envoi"
+      },
+      "fields": {
+        "fullName": "Nom complet",
+        "province": "Province (facultatif)",
+        "subjects": "Matières enseignées",
+        "levels": "Niveaux enseignés",
+        "years": "Années d’expérience",
+        "institutions": "Établissements actuels ou passés",
+        "credentials": "Diplômes et titres",
+        "files": "Justificatifs (facultatif)",
+        "sample": "Exemple de cours (lien)",
+        "motivation": "Pourquoi voulez-vous enseigner sur Yekkola ?"
+      },
+      "hints": {
+        "fullName": "Le nom affiché sur votre profil et vos cours.",
+        "province": "Aide les élèves à vous situer ; vous enseignez partout quelle que soit votre province.",
+        "subjects": "Ajoutez chaque matière (jusqu’à 10).",
+        "institutions": "Écoles, universités, centres de formation…",
+        "credentials": "Vos diplômes, certifications, prix…",
+        "files": "PDF, JPEG ou PNG, jusqu’à 5 fichiers.",
+        "sample": "Un lien https vers une courte vidéo de vous en train d’enseigner (YouTube, Google Drive…).",
+        "motivation": "Quelques phrases : ce que vous voulez transmettre et à qui."
+      },
+      "provinceNone": "Je préfère ne pas dire",
+      "levels": {
+        "secondary": "Secondaire",
+        "exetat": "Examen d’État",
+        "university": "Université",
+        "professional": "Formation professionnelle"
+      },
+      "addSubject": "Ajouter",
+      "removeSubject": "Retirer {subject}",
+      "removeFile": "Retirer {name}",
+      "uploading": "Envoi du fichier…",
+      "back": "Retour",
+      "next": "Continuer",
+      "submit": "Envoyer ma candidature",
+      "resubmit": "Renvoyer ma candidature",
+      "saving": "Enregistrement…",
+      "savedDraft": "Brouillon enregistré.",
+      "fixErrors": "Corrigez les champs signalés.",
+      "missingTitle": "À compléter avant l’envoi :",
+      "fieldNames": {
+        "full_name": "Nom complet",
+        "subjects": "Matières",
+        "levels": "Niveaux",
+        "years_experience": "Expérience",
+        "motivation": "Motivation",
+        "institutions": "Établissements",
+        "credentials": "Diplômes",
+        "sample_url": "Exemple de cours",
+        "province_id": "Province"
+      },
+      "acceptTerms": "J’accepte le contrat professeur Yekkola.",
+      "needsInfoTitle": "L’équipe Yekkola vous demande des précisions",
+      "expiredNotice": "Votre précédente candidature a expiré faute de réponse. Vous pouvez en commencer une nouvelle.",
+      "status": {
+        "submitted": "Candidature envoyée",
+        "under_review": "Candidature en cours d’examen"
+      },
+      "pendingBody": "Vous pouvez suivre l’avancement sur cette page ; la décision s’y affichera.",
+      "submittedOn": "Envoyée le {date}",
+      "timeline": {
+        "submitted": "Envoyée",
+        "under_review": "En cours d’examen",
+        "decision": "Décision"
+      },
+      "approvedTitle": "Bienvenue parmi les professeurs Yekkola !",
+      "approvedBody": "Votre candidature est acceptée. Le studio est ouvert : créez votre premier cours.",
+      "openStudio": "Ouvrir le studio",
+      "rejectedTitle": "Votre candidature n’a pas été retenue",
+      "reviewerNote": "Message de l’équipe",
+      "reapplyOn": "Vous pourrez postuler à nouveau à partir du {date}.",
+      "applyAgain": "Postuler à nouveau",
+      "backToLearning": "Retour à mes cours",
+      "subjectsAdded": "Matières ajoutées",
+      "fieldOnStep": "{field} (étape {step})"
     }
   },
   "admin": {

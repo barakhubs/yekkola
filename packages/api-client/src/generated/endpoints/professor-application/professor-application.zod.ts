@@ -68,6 +68,12 @@ export const AdminProfessorApplicationsIndexResponse = zod.object({
         submitted_at: zod.string().nullable(),
         decided_at: zod.string().nullable(),
         created_at: zod.string(),
+        missing: zod
+          .array(zod.string())
+          .describe(
+            "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+          ),
+        reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
         applicant: zod.object({
           id: zod.string(),
           name: zod.string().nullable(),
@@ -155,6 +161,12 @@ export const AdminProfessorApplicationsShowResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
       applicant: zod.object({
         id: zod.string(),
         name: zod.string().nullable(),
@@ -211,6 +223,12 @@ export const AdminProfessorApplicationsStartReviewResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
       applicant: zod.object({
         id: zod.string(),
         name: zod.string().nullable(),
@@ -388,6 +406,12 @@ export const AdminProfessorApplicationsRejectResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
       applicant: zod.object({
         id: zod.string(),
         name: zod.string().nullable(),
@@ -458,6 +482,12 @@ export const AdminProfessorApplicationsRequestInfoResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
       applicant: zod.object({
         id: zod.string(),
         name: zod.string().nullable(),

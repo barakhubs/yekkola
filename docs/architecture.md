@@ -409,7 +409,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET / PUT | /professor/application | Application status / create or autosave draft (any signed-in user) |
+| GET / PUT | /professor/application | Application status / create or autosave draft (any signed-in user); includes `missing` (required fields still empty) and `reapply_at` (after a rejection) |
 | POST | /professor/application/submit | Submit with `accept_terms` |
 | POST / DELETE | /professor/application/credentials[/{file}] | Credential files (multipart, max 5) |
 | GET / PATCH | /professor/profile | Own profile (incl. onboarding + terms status) |

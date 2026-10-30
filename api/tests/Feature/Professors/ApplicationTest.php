@@ -56,7 +56,8 @@ it('validates the form fields', function (array $payload, string $field) {
 ]);
 
 it('lists missing fields when submitting an incomplete application', function () {
-    $this->putJson('/api/v1/professor/application', ['subjects' => ['Chimie']]);
+    $this->putJson('/api/v1/professor/application', ['subjects' => ['Chimie']])
+        ->assertJsonPath('data.missing', ['levels', 'years_experience', 'motivation']);
 
     $this->postJson('/api/v1/professor/application/submit', ['accept_terms' => true])
         ->assertUnprocessable()
@@ -127,11 +128,16 @@ it('lets the applicant answer an info request and resubmit', function () {
 });
 
 it('enforces the reapply cooldown after a rejection', function () {
+    $this->freezeTime();
     ProfessorApplication::query()->create([
         'user_id' => $this->applicant->id,
         'status' => ApplicationStatus::Rejected,
         'decided_at' => now(),
     ]);
+
+    $this->getJson('/api/v1/professor/application')
+        ->assertJsonPath('data.reapply_at', now()->addDays(30)->toIso8601String())
+        ->assertJsonPath('data.missing', []);
 
     $this->putJson('/api/v1/professor/application', completeApplication())
         ->assertStatus(409)

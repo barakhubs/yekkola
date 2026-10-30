@@ -28,7 +28,7 @@ function entry(href: string, lastModified?: string | null): MetadataRoute.Sitema
 
 /** Public pages with fr/en alternates (PRD-04 FR-10). Professors are reached through their courses. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const entries: MetadataRoute.Sitemap = [entry("/"), entry("/courses")];
+  const entries: MetadataRoute.Sitemap = [entry("/"), entry("/courses"), entry("/teach")];
 
   try {
     const categories = await getCategories();

@@ -5,12 +5,11 @@ import { type ReactNode, Suspense } from "react";
 
 import { RequireSession } from "@/features/auth/components/require-session";
 import { SiteHeader } from "@/features/layout/components/site-header";
-import { RequireProfessor } from "@/features/studio/components/require-professor";
 
 /** Professor tools are never indexed. */
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-/** Professor studio: client pages behind the session and professor guards (architecture §5.2). */
+/** Professor studio: client pages behind the session guard; course pages also need the professor role (their layout). */
 export default async function StudioLayout({
   children,
   params,
@@ -25,9 +24,7 @@ export default async function StudioLayout({
       <SiteHeader />
       <main id="content" className="flex-1">
         <Suspense>
-          <RequireSession>
-            <RequireProfessor>{children}</RequireProfessor>
-          </RequireSession>
+          <RequireSession>{children}</RequireSession>
         </Suspense>
       </main>
     </div>

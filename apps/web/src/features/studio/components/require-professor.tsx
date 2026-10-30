@@ -25,9 +25,14 @@ export function RequireProfessor({ children }: { children: ReactNode }) {
           title={t("notProfessorTitle")}
           description={t("notProfessorBody")}
           action={
-            <Button asChild variant="outline">
-              <Link href="/my-courses">{t("backToLearning")}</Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button asChild>
+                <Link href="/studio/apply">{t("applyCta")}</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/my-courses">{t("backToLearning")}</Link>
+              </Button>
+            </div>
           }
         />
       </div>

@@ -9749,6 +9749,20 @@
                     "created_at": {
                         "type": "string"
                     },
+                    "missing": {
+                        "type": "array",
+                        "description": "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "reapply_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "ISO 8601 date, only for a rejected application"
+                    },
                     "applicant": {
                         "type": "object",
                         "properties": {
@@ -9830,6 +9844,8 @@
                     "submitted_at",
                     "decided_at",
                     "created_at",
+                    "missing",
+                    "reapply_at",
                     "applicant",
                     "reviewer_id",
                     "review_started_at",
@@ -12297,6 +12313,20 @@
                     },
                     "created_at": {
                         "type": "string"
+                    },
+                    "missing": {
+                        "type": "array",
+                        "description": "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "reapply_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "ISO 8601 date, only for a rejected application"
                     }
                 },
                 "required": [
@@ -12316,7 +12346,9 @@
                     "decision_note",
                     "submitted_at",
                     "decided_at",
-                    "created_at"
+                    "created_at",
+                    "missing",
+                    "reapply_at"
                 ],
                 "title": "ProfessorApplicationResource"
             },

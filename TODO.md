@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-10-26
+> Last updated: 2026-10-28
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-review` (web milestone 1 step 8, PR #23 open — waiting for merge)
-- **Next up:** after milestone 1 — the rest of Phase 2 (student account, studio onboarding, back office)
+- **Current branch:** `feature/prd-02-web-application` (PR #25 open — waiting for merge)
+- **Next up:** studio onboarding (profile, KYC, payout method) — 2.5
 
 ## Legend
 
@@ -138,7 +138,7 @@ Cannot be defaulted:
 - [ ] Link application/profile subjects to catalogue categories — with 1.6
 - [ ] Hide suspended professors' courses from catalogue and search — with 1.6
 - [ ] Sample lesson upload (≤ 5 min) through Mux — now possible with the Mux driver; wire into the application form
-- [ ] Notifications on application/KYC decisions — with 1.12
+- [ ] Notifications on application/KYC decisions — with 1.12 (the web status page says to check back until then)
 - [ ] Check payout number prefix matches the chosen rail — with the payment aggregator (phase 4)
 - [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
 
@@ -349,7 +349,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Show a "try again" state when the API rate-limits a public page (429) instead of the error page
 - [x] Professor page — #18
 - [x] Certificate verification page (noindex) — #18
-- [ ] "Teach on Yekkola" page (PRD-02)
+- [x] "Teach on Yekkola" page (`/teach`, in the sitemap and footer) — #25
 - [ ] Legal pages
 - [ ] Lighthouse CI budgets on public pages
 
@@ -382,7 +382,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 ### 2.5 Web app — professor studio — PRD-02, 03, 08
 
-- [ ] Application flow + status
+- [x] Application flow + status: four steps with autosave, credential files, sample link, agreement, submitted / needs info / approved / rejected (with reapply date) / expired — #25
 - [ ] Onboarding checklist, profile, KYC upload, payout method
 - [x] Course list + course editor (details, cover, category/level/audience, curriculum DnD with keyboard, pricing, status banner) — #22
 - [x] Video/audio uploader (chunked, resumes offline, survives tab changes) + processing status — #22

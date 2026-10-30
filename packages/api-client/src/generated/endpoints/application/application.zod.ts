@@ -44,6 +44,12 @@ export const ProfessorApplicationShowResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
     })
     .and(zod.looseObject({})),
 });
@@ -146,6 +152,12 @@ export const ProfessorApplicationSaveResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
     })
     .and(zod.looseObject({})),
 });
@@ -192,6 +204,12 @@ export const ProfessorApplicationSubmitResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
     })
     .and(zod.looseObject({})),
 });
@@ -240,6 +258,12 @@ export const ProfessorApplicationCredentialsStoreResponse = zod.object({
       submitted_at: zod.string().nullable(),
       decided_at: zod.string().nullable(),
       created_at: zod.string(),
+      missing: zod
+        .array(zod.string())
+        .describe(
+          "What still blocks submission (empty once submitted), and when a rejected applicant may apply again.",
+        ),
+      reapply_at: zod.string().nullable().describe("ISO 8601 date, only for a rejected application"),
     })
     .and(zod.looseObject({})),
 });
