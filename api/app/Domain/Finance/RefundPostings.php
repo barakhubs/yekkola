@@ -25,8 +25,7 @@ use App\Domain\Shared\ValueObjects\Money;
  * - overpaid: an attempt that went through when nothing was owed any more → `payer_receivable`;
  * - reversed: the operator gave a payout back — that attempt's posting mirrored.
  * Unapplied money is already in `refunds_payable`, so only its payout is posted.
- *
- * TODO(1.10): once held earnings are released, take the professor part from available (may go negative).
+ * The professor share comes back from held, or from available once released (EarningsRelease).
  */
 final class RefundPostings
 {
@@ -44,7 +43,7 @@ final class RefundPostings
         [$professor, $platform, $platformDiscount] = SaleSplit::of($item);
 
         return $this->post->handle(LedgerTransactionType::Refund, self::REFUND, $refund->id, [
-            EntryLine::debit(LedgerAccountType::ProfessorHeld, $professor, $item->professor_profile_id),
+            EntryLine::debit(EarningsRelease::professorAccount($item), $professor, $item->professor_profile_id),
             EntryLine::debit(LedgerAccountType::PlatformRevenue, $platform),
             EntryLine::credit(LedgerAccountType::DiscountsPlatform, $platformDiscount),
             EntryLine::credit(LedgerAccountType::RefundsPayable, $item->price()),

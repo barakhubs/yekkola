@@ -7,6 +7,7 @@ namespace App\Domain\Finance\Actions;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Payment;
+use App\Domain\Finance\EarningsRelease;
 use App\Domain\Finance\EntryLine;
 use App\Domain\Finance\Enums\LedgerAccountType;
 use App\Domain\Finance\Enums\LedgerTransactionType;
@@ -42,7 +43,7 @@ final class PostOrderReversal
             }
 
             [$professor, $platform, $platformDiscount] = SaleSplit::of($item);
-            $lines[] = EntryLine::debit(LedgerAccountType::ProfessorHeld, $professor, $item->professor_profile_id);
+            $lines[] = EntryLine::debit(EarningsRelease::professorAccount($item), $professor, $item->professor_profile_id);
             $lines[] = EntryLine::debit(LedgerAccountType::PlatformRevenue, $platform);
             $lines[] = EntryLine::credit(LedgerAccountType::DiscountsPlatform, $platformDiscount);
             $lines[] = EntryLine::credit(LedgerAccountType::GatewayClearing, $item->price());

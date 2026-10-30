@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-web-bundles` (bundles, PR #31 waiting for merge)
-- **Next up:** finance postings and payouts (1.10) — needed before professors can be paid
+- **Current branch:** `feature/prd-08-ledger-release` (earnings release, PR #32 waiting for merge)
+- **Next up:** payout batches with the fake disbursement driver (1.10, PRD-08 FR-06–08, FR-13)
 
 ## Legend
 
@@ -249,10 +249,10 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 ### 1.10 Finance — PRD-08
 
 - [x] Ledger accounts/transactions/entries + posting service (FR-01) — core in 1.7a, #10
-- [ ] Sale, release, refund postings (FR-02–05)
+- [x] Sale, release, refund postings (FR-02–05) — release job + refunds from available after release, #32
 - [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
 - [ ] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward (shares can hold centimes)
-- [ ] Sale reversal and refunds after release: take the professor part from available (`PostOrderReversal`, `RefundPostings` TODOs) — required before payouts
+- [x] Sale reversal and refunds after release: take the professor part from available — #32
 - [ ] Earnings + statement endpoints (FR-09)
 - [ ] Manual adjustments (FR-11)
 - [ ] Ledger integrity job (FR-12)
