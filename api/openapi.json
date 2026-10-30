@@ -4227,6 +4227,557 @@
                 }
             }
         },
+        "/professor/earnings": {
+            "get": {
+                "operationId": "professor.earnings.show",
+                "summary": "Held, available and paid out per currency; earnings per month for the last 12 months; next payout run",
+                "tags": [
+                    "Earnings"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "balances": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "currency": {
+                                                                "type": "string"
+                                                            },
+                                                            "held": {
+                                                                "type": "integer"
+                                                            },
+                                                            "available": {
+                                                                "type": "integer"
+                                                            },
+                                                            "in_payout": {
+                                                                "type": "integer"
+                                                            },
+                                                            "paid_out": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "currency",
+                                                            "held",
+                                                            "available",
+                                                            "in_payout",
+                                                            "paid_out"
+                                                        ]
+                                                    }
+                                                },
+                                                "monthly": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "month": {
+                                                                "type": "string"
+                                                            },
+                                                            "currency": {
+                                                                "type": "string"
+                                                            },
+                                                            "amount_minor": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "month",
+                                                            "currency",
+                                                            "amount_minor"
+                                                        ]
+                                                    }
+                                                },
+                                                "next_payout_on": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "balances",
+                                                "monthly",
+                                                "next_payout_on"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/professor/ledger": {
+            "get": {
+                "operationId": "professor.ledger.index",
+                "summary": "Statement lines, newest first; filter by `type` and dates (`from`, `to`, inclusive)",
+                "tags": [
+                    "Earnings"
+                ],
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/LedgerTransactionType"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `StatementLineResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/StatementLineResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/ledger.csv": {
+            "get": {
+                "operationId": "professor.ledger.csv",
+                "summary": "The same statement as a CSV file (same filters)",
+                "tags": [
+                    "Earnings"
+                ],
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/components/schemas/LedgerTransactionType"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "text/csv; charset=UTF-8": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/payouts": {
+            "get": {
+                "operationId": "professor.payouts.index",
+                "tags": [
+                    "Earnings"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `PayoutResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PayoutResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/courses/{course}/enroll": {
             "post": {
                 "operationId": "courses.enroll",
@@ -5233,6 +5784,110 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/ledger/adjustments": {
+            "post": {
+                "operationId": "admin.ledger.adjustments.store",
+                "tags": [
+                    "LedgerAdjustment"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AdjustmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "memo": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "created_at": {
+                                                    "type": "string"
+                                                },
+                                                "entries": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "account": {
+                                                                "type": "string"
+                                                            },
+                                                            "owner_id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "direction": {
+                                                                "type": "string"
+                                                            },
+                                                            "amount_minor": {
+                                                                "type": "integer"
+                                                            },
+                                                            "currency": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "account",
+                                                            "owner_id",
+                                                            "direction",
+                                                            "amount_minor",
+                                                            "currency"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "type",
+                                                "memo",
+                                                "created_at",
+                                                "entries"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -9825,6 +10480,51 @@
     },
     "components": {
         "schemas": {
+            "AdjustmentRequest": {
+                "type": "object",
+                "properties": {
+                    "professor_profile_id": {
+                        "type": "string"
+                    },
+                    "currency": {
+                        "$ref": "#/components/schemas/Currency"
+                    },
+                    "amount_minor": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100000000000
+                    },
+                    "direction": {
+                        "type": "string",
+                        "description": "`credit`: the platform owes the professor more; `debit`: taken back.",
+                        "enum": [
+                            "credit",
+                            "debit"
+                        ]
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "Shown to the professor on their statement.",
+                        "minLength": 3,
+                        "maxLength": 200
+                    },
+                    "reason": {
+                        "type": "string",
+                        "description": "Internal, kept in the audit log.",
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "professor_profile_id",
+                    "currency",
+                    "amount_minor",
+                    "direction",
+                    "label",
+                    "reason"
+                ],
+                "title": "AdjustmentRequest"
+            },
             "AdminCourseVersionDetailResource": {
                 "type": "object",
                 "properties": {
@@ -12191,6 +12891,28 @@
                 ],
                 "title": "LearningViewResource"
             },
+            "LedgerTransactionType": {
+                "type": "string",
+                "description": "Kinds of ledger postings; one of each kind per reference.\n| |\n|---|\n| `sale` <br/>  |\n| `sale_reversal` <br/>  |\n| `unapplied_receipt` <br/>  |\n| `unapplied_receipt_reversal` <br/>  |\n| `release` <br/>  |\n| `refund` <br/>  |\n| `refund_paid` <br/>  |\n| `refund_reversal` <br/> An approved refund called off (payment reversed before its money went out). |\n| `refund_settled` <br/> A payout that failed after the operator had already given the payer the money back. |\n| `refund_overpaid` <br/> A payout attempt that went through when nothing was owed any more: the payer was paid twice. |\n| `refund_debt` <br/> The operator gave the payer their money back while our payout was out (or in flight): a payer debt. |\n| `refund_paid_reversal` <br/> A completed payout the operator reversed: the money came back. |\n| `payout` <br/>  |\n| `payout_failed` <br/>  |\n| `adjustment` <br/>  |",
+                "enum": [
+                    "sale",
+                    "sale_reversal",
+                    "unapplied_receipt",
+                    "unapplied_receipt_reversal",
+                    "release",
+                    "refund",
+                    "refund_paid",
+                    "refund_reversal",
+                    "refund_settled",
+                    "refund_overpaid",
+                    "refund_debt",
+                    "refund_paid_reversal",
+                    "payout",
+                    "payout_failed",
+                    "adjustment"
+                ],
+                "title": "LedgerTransactionType"
+            },
             "LessonType": {
                 "type": "string",
                 "description": "Lesson kinds (PRD-03).\n",
@@ -14100,6 +14822,67 @@
                     "rail"
                 ],
                 "title": "StartPaymentRequest"
+            },
+            "StatementLineResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "sale, sale_reversal, release, refund, refund_reversal, payout, payout_failed, adjustment"
+                    },
+                    "account": {
+                        "type": "string",
+                        "description": "professor_held or professor_available"
+                    },
+                    "amount": {
+                        "type": "object",
+                        "properties": {
+                            "amount_minor": {
+                                "type": [
+                                    "integer",
+                                    "string"
+                                ]
+                            },
+                            "currency": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "amount_minor",
+                            "currency"
+                        ]
+                    },
+                    "memo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Order number, payout reference, or the adjustment's label."
+                    },
+                    "reference_type": {
+                        "type": "string"
+                    },
+                    "reference_id": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "date",
+                    "type",
+                    "account",
+                    "amount",
+                    "memo",
+                    "reference_type",
+                    "reference_id"
+                ],
+                "title": "StatementLineResource"
             },
             "StoreLessonRequest": {
                 "type": "object",

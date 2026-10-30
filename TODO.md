@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-08-payout-batches` (payout batches, PR #33 waiting for merge)
-- **Next up:** earnings + statement endpoints, manual adjustments, ledger integrity job (1.10, PRD-08 FR-09, FR-11, FR-12)
+- **Current branch:** `feature/prd-08-earnings-adjustments` (earnings, adjustments, ledger check, PR #34 waiting for merge)
+- **Next up:** admin API (1.11) with its back-office screens — finance views first (ledger explorer, payout batches, refunds)
 
 ## Legend
 
@@ -256,9 +256,10 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Back-office payout batch screens (with 2.2 Finance)
 - [x] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward — #33
 - [x] Sale reversal and refunds after release: take the professor part from available — #32
-- [ ] Earnings + statement endpoints (FR-09)
-- [ ] Manual adjustments (FR-11)
-- [ ] Ledger integrity job (FR-12)
+- [x] Earnings + statement endpoints, CSV (FR-09) — #34
+- [ ] Monthly statement PDF (FR-10, Should)
+- [x] Manual adjustments (FR-11) — #34
+- [x] Ledger integrity job (FR-12) — #34; alert routing with 1.12
 
 ### 1.11 Admin API — PRD-09
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
 use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
+use App\Http\Controllers\Api\V1\Admin\LedgerAdjustmentController;
 use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleContro
 use App\Http\Controllers\Api\V1\Professor\CouponController as StudioCouponController;
 use App\Http\Controllers\Api\V1\Professor\CourseController;
 use App\Http\Controllers\Api\V1\Professor\DraftController;
+use App\Http\Controllers\Api\V1\Professor\EarningsController;
 use App\Http\Controllers\Api\V1\Professor\KycController;
 use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
@@ -169,6 +171,12 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
     Route::post('/profile/avatar', [StudioProfileController::class, 'avatar'])->middleware('throttle:uploads')->name('profile.avatar');
     Route::post('/terms/accept', [StudioProfileController::class, 'acceptTerms'])->name('terms.accept');
 
+    // Earnings (PRD-08 FR-09)
+    Route::get('/earnings', [EarningsController::class, 'show'])->name('earnings.show');
+    Route::get('/ledger', [EarningsController::class, 'statement'])->name('ledger.index');
+    Route::get('/ledger.csv', [EarningsController::class, 'statementCsv'])->name('ledger.csv');
+    Route::get('/payouts', [EarningsController::class, 'payouts'])->name('payouts.index');
+
     Route::get('/kyc', [KycController::class, 'show'])->name('kyc.show');
     Route::post('/kyc', [KycController::class, 'store'])->middleware('throttle:uploads')->name('kyc.store');
 
@@ -262,6 +270,11 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/payout-batches/{batch}', [PayoutBatchController::class, 'show'])->name('payout-batches.show');
         Route::post('/payout-batches/{batch}/approve', [PayoutBatchController::class, 'approve'])->middleware('idempotent')->name('payout-batches.approve');
         Route::post('/payouts/{payout}/exclude', [PayoutBatchController::class, 'exclude'])->name('payouts.exclude');
+    });
+
+    // Manual ledger adjustments (PRD-08 FR-11)
+    Route::middleware('can:'.Permission::FinanceAdjustments->value)->group(function () {
+        Route::post('/ledger/adjustments', [LedgerAdjustmentController::class, 'store'])->middleware('idempotent')->name('ledger.adjustments.store');
     });
 
     // Coupons and bundles (PRD-09 FR-13): a combinable permission, like finance
