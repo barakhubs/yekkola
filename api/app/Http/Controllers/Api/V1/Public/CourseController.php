@@ -8,10 +8,12 @@ use App\Domain\Authoring\Models\Course;
 use App\Domain\Catalog\Actions\BrowseCourses;
 use App\Domain\Catalog\Actions\HomeRails;
 use App\Domain\Catalog\DownloadEstimate;
+use App\Domain\Commerce\Models\Bundle;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalog\BrowseCoursesRequest;
 use App\Http\Resources\Catalog\CourseCardResource;
 use App\Http\Resources\Catalog\CourseDetailResource;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -41,6 +43,7 @@ final class CourseController extends Controller
                 'professor.province',
                 'category.parent',
                 'liveVersion.sections.lessons.media',
+                'bundles' => self::bundlesOnSale(...),
             ])
             ->firstOrFail();
 
@@ -62,5 +65,16 @@ final class CourseController extends Controller
             'new' => CourseCardResource::collection($rail['new']),
             'free' => CourseCardResource::collection($rail['free']),
         ]];
+    }
+
+    /**
+     * Bundles on sale with their size, for the course page offers (PRD-05 FR-13).
+     *
+     * @param  BelongsToMany<Bundle, Course>  $bundles
+     * @return BelongsToMany<Bundle, Course>
+     */
+    private static function bundlesOnSale(BelongsToMany $bundles): BelongsToMany
+    {
+        return $bundles->onSale()->withCount('courses');
     }
 }

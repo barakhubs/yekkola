@@ -8,6 +8,7 @@ use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\Section;
 use App\Domain\Catalog\DownloadEstimate;
+use App\Domain\Commerce\Models\Bundle;
 use App\Domain\Platform\Settings\CommerceSettings;
 use App\Http\Resources\PublicProfessorResource;
 use Illuminate\Http\Request;
@@ -74,7 +75,27 @@ final class CourseDetailResource extends JsonResource
             'updated_at' => $live->reviewed_at?->toIso8601String(),
             /** Someone (a parent, signed in or not) may pay for a student's access (setting "separate payer", PRD-05 FR-14). */
             'can_buy_for_others' => $this->canBuyForOthers(),
+            'bundles' => $this->bundleOffers(),
         ];
+    }
+
+    /**
+     * Bundles on sale that include this course, for the "save with a bundle" offers (PRD-05 FR-13).
+     *
+     * @return list<array{slug: string, title: string, price: array{amount_minor: int, currency: string}, course_count: int}>
+     */
+    private function bundleOffers(): array
+    {
+        if (! $this->relationLoaded('bundles')) {
+            return [];
+        }
+
+        return $this->bundles->map(fn (Bundle $b) => [
+            'slug' => $b->slug,
+            'title' => $b->title,
+            'price' => $b->price()->toArray(),
+            'course_count' => (int) $b->getAttribute('courses_count'),
+        ])->values()->all();
     }
 
     private function canBuyForOthers(): bool
