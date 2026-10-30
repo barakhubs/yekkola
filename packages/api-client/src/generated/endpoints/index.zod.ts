@@ -40,5 +40,6 @@ export * from "./receipt/receipt.zod";
 export * from "./refund/refund.zod";
 export * from "./review/review.zod";
 export * from "./studio-profile/studio-profile.zod";
+export * from "./user/user.zod";
 export * from "./video-webhook/video-webhook.zod";
 export * from "./wishlist/wishlist.zod";

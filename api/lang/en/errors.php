@@ -151,6 +151,10 @@ return [
         'exhausted' => 'This promo code has reached its maximum number of uses.',
         'already_used' => 'You have already used this promo code.',
     ],
+    'user' => [
+        'own_status' => 'You can\'t change your own account\'s status.',
+        'staff_protected' => 'Only a staff manager can change a staff member\'s status.',
+    ],
     'payout' => [
         'batch_open' => 'A payout batch is already open in this currency.',
         'nothing_to_pay' => 'No professor can be paid right now.',

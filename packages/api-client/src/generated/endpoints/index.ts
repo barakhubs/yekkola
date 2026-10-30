@@ -40,5 +40,6 @@ export * from "./receipt/receipt";
 export * from "./refund/refund";
 export * from "./review/review";
 export * from "./studio-profile/studio-profile";
+export * from "./user/user";
 export * from "./video-webhook/video-webhook";
 export * from "./wishlist/wishlist";
