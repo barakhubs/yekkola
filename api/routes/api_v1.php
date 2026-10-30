@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
 use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\LedgerAdjustmentController;
+use App\Http\Controllers\Api\V1\Admin\LedgerController;
 use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
@@ -270,6 +271,12 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/payout-batches/{batch}', [PayoutBatchController::class, 'show'])->name('payout-batches.show');
         Route::post('/payout-batches/{batch}/approve', [PayoutBatchController::class, 'approve'])->middleware('idempotent')->name('payout-batches.approve');
         Route::post('/payouts/{payout}/exclude', [PayoutBatchController::class, 'exclude'])->name('payouts.exclude');
+    });
+
+    // Ledger explorer (PRD-09 finance views)
+    Route::middleware('can:'.Permission::FinanceView->value)->group(function () {
+        Route::get('/ledger/accounts', [LedgerController::class, 'accounts'])->name('ledger.accounts.index');
+        Route::get('/ledger/transactions', [LedgerController::class, 'transactions'])->name('ledger.transactions.index');
     });
 
     // Manual ledger adjustments (PRD-08 FR-11)

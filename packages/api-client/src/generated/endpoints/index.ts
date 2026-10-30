@@ -20,6 +20,7 @@ export * from "./guest-order/guest-order";
 export * from "./kyc/kyc";
 export * from "./kyc-submission/kyc-submission";
 export * from "./learning/learning";
+export * from "./ledger/ledger";
 export * from "./ledger-adjustment/ledger-adjustment";
 export * from "./logout/logout";
 export * from "./media/media";
