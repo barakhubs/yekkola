@@ -5,8 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course.
+ */
 export type ProfessorProfileResourceOnboarding = {
-  profile_complete: string;
+  profile_complete: boolean;
   kyc_verified: boolean;
   payout_method_set: boolean;
+  first_course: boolean;
 };

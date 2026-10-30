@@ -46,5 +46,6 @@ export interface ProfessorProfileResource {
   payout_hold_until: string | null;
   is_payable: boolean;
   terms: ProfessorProfileResourceTerms;
+  /** The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course. */
   onboarding: ProfessorProfileResourceOnboarding;
 }

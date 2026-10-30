@@ -23,7 +23,19 @@ it('shows the professor their own profile with onboarding status', function () {
         ->assertOk()
         ->assertJsonPath('data.slug', 'marie-kabila')
         ->assertJsonPath('data.terms.accepted', true)
-        ->assertJsonPath('data.onboarding', ['profile_complete' => false, 'kyc_verified' => false, 'payout_method_set' => false]);
+        ->assertJsonPath('data.onboarding', ['profile_complete' => false, 'kyc_verified' => false, 'payout_method_set' => false, 'first_course' => false]);
+});
+
+it('ticks the first course once one is sent for review', function () {
+    Storage::fake('local');
+    Storage::fake('public');
+    $professor = actingAsProfessor();
+    $course = courseReadyForReview($professor);
+    $this->getJson('/api/v1/professor/profile')->assertJsonPath('data.onboarding.first_course', false);
+
+    $this->postJson("/api/v1/professor/courses/{$course->id}/submit")->assertOk();
+
+    $this->getJson('/api/v1/professor/profile')->assertJsonPath('data.onboarding.first_course', true);
 });
 
 it('updates the profile and lets the slug change only once', function () {
