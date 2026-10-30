@@ -16,6 +16,6 @@ Read the app's `CLAUDE.md` and the PRD first. Brand rules: `project-context.md` 
 7. **States:** loading (skeletons), empty, error (with retry), and permission-denied for every data view.
 8. **i18n:** every string in fr + en catalogues; money/dates/phones via shared formatters.
 9. **Styling:** theme tokens only (`primary` indigo, `brand-accent` amber). Never white text on amber. Mobile-first in apps/web.
-10. **Tests:** component tests for logic-heavy pieces; add/extend a Playwright journey for critical flows.
+10. **Tests:** only for logic-heavy pieces (pull the logic into a plain function and unit-test it). No Playwright or browser walkthroughs for routine screens.
 
 Done when: typecheck + lint pass, works at 360 px width (web), both locales render, no direct `fetch`.

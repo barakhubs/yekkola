@@ -11,6 +11,6 @@ description: Write or update a Yekkola PRD in docs/prd/ using the project templa
    - Header table: Status, Phase, Related
    - 1 Summary · 2 Goals & non-goals · 3 User stories · 4 Functional requirements (`FR-NN`, Must/Should/Could) · 5 Business rules (`BR-NN`) · 6 UX notes · 7 Edge cases · 8 Acceptance criteria (checkboxes) · 9 Analytics events (`object_action`) · 10 Open questions
 4. **Never renumber** existing FR/BR IDs — they're referenced by tickets and commits. Deprecate with ~~strikethrough~~ and a note instead.
-5. Anything not decided → mark **Open**; don't invent values. Values the admin controls → reference *Platform settings* instead of hard numbers.
+5. Anything not decided → mark **Open**; don't invent values. Values the admin controls → reference _Platform settings_ instead of hard numbers.
 6. Respect product principles: full product (not pilot), not tied to any city, French first, mobile/offline-first, data-cost aware.
 7. If the PRD implies schema or endpoint changes, update `docs/architecture.md` accordingly.

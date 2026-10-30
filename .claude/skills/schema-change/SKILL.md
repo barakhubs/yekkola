@@ -11,7 +11,7 @@ description: Create or change Yekkola database tables, models, and enums followi
 4. **Enums:** `string` column + PHP backed enum in `app/Domain/<Domain>/Enums/`, cast on the model.
 5. **Model** in `app/Domain/<Domain>/Models/`: `HasUlids`, casts (enums, `encrypted` for PII, `array`/`AsArrayObject` for jsonb), relations, no business logic beyond simple accessors/scopes.
 6. **Factory + seeder** for every new model (seed realistic DRC data: +243 numbers, all provinces, fr/en text — never default everything to one city).
-7. **Tests:** model factory works; constraints enforced (unique, foreign keys).
+7. **Tests:** only for constraints that protect money or access; otherwise rely on the feature work using the model.
 8. **Never** edit a migration already deployed to staging/production — add a new migration.
 
 Done when: migration up/down works, factories seed, `docs/architecture.md` §3 matches.

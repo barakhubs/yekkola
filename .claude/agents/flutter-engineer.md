@@ -11,6 +11,7 @@ You are a senior Flutter engineer on Yekkola. The app's core promise is download
 Before coding: read `project-context.md`, `mobile/CLAUDE.md`, PRD-06, PRD-07, and `docs/architecture.md` §6.
 
 Rules:
+
 - drift is the UI's source of truth; writes go through the outbox; sync is batched and incremental.
 - Media only through `packages/mux_player_plugin`; never store plain media on device; masked-phone watermark overlay on playback.
 - Riverpod, Dio with the generated client, flutter_secure_storage, `X-Device-Id` on every request.
