@@ -343,3 +343,331 @@ export const MeOrdersIndexResponse = zod.object({
       .describe("Total number of items being paginated."),
   }),
 });
+
+export const adminOrdersIndexQueryPageDefault = 1;
+export const adminOrdersIndexQueryPerPageDefault = 15;
+
+export const AdminOrdersIndexQueryParams = zod.object({
+  page: zod.int().default(adminOrdersIndexQueryPageDefault),
+  per_page: zod.int().default(adminOrdersIndexQueryPerPageDefault),
+  "filter[status]": zod.string().optional().describe("One order status or several, comma-separated."),
+  "filter[number]": zod.string().optional().describe("Order number (exact)."),
+  "filter[phone]": zod.string().optional().describe("Student or buyer phone number."),
+  "filter[flag]": zod.string().optional().describe("Only flagged orders: a flag, or `any`."),
+  "filter[currency]": zod.string().optional(),
+  "filter[stuck]": zod
+    .string()
+    .optional()
+    .describe("`1`: orders with a payment still waiting after 10 minutes."),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` or `total_minor`; prefix `-` for newest/largest first (default `-created_at`)."),
+});
+
+export const adminOrdersIndexResponseMetaPerPageMin = 0;
+
+export const adminOrdersIndexResponseMetaTotalMin = 0;
+
+export const AdminOrdersIndexResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.string(),
+      number: zod.string(),
+      status: zod.string(),
+      flag: zod
+        .string()
+        .nullable()
+        .describe(
+          "late_success, amount_mismatch, reversed, duplicate_payment, already_enrolled, coupon_over_limit",
+        ),
+      total: zod.object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      }),
+      student: zod.object({
+        name: zod.string().nullable(),
+        phone: zod.string().nullable(),
+      }),
+      buyer: zod
+        .object({
+          name: zod.string().nullable(),
+          phone: zod.string().nullable(),
+        })
+        .nullable()
+        .describe("The person who paid, when not the student."),
+      courses: zod.array(zod.string()),
+      latest_payment_status: zod.string().nullable(),
+      created_at: zod.string(),
+      paid_at: zod.string().nullable(),
+    }),
+  ),
+  links: zod.object({
+    first: zod.string().nullable(),
+    last: zod.string().nullable(),
+    prev: zod.string().nullable(),
+    next: zod.string().nullable(),
+  }),
+  meta: zod.object({
+    current_page: zod.int().min(1),
+    from: zod.int().min(1).nullable(),
+    last_page: zod.int().min(1),
+    links: zod
+      .array(
+        zod.object({
+          url: zod.string().nullable(),
+          label: zod.string(),
+          active: zod.boolean(),
+        }),
+      )
+      .describe("Generated paginator links."),
+    path: zod.string().nullable().describe("Base path for paginator generated URLs."),
+    per_page: zod
+      .int()
+      .min(adminOrdersIndexResponseMetaPerPageMin)
+      .describe("Number of items shown per page."),
+    to: zod.int().min(1).nullable().describe("Number of the last item in the slice."),
+    total: zod
+      .int()
+      .min(adminOrdersIndexResponseMetaTotalMin)
+      .describe("Total number of items being paginated."),
+  }),
+});
+
+export const AdminOrdersShowParams = zod.object({
+  order: zod.string().describe("The order ID"),
+});
+
+export const AdminOrdersShowResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    number: zod.string(),
+    status: zod.string(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe(
+        "late_success, amount_mismatch, reversed, duplicate_payment, already_enrolled, coupon_over_limit",
+      ),
+    total: zod.object({
+      amount_minor: zod.int(),
+      currency: zod.string(),
+    }),
+    student: zod.object({
+      name: zod.string().nullable(),
+      phone: zod.string().nullable(),
+    }),
+    buyer: zod
+      .object({
+        name: zod.string().nullable(),
+        phone: zod.string().nullable(),
+      })
+      .nullable()
+      .describe("The person who paid, when not the student."),
+    courses: zod.array(zod.string()),
+    latest_payment_status: zod.string().nullable(),
+    created_at: zod.string(),
+    paid_at: zod.string().nullable(),
+    subtotal: zod.object({
+      amount_minor: zod.int(),
+      currency: zod.string(),
+    }),
+    discount: zod.object({
+      amount_minor: zod.int(),
+      currency: zod.string(),
+    }),
+    expires_at: zod.string(),
+    paid_payment_id: zod.string().nullable(),
+    items: zod.array(
+      zod.object({
+        id: zod.string(),
+        course_id: zod.string(),
+        title: zod.string(),
+        price: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        granted_at: zod.string().nullable(),
+        enrollment_status: zod.string().nullable(),
+      }),
+    ),
+    payments: zod.array(
+      zod.object({
+        id: zod.string(),
+        status: zod.string(),
+        rail: zod.string(),
+        msisdn: zod.string(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        confirmed_amount_minor: zod.int().nullable(),
+        fee_minor: zod.int().nullable(),
+        operator_reference: zod.string().nullable(),
+        failure_code: zod.string().nullable(),
+        failure_message: zod.string().nullable(),
+        flag: zod.string().nullable(),
+        checks: zod.int(),
+        last_checked_at: zod.string().nullable(),
+        created_at: zod.string(),
+        succeeded_at: zod.string().nullable(),
+        events: zod.array(
+          zod.object({
+            event_id: zod.string(),
+            received_at: zod.string(),
+            processed_at: zod.string().nullable(),
+            error: zod.string().nullable(),
+            attempts: zod.int(),
+          }),
+        ),
+        can: zod
+          .object({
+            recheck: zod.boolean(),
+          })
+          .describe("A reversed payment is over; anything else may still change at the gateway."),
+      }),
+    ),
+    refunds: zod.array(
+      zod.object({
+        id: zod.string(),
+        status: zod.string(),
+        course: zod.string().nullable(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        created_at: zod.string(),
+      }),
+    ),
+    ledger: zod.array(
+      zod.object({
+        id: zod.string(),
+        type: zod.string(),
+        reference_type: zod.string(),
+        memo: zod.string().nullable(),
+        created_at: zod.string(),
+      }),
+    ),
+  }),
+});
+
+/**
+ * @summary Asks the gateway again about one payment (the status API is the source of truth) and shows the order as it
+now stands. Safe to repeat
+ */
+export const AdminPaymentsRecheckParams = zod.object({
+  payment: zod.string().describe("The payment ID"),
+});
+
+export const AdminPaymentsRecheckResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    number: zod.string(),
+    status: zod.string(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe(
+        "late_success, amount_mismatch, reversed, duplicate_payment, already_enrolled, coupon_over_limit",
+      ),
+    total: zod.object({
+      amount_minor: zod.int(),
+      currency: zod.string(),
+    }),
+    student: zod.object({
+      name: zod.string().nullable(),
+      phone: zod.string().nullable(),
+    }),
+    buyer: zod
+      .object({
+        name: zod.string().nullable(),
+        phone: zod.string().nullable(),
+      })
+      .nullable()
+      .describe("The person who paid, when not the student."),
+    courses: zod.array(zod.string()),
+    latest_payment_status: zod.string().nullable(),
+    created_at: zod.string(),
+    paid_at: zod.string().nullable(),
+    subtotal: zod.object({
+      amount_minor: zod.int(),
+      currency: zod.string(),
+    }),
+    discount: zod.object({
+      amount_minor: zod.int(),
+      currency: zod.string(),
+    }),
+    expires_at: zod.string(),
+    paid_payment_id: zod.string().nullable(),
+    items: zod.array(
+      zod.object({
+        id: zod.string(),
+        course_id: zod.string(),
+        title: zod.string(),
+        price: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        granted_at: zod.string().nullable(),
+        enrollment_status: zod.string().nullable(),
+      }),
+    ),
+    payments: zod.array(
+      zod.object({
+        id: zod.string(),
+        status: zod.string(),
+        rail: zod.string(),
+        msisdn: zod.string(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        confirmed_amount_minor: zod.int().nullable(),
+        fee_minor: zod.int().nullable(),
+        operator_reference: zod.string().nullable(),
+        failure_code: zod.string().nullable(),
+        failure_message: zod.string().nullable(),
+        flag: zod.string().nullable(),
+        checks: zod.int(),
+        last_checked_at: zod.string().nullable(),
+        created_at: zod.string(),
+        succeeded_at: zod.string().nullable(),
+        events: zod.array(
+          zod.object({
+            event_id: zod.string(),
+            received_at: zod.string(),
+            processed_at: zod.string().nullable(),
+            error: zod.string().nullable(),
+            attempts: zod.int(),
+          }),
+        ),
+        can: zod
+          .object({
+            recheck: zod.boolean(),
+          })
+          .describe("A reversed payment is over; anything else may still change at the gateway."),
+      }),
+    ),
+    refunds: zod.array(
+      zod.object({
+        id: zod.string(),
+        status: zod.string(),
+        course: zod.string().nullable(),
+        amount: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        created_at: zod.string(),
+      }),
+    ),
+    ledger: zod.array(
+      zod.object({
+        id: zod.string(),
+        type: zod.string(),
+        reference_type: zod.string(),
+        memo: zod.string().nullable(),
+        created_at: zod.string(),
+      }),
+    ),
+  }),
+});

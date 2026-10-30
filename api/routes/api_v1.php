@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\LedgerAdjustmentController;
 use App\Http\Controllers\Api\V1\Admin\LedgerController;
+use App\Http\Controllers\Api\V1\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
@@ -271,6 +272,13 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/payout-batches/{batch}', [PayoutBatchController::class, 'show'])->name('payout-batches.show');
         Route::post('/payout-batches/{batch}/approve', [PayoutBatchController::class, 'approve'])->middleware('idempotent')->name('payout-batches.approve');
         Route::post('/payouts/{payout}/exclude', [PayoutBatchController::class, 'exclude'])->name('payouts.exclude');
+    });
+
+    // Orders and payments (PRD-09 FR-11)
+    Route::middleware('can:'.Permission::CommerceView->value)->group(function () {
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+        Route::post('/payments/{payment}/recheck', [AdminOrderController::class, 'recheck'])->middleware('throttle:payments')->name('payments.recheck');
     });
 
     // Ledger explorer (PRD-09 finance views)

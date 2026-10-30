@@ -962,7 +962,8 @@
       "courseReviews": "Course reviews",
       "refunds": "Refunds",
       "payouts": "Payouts",
-      "ledger": "Ledger"
+      "ledger": "Ledger",
+      "orders": "Orders"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1323,6 +1324,84 @@
         "reason": "Reason",
         "reasonHint": "Internal: kept in the audit log.",
         "save": "Save the adjustment"
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "intro": "Orders and payments. Find an order by number or phone.",
+      "search": "Search",
+      "searchHint": "Order number or phone",
+      "allStatuses": "All statuses",
+      "show": "Show",
+      "showAll": "All",
+      "showStuck": "Stuck payments (> 10 min)",
+      "showFlagged": "Flagged",
+      "empty": "No orders.",
+      "columns": {
+        "number": "Order",
+        "student": "Student",
+        "courses": "Courses",
+        "total": "Total",
+        "status": "Status",
+        "created": "Created"
+      },
+      "status": {
+        "pending": "Created",
+        "awaiting_payment": "Awaiting payment",
+        "paid": "Paid",
+        "expired": "Expired",
+        "cancelled": "Cancelled",
+        "reversed": "Reversed by operator",
+        "refunded": "Refunded",
+        "partially_refunded": "Partly refunded"
+      },
+      "paymentStatus": {
+        "initiated": "Started",
+        "pending": "Pending",
+        "succeeded": "Succeeded",
+        "failed": "Failed",
+        "expired": "Expired",
+        "reversed": "Reversed"
+      },
+      "flags": {
+        "late_success": "Late payment",
+        "amount_mismatch": "Amount differs",
+        "reversed": "Reversed by operator",
+        "duplicate_payment": "Paid twice",
+        "already_enrolled": "Already enrolled",
+        "coupon_over_limit": "Coupon over limit"
+      },
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "access": {
+        "active": "Access active",
+        "revoked": "Access removed",
+        "none": "No access given"
+      },
+      "back": "All orders",
+      "detailTitle": "Order {number}",
+      "buyer": "Paid by",
+      "paidAt": "Paid on",
+      "amounts": "Amounts",
+      "items": "Courses",
+      "payments": "Payments",
+      "noPayments": "No payment started.",
+      "recheck": "Recheck with the operator",
+      "checks": "{count, plural, =0 {Never checked} one {# check} other {# checks}}",
+      "lastChecked": "last on {date}",
+      "operatorRef": "operator ref. {ref}",
+      "timeline": "Timeline",
+      "events": {
+        "created": "Order created",
+        "paymentStarted": "Payment started ({rail})",
+        "webhook": "Operator notification received",
+        "webhookError": "Operator notification failed: {error}",
+        "paymentSucceeded": "Payment confirmed",
+        "refundRequested": "Refund requested ({status})",
+        "ledger": "Ledger posting: {type}"
       }
     }
   }

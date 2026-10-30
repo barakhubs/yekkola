@@ -13,6 +13,7 @@ import {
   LogOut,
   ReceiptText,
   ShieldAlert,
+  ShoppingCart,
   Wallet,
   WifiOff,
 } from "lucide-react";
@@ -28,6 +29,7 @@ const NAV = [
   { href: "/", key: "home", icon: LayoutDashboard, permission: null },
   { href: "/applications", key: "applications", icon: GraduationCap, permission: "moderation.review" },
   { href: "/moderation/courses", key: "courseReviews", icon: BookCheck, permission: "moderation.review" },
+  { href: "/orders", key: "orders", icon: ShoppingCart, permission: "commerce.view" },
   { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
   { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
   { href: "/finance/ledger", key: "ledger", icon: BookOpenText, permission: "finance.view" },

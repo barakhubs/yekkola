@@ -962,7 +962,8 @@
       "courseReviews": "Relecture des cours",
       "refunds": "Remboursements",
       "payouts": "Versements",
-      "ledger": "Grand livre"
+      "ledger": "Grand livre",
+      "orders": "Commandes"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1323,6 +1324,84 @@
         "reason": "Raison",
         "reasonHint": "Interne : gardée dans le journal d’audit.",
         "save": "Enregistrer l’ajustement"
+      }
+    },
+    "orders": {
+      "title": "Commandes",
+      "intro": "Commandes et paiements. Retrouvez une commande par numéro ou par téléphone.",
+      "search": "Rechercher",
+      "searchHint": "N° de commande ou téléphone",
+      "allStatuses": "Tous les statuts",
+      "show": "Afficher",
+      "showAll": "Toutes",
+      "showStuck": "Paiements bloqués (> 10 min)",
+      "showFlagged": "Signalées",
+      "empty": "Aucune commande.",
+      "columns": {
+        "number": "Commande",
+        "student": "Étudiant",
+        "courses": "Cours",
+        "total": "Total",
+        "status": "Statut",
+        "created": "Créée le"
+      },
+      "status": {
+        "pending": "Créée",
+        "awaiting_payment": "En attente de paiement",
+        "paid": "Payée",
+        "expired": "Expirée",
+        "cancelled": "Annulée",
+        "reversed": "Annulée par l’opérateur",
+        "refunded": "Remboursée",
+        "partially_refunded": "Remboursée en partie"
+      },
+      "paymentStatus": {
+        "initiated": "Lancé",
+        "pending": "En attente",
+        "succeeded": "Réussi",
+        "failed": "Échoué",
+        "expired": "Expiré",
+        "reversed": "Annulé"
+      },
+      "flags": {
+        "late_success": "Paiement tardif",
+        "amount_mismatch": "Montant différent",
+        "reversed": "Annulé par l’opérateur",
+        "duplicate_payment": "Payé deux fois",
+        "already_enrolled": "Déjà inscrit",
+        "coupon_over_limit": "Coupon dépassé"
+      },
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "access": {
+        "active": "Accès actif",
+        "revoked": "Accès retiré",
+        "none": "Pas d’accès donné"
+      },
+      "back": "Toutes les commandes",
+      "detailTitle": "Commande {number}",
+      "buyer": "Payé par",
+      "paidAt": "Payée le",
+      "amounts": "Montants",
+      "items": "Cours",
+      "payments": "Paiements",
+      "noPayments": "Aucun paiement lancé.",
+      "recheck": "Vérifier auprès de l’opérateur",
+      "checks": "{count, plural, =0 {Jamais vérifié} one {# vérification} other {# vérifications}}",
+      "lastChecked": "dernière le {date}",
+      "operatorRef": "réf. opérateur {ref}",
+      "timeline": "Historique",
+      "events": {
+        "created": "Commande créée",
+        "paymentStarted": "Paiement lancé ({rail})",
+        "webhook": "Notification de l’opérateur reçue",
+        "webhookError": "Notification de l’opérateur en erreur : {error}",
+        "paymentSucceeded": "Paiement confirmé",
+        "refundRequested": "Remboursement demandé ({status})",
+        "ledger": "Écriture comptable : {type}"
       }
     }
   }
