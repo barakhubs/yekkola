@@ -15,5 +15,7 @@ Schedule::command('model:prune', ['--model' => [OtpChallenge::class, DataExport:
 // Commerce (PRD-05 FR-10)
 Schedule::command('commerce:reconcile')->everyFiveMinutes()->withoutOverlapping(10)->onOneServer();
 
-// Finance (PRD-08 FR-03)
+// Finance (PRD-08 FR-03, FR-06, FR-08)
 Schedule::command('finance:release-earnings')->hourly()->withoutOverlapping(60)->onOneServer();
+Schedule::command('finance:build-payout-batches')->dailyAt('04:00')->onOneServer();
+Schedule::command('finance:sync-payouts')->everyFiveMinutes()->withoutOverlapping(10)->onOneServer();

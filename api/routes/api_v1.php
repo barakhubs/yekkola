@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
 use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
+use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
@@ -252,6 +253,15 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::post('/refunds/{refund}/reject', [AdminRefundController::class, 'reject'])->name('refunds.reject');
         Route::post('/refunds/{refund}/retry', [AdminRefundController::class, 'retry'])->name('refunds.retry');
         Route::post('/payments/{payment}/refund', [AdminRefundController::class, 'refundUnapplied'])->name('payments.refund');
+    });
+
+    // Professor payouts (PRD-08 FR-06–FR-08)
+    Route::middleware('can:'.Permission::FinancePayouts->value)->group(function () {
+        Route::get('/payout-batches', [PayoutBatchController::class, 'index'])->name('payout-batches.index');
+        Route::post('/payout-batches', [PayoutBatchController::class, 'store'])->name('payout-batches.store');
+        Route::get('/payout-batches/{batch}', [PayoutBatchController::class, 'show'])->name('payout-batches.show');
+        Route::post('/payout-batches/{batch}/approve', [PayoutBatchController::class, 'approve'])->middleware('idempotent')->name('payout-batches.approve');
+        Route::post('/payouts/{payout}/exclude', [PayoutBatchController::class, 'exclude'])->name('payouts.exclude');
     });
 
     // Coupons and bundles (PRD-09 FR-13): a combinable permission, like finance

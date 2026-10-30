@@ -151,6 +151,13 @@ return [
         'exhausted' => 'Ce code promo a déjà été utilisé le nombre maximal de fois.',
         'already_used' => 'Vous avez déjà utilisé ce code promo.',
     ],
+    'payout' => [
+        'batch_open' => 'Un lot de versements est déjà ouvert dans cette devise.',
+        'nothing_to_pay' => 'Aucun professeur ne peut être payé pour le moment.',
+        'batch_not_draft' => 'Ce lot n’est plus en préparation.',
+        'not_pending' => 'Ce versement n’est plus en attente.',
+        'own_payout' => 'Vous ne pouvez pas approuver un lot qui vous verse de l’argent.',
+    ],
     'refund' => [
         'not_refundable' => 'Ce cours ne peut pas être remboursé.',
         'window_closed' => 'Le délai de remboursement de :days jours est dépassé.',
