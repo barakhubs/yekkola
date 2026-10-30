@@ -473,6 +473,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/payments/{id}/refund | Send back a payment's unapplied money (`finance.refunds`) |
 | GET / POST / GET {id} / PATCH {id} | /admin/coupons | Coupons with usage — platform-funded only (`promotions.manage`, audited) |
 | GET / POST / PATCH {id} | /admin/bundles | Bundles (`promotions.manage`, audited); archiving never re-validates prices |
+| GET | /admin/users, /admin/users/{id} | Accounts (`users.view`): search by phone or name, filter status/role; detail with devices, recent enrollments and orders, `can` |
+| POST | /admin/users/{id}/status, /admin/users/{id}/sign-out | Suspend / ban / reactivate `{status, note}` (suspend or ban signs out everywhere; a ban recounts the ratings of courses they reviewed), sign out everywhere (`users.manage`; never one's own account; staff accounts need `staff.manage`; audited) |
+| DELETE | /admin/users/{id}/devices/{device} | Remove a device (`users.manage`, audited) |
 | GET | /admin/orders, /admin/orders/{id} | Orders (`commerce.view`): filters status, number, phone (student or buyer), flag, currency, `stuck` (a payment waiting > 10 min); detail with items + access, payment attempts + gateway events, refunds, ledger transactions |
 | POST | /admin/payments/{id}/recheck | Ask the gateway again about a payment (audited); returns the order detail |
 | GET | /admin/ledger/accounts, /admin/ledger/transactions | Ledger explorer (`finance.view`): accounts with debits/credits/balance and the professor's name (filters: type, currency, owner); transactions with entries (filters: type, reference, account, dates) |

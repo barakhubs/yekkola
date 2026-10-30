@@ -135,4 +135,14 @@ final class IdentityException extends DomainException
     {
         return new self('export.in_progress', 409);
     }
+
+    public static function ownAccountStatus(): self
+    {
+        return new self('user.own_status', 403);
+    }
+
+    public static function staffAccountProtected(): self
+    {
+        return new self('user.staff_protected', 403);
+    }
 }

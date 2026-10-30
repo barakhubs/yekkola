@@ -151,6 +151,10 @@ return [
         'exhausted' => 'Ce code promo a déjà été utilisé le nombre maximal de fois.',
         'already_used' => 'Vous avez déjà utilisé ce code promo.',
     ],
+    'user' => [
+        'own_status' => 'Vous ne pouvez pas changer le statut de votre propre compte.',
+        'staff_protected' => 'Seul un responsable du personnel peut changer le statut d’un membre du personnel.',
+    ],
     'payout' => [
         'batch_open' => 'Un lot de versements est déjà ouvert dans cette devise.',
         'nothing_to_pay' => 'Aucun professeur ne peut être payé pour le moment.',

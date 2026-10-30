@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
 use App\Http\Controllers\Api\V1\Commerce\CheckoutController;
@@ -272,6 +273,17 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/payout-batches/{batch}', [PayoutBatchController::class, 'show'])->name('payout-batches.show');
         Route::post('/payout-batches/{batch}/approve', [PayoutBatchController::class, 'approve'])->middleware('idempotent')->name('payout-batches.approve');
         Route::post('/payouts/{payout}/exclude', [PayoutBatchController::class, 'exclude'])->name('payouts.exclude');
+    });
+
+    // Accounts (PRD-09 FR-04)
+    Route::middleware('can:'.Permission::UsersView->value)->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+    });
+    Route::middleware('can:'.Permission::UsersManage->value)->group(function () {
+        Route::post('/users/{user}/status', [AdminUserController::class, 'status'])->name('users.status');
+        Route::post('/users/{user}/sign-out', [AdminUserController::class, 'signOut'])->name('users.sign-out');
+        Route::delete('/users/{user}/devices/{device}', [AdminUserController::class, 'removeDevice'])->name('users.devices.destroy');
     });
 
     // Orders and payments (PRD-09 FR-11)

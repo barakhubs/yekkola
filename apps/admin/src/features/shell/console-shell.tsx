@@ -14,6 +14,7 @@ import {
   ReceiptText,
   ShieldAlert,
   ShoppingCart,
+  Users,
   Wallet,
   WifiOff,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const NAV = [
   { href: "/", key: "home", icon: LayoutDashboard, permission: null },
   { href: "/applications", key: "applications", icon: GraduationCap, permission: "moderation.review" },
   { href: "/moderation/courses", key: "courseReviews", icon: BookCheck, permission: "moderation.review" },
+  { href: "/users", key: "users", icon: Users, permission: "users.view" },
   { href: "/orders", key: "orders", icon: ShoppingCart, permission: "commerce.view" },
   { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
   { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },

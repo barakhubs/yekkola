@@ -11062,6 +11062,413 @@
                 }
             }
         },
+        "/admin/users": {
+            "get": {
+                "operationId": "admin.users.index",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[q]",
+                        "in": "query",
+                        "description": "A phone number, or part of a name.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "`active`, `suspended` or `banned`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[role]",
+                        "in": "query",
+                        "description": "`student`, `professor`, `moderator`, `admin` or `super_admin`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` or `last_seen_at`; prefix `-` for newest first (default `-created_at`).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AdminUserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminUserResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/users/{user}": {
+            "get": {
+                "operationId": "admin.users.show",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AdminUserDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUserDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/users/{user}/status": {
+            "post": {
+                "operationId": "admin.users.status",
+                "summary": "Suspend (may sign in to read why), ban (may not sign in) or reactivate; suspending or banning signs the account\nout everywhere. A reason (`note`) is required",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminUserDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUserDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/users/{user}/sign-out": {
+            "post": {
+                "operationId": "admin.users.sign-out",
+                "summary": "Ends every session and app token of the account (e.g. a lost phone)",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AdminUserDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUserDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/users/{user}/devices/{device}": {
+            "delete": {
+                "operationId": "admin.users.devices.destroy",
+                "summary": "Removes one registered device: it is signed out and its downloads stop at its next sync",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "device",
+                        "in": "path",
+                        "required": true,
+                        "description": "The device ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AdminUserDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUserDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/webhooks/video": {
             "post": {
                 "operationId": "webhooks.video",
@@ -12668,6 +13075,324 @@
                     "can"
                 ],
                 "title": "AdminRefundResource"
+            },
+            "AdminUserDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Null once the account is anonymised."
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "is_staff": {
+                        "type": "boolean"
+                    },
+                    "last_seen_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "deletion_requested_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "locale": {
+                        "type": "string"
+                    },
+                    "province": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "city": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "last_login_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "professor_profile_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Their professor profile, if they teach."
+                    },
+                    "devices": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "platform": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "app_version": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "last_active_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "registered_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "platform",
+                                "name",
+                                "app_version",
+                                "last_active_at",
+                                "registered_at"
+                            ]
+                        }
+                    },
+                    "enrollment_count": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "enrollments": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "course_id": {
+                                    "type": "string"
+                                },
+                                "course": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "source": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "string"
+                                },
+                                "progress_pct": {
+                                    "type": "integer"
+                                },
+                                "enrolled_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "course_id",
+                                "course",
+                                "source",
+                                "status",
+                                "progress_pct",
+                                "enrolled_at"
+                            ]
+                        }
+                    },
+                    "orders": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "number": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "string"
+                                },
+                                "total": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount_minor": {
+                                            "type": "integer"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount_minor",
+                                        "currency"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "number",
+                                "status",
+                                "total",
+                                "created_at"
+                            ]
+                        }
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "suspend": {
+                                "type": "string"
+                            },
+                            "ban": {
+                                "type": "string"
+                            },
+                            "reactivate": {
+                                "type": "string"
+                            },
+                            "sign_out": {
+                                "type": "string"
+                            },
+                            "remove_device": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "suspend",
+                            "ban",
+                            "reactivate",
+                            "sign_out",
+                            "remove_device"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "phone",
+                    "status",
+                    "roles",
+                    "is_staff",
+                    "last_seen_at",
+                    "deletion_requested_at",
+                    "created_at",
+                    "email",
+                    "locale",
+                    "province",
+                    "city",
+                    "last_login_at",
+                    "professor_profile_id",
+                    "devices",
+                    "enrollment_count",
+                    "enrollments",
+                    "orders",
+                    "can"
+                ],
+                "title": "AdminUserDetailResource"
+            },
+            "AdminUserResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Null once the account is anonymised."
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "is_staff": {
+                        "type": "boolean"
+                    },
+                    "last_seen_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "deletion_requested_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "phone",
+                    "status",
+                    "roles",
+                    "is_staff",
+                    "last_seen_at",
+                    "deletion_requested_at",
+                    "created_at"
+                ],
+                "title": "AdminUserResource"
             },
             "Audience": {
                 "type": "string",
@@ -17455,6 +18180,34 @@
                     "created_at"
                 ],
                 "title": "UserResource"
+            },
+            "UserStatus": {
+                "type": "string",
+                "enum": [
+                    "active",
+                    "suspended",
+                    "banned"
+                ],
+                "title": "UserStatus"
+            },
+            "UserStatusRequest": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/UserStatus"
+                    },
+                    "note": {
+                        "type": "string",
+                        "description": "Why: kept in the audit log.",
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "status",
+                    "note"
+                ],
+                "title": "UserStatusRequest"
             },
             "VerifyOtpRequest": {
                 "type": "object",

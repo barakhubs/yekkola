@@ -963,7 +963,8 @@
       "refunds": "Refunds",
       "payouts": "Payouts",
       "ledger": "Ledger",
-      "orders": "Orders"
+      "orders": "Orders",
+      "users": "Accounts"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1403,6 +1404,72 @@
         "refundRequested": "Refund requested ({status})",
         "ledger": "Ledger posting: {type}"
       }
+    },
+    "users": {
+      "title": "Accounts",
+      "intro": "Students, professors and staff. Search by phone or name.",
+      "search": "Search",
+      "searchHint": "Phone or name",
+      "allStatuses": "All statuses",
+      "allRoles": "All roles",
+      "empty": "No accounts.",
+      "noName": "No name",
+      "columns": {
+        "name": "Name",
+        "phone": "Phone",
+        "roles": "Roles",
+        "status": "Status",
+        "lastSeen": "Last seen",
+        "created": "Created"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended",
+        "banned": "Banned"
+      },
+      "roles": {
+        "student": "Student",
+        "professor": "Professor",
+        "moderator": "Moderator",
+        "admin": "Admin",
+        "super_admin": "Super admin"
+      },
+      "back": "All accounts",
+      "email": "Email",
+      "place": "Location",
+      "lastLogin": "Last sign-in",
+      "deletionRequested": "Deletion requested on",
+      "reason": "Reason (kept in the audit log)",
+      "confirmTitle": "{action} — {name}?",
+      "reactivate": "Reactivate",
+      "reactivateHint": "The account can sign in and follow its courses again.",
+      "suspend": "Suspend",
+      "suspendHint": "The account is signed out everywhere. It can sign in to read why, but can't follow courses.",
+      "ban": "Ban",
+      "banHint": "The account is signed out everywhere and can't sign in again. Its reviews are hidden.",
+      "signOut": "Sign out everywhere",
+      "signOutConfirm": "Sign this account out everywhere?",
+      "signOutHint": "Every session and app will have to sign in again (e.g. a lost phone).",
+      "devices": "Devices",
+      "noDevices": "No registered devices.",
+      "removeDevice": "Remove",
+      "removeDeviceConfirm": "Remove this device?",
+      "removeDeviceHint": "It is signed out and its downloads stop at its next sync.",
+      "enrollments": "Enrollments ({count})",
+      "noEnrollments": "No enrollments.",
+      "sources": {
+        "purchase": "Purchase",
+        "free": "Free",
+        "coupon": "Coupon",
+        "bundle": "Bundle",
+        "admin": "By staff"
+      },
+      "access": {
+        "active": "access active",
+        "revoked": "access removed"
+      },
+      "orders": "Recent orders",
+      "noOrders": "No orders."
     }
   }
 }
