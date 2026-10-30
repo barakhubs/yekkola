@@ -155,7 +155,8 @@
       "linkCopied": "Link copied",
       "moreReviews": "More reviews",
       "anonymous": "Student",
-      "ratingOutOf5": "{rating} out of 5"
+      "ratingOutOf5": "{rating} out of 5",
+      "payForStudent": "Pay for this course for a student"
     },
     "professor": {
       "courses": "Courses by {name}",
@@ -919,6 +920,17 @@
       "deleteBody": "You'll lose access to your courses, progress and certificates. You can cancel during the waiting period.",
       "deletionScheduled": "Your account will be deleted on {date}.",
       "keepAccount": "Keep my account"
+    },
+    "gift": {
+      "title": "Pay for “{course}” for a student",
+      "intro": "No account needed: enter the student's number, then pay with mobile money.",
+      "signedIn": "You're signed in: use the usual checkout and tick “for another student”.",
+      "toCheckout": "Go to checkout",
+      "payer": "Paying number (optional)",
+      "payerHint": "The mobile money number that gets the payment request. You can also choose it in the next step.",
+      "alreadyOwned": "This student already has access to this course.",
+      "continue": "Continue",
+      "missingToken": "This order link is incomplete. Open the link you got when placing order {order}."
     }
   },
   "admin": {

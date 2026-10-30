@@ -144,6 +144,11 @@ export default async function CoursePage({ params }: Props) {
               className="text-2xl font-extrabold"
             />
             <EnrollButton courseId={course.id} slug={slug} isFree={course.is_free} />
+            {course.can_buy_for_others ? (
+              <Link href={`/courses/${slug}/gift`} className="text-sm font-semibold text-primary underline">
+                {t("course.payForStudent")}
+              </Link>
+            ) : null}
             {preview ? (
               <PreviewButton
                 lessonUid={preview.uid}
