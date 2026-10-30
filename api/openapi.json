@@ -10940,6 +10940,10 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "can_buy_for_others": {
+                        "type": "boolean",
+                        "description": "Someone (a parent, signed in or not) may pay for a student's access (setting \"separate payer\", PRD-05 FR-14)."
                     }
                 },
                 "required": [
@@ -10966,7 +10970,8 @@
                     "sections",
                     "lesson_count",
                     "download_bytes",
-                    "updated_at"
+                    "updated_at",
+                    "can_buy_for_others"
                 ],
                 "title": "CourseDetailResource"
             },

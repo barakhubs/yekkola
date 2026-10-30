@@ -258,6 +258,11 @@ export const CoursesShowResponse = zod.object({
     lesson_count: zod.int(),
     download_bytes: zod.int(),
     updated_at: zod.string().nullable(),
+    can_buy_for_others: zod
+      .boolean()
+      .describe(
+        'Someone (a parent, signed in or not) may pay for a student\'s access (setting "separate payer", PRD-05 FR-14).',
+      ),
   }),
 });
 

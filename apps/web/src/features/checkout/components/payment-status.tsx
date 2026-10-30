@@ -3,8 +3,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ApiError, apiUrl, success } from "@yekkola/api-client";
 import { useCheckoutRails } from "@yekkola/api-client/endpoints/checkout";
+import { guestOrdersPay, guestOrdersShow } from "@yekkola/api-client/endpoints/guest-order";
 import { ordersPay, ordersShow } from "@yekkola/api-client/endpoints/order";
-import type { Currency, MobileMoneyRail, OrderResource } from "@yekkola/api-client/model";
+import type {
+  Currency,
+  MobileMoneyRail,
+  OrderResource,
+  StartPaymentRequest,
+} from "@yekkola/api-client/model";
 import { formatMoney, formatPhone, type Locale } from "@yekkola/i18n";
 import { EmptyState } from "@yekkola/ui/blocks/empty-state";
 import { Button } from "@yekkola/ui/components/button";
@@ -27,10 +33,33 @@ const TERMINAL = new Set(["paid", "expired", "cancelled", "reversed", "refunded"
 const BACKOFF_MS = [2_000, 2_000, 3_000, 3_000, 5_000, 5_000, 8_000];
 
 /**
+ * The order's endpoints: the student's own, or a guest order opened with its token (a parent paying without an
+ * account, PRD-05 FR-14).
+ */
+function orderApi(guestToken: string | null) {
+  const guest = guestToken ? { headers: { "X-Order-Token": guestToken } } : null;
+
+  return {
+    show: async (id: string) =>
+      success(guest ? await guestOrdersShow(id, guest) : await ordersShow(id)).data as OrderResource,
+    pay: (id: string, body: StartPaymentRequest, key: string) =>
+      guest
+        ? guestOrdersPay(id, body, { headers: { ...guest.headers, "Idempotency-Key": key } })
+        : ordersPay(id, body, { headers: { "Idempotency-Key": key } }),
+  };
+}
+
+/**
  * After the payment request (PRD-05 FR-06–FR-09): "approve on your phone", then success or a clear reason
  * with a retry on the same order until it expires. Success is shown only once the API confirms it.
  */
-export function PaymentStatus({ orderId }: { orderId: string }) {
+export function PaymentStatus({
+  orderId,
+  guestToken = null,
+}: {
+  orderId: string;
+  guestToken?: string | null;
+}) {
   const t = useTranslations("web.checkout");
   const errors = useTranslations("errors");
   const locale = useLocale() as Locale;
@@ -39,7 +68,7 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
 
   const order = useQuery({
     queryKey: ["order", orderId],
-    queryFn: async () => success(await ordersShow(orderId)).data,
+    queryFn: () => orderApi(guestToken).show(orderId),
     refetchInterval: (query) => {
       const status = query.state.data?.status;
       const latest = query.state.data?.payments[0]?.status;
@@ -115,16 +144,19 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
           <h1 ref={heading} tabIndex={-1} className="text-2xl font-extrabold focus:outline-none">
             {t("paidTitle")}
           </h1>
-          <p>{o.is_gift ? t("paidGiftBody") : t("paidBody")}</p>
+          <p>{o.is_gift || guestToken ? t("paidGiftBody") : t("paidBody")}</p>
           <div className="flex flex-wrap justify-center gap-2">
-            {o.items[0] && !o.is_gift ? (
+            {o.items[0] && !o.is_gift && !guestToken ? (
               <Button asChild size="lg">
                 <Link href={`/learn/${o.items[0].course_id}`}>{t("startLearning")}</Link>
               </Button>
             ) : null}
-            <Button asChild variant="outline" size="lg">
-              <a href={receiptUrl(o.id)}>{t("receipt")}</a>
-            </Button>
+            {/* The receipt link uses the session cookie; a guest has none. */}
+            {guestToken ? null : (
+              <Button asChild variant="outline" size="lg">
+                <a href={receiptUrl(o.id)}>{t("receipt")}</a>
+              </Button>
+            )}
           </div>
         </section>
       ) : null}
@@ -152,7 +184,7 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
               <p className="text-sm text-muted-foreground">{t("retryOther")}</p>
             </>
           ) : null}
-          <RetryPayment order={o} onSent={refresh} />
+          <RetryPayment order={o} guestToken={guestToken} onSent={refresh} />
           <ExpiresIn expiresAt={o.expires_at} onExpired={refresh} />
         </section>
       ) : null}
@@ -165,7 +197,15 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
           action={
             o.items[0] ? (
               <Button asChild>
-                <Link href={`/checkout?course=${o.items[0].course_id}`}>{t("startOver")}</Link>
+                <Link
+                  href={
+                    guestToken
+                      ? `/courses/${o.items[0].course_slug}/gift`
+                      : `/checkout?course=${o.items[0].course_id}`
+                  }
+                >
+                  {t("startOver")}
+                </Link>
               </Button>
             ) : null
           }
@@ -184,7 +224,15 @@ export function receiptUrl(orderId: string): string {
  * Same order, another try: same or another operator and number (PRD-05 FR-09). A try the API answered gets a new
  * idempotency key; one lost on the network is sent again with the same key.
  */
-function RetryPayment({ order, onSent }: { order: OrderResource; onSent: () => void }) {
+function RetryPayment({
+  order,
+  guestToken,
+  onSent,
+}: {
+  order: OrderResource;
+  guestToken: string | null;
+  onSent: () => void;
+}) {
   const t = useTranslations("web.checkout");
   const errors = useTranslations("errors");
   const locale = useLocale() as Locale;
@@ -204,10 +252,11 @@ function RetryPayment({ order, onSent }: { order: OrderResource; onSent: () => v
   const retry = useMutation({
     mutationFn: async (chosen: MobileMoneyRail) =>
       withIdempotencyKey(payKeyScope(order), async (key) =>
-        ordersPay(
+        // A guest's empty number means the payer named on the order.
+        orderApi(guestToken).pay(
           order.id,
           { rail: chosen, msisdn: msisdnOf(payer ?? user?.phone ?? "") },
-          { headers: { "Idempotency-Key": key } },
+          key,
         ),
       ),
     onSuccess: onSent,

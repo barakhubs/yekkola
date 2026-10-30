@@ -8,6 +8,7 @@ use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\Section;
 use App\Domain\Catalog\DownloadEstimate;
+use App\Domain\Platform\Settings\CommerceSettings;
 use App\Http\Resources\PublicProfessorResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -71,6 +72,13 @@ final class CourseDetailResource extends JsonResource
             'lesson_count' => (int) $live->sections->sum(fn (Section $s) => $s->lessons->count()),
             'download_bytes' => $downloadBytes,
             'updated_at' => $live->reviewed_at?->toIso8601String(),
+            /** Someone (a parent, signed in or not) may pay for a student's access (setting "separate payer", PRD-05 FR-14). */
+            'can_buy_for_others' => $this->canBuyForOthers(),
         ];
+    }
+
+    private function canBuyForOthers(): bool
+    {
+        return app(CommerceSettings::class)->separate_payer_enabled && $this->price_minor > 0;
     }
 }

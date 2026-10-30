@@ -155,7 +155,8 @@
       "linkCopied": "Lien copié",
       "moreReviews": "Plus d’avis",
       "anonymous": "Étudiant",
-      "ratingOutOf5": "{rating} sur 5"
+      "ratingOutOf5": "{rating} sur 5",
+      "payForStudent": "Payer ce cours pour un élève"
     },
     "professor": {
       "courses": "Cours de {name}",
@@ -919,6 +920,17 @@
       "deleteBody": "Tu perdras l’accès à tes cours, ta progression et tes certificats. Tu peux annuler pendant le délai de suppression.",
       "deletionScheduled": "Ton compte sera supprimé le {date}.",
       "keepAccount": "Garder mon compte"
+    },
+    "gift": {
+      "title": "Payer « {course} » pour un élève",
+      "intro": "Pas besoin de compte : indique le numéro de l’élève, puis paie par mobile money.",
+      "signedIn": "Tu es connecté : utilise le paiement habituel et coche « pour un autre élève ».",
+      "toCheckout": "Aller au paiement",
+      "payer": "Numéro qui paie (facultatif)",
+      "payerHint": "Le numéro mobile money qui recevra la demande de paiement. Tu pourras aussi le choisir à l’étape suivante.",
+      "alreadyOwned": "Cet élève a déjà accès à ce cours.",
+      "continue": "Continuer",
+      "missingToken": "Ce lien de commande est incomplet. Ouvre le lien reçu au moment de la commande {order}."
     }
   },
   "admin": {

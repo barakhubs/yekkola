@@ -43,4 +43,6 @@ export interface CourseDetailResource {
   download_bytes: number;
   /** @nullable */
   updated_at: string | null;
+  /** Someone (a parent, signed in or not) may pay for a student's access (setting "separate payer", PRD-05 FR-14). */
+  can_buy_for_others: boolean;
 }
