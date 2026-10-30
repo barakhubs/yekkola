@@ -15,5 +15,5 @@ export interface DeviceResource {
   registered_at: string;
   /** @nullable */
   last_active_at: string | null;
-  is_current: string;
+  is_current: boolean;
 }

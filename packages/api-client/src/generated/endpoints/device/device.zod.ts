@@ -18,7 +18,7 @@ export const MeDevicesIndexResponse = zod.object({
       app_version: zod.string().nullable(),
       registered_at: zod.string(),
       last_active_at: zod.string().nullable(),
-      is_current: zod.string(),
+      is_current: zod.boolean(),
     }),
   ),
 });

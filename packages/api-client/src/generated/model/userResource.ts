@@ -25,5 +25,10 @@ export interface UserResource {
   permissions: string[];
   /** @nullable */
   deletion_requested_at: string | null;
+  /**
+   * When the account is erased unless the request is cancelled (FR-11).
+   * @nullable
+   */
+  deletion_scheduled_for: string | null;
   created_at: string;
 }

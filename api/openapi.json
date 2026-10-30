@@ -11301,7 +11301,7 @@
                         ]
                     },
                     "is_current": {
-                        "type": "string"
+                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -14284,6 +14284,13 @@
                             "null"
                         ]
                     },
+                    "deletion_scheduled_for": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "When the account is erased unless the request is cancelled (FR-11)."
+                    },
                     "created_at": {
                         "type": "string"
                     }
@@ -14301,6 +14308,7 @@
                     "is_staff",
                     "permissions",
                     "deletion_requested_at",
+                    "deletion_scheduled_for",
                     "created_at"
                 ],
                 "title": "UserResource"

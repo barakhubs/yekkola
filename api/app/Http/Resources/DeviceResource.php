@@ -19,8 +19,6 @@ final class DeviceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $token = $request->user()?->currentAccessToken();
-
         return [
             'id' => $this->id,
             'platform' => $this->platform->value,
@@ -28,7 +26,15 @@ final class DeviceResource extends JsonResource
             'app_version' => $this->app_version,
             'registered_at' => $this->registered_at->toIso8601String(),
             'last_active_at' => $this->last_active_at?->toIso8601String(),
-            'is_current' => $token instanceof PersonalAccessToken && $token->device_id === $this->id,
+            'is_current' => $this->isCurrent($request),
         ];
+    }
+
+    /** Whether the request is signed in from this device (web sessions never are). */
+    private function isCurrent(Request $request): bool
+    {
+        $token = $request->user()?->currentAccessToken();
+
+        return $token instanceof PersonalAccessToken && $token->device_id === $this->id;
     }
 }

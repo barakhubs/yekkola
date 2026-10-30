@@ -96,6 +96,10 @@ export const AuthOtpVerifyResponse = zod.object({
         ),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
+      deletion_scheduled_for: zod
+        .string()
+        .nullable()
+        .describe("When the account is erased unless the request is cancelled (FR-11)."),
       created_at: zod.string(),
     }),
     is_new_user: zod.boolean(),
@@ -108,7 +112,7 @@ export const AuthOtpVerifyResponse = zod.object({
         app_version: zod.string().nullable(),
         registered_at: zod.string(),
         last_active_at: zod.string().nullable(),
-        is_current: zod.string(),
+        is_current: zod.boolean(),
       }),
       zod.null(),
     ]),
