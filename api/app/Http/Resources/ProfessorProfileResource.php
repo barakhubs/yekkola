@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Domain\Authoring\Enums\CourseStatus;
+use App\Domain\Authoring\Models\Course;
 use App\Domain\Professors\Enums\LegalDocument;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Professors\Models\TermsAcceptance;
@@ -43,11 +45,28 @@ final class ProfessorProfileResource extends JsonResource
                 'current_version' => $version,
                 'accepted' => TermsAcceptance::hasAcceptedCurrent($this->user_id, LegalDocument::ProfessorAgreement),
             ],
+            // The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course.
             'onboarding' => [
-                'profile_complete' => filled($this->bio) && filled($this->headline) && $this->avatarUrl() !== null,
+                'profile_complete' => $this->profileComplete(),
                 'kyc_verified' => $this->isVerified(),
                 'payout_method_set' => $this->hasPayoutMethod(),
+                'first_course' => $this->hasSubmittedCourse(),
             ],
         ];
+    }
+
+    /** Photo, headline and bio: what students see first on the public page. */
+    private function profileComplete(): bool
+    {
+        return filled($this->bio) && filled($this->headline) && $this->avatarUrl() !== null;
+    }
+
+    /** At least one course sent for review or live. */
+    private function hasSubmittedCourse(): bool
+    {
+        return Course::query()
+            ->where('professor_profile_id', $this->id)
+            ->where(fn ($q) => $q->whereNotNull('live_version_id')->orWhere('status', CourseStatus::InReview))
+            ->exists();
     }
 }

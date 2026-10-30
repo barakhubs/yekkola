@@ -6,17 +6,24 @@
 
 - Before building a feature, read its PRD in `docs/prd/` and follow `docs/architecture.md` (schema, endpoints, file structure). Reference requirement IDs (e.g. `PRD-05 FR-07`) in commits and PRs.
 - If you change the schema, an endpoint, or the structure, update `docs/architecture.md` in the same change. `project-context.md` wins when docs disagree.
-- **Work autonomously.** Don't hand tasks to the user or wait for go-aheads — plan, build, test, review, commit, push, and open the PR yourself. The only user step is merging PRs.
-- Never hard-code values listed under *Platform settings* or *Open decisions* in `project-context.md`. Don't block on them either: implement behind a setting/interface with a safe default, document the default, and add a `TODO.md` item to confirm it.
+- **Work autonomously.** Don't hand tasks to the user or wait for go-aheads — plan, build, check, commit, push, and open the PR yourself. The only user step is merging PRs.
+- Never hard-code values listed under _Platform settings_ or _Open decisions_ in `project-context.md`. Don't block on them either: implement behind a setting/interface with a safe default, document the default, and add a `TODO.md` item to confirm it.
 - Business logic lives only in the API. Front ends (web, admin, mobile) display and submit.
 - Any API change: regenerate the OpenAPI spec and `packages/api-client` in the same change.
 - All user-facing text goes through translations (French default, English). No hard-coded copy.
 - Do not privilege Kinshasa or any city/province in copy, defaults, or data.
 - External services (Mux, payments, SMS) are only reached through their interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`); tests use the fake drivers.
 
+## Testing (keep it lean — speed matters)
+
+- Write automated tests **only for complex or risky logic**: money, ledger and payments; auth/OTP; access control and content protection; state machines; concurrency/ordering; and a bug worth guarding against. **No tests** for simple CRUD, straightforward endpoints, forms, layout, or copy.
+- Locally, run only the tests for what changed (one file or folder) plus lint/typecheck. **CI runs the full suites** — don't run the full Pest suite before every commit.
+- **No browser walkthroughs or Playwright scripts** unless a feature is complex and can't be checked another way.
+- Use the `reviewer` subagent once per PR, and only for non-trivial changes.
+
 ## TODO list
 
-`TODO.md` is the single start-to-finish task list. **Keep it current on every piece of work**, in the same branch/PR: mark tasks `[~]` when starting and `[x]` (with PR number) when done, add newly discovered work under the right phase, update the *Now* section and *Last updated*. See "How to update" at the bottom of `TODO.md`.
+`TODO.md` is the single start-to-finish task list. **Keep it current on every piece of work**, in the same branch/PR: mark tasks `[~]` when starting and `[x]` (with PR number) when done, add newly discovered work under the right phase, update the _Now_ section and _Last updated_. See "How to update" at the bottom of `TODO.md`.
 
 ## Git workflow
 
@@ -29,14 +36,14 @@
 
 ## Layout
 
-| Folder | What | Notes |
-|---|---|---|
-| `api/` | Laravel API | See `api/CLAUDE.md` |
-| `apps/web/` | Next.js — public site, students, professor studio | See `apps/web/CLAUDE.md` |
-| `apps/admin/` | Next.js — back office | See `apps/admin/CLAUDE.md` |
-| `packages/` | Shared front-end packages (ui, api-client, i18n, config) | See `packages/CLAUDE.md` |
-| `mobile/` | Flutter app (phase 3) | See `mobile/CLAUDE.md` |
-| `docs/` | Architecture, PRDs, runbooks | |
+| Folder        | What                                                     | Notes                      |
+| ------------- | -------------------------------------------------------- | -------------------------- |
+| `api/`        | Laravel API                                              | See `api/CLAUDE.md`        |
+| `apps/web/`   | Next.js — public site, students, professor studio        | See `apps/web/CLAUDE.md`   |
+| `apps/admin/` | Next.js — back office                                    | See `apps/admin/CLAUDE.md` |
+| `packages/`   | Shared front-end packages (ui, api-client, i18n, config) | See `packages/CLAUDE.md`   |
+| `mobile/`     | Flutter app (phase 3)                                    | See `mobile/CLAUDE.md`     |
+| `docs/`       | Architecture, PRDs, runbooks                             |                            |
 
 ## Claude Code setup (`.claude/`)
 

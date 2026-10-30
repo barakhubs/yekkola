@@ -741,6 +741,108 @@
       "backToLearning": "Retour à mes cours",
       "subjectsAdded": "Matières ajoutées",
       "fieldOnStep": "{field} (étape {step})"
+    },
+    "onboarding": {
+      "homeTitle": "Studio",
+      "nav": {
+        "label": "Studio",
+        "home": "Accueil",
+        "courses": "Mes cours",
+        "profile": "Profil",
+        "kyc": "Vérification",
+        "payouts": "Paiements"
+      },
+      "welcome": "Bonjour {name}",
+      "progress": "{done} étape(s) sur {total} pour être prêt à enseigner et à être payé.",
+      "done": "Fait",
+      "todo": "À faire",
+      "start": "Commencer",
+      "view": "Voir",
+      "steps": {
+        "profile_complete": {
+          "title": "Votre profil public",
+          "body": "Photo, accroche et présentation : ce que les élèves voient en premier."
+        },
+        "kyc_verified": {
+          "title": "Vérification d’identité",
+          "body": "Identité vérifiée."
+        },
+        "payout_method_set": {
+          "title": "Méthode de paiement",
+          "body": "Le compte mobile money où vous recevez vos gains."
+        },
+        "first_course": {
+          "title": "Votre premier cours",
+          "body": "Créez-le et envoyez-le en relecture."
+        }
+      },
+      "kycStatus": {
+        "none": "Pièce d’identité et selfie à envoyer avant tout paiement.",
+        "pending": "Envoyée, en cours de vérification.",
+        "verified": "Identité vérifiée.",
+        "rejected": "Refusée : renvoyez vos documents."
+      },
+      "payable": "Tout est prêt : vos gains peuvent vous être versés.",
+      "notPayable": "Vos gains seront versés une fois votre identité vérifiée et votre méthode de paiement enregistrée.",
+      "onHold": "Paiements suspendus jusqu’au {date} après le changement de votre méthode de paiement (sécurité).",
+      "termsTitle": "Le contrat professeur a changé",
+      "termsBody": "Pour continuer à utiliser le studio, acceptez la nouvelle version ({version}) du contrat professeur.",
+      "termsAccept": "J’accepte le contrat professeur",
+      "profileTitle": "Profil public",
+      "profileIntro": "Ce que les élèves voient sur votre page professeur.",
+      "viewPublic": "Voir ma page",
+      "fields": {
+        "avatar": "Photo",
+        "displayName": "Nom affiché",
+        "slug": "Adresse de votre page",
+        "headline": "Accroche",
+        "bio": "Présentation",
+        "subjects": "Matières",
+        "province": "Province (facultatif)",
+        "links": "Liens (site, réseaux)",
+        "documentType": "Type de pièce",
+        "front": "Recto de la pièce",
+        "back": "Verso de la pièce",
+        "selfie": "Selfie avec votre pièce",
+        "payoutPhone": "Numéro mobile money",
+        "payoutName": "Nom du titulaire du compte",
+        "code": "Code reçu par SMS"
+      },
+      "slugOnce": "Modifiable une seule fois.",
+      "slugLocked": "Déjà modifiée : elle ne peut plus changer.",
+      "headlineHint": "Une phrase, par exemple « Professeur de mathématiques, 15 ans d’expérience ».",
+      "subjectsHint": "Séparées par des virgules.",
+      "provinceNone": "Je préfère ne pas dire",
+      "linkLabel": "Libellé du lien {number}",
+      "linkUrl": "Adresse du lien {number}",
+      "removeLink": "Retirer le lien {number}",
+      "addLink": "Ajouter un lien",
+      "save": "Enregistrer",
+      "saved": "Enregistré.",
+      "kycTitle": "Vérification d’identité",
+      "kycIntro": "Obligatoire pour recevoir vos gains. Vous pouvez créer et publier des cours avant.",
+      "documentTypes": {
+        "national_id": "Carte d’identité",
+        "voter_card": "Carte d’électeur",
+        "passport": "Passeport"
+      },
+      "kycSubmit": "Envoyer pour vérification",
+      "kycVerified": "Votre identité est vérifiée.",
+      "kycPending": "Documents envoyés le {date}, en cours de vérification par l’équipe Yekkola.",
+      "kycRejected": "Votre vérification a été refusée : {reason} Renvoyez vos documents ci-dessous.",
+      "kycPrivacy": "Vos documents sont stockés de façon privée et ne sont vus que par l’équipe de vérification.",
+      "payoutTitle": "Méthode de paiement",
+      "payoutIntro": "Le compte mobile money sur lequel Yekkola vous verse vos gains.",
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "change": "Modifier",
+      "sendCode": "Recevoir un code de confirmation",
+      "confirm": "Confirmer",
+      "codeSent": "Code envoyé au numéro de votre compte ({phone}).",
+      "holdNotice": "Par sécurité, les paiements sont suspendus 48 heures après chaque changement."
     }
   },
   "admin": {

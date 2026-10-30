@@ -1,21 +1,21 @@
 # Yekkola — Project Context
 
 > Master brief for everyone (humans and AI agents) working on Yekkola. Read this first.
-> Detail lives in the linked docs — this file states *what* and *why*; they state *how*.
+> Detail lives in the linked docs — this file states _what_ and _why_; they state _how_.
 
 ## Docs map
 
-| Doc | What it holds |
-|---|---|
-| `project-context.md` (this file) | Product, principles, stack, decisions, scope |
-| [`docs/architecture.md`](docs/architecture.md) | System architecture, repo/file structure, database schema, API catalogue, UI architecture, scaling, security |
-| [`docs/prd/`](docs/prd/) | One PRD per product area — requirements, rules, acceptance criteria |
-| [`docs/brand.md`](docs/brand.md) | Colours, scales, contrast, Nunito type scale, tagline, logo brief |
-| [`docs/research/`](docs/research/) | Vendor research (Mux findings + cost estimate) |
-| [`docs/spikes/`](docs/spikes/) | De-risking experiments: plans and results |
-| [`docs/runbooks/`](docs/runbooks/) | Incident playbooks |
-| [`docs/catalogue-categories.md`](docs/catalogue-categories.md) | Launch category tree (provisional seed) |
-| [`TODO.md`](TODO.md) | Start-to-finish task list |
+| Doc                                                            | What it holds                                                                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `project-context.md` (this file)                               | Product, principles, stack, decisions, scope                                                                 |
+| [`docs/architecture.md`](docs/architecture.md)                 | System architecture, repo/file structure, database schema, API catalogue, UI architecture, scaling, security |
+| [`docs/prd/`](docs/prd/)                                       | One PRD per product area — requirements, rules, acceptance criteria                                          |
+| [`docs/brand.md`](docs/brand.md)                               | Colours, scales, contrast, Nunito type scale, tagline, logo brief                                            |
+| [`docs/research/`](docs/research/)                             | Vendor research (Mux findings + cost estimate)                                                               |
+| [`docs/spikes/`](docs/spikes/)                                 | De-risking experiments: plans and results                                                                    |
+| [`docs/runbooks/`](docs/runbooks/)                             | Incident playbooks                                                                                           |
+| [`docs/catalogue-categories.md`](docs/catalogue-categories.md) | Launch category tree (provisional seed)                                                                      |
+| [`TODO.md`](TODO.md)                                           | Start-to-finish task list                                                                                    |
 
 When docs disagree, **this file wins**; fix the other doc in the same PR.
 
@@ -27,24 +27,24 @@ Yekkola is a national online learning marketplace for the DRC: professors and in
 
 **Not tied to one city.** Do not hard-code or privilege Kinshasa (or any city/province) in copy, onboarding, defaults, or data models. Location (province/city) is an optional attribute on professors and students — useful for filtering and analytics, never a requirement or a brand anchor.
 
-**This is a full product, not a pilot.** Build features to production quality. Delivery is sequenced (see *Build sequence*), but scope is not cut — do not treat anything below as "later" unless it is listed under *Out of scope*.
+**This is a full product, not a pilot.** Build features to production quality. Delivery is sequenced (see _Build sequence_), but scope is not cut — do not treat anything below as "later" unless it is listed under _Out of scope_.
 
 ## Glossary
 
 Use these terms consistently in code, API, and UI copy.
 
-| Term (code) | FR (UI) | Meaning |
-|---|---|---|
-| `Professor` | Professeur | Approved content creator. A `User` with an approved `ProfessorProfile`. |
-| `Student` | Étudiant | Any user who enrolls in courses. Every user can be a student. |
-| `Course` | Cours | Sellable unit. Has a price (or is free) and versions. |
-| `CourseVersion` | — | Immutable-once-approved snapshot of a course's content. Students see the latest approved version. |
-| `Lesson` | Leçon | Video, audio, document, or quiz inside a section. Has a stable `uid` across versions. |
-| `Enrollment` | Inscription | The access grant. Access checks look **only** at active enrollments. |
-| `Order` / `Payment` | Commande / Paiement | What the student buys / each attempt to pay for it. |
-| `LedgerEntry` | — | Double-entry money record. Balances are derived from it. |
-| `Payout` | Versement | Money sent to a professor's mobile-money account. |
-| `Rail` | Opérateur | Orange Money, Airtel Money, M-Pesa. |
+| Term (code)         | FR (UI)             | Meaning                                                                                           |
+| ------------------- | ------------------- | ------------------------------------------------------------------------------------------------- |
+| `Professor`         | Professeur          | Approved content creator. A `User` with an approved `ProfessorProfile`.                           |
+| `Student`           | Étudiant            | Any user who enrolls in courses. Every user can be a student.                                     |
+| `Course`            | Cours               | Sellable unit. Has a price (or is free) and versions.                                             |
+| `CourseVersion`     | —                   | Immutable-once-approved snapshot of a course's content. Students see the latest approved version. |
+| `Lesson`            | Leçon               | Video, audio, document, or quiz inside a section. Has a stable `uid` across versions.             |
+| `Enrollment`        | Inscription         | The access grant. Access checks look **only** at active enrollments.                              |
+| `Order` / `Payment` | Commande / Paiement | What the student buys / each attempt to pay for it.                                               |
+| `LedgerEntry`       | —                   | Double-entry money record. Balances are derived from it.                                          |
+| `Payout`            | Versement           | Money sent to a professor's mobile-money account.                                                 |
+| `Rail`              | Opérateur           | Orange Money, Airtel Money, M-Pesa.                                                               |
 
 ## Personas
 
@@ -60,14 +60,15 @@ Use these terms consistently in code, API, and UI copy.
 
 ## Brand
 
-| Role | Hex | Use |
-|---|---|---|
-| **Primary** | `#2c3892` (deep indigo) | Main buttons, links, active nav, headers, focus rings, primary chart series |
-| **Secondary** | `#fdb73b` (amber) | Highlights and accents: "Gratuit" badges, ratings stars, featured tags, promo banners, progress/celebration moments, second chart series |
+| Role          | Hex                     | Use                                                                                                                                      |
+| ------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary**   | `#2c3892` (deep indigo) | Main buttons, links, active nav, headers, focus rings, primary chart series                                                              |
+| **Secondary** | `#fdb73b` (amber)       | Highlights and accents: "Gratuit" badges, ratings stars, featured tags, promo banners, progress/celebration moments, second chart series |
 
 | **Font** | **Nunito** (Google Fonts, OFL) | Everything — UI, headings, body — on web and mobile. Weights 400/600/700/800. Self-hosted via `next/font` on web, bundled in the Flutter app. |
 
 **Contrast rules (WCAG AA):**
+
 - White text on primary: ~10:1 ✓ — default for primary buttons.
 - Primary text on secondary: ~5.7:1 ✓ — use indigo text on amber surfaces.
 - **White text on secondary: ~1.8:1 ✗** and **secondary text on white ✗** — for amber-coloured text use `amber-700`.
@@ -85,7 +86,8 @@ Use these terms consistently in code, API, and UI copy.
 - **Quiz** — multiple-choice/true-false practice tests with scoring and explanations. Central to the exam-prep persona.
 
 **Versioning:**
-- A course always has at most one *draft* version (being edited) and one *live* version (latest approved).
+
+- A course always has at most one _draft_ version (being edited) and one _live_ version (latest approved).
 - Professors edit the draft; submitting sends it to review; approval makes it the live version. The previous live version is kept (superseded), never mutated.
 - Students always see the live version. Lessons carry a stable `uid` across versions, so progress, quiz history, and Q&A threads survive edits.
 - Course status: `draft → in_review → published → unpublished / archived`. A published course can have a draft in review at the same time without going offline.
@@ -97,15 +99,15 @@ Paid content must not be trivially shareable — piracy directly undercuts profe
 - **Video:** Mux DRM (Widevine / FairPlay). Signed playback + DRM tokens are issued by the API only to users with an active enrollment (or for preview lessons).
 - **Audio:** Mux signed playback (short-lived tokens, same access checks) — Mux can't DRM audio-only assets. Offline audio is encrypted at rest in app-private storage with a per-device key and the same expiry as offline licenses. Weaker than DRM; accepted for v1 (see [`docs/research/mux.md`](docs/research/mux.md) §2).
 - **Watermarking, two layers:**
-  - *Burned in at upload* (Mux `overlay_settings`): Yekkola logo + professor name, identical for all viewers.
-  - *Per-viewer overlay in the player*: viewer's name/phone drawn over the video by our web and mobile players, repositioning periodically. Mux has no per-viewer watermark, so this is ours — a deterrent against screen recording, not forensic tracing.
+  - _Burned in at upload_ (Mux `overlay_settings`): Yekkola logo + professor name, identical for all viewers.
+  - _Per-viewer overlay in the player_: viewer's name/phone drawn over the video by our web and mobile players, repositioning periodically. Mux has no per-viewer watermark, so this is ours — a deterrent against screen recording, not forensic tracing.
 - **Offline (mobile):** video downloaded through Mux's native SDKs as DRM-protected files with a persistent license; audio encrypted at rest (above). Never store plain media files on device.
 - **Documents:** served via short-lived signed URLs; every download is stamped with the student's name/phone (per-student PDF watermark, generated on a queue and cached).
 - **Devices:**
-  - *Registered devices* (mobile apps — can hold offline downloads) are limited per account (admin setting, default 2).
-  - *Web* does not count as a registered device but is limited to **concurrent streams** per account (admin setting, default 1).
+  - _Registered devices_ (mobile apps — can hold offline downloads) are limited per account (admin setting, default 2).
+  - _Web_ does not count as a registered device but is limited to **concurrent streams** per account (admin setting, default 1).
   - Removing a device revokes its tokens and stops new licenses for it.
-- **Revocation (be precise about this):** refunds, bans, and takedowns stop streaming immediately (no new tokens). A persistent offline license **cannot be killed remotely**; the app deletes revoked content at its next online sync, and in the worst case the content stops playing when its license expires. Keep the *offline license duration* setting short enough to make this acceptable (suggested 7–14 days).
+- **Revocation (be precise about this):** refunds, bans, and takedowns stop streaming immediately (no new tokens). A persistent offline license **cannot be killed remotely**; the app deletes revoked content at its next online sync, and in the worst case the content stops playing when its license expires. Keep the _offline license duration_ setting short enough to make this acceptable (suggested 7–14 days).
 
 ## Consumption model (important — do not conflate)
 
@@ -124,7 +126,7 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 
 - **Upload:** professors upload straight from the browser to Mux via direct-upload URLs issued by the API; Mux webhooks (`video.asset.ready`, errors) update `MediaAsset` status.
 - **Playback (web):** Mux Player (React) with signed playback + DRM tokens, plus our per-viewer overlay.
-- **Offline (mobile):** Mux DRM persistent licenses. The API signs the DRM token with `offline: true` and `licenseExpiration` = the admin *offline license duration* setting; `playDuration` optional.
+- **Offline (mobile):** Mux DRM persistent licenses. The API signs the DRM token with `offline: true` and `licenseExpiration` = the admin _offline license duration_ setting; `playDuration` optional.
 - **Flutter gap:** Mux ships native players with offline-download managers for Android (`MuxDownloadManager`, Media3) and iOS (`MuxOfflineAccessManager`, AVFoundation), but **no Flutter SDK**. Phase 3 includes a small in-house Flutter plugin wrapping these native SDKs via platform channels (download, progress, delete, play with overlay). Prototype it early — it is the riskiest mobile piece.
 - **Mux client:** Laravel HTTP client for the Mux REST API + `firebase/php-jwt` for signed playback/DRM tokens. (The official `muxinc/mux-php` SDK requires Guzzle 7; Laravel 13 ships Guzzle 8.) Mux keys live only in API env vars.
 - Keep a `VideoProvider` interface (direct upload, webhook handling, playback/DRM tokens, offline token) so domain code doesn't depend on Mux directly.
@@ -138,7 +140,7 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 - Price changes are not retroactive: switching a course between free and paid never revokes existing enrollments.
 - DRC mobile money rails: Orange Money, Airtel Money DRC, M-Pesa (Vodacom) — **not** MTN (that's the Uganda-side assumption from other projects; do not carry it over here).
 - Aggregator candidates: Flutterwave, CinetPay, and DRC-local aggregators (e.g. MaxiCash, FreshPay). Must cover both collection **and** disbursement (for professor payouts) on all three rails.
-- **Integration timing:** the real payment gateway is integrated later in the build (see *Build sequence*). Until then, orders, payment state machine, ledger, and payouts are built and tested against a `PaymentGateway` interface with a fake driver (simulates success, failure, pending, timeout, reversal). Plugging in the real aggregator must be a driver, not a redesign.
+- **Integration timing:** the real payment gateway is integrated later in the build (see _Build sequence_). Until then, orders, payment state machine, ledger, and payouts are built and tested against a `PaymentGateway` interface with a fake driver (simulates success, failure, pending, timeout, reversal). Plugging in the real aggregator must be a driver, not a redesign.
 - Mobile money is asynchronous (USSD prompt, pending, timeout, reversal). Payments are a state machine driven by idempotent webhooks plus a reconciliation job — never trust the client redirect.
 - Revenue split is stored as data (admin default, overridable per professor and per course), never hard-coded, and **snapshotted on each order item** at the moment of sale.
 - **Money:** integer minor units **with an explicit currency** on every money row. Active currencies (USD, CDF, or both) are an admin setting — the schema must not assume one. No currency conversion inside the platform: a course is priced in one currency and paid in that currency.
@@ -165,6 +167,7 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 **The backend serves no UI.** No Blade views, no Inertia, no Filament, no server-rendered admin. Every client — web app, back office, mobile — is an equal consumer of the same `/api/v1`. (The only exceptions are ops tools for engineers, e.g. the Horizon dashboard, behind admin auth.) Full design: [`docs/architecture.md`](docs/architecture.md).
 
 ### Backend (API only)
+
 - Laravel 13 (API-only), PHP 8.3+ locally and in CI (8.3 + 8.4); run 8.4 on Laravel Cloud
 - PostgreSQL; ULID primary keys (non-enumerable, safe in URLs)
 - Laravel Sanctum — cookie-based SPA auth for the web app and back office (same parent domain); API tokens for mobile
@@ -182,7 +185,7 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 - `spatie/laravel-medialibrary` — documents, images, avatars (not video/audio)
 - `spatie/laravel-activitylog` — audit log surfaced in the back office
 - `spatie/laravel-backup` — on top of the platform's own DB backups
-- Pest + PHPStan (Larastan) — tests and static analysis (feature tests per endpoint are the API contract)
+- Pest + PHPStan (Larastan) — static analysis everywhere; feature tests for endpoints with real logic (money, access, state changes)
 
 ### Web front ends (React)
 
@@ -204,6 +207,7 @@ Two Next.js apps sharing UI and API code:
 - **Dashboards:** professor studio and admin dashboards are first-class features, backed by pre-aggregated stats endpoints — not computed in the browser.
 
 ### Mobile (Flutter)
+
 - Riverpod — state management
 - Dio — HTTP client against `/api/v1` (client generated from OpenAPI)
 - flutter_secure_storage — auth tokens
@@ -215,6 +219,7 @@ Two Next.js apps sharing UI and API code:
 - Target: Android first-class (low-end devices, Android 8+); iOS supported
 
 ### Infrastructure
+
 - **Hosting: Laravel Cloud.** No African region — use `eu-west-2` (London) or `eu-central-1` (Frankfurt); benchmark latency from several DRC cities (west, east, south) before choosing.
   - Three Cloud applications from the same repo (Cloud's monorepo support — each app is scoped to its directory):
     - `api/` — Laravel API instances + separate queue workers
@@ -254,7 +259,7 @@ yekkola/
 
 1. **Storage is abstracted.** Files go through `Storage::disk()`; video/audio go through `VideoProvider`. Swapping providers is a config/adapter change.
 2. **Media never touches the app server.** Professors upload directly to Mux (direct upload URLs) and to object storage (pre-signed URLs); Laravel only receives webhooks/confirmations.
-3. **API-only backend, one contract for all clients.** Web, back office, and mobile consume the same `/api/v1`. Nothing a client needs may exist only in a UI layer. The OpenAPI spec is generated from code and every endpoint has feature tests.
+3. **API-only backend, one contract for all clients.** Web, back office, and mobile consume the same `/api/v1`. Nothing a client needs may exist only in a UI layer. The OpenAPI spec is generated from code; endpoints with real logic have feature tests.
 4. **No business logic in the front ends.** Prices, access rules, splits, limits, and permissions are decided by the API; React and Flutter display and submit. The back office is just another API client with admin permissions.
 5. **External integrations behind interfaces** (`VideoProvider`, `PaymentGateway`, `SmsSender`), each with a fake driver used in tests and local dev.
 6. **What's hard to change later:** core data model (users, courses, versions, lessons, enrollments, orders, ledger), auth/identity approach, money/currency representation, content-protection model. Spend design effort here first.
@@ -267,7 +272,7 @@ yekkola/
 - **Phone number (E.164) + SMS OTP is the primary sign-in**; email is optional (for receipts/recovery).
 - SMS gateway must have confirmed DRC deliverability — do not assume Uganda-side providers work.
 - Until the SMS gateway is integrated, OTPs go through an `SmsSender` interface with a **log driver** (codes written to the log; fixed test codes allowed only outside production). Production must refuse to boot with the log driver.
-- OTP abuse protection (SMS pumping costs real money): per-phone and per-IP limits, a global hourly SMS budget (circuit breaker), a country allowlist (*provisional: DRC +243 only*), 5 attempts per code and 15 wrong codes per number per day, Cloudflare Turnstile for browsers/scripts; the mobile app gets app attestation in phase 3. Responses never reveal whether a number has an account.
+- OTP abuse protection (SMS pumping costs real money): per-phone and per-IP limits, a global hourly SMS budget (circuit breaker), a country allowlist (_provisional: DRC +243 only_), 5 attempts per code and 15 wrong codes per number per day, Cloudflare Turnstile for browsers/scripts; the mobile app gets app attestation in phase 3. Responses never reveal whether a number has an account.
 - Phone change needs a sign-in within the last 15 minutes, notifies the old number by SMS, and signs out every other session and device.
 - Device registry per user (device limits, push tokens, token revocation).
 - Details: [`docs/prd/01-auth-identity.md`](docs/prd/01-auth-identity.md).
@@ -276,18 +281,18 @@ yekkola/
 
 Each area has a PRD in [`docs/prd/`](docs/prd/).
 
-| # | Area | Highlights |
-|---|---|---|
-| 01 | Auth & identity | Phone OTP, devices, roles, account deletion |
-| 02 | Professor onboarding | Application, manual vetting, KYC, public profile |
-| 03 | Course authoring | Course builder, 4 lesson types, Mux upload, versioning, review submission |
-| 04 | Discovery | Catalogue, categories, search, filters, course & professor pages, wishlist, SEO |
-| 05 | Checkout & payments | Free enroll, orders, mobile money, coupons, bundles, parent payer, refunds, receipts |
-| 06 | Learning experience | Player, progress, quizzes, certificates, reviews, lesson Q&A |
-| 07 | Content protection & offline | DRM, watermarks, device limits, offline downloads & sync |
-| 08 | Earnings & payouts | Ledger, professor earnings, payout batches, statements |
-| 09 | Back office | Admin dashboard, moderation, users, finance, settings, audit |
-| 10 | Notifications | Push, SMS, email, in-app; preferences; templates |
+| #   | Area                         | Highlights                                                                           |
+| --- | ---------------------------- | ------------------------------------------------------------------------------------ |
+| 01  | Auth & identity              | Phone OTP, devices, roles, account deletion                                          |
+| 02  | Professor onboarding         | Application, manual vetting, KYC, public profile                                     |
+| 03  | Course authoring             | Course builder, 4 lesson types, Mux upload, versioning, review submission            |
+| 04  | Discovery                    | Catalogue, categories, search, filters, course & professor pages, wishlist, SEO      |
+| 05  | Checkout & payments          | Free enroll, orders, mobile money, coupons, bundles, parent payer, refunds, receipts |
+| 06  | Learning experience          | Player, progress, quizzes, certificates, reviews, lesson Q&A                         |
+| 07  | Content protection & offline | DRM, watermarks, device limits, offline downloads & sync                             |
+| 08  | Earnings & payouts           | Ledger, professor earnings, payout batches, statements                               |
+| 09  | Back office                  | Admin dashboard, moderation, users, finance, settings, audit                         |
+| 10  | Notifications                | Push, SMS, email, in-app; preferences; templates                                     |
 
 **Platform (cross-cutting):** rate limiting on auth, OTP, and payment endpoints; terms of service, privacy policy, professor agreement (content ownership + licence to Yekkola); support channel (in-app contact / WhatsApp link); account deletion and data export.
 
@@ -321,26 +326,26 @@ Each area has a PRD in [`docs/prd/`](docs/prd/).
 
 These are business decisions the admin makes and changes at runtime from the React back office (via admin API endpoints) — **not** values to hard-code or decide in code. Store them in the database (`spatie/laravel-settings`), seed sensible defaults, and record every change in the audit log.
 
-Defaults marked *(provisional)* are working values so nothing blocks; confirm them before launch (TODO 0.5).
+Defaults marked _(provisional)_ are working values so nothing blocks; confirm them before launch (TODO 0.5).
 
-| Setting | Default | Notes |
-|---|---|---|
-| Enabled currencies + default currency (USD / CDF) | USD and CDF enabled, USD default *(provisional)* | Code supports both; each price and money row keeps its own currency. |
-| Default revenue split | 70% professor / 30% platform *(provisional)* | Overridable per professor and per course; snapshotted per order item. |
-| Content categories | Seeded from [`docs/catalogue-categories.md`](docs/catalogue-categories.md) *(provisional)* | Admin creates, edits, orders, and hides categories (fr/en names). |
-| Separate payer on orders (parent pays for student) | on | Feature is built; admin turns it on/off. |
-| Registered device limit per account | 2 | Mobile devices that can hold downloads. |
-| Concurrent web streams per account | 1 | |
-| Offline license duration | 14 days | How long downloads play before the app must re-validate online. |
-| Free-course limits | unlimited | Max free courses and/or free media hours per professor. |
-| Payment gateways / rails enabled | — | Pause a gateway or rail during an outage. Adding a gateway is dev work. |
-| Refund window | 7 days | Days after purchase a student can request a refund (and max progress %, e.g. 20%). |
-| Payout minimum + schedule | Monthly; minimum 10 USD / 25,000 CDF *(provisional)* | Minimum balance to be paid out; weekly/bi-weekly/monthly batch cadence. |
-| Disbursement fees | Paid by platform *(provisional)* | Who bears the aggregator's payout fee. |
-| Review SLA targets | Courses 48 h, applications 72 h *(provisional)* | Shown on the admin dashboard. |
-| Earnings hold period | 7 days | Sale earnings become payable after the refund window, protecting against refunds. |
-| Order payment timeout | 15 min | Pending mobile-money payments expire after this. |
-| Certificate completion rule | 100% lessons + all quizzes passed | Adjustable threshold. |
+| Setting                                            | Default                                                                                    | Notes                                                                              |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Enabled currencies + default currency (USD / CDF)  | USD and CDF enabled, USD default _(provisional)_                                           | Code supports both; each price and money row keeps its own currency.               |
+| Default revenue split                              | 70% professor / 30% platform _(provisional)_                                               | Overridable per professor and per course; snapshotted per order item.              |
+| Content categories                                 | Seeded from [`docs/catalogue-categories.md`](docs/catalogue-categories.md) _(provisional)_ | Admin creates, edits, orders, and hides categories (fr/en names).                  |
+| Separate payer on orders (parent pays for student) | on                                                                                         | Feature is built; admin turns it on/off.                                           |
+| Registered device limit per account                | 2                                                                                          | Mobile devices that can hold downloads.                                            |
+| Concurrent web streams per account                 | 1                                                                                          |                                                                                    |
+| Offline license duration                           | 14 days                                                                                    | How long downloads play before the app must re-validate online.                    |
+| Free-course limits                                 | unlimited                                                                                  | Max free courses and/or free media hours per professor.                            |
+| Payment gateways / rails enabled                   | —                                                                                          | Pause a gateway or rail during an outage. Adding a gateway is dev work.            |
+| Refund window                                      | 7 days                                                                                     | Days after purchase a student can request a refund (and max progress %, e.g. 20%). |
+| Payout minimum + schedule                          | Monthly; minimum 10 USD / 25,000 CDF _(provisional)_                                       | Minimum balance to be paid out; weekly/bi-weekly/monthly batch cadence.            |
+| Disbursement fees                                  | Paid by platform _(provisional)_                                                           | Who bears the aggregator's payout fee.                                             |
+| Review SLA targets                                 | Courses 48 h, applications 72 h _(provisional)_                                            | Shown on the admin dashboard.                                                      |
+| Earnings hold period                               | 7 days                                                                                     | Sale earnings become payable after the refund window, protecting against refunds.  |
+| Order payment timeout                              | 15 min                                                                                     | Pending mobile-money payments expire after this.                                   |
+| Certificate completion rule                        | 100% lessons + all quizzes passed                                                          | Adjustable threshold.                                                              |
 
 Smaller operational settings (preview lessons per course, upload size limits, price min/max, review progress threshold, reapply cooldown, etc.) are defined in the PRDs and live in the same settings store.
 
@@ -348,12 +353,12 @@ Rule: a settings change applies **going forward only**. It must never alter exis
 
 ## Open decisions (flag, don't assume)
 
-Technical decisions — integrations depend on them. Deferred (see *Build sequence*) but must be settled before public launch:
+Technical decisions — integrations depend on them. Deferred (see _Build sequence_) but must be settled before public launch:
 
 - Payment aggregator(s) to integrate (pending DRC rail + disbursement confirmation)
 - SMS gateway (pending DRC deliverability test)
 
-Business — provisional defaults are in *Platform settings*; confirm before launch:
+Business — provisional defaults are in _Platform settings_; confirm before launch:
 
 - Revenue split, payout schedule/minimum, active currencies, launch categories, disbursement fees, review SLAs
 - Bundle containing an already-owned course: provisional — owned courses are excluded and the bundle price is reduced pro-rata (PRD-05)

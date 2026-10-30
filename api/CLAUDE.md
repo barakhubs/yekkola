@@ -12,7 +12,7 @@ Pure JSON API (`/api/v1`). Serves no UI — no Blade views, Inertia, or Filament
 - Lists support server-side filter/sort/pagination (`spatie/laravel-query-builder`).
 - Errors use the RFC 9457-style envelope with a stable `code` (see architecture §4.1). Messages translated via `Accept-Language` (`lang/fr`, `lang/en`).
 - Money and webhooks: idempotency keys and event-ID deduplication. Ledger rows are never updated or deleted.
-- Every endpoint gets Pest feature tests (auth, validation, authorization, happy path).
+- Pest feature tests for endpoints with real logic (money, access, state changes, tricky rules) — not for simple CRUD. See *Testing* in the root `CLAUDE.md`.
 
 ## Code design (SOLID, pragmatically)
 

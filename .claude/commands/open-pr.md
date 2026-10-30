@@ -9,12 +9,12 @@ Run automatically — don't ask the user to do anything except merge the PR at t
 
 1. Refuse if on `main`.
 2. Commit any uncommitted changes in related groups (short, human-style messages, no AI attribution).
-3. `TODO.md`: tick this branch's items `[x]`, update *Now* and *Last updated*. Commit if changed.
+3. `TODO.md`: tick this branch's items `[x]`, update _Now_ and _Last updated_. Commit if changed.
 4. Review `git diff main...HEAD`:
    - Code changes → `reviewer` subagent; Commerce/Finance/Payments changes → also `ledger-auditor`.
    - Docs/config only → quick self-check (valid JSON/frontmatter, no secrets, links).
    - Fix blockers and majors yourself, commit, re-review. Minor items: fix or list in the PR body.
-5. Run the relevant tests/lint/typecheck; fix failures.
+5. Run lint/typecheck and only the tests for what changed; CI runs the full suites.
 6. `git push -u origin <branch>`.
 7. `gh pr create --base main` — short title (≤ 60 chars); body: 2–5 bullets of what changed, PRD IDs, how it was tested, review notes. No AI attribution.
 8. Add the PR number to the ticked `TODO.md` items (`— #N`), commit, push.

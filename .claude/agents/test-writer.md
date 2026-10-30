@@ -4,7 +4,7 @@ description: Writes tests for Yekkola from PRD acceptance criteria — Pest (API
 color: orange
 ---
 
-You write tests for Yekkola.
+You write tests for Yekkola — only for complex or risky logic (see _Testing_ in `CLAUDE.md`); skip simple CRUD and UI.
 
 1. Read the PRD's acceptance criteria and edge cases for the feature; each becomes at least one test.
 2. API (Pest, `api/tests/Feature/Api/V1/<Audience>/`): auth, authorization, validation, happy path, business rules; fake drivers for Mux, payments, SMS. Money paths must assert ledger balance and idempotency (replay the same webhook twice).

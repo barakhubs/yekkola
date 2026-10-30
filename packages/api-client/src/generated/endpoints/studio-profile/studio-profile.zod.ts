@@ -93,11 +93,16 @@ export const ProfessorProfileShowResponse = zod.object({
       current_version: zod.string(),
       accepted: zod.boolean(),
     }),
-    onboarding: zod.object({
-      profile_complete: zod.string(),
-      kyc_verified: zod.boolean(),
-      payout_method_set: zod.boolean(),
-    }),
+    onboarding: zod
+      .object({
+        profile_complete: zod.boolean(),
+        kyc_verified: zod.boolean(),
+        payout_method_set: zod.boolean(),
+        first_course: zod.boolean(),
+      })
+      .describe(
+        "The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course.",
+      ),
   }),
 });
 
@@ -245,11 +250,16 @@ export const ProfessorProfileUpdateResponse = zod.object({
       current_version: zod.string(),
       accepted: zod.boolean(),
     }),
-    onboarding: zod.object({
-      profile_complete: zod.string(),
-      kyc_verified: zod.boolean(),
-      payout_method_set: zod.boolean(),
-    }),
+    onboarding: zod
+      .object({
+        profile_complete: zod.boolean(),
+        kyc_verified: zod.boolean(),
+        payout_method_set: zod.boolean(),
+        first_course: zod.boolean(),
+      })
+      .describe(
+        "The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course.",
+      ),
   }),
 });
 
@@ -347,11 +357,16 @@ export const ProfessorProfileAvatarResponse = zod.object({
       current_version: zod.string(),
       accepted: zod.boolean(),
     }),
-    onboarding: zod.object({
-      profile_complete: zod.string(),
-      kyc_verified: zod.boolean(),
-      payout_method_set: zod.boolean(),
-    }),
+    onboarding: zod
+      .object({
+        profile_complete: zod.boolean(),
+        kyc_verified: zod.boolean(),
+        payout_method_set: zod.boolean(),
+        first_course: zod.boolean(),
+      })
+      .describe(
+        "The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course.",
+      ),
   }),
 });
 
@@ -449,10 +464,15 @@ export const ProfessorTermsAcceptResponse = zod.object({
       current_version: zod.string(),
       accepted: zod.boolean(),
     }),
-    onboarding: zod.object({
-      profile_complete: zod.string(),
-      kyc_verified: zod.boolean(),
-      payout_method_set: zod.boolean(),
-    }),
+    onboarding: zod
+      .object({
+        profile_complete: zod.boolean(),
+        kyc_verified: zod.boolean(),
+        payout_method_set: zod.boolean(),
+        first_course: zod.boolean(),
+      })
+      .describe(
+        "The studio's onboarding checklist (PRD-02 §6): profile, identity, payout method, first course.",
+      ),
   }),
 });

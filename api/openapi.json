@@ -12520,21 +12520,26 @@
                     },
                     "onboarding": {
                         "type": "object",
+                        "description": "The studio's onboarding checklist (PRD-02 \u00a76): profile, identity, payout method, first course.",
                         "properties": {
                             "profile_complete": {
-                                "type": "string"
+                                "type": "boolean"
                             },
                             "kyc_verified": {
                                 "type": "boolean"
                             },
                             "payout_method_set": {
                                 "type": "boolean"
+                            },
+                            "first_course": {
+                                "type": "boolean"
                             }
                         },
                         "required": [
                             "profile_complete",
                             "kyc_verified",
-                            "payout_method_set"
+                            "payout_method_set",
+                            "first_course"
                         ]
                     }
                 },
