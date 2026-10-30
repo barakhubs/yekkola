@@ -4,8 +4,8 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { RefundResource } from "./refundResource";
+import type { AdminRefundResource } from "./adminRefundResource";
 
 export type AdminRefundsApprove200 = {
-  data: RefundResource;
+  data: AdminRefundResource;
 };

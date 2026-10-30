@@ -6,6 +6,17 @@
  */
 import * as zod from "zod";
 
+export const adminPayoutBatchesIndexQueryPageDefault = 1;
+export const adminPayoutBatchesIndexQueryPerPageDefault = 15;
+
+export const AdminPayoutBatchesIndexQueryParams = zod.object({
+  page: zod.int().default(adminPayoutBatchesIndexQueryPageDefault),
+  per_page: zod.int().default(adminPayoutBatchesIndexQueryPerPageDefault),
+  "filter[status]": zod.string().optional().describe("draft, processing, completed or partially_failed."),
+  "filter[currency]": zod.string().optional(),
+  sort: zod.string().optional().describe("`created_at`; prefix `-` for newest first (default)."),
+});
+
 export const adminPayoutBatchesIndexResponseMetaPerPageMin = 0;
 
 export const adminPayoutBatchesIndexResponseMetaTotalMin = 0;

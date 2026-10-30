@@ -12,7 +12,7 @@ use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Platform\Settings\CommerceSettings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StaffNoteRequest;
-use App\Http\Resources\Commerce\RefundResource;
+use App\Http\Resources\Commerce\AdminRefundResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -25,6 +25,11 @@ use Spatie\QueryBuilder\QueryBuilder;
  */
 final class RefundController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: 'requested, approved, rejected, processing, completed, failed or cancelled.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[kind]', description: '`item` or `unapplied`.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at` or `amount_minor`; prefix `-` for newest/largest first.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $refunds = QueryBuilder::for(Refund::query()->with('order', 'item'))
@@ -34,25 +39,25 @@ final class RefundController extends Controller
             ->paginate($this->perPage($request))
             ->appends($request->query());
 
-        return RefundResource::collection($refunds);
+        return AdminRefundResource::collection($refunds);
     }
 
-    public function show(Refund $refund, CommerceSettings $settings): RefundResource
+    public function show(Refund $refund, CommerceSettings $settings): AdminRefundResource
     {
         return $this->present($refund, $settings);
     }
 
-    public function approve(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): RefundResource
+    public function approve(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): AdminRefundResource
     {
         return $this->present($refunds->approve($refund, $this->staff($request), $request->note()), $settings);
     }
 
-    public function reject(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): RefundResource
+    public function reject(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): AdminRefundResource
     {
         return $this->present($refunds->reject($refund, $this->staff($request), (string) $request->note()), $settings);
     }
 
-    public function retry(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): RefundResource
+    public function retry(StaffNoteRequest $request, Refund $refund, RefundLifecycle $refunds, CommerceSettings $settings): AdminRefundResource
     {
         return $this->present($refunds->retry($refund, $this->staff($request), (string) $request->note()), $settings);
     }
@@ -62,16 +67,16 @@ final class RefundController extends Controller
     {
         $refund = $refunds->settleUnapplied($payment, $this->staff($request), $request->note());
 
-        return (new RefundResource($refund->load('order', 'item')))->response()->setStatusCode(201);
+        return (new AdminRefundResource($refund->load('order', 'item')))->response()->setStatusCode(201);
     }
 
-    private function present(Refund $refund, CommerceSettings $settings): RefundResource
+    private function present(Refund $refund, CommerceSettings $settings): AdminRefundResource
     {
         $refund->refresh()->load('order', 'item'); // the payout job may already have run
         $progress = $refund->order_item_id === null ? null
             : Enrollment::query()->where('order_item_id', $refund->order_item_id)->value('progress_pct');
 
-        return (new RefundResource($refund))->withPolicy([
+        return (new AdminRefundResource($refund))->withPolicy([
             'days_since_payment' => $refund->order->paid_at === null ? null : (int) $refund->order->paid_at->diffInDays(now()),
             'refund_window_days' => $settings->refund_window_days,
             'progress_pct' => $progress === null ? null : (int) $progress,

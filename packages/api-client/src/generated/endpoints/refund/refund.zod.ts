@@ -43,9 +43,7 @@ export const OrdersRefundRequestsStoreResponse = zod.object({
     decided_at: zod.string().nullable(),
     completed_at: zod.string().nullable(),
     failure_code: zod.string().nullable(),
-    flag: zod.string().nullish(),
     created_at: zod.string(),
-    policy: zod.null().optional(),
   }),
 });
 
@@ -71,9 +69,7 @@ export const MeRefundsIndexResponse = zod.object({
       decided_at: zod.string().nullable(),
       completed_at: zod.string().nullable(),
       failure_code: zod.string().nullable(),
-      flag: zod.string().nullish(),
       created_at: zod.string(),
-      policy: zod.null().optional(),
     }),
   ),
   links: zod.object({
@@ -105,6 +101,23 @@ export const MeRefundsIndexResponse = zod.object({
   }),
 });
 
+export const adminRefundsIndexQueryPageDefault = 1;
+export const adminRefundsIndexQueryPerPageDefault = 15;
+
+export const AdminRefundsIndexQueryParams = zod.object({
+  page: zod.int().default(adminRefundsIndexQueryPageDefault),
+  per_page: zod.int().default(adminRefundsIndexQueryPerPageDefault),
+  "filter[status]": zod
+    .string()
+    .optional()
+    .describe("requested, approved, rejected, processing, completed, failed or cancelled."),
+  "filter[kind]": zod.string().optional().describe("`item` or `unapplied`."),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` or `amount_minor`; prefix `-` for newest/largest first."),
+});
+
 export const adminRefundsIndexResponseMetaPerPageMin = 0;
 
 export const adminRefundsIndexResponseMetaTotalMin = 0;
@@ -127,9 +140,24 @@ export const AdminRefundsIndexResponse = zod.object({
       decided_at: zod.string().nullable(),
       completed_at: zod.string().nullable(),
       failure_code: zod.string().nullable(),
-      flag: zod.string().nullish(),
       created_at: zod.string(),
-      policy: zod.null().optional(),
+      flag: zod
+        .string()
+        .nullable()
+        .describe("paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"),
+      policy: zod
+        .object({
+          days_since_payment: zod.int().nullable(),
+          refund_window_days: zod.int(),
+          progress_pct: zod.int().nullable(),
+          max_progress_pct: zod.int(),
+        })
+        .nullable(),
+      can: zod.object({
+        approve: zod.boolean(),
+        reject: zod.boolean(),
+        retry: zod.boolean(),
+      }),
     }),
   ),
   links: zod.object({
@@ -185,9 +213,24 @@ export const AdminRefundsShowResponse = zod.object({
     decided_at: zod.string().nullable(),
     completed_at: zod.string().nullable(),
     failure_code: zod.string().nullable(),
-    flag: zod.string().nullish(),
     created_at: zod.string(),
-    policy: zod.null().optional(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe("paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"),
+    policy: zod
+      .object({
+        days_since_payment: zod.int().nullable(),
+        refund_window_days: zod.int(),
+        progress_pct: zod.int().nullable(),
+        max_progress_pct: zod.int(),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.boolean(),
+      reject: zod.boolean(),
+      retry: zod.boolean(),
+    }),
   }),
 });
 
@@ -223,9 +266,24 @@ export const AdminRefundsApproveResponse = zod.object({
     decided_at: zod.string().nullable(),
     completed_at: zod.string().nullable(),
     failure_code: zod.string().nullable(),
-    flag: zod.string().nullish(),
     created_at: zod.string(),
-    policy: zod.null().optional(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe("paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"),
+    policy: zod
+      .object({
+        days_since_payment: zod.int().nullable(),
+        refund_window_days: zod.int(),
+        progress_pct: zod.int().nullable(),
+        max_progress_pct: zod.int(),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.boolean(),
+      reject: zod.boolean(),
+      retry: zod.boolean(),
+    }),
   }),
 });
 
@@ -261,9 +319,24 @@ export const AdminRefundsRejectResponse = zod.object({
     decided_at: zod.string().nullable(),
     completed_at: zod.string().nullable(),
     failure_code: zod.string().nullable(),
-    flag: zod.string().nullish(),
     created_at: zod.string(),
-    policy: zod.null().optional(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe("paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"),
+    policy: zod
+      .object({
+        days_since_payment: zod.int().nullable(),
+        refund_window_days: zod.int(),
+        progress_pct: zod.int().nullable(),
+        max_progress_pct: zod.int(),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.boolean(),
+      reject: zod.boolean(),
+      retry: zod.boolean(),
+    }),
   }),
 });
 
@@ -299,9 +372,24 @@ export const AdminRefundsRetryResponse = zod.object({
     decided_at: zod.string().nullable(),
     completed_at: zod.string().nullable(),
     failure_code: zod.string().nullable(),
-    flag: zod.string().nullish(),
     created_at: zod.string(),
-    policy: zod.null().optional(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe("paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"),
+    policy: zod
+      .object({
+        days_since_payment: zod.int().nullable(),
+        refund_window_days: zod.int(),
+        progress_pct: zod.int().nullable(),
+        max_progress_pct: zod.int(),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.boolean(),
+      reject: zod.boolean(),
+      retry: zod.boolean(),
+    }),
   }),
 });
 
@@ -340,8 +428,23 @@ export const AdminPaymentsRefundResponse = zod.object({
     decided_at: zod.string().nullable(),
     completed_at: zod.string().nullable(),
     failure_code: zod.string().nullable(),
-    flag: zod.string().nullish(),
     created_at: zod.string(),
-    policy: zod.null().optional(),
+    flag: zod
+      .string()
+      .nullable()
+      .describe("paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"),
+    policy: zod
+      .object({
+        days_since_payment: zod.int().nullable(),
+        refund_window_days: zod.int(),
+        progress_pct: zod.int().nullable(),
+        max_progress_pct: zod.int(),
+      })
+      .nullable(),
+    can: zod.object({
+      approve: zod.boolean(),
+      reject: zod.boolean(),
+      retry: zod.boolean(),
+    }),
   }),
 });

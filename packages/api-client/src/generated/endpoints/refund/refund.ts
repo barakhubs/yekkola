@@ -21,6 +21,7 @@ import type {
   AdminPaymentsRefund201,
   AdminRefundsApprove200,
   AdminRefundsIndex200,
+  AdminRefundsIndexParams,
   AdminRefundsReject200,
   AdminRefundsRetry200,
   AdminRefundsShow200,
@@ -363,36 +364,50 @@ export type adminRefundsIndexResponseError = adminRefundsIndexResponse403 & {
 
 export type adminRefundsIndexResponse = adminRefundsIndexResponseSuccess | adminRefundsIndexResponseError;
 
-export const getAdminRefundsIndexUrl = () => {
-  return `/admin/refunds`;
+export const getAdminRefundsIndexUrl = (params?: AdminRefundsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/admin/refunds?${stringifiedParams}` : `/admin/refunds`;
 };
 
 export const adminRefundsIndex = async (
+  params?: AdminRefundsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminRefundsIndexResponse> => {
-  return apiFetch<adminRefundsIndexResponse>(getAdminRefundsIndexUrl(), {
+  return apiFetch<adminRefundsIndexResponse>(getAdminRefundsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminRefundsIndexQueryKey = () => {
-  return [`/admin/refunds`] as const;
+export const getAdminRefundsIndexQueryKey = (params?: AdminRefundsIndexParams) => {
+  return [`/admin/refunds`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminRefundsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminRefundsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminRefundsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminRefundsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminRefundsIndex>>> = ({ signal }) =>
-    adminRefundsIndex({ signal, ...requestOptions });
+    adminRefundsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminRefundsIndex>>,
@@ -408,6 +423,7 @@ export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminRefundsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>> &
       Pick<
@@ -426,6 +442,7 @@ export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminRefundsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>> &
       Pick<
@@ -444,6 +461,7 @@ export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminRefundsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -455,13 +473,14 @@ export function useAdminRefundsIndex<
   TData = Awaited<ReturnType<typeof adminRefundsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminRefundsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminRefundsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminRefundsIndexQueryOptions(options);
+  const queryOptions = getAdminRefundsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

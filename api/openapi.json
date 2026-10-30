@@ -6431,6 +6431,47 @@
                 "tags": [
                     "PayoutBatch"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "draft, processing, completed or partially_failed.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[currency]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at`; prefix `-` for newest first (default).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `PayoutBatchResource`",
@@ -9112,9 +9153,51 @@
                 "tags": [
                     "Refund"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "requested, approved, rejected, processing, completed, failed or cancelled.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[kind]",
+                        "in": "query",
+                        "description": "`item` or `unapplied`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` or `amount_minor`; prefix `-` for newest/largest first.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Paginated set of `RefundResource`",
+                        "description": "Paginated set of `AdminRefundResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9123,7 +9206,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/RefundResource"
+                                                "$ref": "#/components/schemas/AdminRefundResource"
                                             }
                                         },
                                         "links": {
@@ -9277,14 +9360,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "`RefundResource`",
+                        "description": "`AdminRefundResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/RefundResource"
+                                            "$ref": "#/components/schemas/AdminRefundResource"
                                         }
                                     },
                                     "required": [
@@ -9332,14 +9415,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`RefundResource`",
+                        "description": "`AdminRefundResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/RefundResource"
+                                            "$ref": "#/components/schemas/AdminRefundResource"
                                         }
                                     },
                                     "required": [
@@ -9390,14 +9473,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`RefundResource`",
+                        "description": "`AdminRefundResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/RefundResource"
+                                            "$ref": "#/components/schemas/AdminRefundResource"
                                         }
                                     },
                                     "required": [
@@ -9448,14 +9531,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "`RefundResource`",
+                        "description": "`AdminRefundResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/RefundResource"
+                                            "$ref": "#/components/schemas/AdminRefundResource"
                                         }
                                     },
                                     "required": [
@@ -9507,14 +9590,14 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "`RefundResource`",
+                        "description": "`AdminRefundResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/RefundResource"
+                                            "$ref": "#/components/schemas/AdminRefundResource"
                                         }
                                     },
                                     "required": [
@@ -11140,6 +11223,157 @@
                     "is_payable"
                 ],
                 "title": "AdminProfessorResource"
+            },
+            "AdminRefundResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "order_number": {
+                        "type": "string"
+                    },
+                    "course": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "amount": {
+                        "type": "object",
+                        "properties": {
+                            "amount_minor": {
+                                "type": "integer"
+                            },
+                            "currency": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "amount_minor",
+                            "currency"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "decision_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "decided_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "completed_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "failure_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "flag": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "paid_twice, amount_mismatch, paid_after_reversal, payout_reversed, stuck"
+                    },
+                    "policy": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "days_since_payment": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "refund_window_days": {
+                                "type": "integer"
+                            },
+                            "progress_pct": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "max_progress_pct": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "days_since_payment",
+                            "refund_window_days",
+                            "progress_pct",
+                            "max_progress_pct"
+                        ]
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "approve": {
+                                "type": "boolean"
+                            },
+                            "reject": {
+                                "type": "boolean"
+                            },
+                            "retry": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "approve",
+                            "reject",
+                            "retry"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "kind",
+                    "order_id",
+                    "order_number",
+                    "course",
+                    "amount",
+                    "status",
+                    "reason",
+                    "decision_note",
+                    "decided_at",
+                    "completed_at",
+                    "failure_code",
+                    "created_at",
+                    "flag",
+                    "policy",
+                    "can"
+                ],
+                "title": "AdminRefundResource"
             },
             "Audience": {
                 "type": "string",
@@ -14471,17 +14705,8 @@
                             "null"
                         ]
                     },
-                    "flag": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
                     "created_at": {
                         "type": "string"
-                    },
-                    "policy": {
-                        "type": "null"
                     }
                 },
                 "required": [

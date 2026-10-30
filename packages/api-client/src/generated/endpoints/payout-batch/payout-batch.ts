@@ -20,6 +20,7 @@ import type {
 import type {
   AdminPayoutBatchesApprove200,
   AdminPayoutBatchesIndex200,
+  AdminPayoutBatchesIndexParams,
   AdminPayoutBatchesShow200,
   AdminPayoutBatchesStore201,
   AdminPayoutsExclude200,
@@ -70,36 +71,52 @@ export type adminPayoutBatchesIndexResponseError = adminPayoutBatchesIndexRespon
 export type adminPayoutBatchesIndexResponse =
   adminPayoutBatchesIndexResponseSuccess | adminPayoutBatchesIndexResponseError;
 
-export const getAdminPayoutBatchesIndexUrl = () => {
-  return `/admin/payout-batches`;
+export const getAdminPayoutBatchesIndexUrl = (params?: AdminPayoutBatchesIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/admin/payout-batches?${stringifiedParams}`
+    : `/admin/payout-batches`;
 };
 
 export const adminPayoutBatchesIndex = async (
+  params?: AdminPayoutBatchesIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminPayoutBatchesIndexResponse> => {
-  return apiFetch<adminPayoutBatchesIndexResponse>(getAdminPayoutBatchesIndexUrl(), {
+  return apiFetch<adminPayoutBatchesIndexResponse>(getAdminPayoutBatchesIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminPayoutBatchesIndexQueryKey = () => {
-  return [`/admin/payout-batches`] as const;
+export const getAdminPayoutBatchesIndexQueryKey = (params?: AdminPayoutBatchesIndexParams) => {
+  return [`/admin/payout-batches`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminPayoutBatchesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminPayoutBatchesIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminPayoutBatchesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminPayoutBatchesIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminPayoutBatchesIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>> = ({ signal }) =>
-    adminPayoutBatchesIndex({ signal, ...requestOptions });
+    adminPayoutBatchesIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminPayoutBatchesIndex>>,
@@ -117,6 +134,7 @@ export function useAdminPayoutBatchesIndex<
   TData = Awaited<ReturnType<typeof adminPayoutBatchesIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminPayoutBatchesIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>, TError, TData>> &
       Pick<
@@ -135,6 +153,7 @@ export function useAdminPayoutBatchesIndex<
   TData = Awaited<ReturnType<typeof adminPayoutBatchesIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminPayoutBatchesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>, TError, TData>> &
       Pick<
@@ -153,6 +172,7 @@ export function useAdminPayoutBatchesIndex<
   TData = Awaited<ReturnType<typeof adminPayoutBatchesIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminPayoutBatchesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -164,13 +184,14 @@ export function useAdminPayoutBatchesIndex<
   TData = Awaited<ReturnType<typeof adminPayoutBatchesIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminPayoutBatchesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPayoutBatchesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminPayoutBatchesIndexQueryOptions(options);
+  const queryOptions = getAdminPayoutBatchesIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
