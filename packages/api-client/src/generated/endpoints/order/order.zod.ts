@@ -55,8 +55,12 @@ export const OrdersStoreResponse = zod.object({
     expires_at: zod.string(),
     paid_at: zod.string().nullable(),
     created_at: zod.string(),
+    is_gift: zod
+      .boolean()
+      .describe("Bought for another student (FR-14): the courses are on their account, not the buyer's."),
     items: zod.array(
       zod.object({
+        id: zod.string(),
         course_id: zod.string(),
         course_slug: zod.string(),
         title: zod.string(),
@@ -72,6 +76,16 @@ export const OrdersStoreResponse = zod.object({
           amount_minor: zod.int(),
           currency: zod.string(),
         }),
+        refund: zod.union([
+          zod.object({
+            status: zod.string().nullable(),
+            can_request: zod.boolean(),
+          }),
+          zod.object({
+            status: zod.null(),
+            can_request: zod.boolean(),
+          }),
+        ]),
       }),
     ),
     payments: zod.array(
@@ -122,8 +136,12 @@ export const OrdersShowResponse = zod.object({
     expires_at: zod.string(),
     paid_at: zod.string().nullable(),
     created_at: zod.string(),
+    is_gift: zod
+      .boolean()
+      .describe("Bought for another student (FR-14): the courses are on their account, not the buyer's."),
     items: zod.array(
       zod.object({
+        id: zod.string(),
         course_id: zod.string(),
         course_slug: zod.string(),
         title: zod.string(),
@@ -139,6 +157,16 @@ export const OrdersShowResponse = zod.object({
           amount_minor: zod.int(),
           currency: zod.string(),
         }),
+        refund: zod.union([
+          zod.object({
+            status: zod.string().nullable(),
+            can_request: zod.boolean(),
+          }),
+          zod.object({
+            status: zod.null(),
+            can_request: zod.boolean(),
+          }),
+        ]),
       }),
     ),
     payments: zod.array(
@@ -235,8 +263,12 @@ export const MeOrdersIndexResponse = zod.object({
       expires_at: zod.string(),
       paid_at: zod.string().nullable(),
       created_at: zod.string(),
+      is_gift: zod
+        .boolean()
+        .describe("Bought for another student (FR-14): the courses are on their account, not the buyer's."),
       items: zod.array(
         zod.object({
+          id: zod.string(),
           course_id: zod.string(),
           course_slug: zod.string(),
           title: zod.string(),
@@ -252,6 +284,16 @@ export const MeOrdersIndexResponse = zod.object({
             amount_minor: zod.int(),
             currency: zod.string(),
           }),
+          refund: zod.union([
+            zod.object({
+              status: zod.string().nullable(),
+              can_request: zod.boolean(),
+            }),
+            zod.object({
+              status: zod.null(),
+              can_request: zod.boolean(),
+            }),
+          ]),
         }),
       ),
       payments: zod.array(

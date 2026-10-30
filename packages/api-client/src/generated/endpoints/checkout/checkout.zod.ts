@@ -18,7 +18,8 @@ export const CheckoutRailsResponse = zod.object({
 });
 
 /**
- * @summary Price for the selected courses; courses already owned are left out
+ * @summary Price for the selected courses; courses already owned are left out. `can_buy_for_others` says whether the
+student may buy them for someone else (admin setting "separate payer", FR-14)
  */
 export const checkoutQuoteBodyCourseIdsMax = 20;
 
@@ -92,5 +93,6 @@ export const CheckoutQuoteResponse = zod.object({
       amount_minor: zod.int(),
       currency: zod.string(),
     }),
+    can_buy_for_others: zod.boolean(),
   }),
 });

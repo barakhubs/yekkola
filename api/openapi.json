@@ -1249,7 +1249,7 @@
         "/checkout/quote": {
             "post": {
                 "operationId": "checkout.quote",
-                "summary": "Price for the selected courses; courses already owned are left out",
+                "summary": "Price for the selected courses; courses already owned are left out. `can_buy_for_others` says whether the\nstudent may buy them for someone else (admin setting \"separate payer\", FR-14)",
                 "tags": [
                     "Checkout"
                 ],
@@ -1438,6 +1438,9 @@
                                                         "amount_minor",
                                                         "currency"
                                                     ]
+                                                },
+                                                "can_buy_for_others": {
+                                                    "type": "boolean"
                                                 }
                                             },
                                             "required": [
@@ -1449,7 +1452,8 @@
                                                 "bundle",
                                                 "subtotal",
                                                 "discount",
-                                                "total"
+                                                "total",
+                                                "can_buy_for_others"
                                             ]
                                         }
                                     },
@@ -11922,11 +11926,18 @@
                     "created_at": {
                         "type": "string"
                     },
+                    "is_gift": {
+                        "type": "boolean",
+                        "description": "Bought for another student (FR-14): the courses are on their account, not the buyer's."
+                    },
                     "items": {
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
                                 "course_id": {
                                     "type": "string"
                                 },
@@ -11980,15 +11991,54 @@
                                         "amount_minor",
                                         "currency"
                                     ]
+                                },
+                                "refund": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "can_request": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "status",
+                                                "can_request"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "null"
+                                                },
+                                                "can_request": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "status",
+                                                "can_request"
+                                            ]
+                                        }
+                                    ]
                                 }
                             },
                             "required": [
+                                "id",
                                 "course_id",
                                 "course_slug",
                                 "title",
                                 "list_price",
                                 "discount",
-                                "price"
+                                "price",
+                                "refund"
                             ]
                         }
                     },
@@ -12010,6 +12060,7 @@
                     "expires_at",
                     "paid_at",
                     "created_at",
+                    "is_gift",
                     "items",
                     "payments"
                 ],

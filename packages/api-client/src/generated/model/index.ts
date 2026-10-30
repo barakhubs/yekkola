@@ -253,6 +253,7 @@ export * from "./orderResourceItemsItem";
 export * from "./orderResourceItemsItemDiscount";
 export * from "./orderResourceItemsItemListPrice";
 export * from "./orderResourceItemsItemPrice";
+export * from "./orderResourceItemsItemRefund";
 export * from "./orderResourceSubtotal";
 export * from "./orderResourceTotal";
 export * from "./ordersPay201";

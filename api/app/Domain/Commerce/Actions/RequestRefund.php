@@ -10,6 +10,7 @@ use App\Domain\Commerce\Enums\RefundStatus;
 use App\Domain\Commerce\Events\RefundRequested;
 use App\Domain\Commerce\Exceptions\CommerceException;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\Refund;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Enrollment;
@@ -36,24 +37,10 @@ final class RequestRefund
             $order = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
             $item = $order->items()->whereKey($orderItemId)->firstOrFail();
 
-            if (! in_array($order->status, [OrderStatus::Paid, OrderStatus::PartiallyRefunded], true) || $order->paid_payment_id === null || $item->price_minor === 0) {
-                throw CommerceException::notRefundable();
-            }
-            if ($order->paid_at === null || $order->paid_at->lt(now()->subDays($this->settings->refund_window_days))) {
-                throw CommerceException::refundWindowClosed($this->settings->refund_window_days);
-            }
-
-            $enrollment = Enrollment::query()->active()->where('order_item_id', $item->id)->first();
-            if ($enrollment === null) {
-                throw CommerceException::notRefundable(); // granted elsewhere, or already revoked
-            }
-            if ($enrollment->progress_pct > $this->settings->refund_max_progress_pct) {
-                throw CommerceException::refundProgressTooHigh($this->settings->refund_max_progress_pct);
-            }
-
-            $existing = Refund::query()->where('order_item_id', $item->id)->whereNotIn('status', [RefundStatus::Rejected, RefundStatus::Cancelled])->exists();
-            if ($existing) {
-                throw CommerceException::refundAlreadyRequested();
+            $open = Refund::query()->where('order_item_id', $item->id)->whereNotIn('status', [RefundStatus::Rejected, RefundStatus::Cancelled])->exists();
+            $refusal = $this->refusal($order, $item, Enrollment::query()->active()->where('order_item_id', $item->id)->first(), $open);
+            if ($refusal !== null) {
+                throw $refusal;
             }
 
             return Refund::query()->create([
@@ -72,5 +59,27 @@ final class RequestRefund
         $this->events->dispatch(new RefundRequested($refund->id));
 
         return $refund;
+    }
+
+    /**
+     * Why this item can't be refunded now, or null when a request would be accepted (FR-16, BR-06). Also tells the
+     * orders page whether to offer the request.
+     */
+    public function refusal(Order $order, OrderItem $item, ?Enrollment $activeEnrollment, bool $hasOpenRefund): ?CommerceException
+    {
+        if (! in_array($order->status, [OrderStatus::Paid, OrderStatus::PartiallyRefunded], true) || $order->paid_payment_id === null || $item->price_minor === 0) {
+            return CommerceException::notRefundable();
+        }
+        if ($order->paid_at === null || $order->paid_at->lt(now()->subDays($this->settings->refund_window_days))) {
+            return CommerceException::refundWindowClosed($this->settings->refund_window_days);
+        }
+        if ($activeEnrollment === null) {
+            return CommerceException::notRefundable(); // granted elsewhere, or already revoked
+        }
+        if ($activeEnrollment->progress_pct > $this->settings->refund_max_progress_pct) {
+            return CommerceException::refundProgressTooHigh($this->settings->refund_max_progress_pct);
+        }
+
+        return $hasOpenRefund ? CommerceException::refundAlreadyRequested() : null;
     }
 }
