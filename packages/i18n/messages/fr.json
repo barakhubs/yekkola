@@ -959,7 +959,9 @@
       "label": "Sections du back office",
       "home": "Accueil",
       "applications": "Candidatures",
-      "courseReviews": "Relecture des cours"
+      "courseReviews": "Relecture des cours",
+      "refunds": "Remboursements",
+      "payouts": "Versements"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1135,6 +1137,112 @@
       "explanation": "Explication : {text}"
     },
     "suspendedTitle": "Votre compte est suspendu",
-    "suspendedBody": "Le back office n’est pas accessible pendant une suspension. Contactez un administrateur."
+    "suspendedBody": "Le back office n’est pas accessible pendant une suspension. Contactez un administrateur.",
+    "refunds": {
+      "title": "Remboursements",
+      "intro": "Demandes des étudiants et versements de remboursement. L’argent revient au numéro qui a payé.",
+      "filterStatus": "Statut",
+      "allStatuses": "Tous les statuts",
+      "empty": "Aucune demande ici.",
+      "unapplied": "Paiement non appliqué",
+      "columns": {
+        "order": "Commande",
+        "course": "Cours",
+        "amount": "Montant",
+        "status": "Statut",
+        "requested": "Demandé le"
+      },
+      "status": {
+        "requested": "Demandé",
+        "approved": "Approuvé",
+        "rejected": "Refusé",
+        "processing": "En cours de versement",
+        "completed": "Remboursé",
+        "failed": "Échec du versement",
+        "cancelled": "Annulé"
+      },
+      "flags": {
+        "paid_twice": "Payé deux fois",
+        "amount_mismatch": "Montant différent",
+        "paid_after_reversal": "Payé après annulation",
+        "payout_reversed": "Versement annulé",
+        "stuck": "Bloqué"
+      },
+      "back": "Tous les remboursements",
+      "detailTitle": "Remboursement — commande {order}",
+      "course": "Cours",
+      "reason": "Raison donnée",
+      "daysSincePayment": "Jours depuis le paiement",
+      "progress": "Progression",
+      "ofLimit": "{value} (limite : {limit})",
+      "ofLimitPct": "{value} % (limite : {limit} %)",
+      "decisionNote": "Note de décision",
+      "failure": "Échec",
+      "completed": "Remboursé le",
+      "approve": "Approuver",
+      "approveConfirm": "Rembourser {amount} ?",
+      "approveHint": "L’accès au cours est retiré et l’argent est renvoyé au numéro qui a payé.",
+      "reject": "Refuser",
+      "rejectConfirm": "Refuser ce remboursement ?",
+      "rejectHint": "L’étudiant garde l’accès au cours. La note lui est montrée.",
+      "noteToStudent": "Note pour l’étudiant",
+      "retry": "Relancer le versement",
+      "retryConfirm": "Relancer le versement ?",
+      "retryHint": "Le dernier essai est d’abord vérifié auprès de l’opérateur.",
+      "internalNote": "Note interne"
+    },
+    "payouts": {
+      "title": "Versements aux professeurs",
+      "intro": "Lots de versements par devise. Un lot est préparé selon le calendrier ; vous pouvez aussi en préparer un maintenant.",
+      "filterStatus": "Statut",
+      "allStatuses": "Tous les statuts",
+      "empty": "Aucun lot pour le moment.",
+      "build": "Préparer un lot",
+      "openIt": "Ouvrir le lot en cours",
+      "columns": {
+        "created": "Préparé le",
+        "currency": "Devise",
+        "total": "Total",
+        "lines": "Versements",
+        "status": "Statut",
+        "professor": "Professeur",
+        "number": "Numéro",
+        "amount": "Montant",
+        "actions": "Actions"
+      },
+      "linesSummary": "{paid} payé(s) sur {lines}",
+      "status": {
+        "draft": "Brouillon",
+        "processing": "En cours",
+        "completed": "Terminé",
+        "partially_failed": "Échecs partiels"
+      },
+      "lineStatus": {
+        "pending": "En attente",
+        "excluded": "Écarté",
+        "processing": "En cours",
+        "paid": "Payé",
+        "failed": "Échec"
+      },
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "back": "Tous les lots",
+      "detailTitle": "Lot {currency} du {date}",
+      "bySchedule": "Préparé selon le calendrier",
+      "byHand": "Préparé à la main",
+      "paidSoFar": "{amount} payés",
+      "linesCaption": "Versements du lot",
+      "approve": "Approuver et payer",
+      "approveConfirm": "Payer {amount} ?",
+      "approveHint": "Chaque versement est envoyé à l’opérateur. Les échecs restent disponibles pour le prochain lot.",
+      "draftHint": "Écartez d’abord les versements à ne pas payer.",
+      "exclude": "Écarter",
+      "excludeConfirm": "Écarter le versement de {name} ?",
+      "excludeHint": "L’argent reste disponible pour un prochain lot.",
+      "excludeReason": "Raison"
+    }
   }
 }
