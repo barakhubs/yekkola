@@ -324,7 +324,12 @@
       "expiredTitle": "La commande a expiré",
       "expiredBody": "Le délai de paiement est dépassé. Recommence ta commande.",
       "startOver": "Recommencer",
-      "unknownOrder": "Cette commande est introuvable."
+      "unknownOrder": "Cette commande est introuvable.",
+      "forWhom": "Pour qui ?",
+      "forOther": "J’achète ce cours pour un autre élève",
+      "studentPhone": "Numéro de téléphone de l’élève",
+      "studentPhoneHint": "Le cours sera ajouté au compte Yekkola de ce numéro (créé s’il n’existe pas).",
+      "paidGiftBody": "Le cours a été ajouté au compte de l’élève."
     },
     "orders": {
       "title": "Mes commandes",
@@ -341,7 +346,23 @@
         "partially_refunded": "Remboursée en partie"
       },
       "receipt": "Reçu (PDF)",
-      "continuePayment": "Continuer le paiement"
+      "continuePayment": "Continuer le paiement",
+      "gift": "Acheté pour un autre élève.",
+      "refund": {
+        "request": "Demander un remboursement",
+        "title": "Rembourser « {course} » ?",
+        "body": "L’équipe Yekkola examine ta demande. Si elle est acceptée, tu perds l’accès au cours et l’argent est renvoyé au numéro qui a payé.",
+        "reason": "Pourquoi demandes-tu un remboursement ?",
+        "send": "Envoyer la demande",
+        "cancel": "Annuler",
+        "requested": "Remboursement demandé",
+        "approved": "Remboursement accepté",
+        "rejected": "Remboursement refusé",
+        "processing": "Remboursement en cours",
+        "completed": "Remboursé",
+        "failed": "Remboursement en échec",
+        "cancelled": "Demande annulée"
+      }
     },
     "studio": {
       "coursesTitle": "Mes cours (studio)",

@@ -219,7 +219,8 @@ export const getCheckoutQuoteUrl = () => {
 };
 
 /**
- * @summary Price for the selected courses; courses already owned are left out
+ * @summary Price for the selected courses; courses already owned are left out. `can_buy_for_others` says whether the
+student may buy them for someone else (admin setting "separate payer", FR-14)
  */
 export const checkoutQuote = async (
   courseSelectionRequest?: CourseSelectionRequest,
@@ -330,7 +331,8 @@ export function useCheckoutQuote<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Price for the selected courses; courses already owned are left out
+ * @summary Price for the selected courses; courses already owned are left out. `can_buy_for_others` says whether the
+student may buy them for someone else (admin setting "separate payer", FR-14)
  */
 
 export function useCheckoutQuote<

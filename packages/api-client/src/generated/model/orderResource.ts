@@ -22,6 +22,8 @@ export interface OrderResource {
   /** @nullable */
   paid_at: string | null;
   created_at: string;
+  /** Bought for another student (FR-14): the courses are on their account, not the buyer's. */
+  is_gift: boolean;
   items: OrderResourceItemsItem[];
   payments: PaymentResource[];
 }

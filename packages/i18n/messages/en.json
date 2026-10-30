@@ -324,7 +324,12 @@
       "expiredTitle": "The order has expired",
       "expiredBody": "The time to pay has run out. Please start your order again.",
       "startOver": "Start again",
-      "unknownOrder": "This order can’t be found."
+      "unknownOrder": "This order can’t be found.",
+      "forWhom": "Who is it for?",
+      "forOther": "I'm buying this course for another student",
+      "studentPhone": "Student's phone number",
+      "studentPhoneHint": "The course goes to the Yekkola account of this number (created if needed).",
+      "paidGiftBody": "The course has been added to the student's account."
     },
     "orders": {
       "title": "My orders",
@@ -341,7 +346,23 @@
         "partially_refunded": "Partly refunded"
       },
       "receipt": "Receipt (PDF)",
-      "continuePayment": "Continue paying"
+      "continuePayment": "Continue paying",
+      "gift": "Bought for another student.",
+      "refund": {
+        "request": "Request a refund",
+        "title": "Refund “{course}”?",
+        "body": "The Yekkola team reviews your request. If it's accepted, you lose access to the course and the money goes back to the number that paid.",
+        "reason": "Why are you asking for a refund?",
+        "send": "Send request",
+        "cancel": "Cancel",
+        "requested": "Refund requested",
+        "approved": "Refund approved",
+        "rejected": "Refund declined",
+        "processing": "Refund in progress",
+        "completed": "Refunded",
+        "failed": "Refund failed",
+        "cancelled": "Request cancelled"
+      }
     },
     "studio": {
       "coursesTitle": "My courses (studio)",

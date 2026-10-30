@@ -413,3 +413,18 @@ it('records the payer debt when unapplied money being paid back is also reversed
         ->and(ledgerBalance(LedgerAccountType::RefundsPayable))->toBe(-1_500);
     assertLedgerBalanced();
 });
+
+it('tells the orders page which courses can still be refunded', function () {
+    $refundOf = fn (string $courseId) => collect($this->getJson('/api/v1/me/orders')->assertOk()->json('data.0.items'))
+        ->firstWhere('course_id', $courseId)['refund'];
+
+    expect($refundOf($this->maths->id))->toBe(['status' => null, 'can_request' => true]);
+
+    askRefund($this->order, $this->maths->id)->assertCreated();
+    expect($refundOf($this->maths->id))->toBe(['status' => 'requested', 'can_request' => false])
+        ->and($refundOf($this->physics->id))->toBe(['status' => null, 'can_request' => true]);
+
+    $this->travel(30)->days();
+    expect($refundOf($this->physics->id)['can_request'])->toBeFalse();
+    askRefund($this->order, $this->physics->id)->assertUnprocessable()->assertJsonPath('code', 'refund.window_closed');
+});

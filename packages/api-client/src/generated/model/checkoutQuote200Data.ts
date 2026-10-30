@@ -23,4 +23,5 @@ export type CheckoutQuote200Data = {
   subtotal: CheckoutQuote200DataSubtotal;
   discount: CheckoutQuote200DataDiscount;
   total: CheckoutQuote200DataTotal;
+  can_buy_for_others: boolean;
 };

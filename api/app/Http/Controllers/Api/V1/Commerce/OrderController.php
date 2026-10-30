@@ -36,7 +36,7 @@ final class OrderController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $orders = $this->visible($request)
-            ->with('items.course', 'payments')
+            ->with('items.course', 'items.activeEnrollment', 'items.refunds', 'payments')
             ->orderByDesc('created_at')->orderByDesc('id')
             ->paginate($this->perPage($request));
 
@@ -66,7 +66,7 @@ final class OrderController extends Controller
     {
         $model = $refresh->handle($this->visible($request)->findOrFail($order));
 
-        return new OrderResource($model->load('items.course', 'payments'));
+        return new OrderResource($model->load('items.course', 'items.activeEnrollment', 'items.refunds', 'payments'));
     }
 
     /**

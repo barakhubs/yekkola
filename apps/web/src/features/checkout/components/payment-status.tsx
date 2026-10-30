@@ -115,9 +115,9 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
           <h1 ref={heading} tabIndex={-1} className="text-2xl font-extrabold focus:outline-none">
             {t("paidTitle")}
           </h1>
-          <p>{t("paidBody")}</p>
+          <p>{o.is_gift ? t("paidGiftBody") : t("paidBody")}</p>
           <div className="flex flex-wrap justify-center gap-2">
-            {o.items[0] ? (
+            {o.items[0] && !o.is_gift ? (
               <Button asChild size="lg">
                 <Link href={`/learn/${o.items[0].course_id}`}>{t("startLearning")}</Link>
               </Button>

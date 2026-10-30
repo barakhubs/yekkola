@@ -391,7 +391,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | Method | Path | Purpose |
 |---|---|---|
 | GET | /checkout/rails?currency= | Operators and whether each can take a payment now (public) |
-| POST | /checkout/quote | Price quote `{course_ids | bundle_id, coupon_code?}` (20/min per user) |
+| POST | /checkout/quote | Price quote `{course_ids | bundle_id, coupon_code?}` (20/min per user); `can_buy_for_others` reflects the "separate payer" setting |
 | GET | /bundles/{slug} | Active bundle whose courses are all listed |
 | POST | /orders | Create order `{course_ids | bundle_id, coupon_code?, beneficiary_phone?, payer_msisdn?}` (`Idempotency-Key`) |
 | POST | /guest/orders | Parent without an account: `{…, beneficiary_phone, payer_msisdn?, bot_token}` → order + one-time `access_token` (10/h per IP) |
@@ -402,7 +402,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /orders/{id}/cancel | Cancel unpaid order |
 | GET | /me/orders | Order history: orders I bought and orders bought for me (only the buyer can pay) |
 | GET | /orders/{id}/receipt[.pdf] | Receipt as JSON or PDF (request language) for buyer and student; guests: `GET /guest/orders/{id}/receipt.pdf` |
-| POST | /orders/{id}/refund-requests | Request a refund `{order_item_id, reason}` (window and progress limits from settings) |
+| POST | /orders/{id}/refund-requests | Request a refund `{order_item_id, reason}` (window and progress limits from settings). Order items carry `refund {status, can_request}` from the same checks |
 | GET | /me/refunds | My refund requests |
 
 **Professor** (`/professor`, role: professor except application endpoints)

@@ -7,12 +7,15 @@
 import type { OrderResourceItemsItemDiscount } from "./orderResourceItemsItemDiscount";
 import type { OrderResourceItemsItemListPrice } from "./orderResourceItemsItemListPrice";
 import type { OrderResourceItemsItemPrice } from "./orderResourceItemsItemPrice";
+import type { OrderResourceItemsItemRefund } from "./orderResourceItemsItemRefund";
 
 export type OrderResourceItemsItem = {
+  id: string;
   course_id: string;
   course_slug: string;
   title: string;
   list_price: OrderResourceItemsItemListPrice;
   discount: OrderResourceItemsItemDiscount;
   price: OrderResourceItemsItemPrice;
+  refund: OrderResourceItemsItemRefund;
 };

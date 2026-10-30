@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-01-web-account` (student account page, PR #28 waiting for merge)
-- **Next up:** refund request + buy for someone else in the web checkout — 2.4
+- **Current branch:** `feature/prd-05-web-refund-payer` (refund request + buy for another student, PR #29 waiting for merge)
+- **Next up:** guest checkout for parents without an account (public page, order token) — 2.4
 
 ## Legend
 
@@ -361,8 +361,10 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout) — #19
 - [x] Checkout on the fake gateway: quote, coupon, rail picker, payer number, waiting screen with countdown, results, retry with another operator or number — #21
 - [x] Orders list + receipt PDF links — #21
-- [ ] Refund request from the orders page (PRD-05 FR-12, API exists)
-- [ ] Buy for another student / guest payer link in the web checkout (PRD-05 FR-14, API exists)
+- [x] Refund request from the orders page (PRD-05 FR-16) — #29
+- [x] Buy for another student in the signed-in checkout (PRD-05 FR-14) — #29
+- [ ] Guest checkout: a parent without an account pays for a student (public page, Turnstile, order token; PRD-05 FR-14)
+- [ ] Gift a course the buyer already owns (the quote is for the buyer, so checkout currently stops at "already owned")
 - [ ] Bundles in the web checkout (course page "bundle" offers, PRD-05 FR-11)
 - [ ] Operator-specific hints on the waiting screen (USSD code, "check *144#") once the real aggregator is chosen
 - [ ] Playwright journey: paid checkout on the fake gateway (success, insufficient funds `…0001` then retry)

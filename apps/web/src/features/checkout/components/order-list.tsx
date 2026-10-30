@@ -1,8 +1,12 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { success } from "@yekkola/api-client";
-import { useMeOrdersIndex } from "@yekkola/api-client/endpoints/order";
+import { getMeOrdersIndexQueryKey, useMeOrdersIndex } from "@yekkola/api-client/endpoints/order";
+import { ordersRefundRequestsStore } from "@yekkola/api-client/endpoints/refund";
+import type { OrderResource } from "@yekkola/api-client/model";
 import { formatDate, formatMoney, type Locale } from "@yekkola/i18n";
+import { ConfirmDialog } from "@yekkola/ui/blocks/confirm-dialog";
 import { EmptyState } from "@yekkola/ui/blocks/empty-state";
 import { PageHeader } from "@yekkola/ui/blocks/page-header";
 import { type StatusTone, StatusBadge } from "@yekkola/ui/blocks/status-badge";
@@ -13,6 +17,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useState } from "react";
 
+import { useErrorText } from "@/features/studio/hooks";
 import { Link } from "@/i18n/navigation";
 
 import { canStillPay } from "../order-state";
@@ -73,11 +78,15 @@ export function OrderList() {
                   <span className="font-bold">{t("number", { number: order.number })}</span>
                   <StatusBadge status={status} tones={TONES} label={t(`status.${status}`)} />
                 </div>
-                <ul className="text-sm">
+                <ul className="grid gap-1 text-sm">
                   {order.items.map((item) => (
-                    <li key={item.course_id}>{item.title}</li>
+                    <li key={item.id} className="flex flex-wrap items-center justify-between gap-2">
+                      <span>{item.title}</span>
+                      <RefundAction order={order} item={item} />
+                    </li>
                   ))}
                 </ul>
+                {order.is_gift ? <p className="text-xs text-muted-foreground">{t("gift")}</p> : null}
                 <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                   <span className="text-muted-foreground">
                     {formatDate(order.created_at, locale)} · {formatMoney(order.total, locale)}
@@ -114,5 +123,62 @@ export function OrderList() {
         </nav>
       ) : null}
     </div>
+  );
+}
+
+type RefundState =
+  "requested" | "approved" | "rejected" | "processing" | "completed" | "failed" | "cancelled";
+
+const REFUND_TONES: Record<RefundState, StatusTone> = {
+  requested: "warning",
+  approved: "info",
+  rejected: "neutral",
+  processing: "info",
+  completed: "success",
+  failed: "danger",
+  cancelled: "neutral",
+};
+
+/**
+ * A course's refund: its latest request, or the request button when the API says one would be accepted (refund
+ * window, progress limit — PRD-05 FR-16). Staff decide; the money goes back to the number that paid.
+ */
+function RefundAction({ order, item }: { order: OrderResource; item: OrderResource["items"][number] }) {
+  const t = useTranslations("web.orders");
+  const errorText = useErrorText();
+  const queryClient = useQueryClient();
+  const [error, setError] = useState<unknown>(null);
+  const status = item.refund.status as RefundState | null;
+  const known = status !== null && status in REFUND_TONES;
+
+  return (
+    <span className="flex flex-wrap items-center gap-2">
+      {known ? <StatusBadge status={status} tones={REFUND_TONES} label={t(`refund.${status}`)} /> : null}
+      {item.refund.can_request ? (
+        <ConfirmDialog
+          trigger={
+            <Button size="sm" variant="ghost">
+              {t("refund.request")}
+            </Button>
+          }
+          title={t("refund.title", { course: item.title })}
+          description={t("refund.body")}
+          reason={{ label: t("refund.reason"), minLength: 3 }}
+          confirmLabel={t("refund.send")}
+          cancelLabel={t("refund.cancel")}
+          error={error ? errorText(error) : undefined}
+          onOpenChange={() => setError(null)}
+          onConfirm={async (reason) => {
+            try {
+              await ordersRefundRequestsStore(order.id, { order_item_id: item.id, reason });
+            } catch (e) {
+              setError(e);
+              throw e;
+            }
+            await queryClient.invalidateQueries({ queryKey: getMeOrdersIndexQueryKey() });
+          }}
+        />
+      ) : null}
+    </span>
   );
 }

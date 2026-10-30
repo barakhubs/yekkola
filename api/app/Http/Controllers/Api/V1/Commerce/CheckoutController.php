@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1\Commerce;
 use App\Domain\Commerce\Actions\AvailableRails;
 use App\Domain\Commerce\Actions\QuoteOrder;
 use App\Domain\Identity\Models\User;
+use App\Domain\Platform\Settings\CommerceSettings;
 use App\Domain\Shared\Enums\Currency;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Commerce\CourseSelectionRequest;
@@ -19,16 +20,19 @@ use Illuminate\Validation\Rule;
 final class CheckoutController extends Controller
 {
     /**
-     * Price for the selected courses; courses already owned are left out.
+     * Price for the selected courses; courses already owned are left out. `can_buy_for_others` says whether the
+     * student may buy them for someone else (admin setting "separate payer", FR-14).
      *
      * @return array{data: array<string, mixed>}
      */
-    public function quote(CourseSelectionRequest $request, QuoteOrder $quote): array
+    public function quote(CourseSelectionRequest $request, QuoteOrder $quote, CommerceSettings $settings): array
     {
         /** @var User $user */
         $user = $request->user();
+        $data = $quote->handle($user, $request->courseIds(), $request->bundleId(), $request->couponCode())->toArray();
+        $data['can_buy_for_others'] = $settings->separate_payer_enabled;
 
-        return ['data' => $quote->handle($user, $request->courseIds(), $request->bundleId(), $request->couponCode())->toArray()];
+        return ['data' => $data];
     }
 
     /**
