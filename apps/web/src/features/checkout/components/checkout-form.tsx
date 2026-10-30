@@ -47,6 +47,9 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [rail, setRail] = useState<MobileMoneyRail | null>(null);
   const [payer, setPayer] = useState<string | null>(null);
+  // Buying for another student (PRD-05 FR-14): the course goes to the account of this number.
+  const [forOther, setForOther] = useState(false);
+  const [student, setStudent] = useState("");
   // Set once the order exists: a payment request the API turned down is fixed and sent again for this order.
   const [order, setOrder] = useState<OrderResource | null>(null);
 
@@ -79,16 +82,17 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
     if (code && !applyCoupon.isPending) applyCoupon.mutate(code);
   };
 
+  const beneficiary = forOther ? msisdnOf(student) : null;
   const pay = useMutation({
     mutationFn: async () => {
       const current =
         order ??
         (await withIdempotencyKey(
-          `order:${courseId}:${appliedCoupon ?? ""}`,
+          `order:${courseId}:${appliedCoupon ?? ""}:${beneficiary ?? ""}`,
           async (key) =>
             success(
               await ordersStore(
-                { course_ids: [courseId], coupon_code: appliedCoupon },
+                { course_ids: [courseId], coupon_code: appliedCoupon, beneficiary_phone: beneficiary },
                 { headers: { "Idempotency-Key": key } },
               ),
             ).data,
@@ -157,7 +161,8 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
   const q = quote.data;
   const availableRails = rails.data ?? {};
   const anyRail = Object.values(availableRails).some(Boolean);
-  const canPay = q.is_free || (rail !== null && availableRails[rail] === true);
+  const canPay =
+    (q.is_free || (rail !== null && availableRails[rail] === true)) && !(forOther && !beneficiary);
 
   return (
     <form
@@ -244,6 +249,37 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
           ) : null}
         </div>
       )}
+
+      {q.can_buy_for_others && !order ? (
+        <fieldset className="grid gap-3">
+          <legend className="sr-only">{t("forWhom")}</legend>
+          <label className="flex items-center gap-2 text-sm font-semibold">
+            <input
+              type="checkbox"
+              className="size-4 accent-primary"
+              checked={forOther}
+              onChange={(e) => setForOther(e.target.checked)}
+            />
+            {t("forOther")}
+          </label>
+          {forOther ? (
+            <div className="grid gap-2">
+              <Label htmlFor="student-phone">{t("studentPhone")}</Label>
+              <Input
+                id="student-phone"
+                type="tel"
+                inputMode="tel"
+                value={student}
+                aria-describedby="student-phone-hint"
+                onChange={(e) => setStudent(e.target.value)}
+              />
+              <p id="student-phone-hint" className="text-xs text-muted-foreground">
+                {t("studentPhoneHint")}
+              </p>
+            </div>
+          ) : null}
+        </fieldset>
+      ) : null}
 
       {q.is_free ? null : rails.isPending ? (
         <Skeleton className="h-24 w-full" />
