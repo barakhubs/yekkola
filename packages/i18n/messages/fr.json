@@ -961,7 +961,8 @@
       "applications": "Candidatures",
       "courseReviews": "Relecture des cours",
       "refunds": "Remboursements",
-      "payouts": "Versements"
+      "payouts": "Versements",
+      "ledger": "Grand livre"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1243,6 +1244,86 @@
       "excludeConfirm": "Écarter le versement de {name} ?",
       "excludeHint": "L’argent reste disponible pour un prochain lot.",
       "excludeReason": "Raison"
+    },
+    "ledger": {
+      "title": "Grand livre",
+      "intro": "Tous les comptes avec leurs totaux, et chaque écriture. Rien ne se modifie ici : une correction est un ajustement.",
+      "tabs": {
+        "accounts": "Comptes",
+        "transactions": "Écritures"
+      },
+      "filterOwner": "Titulaire",
+      "allOwners": "Tous",
+      "platform": "Plateforme",
+      "professors": "Professeurs",
+      "balanceHint": "Solde = débits − crédits. Un solde négatif sur un compte professeur est ce que la plateforme lui doit.",
+      "columns": {
+        "owner": "Titulaire",
+        "account": "Compte",
+        "debits": "Débits",
+        "credits": "Crédits",
+        "balance": "Solde",
+        "actions": "Actions",
+        "date": "Date",
+        "type": "Type",
+        "entries": "Lignes",
+        "reference": "Référence"
+      },
+      "seeTransactions": "Écritures",
+      "emptyAccounts": "Aucun compte.",
+      "emptyTransactions": "Aucune écriture.",
+      "allTypes": "Tous les types",
+      "from": "Du",
+      "to": "Au",
+      "oneAccount": "Écritures d’un seul compte.",
+      "allAccounts": "Voir tous les comptes",
+      "debit": "Débit",
+      "credit": "Crédit",
+      "accounts": {
+        "gateway_clearing": "Compte opérateur (encaissements)",
+        "gateway_fees": "Frais opérateur",
+        "platform_revenue": "Revenus de la plateforme",
+        "professor_held": "Professeur — en attente",
+        "professor_available": "Professeur — disponible",
+        "professor_paid_out": "Professeur — versé",
+        "refunds_payable": "Remboursements à verser",
+        "discounts_platform": "Remises payées par la plateforme",
+        "payer_receivable": "Dû par des payeurs"
+      },
+      "types": {
+        "sale": "Vente",
+        "sale_reversal": "Annulation de vente",
+        "unapplied_receipt": "Paiement non appliqué",
+        "unapplied_receipt_reversal": "Annulation de paiement non appliqué",
+        "release": "Gains disponibles",
+        "refund": "Remboursement",
+        "refund_paid": "Remboursement versé",
+        "refund_reversal": "Remboursement annulé",
+        "refund_debt": "Dette de remboursement",
+        "refund_settled": "Dette de remboursement réglée",
+        "refund_overpaid": "Remboursement payé deux fois",
+        "refund_paid_reversal": "Versement de remboursement annulé",
+        "payout": "Versement au professeur",
+        "payout_failed": "Versement annulé",
+        "adjustment": "Ajustement manuel"
+      },
+      "adjust": {
+        "open": "Ajuster",
+        "title": "Ajuster le solde de {name}",
+        "hint": "Une écriture équilibrée contre les revenus de la plateforme. Elle ne peut pas être modifiée ensuite.",
+        "direction": "Sens",
+        "directions": {
+          "credit": "Ajouter au solde (la plateforme doit plus)",
+          "debit": "Retirer du solde"
+        },
+        "amount": "Montant ({currency})",
+        "badAmount": "Saisissez un montant positif.",
+        "label": "Libellé",
+        "labelHint": "Visible par le professeur sur son relevé.",
+        "reason": "Raison",
+        "reasonHint": "Interne : gardée dans le journal d’audit.",
+        "save": "Enregistrer l’ajustement"
+      }
     }
   }
 }

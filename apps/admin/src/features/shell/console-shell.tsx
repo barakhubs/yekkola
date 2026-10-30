@@ -7,6 +7,7 @@ import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { cn } from "@yekkola/ui/lib/utils";
 import {
   BookCheck,
+  BookOpenText,
   GraduationCap,
   LayoutDashboard,
   LogOut,
@@ -29,6 +30,7 @@ const NAV = [
   { href: "/moderation/courses", key: "courseReviews", icon: BookCheck, permission: "moderation.review" },
   { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
   { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
+  { href: "/finance/ledger", key: "ledger", icon: BookOpenText, permission: "finance.view" },
 ] as const;
 
 /**

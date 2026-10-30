@@ -961,7 +961,8 @@
       "applications": "Applications",
       "courseReviews": "Course reviews",
       "refunds": "Refunds",
-      "payouts": "Payouts"
+      "payouts": "Payouts",
+      "ledger": "Ledger"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1243,6 +1244,86 @@
       "excludeConfirm": "Leave out {name}'s payout?",
       "excludeHint": "The money stays available for a later batch.",
       "excludeReason": "Reason"
+    },
+    "ledger": {
+      "title": "Ledger",
+      "intro": "Every account with its totals, and every posting. Nothing is edited here: a correction is an adjustment.",
+      "tabs": {
+        "accounts": "Accounts",
+        "transactions": "Transactions"
+      },
+      "filterOwner": "Owner",
+      "allOwners": "All",
+      "platform": "Platform",
+      "professors": "Professors",
+      "balanceHint": "Balance = debits − credits. A negative balance on a professor account is what the platform owes them.",
+      "columns": {
+        "owner": "Owner",
+        "account": "Account",
+        "debits": "Debits",
+        "credits": "Credits",
+        "balance": "Balance",
+        "actions": "Actions",
+        "date": "Date",
+        "type": "Type",
+        "entries": "Entries",
+        "reference": "Reference"
+      },
+      "seeTransactions": "Transactions",
+      "emptyAccounts": "No accounts.",
+      "emptyTransactions": "No transactions.",
+      "allTypes": "All types",
+      "from": "From",
+      "to": "To",
+      "oneAccount": "Transactions on one account.",
+      "allAccounts": "See all accounts",
+      "debit": "Debit",
+      "credit": "Credit",
+      "accounts": {
+        "gateway_clearing": "Operator clearing",
+        "gateway_fees": "Operator fees",
+        "platform_revenue": "Platform revenue",
+        "professor_held": "Professor — held",
+        "professor_available": "Professor — available",
+        "professor_paid_out": "Professor — paid out",
+        "refunds_payable": "Refunds payable",
+        "discounts_platform": "Platform-funded discounts",
+        "payer_receivable": "Owed by payers"
+      },
+      "types": {
+        "sale": "Sale",
+        "sale_reversal": "Sale reversal",
+        "unapplied_receipt": "Unapplied payment",
+        "unapplied_receipt_reversal": "Unapplied payment reversal",
+        "release": "Earnings released",
+        "refund": "Refund",
+        "refund_paid": "Refund paid out",
+        "refund_reversal": "Refund called off",
+        "refund_debt": "Refund debt",
+        "refund_settled": "Refund debt settled",
+        "refund_overpaid": "Refund paid twice",
+        "refund_paid_reversal": "Refund payout reversed",
+        "payout": "Professor payout",
+        "payout_failed": "Payout reversed",
+        "adjustment": "Manual adjustment"
+      },
+      "adjust": {
+        "open": "Adjust",
+        "title": "Adjust {name}'s balance",
+        "hint": "A balanced posting against platform revenue. It can't be edited afterwards.",
+        "direction": "Direction",
+        "directions": {
+          "credit": "Add to the balance (the platform owes more)",
+          "debit": "Take from the balance"
+        },
+        "amount": "Amount ({currency})",
+        "badAmount": "Enter a positive amount.",
+        "label": "Label",
+        "labelHint": "Shown to the professor on their statement.",
+        "reason": "Reason",
+        "reasonHint": "Internal: kept in the audit log.",
+        "save": "Save the adjustment"
+      }
     }
   }
 }
