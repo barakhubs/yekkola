@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LogOut,
   ReceiptText,
+  Settings,
   ShieldAlert,
   ShoppingCart,
   Users,
@@ -35,6 +36,7 @@ const NAV = [
   { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
   { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
   { href: "/finance/ledger", key: "ledger", icon: BookOpenText, permission: "finance.view" },
+  { href: "/settings", key: "settings", icon: Settings, permission: "settings.manage" },
 ] as const;
 
 /**

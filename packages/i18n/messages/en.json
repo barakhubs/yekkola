@@ -964,7 +964,8 @@
       "payouts": "Payouts",
       "ledger": "Ledger",
       "orders": "Orders",
-      "users": "Accounts"
+      "users": "Accounts",
+      "settings": "Settings"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1470,6 +1471,84 @@
       },
       "orders": "Recent orders",
       "noOrders": "No orders."
+    },
+    "settings": {
+      "title": "Settings",
+      "intro": "Platform settings. They apply going forward only: past orders, prices and earnings don't change. Every change is logged.",
+      "save": "Save",
+      "saved": "Saved.",
+      "fixErrors": "Fix the fields in red.",
+      "enabled": "On",
+      "groups": {
+        "commerce": "Sales and payments",
+        "payouts": "Professor payouts",
+        "protection": "Content protection",
+        "catalog": "Catalogue and uploads",
+        "learning": "Learning",
+        "moderation": "Moderation"
+      },
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "schedules": {
+        "weekly": "Every week",
+        "biweekly": "Every two weeks",
+        "monthly": "Every month"
+      },
+      "commerce": {
+        "enabled_currencies": "Accepted currencies",
+        "default_currency": "Default currency",
+        "default_revenue_share": "Professor's share (%)",
+        "default_revenue_share_hint": "The default; can be changed per professor and per course. Fixed on each sale.",
+        "enabled_rails": "Active operators",
+        "enabled_rails_hint": "Untick an operator to pause it during an outage.",
+        "enabled_gateways": "Active payment gateways",
+        "enabled_gateways_hint": "Driver names, comma-separated.",
+        "price_limits": "Course price in {currency} (min / max)",
+        "price_min": "Minimum price in {currency}",
+        "price_max": "Maximum price in {currency}",
+        "order_payment_timeout_minutes": "Order payment time limit (minutes)",
+        "refund_window_days": "Refund window (days)",
+        "refund_max_progress_pct": "Most progress allowed for a refund (%)",
+        "separate_payer": "Pay for another student"
+      },
+      "payouts": {
+        "earnings_hold_days": "Earnings hold (days)",
+        "earnings_hold_days_hint": "At least the refund window.",
+        "schedule": "Payout schedule",
+        "minimum": "Payout minimum in {currency}",
+        "payout_method_change_hold_hours": "Hold after a payout number change (hours)",
+        "fees": "Payout fees",
+        "platform_pays_disbursement_fees": "The platform pays the operator's fees"
+      },
+      "protection": {
+        "registered_device_limit": "Mobile devices per account",
+        "concurrent_web_streams": "Simultaneous web streams per account",
+        "offline_license_days": "Offline download validity (days)",
+        "playback_token_ttl_minutes": "Playback token lifetime (minutes)"
+      },
+      "catalog": {
+        "free_course_limit": "Free courses per professor",
+        "free_media_hours_limit": "Free video/audio hours per professor",
+        "unlimited_hint": "Leave empty for unlimited.",
+        "max_preview_lessons": "Preview lessons per course",
+        "max_video_upload_mb": "Max video size (MB)",
+        "max_audio_upload_mb": "Max audio size (MB)",
+        "max_document_upload_mb": "Max document size (MB)"
+      },
+      "learning": {
+        "certificate_min_completion_pct": "Progress for a certificate (%)",
+        "review_min_progress_pct": "Progress to leave a review (%)",
+        "quizzes": "Quizzes",
+        "certificate_requires_quizzes_passed": "All quizzes passed for the certificate"
+      },
+      "moderation": {
+        "course_review_sla_hours": "Course review target (hours)",
+        "application_review_sla_hours": "Application review target (hours)",
+        "application_reapply_cooldown_days": "Wait before reapplying (days)"
+      }
     }
   }
 }

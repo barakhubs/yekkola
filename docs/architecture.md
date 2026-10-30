@@ -484,7 +484,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/payout-batches/{id} | Batch with its lines |
 | POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
 | POST | /admin/payouts/{id}/exclude | Leave a line out of a draft batch `{note}` |
-| GET / PUT | /admin/settings | Platform settings |
+| GET / PUT | /admin/settings | Platform settings (`settings.manage`): all six groups; PUT takes any groups, each whole. `UpdateSettings` checks rules across settings on the would-be result (default currency enabled; price limits and payout minimum for every enabled currency; earnings hold ≥ refund window), then saves in one transaction; `AuditSettingsChange` logs before/after |
 | GET | /admin/audit-log | Activity log |
 | CRUD | /admin/staff | Staff accounts + roles |
 

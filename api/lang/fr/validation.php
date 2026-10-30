@@ -289,4 +289,11 @@ return [
         'work' => 'travail',
         'year' => 'année',
     ],
+    'settings' => [
+        'default_currency' => 'La devise par défaut doit être une devise activée.',
+        'price_limits_missing' => 'Indiquez les prix minimum et maximum en :currency.',
+        'price_limits_invalid' => 'Les limites de prix en :currency sont incohérentes (minimum au-dessus du maximum, ou montant non encaissable).',
+        'payout_minimum_missing' => 'Indiquez le minimum de versement en :currency.',
+        'hold_shorter_than_refund_window' => 'Les gains doivent rester en attente au moins :days jours (le délai de remboursement).',
+    ],
 ];

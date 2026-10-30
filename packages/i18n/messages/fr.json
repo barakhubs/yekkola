@@ -964,7 +964,8 @@
       "payouts": "Versements",
       "ledger": "Grand livre",
       "orders": "Commandes",
-      "users": "Comptes"
+      "users": "Comptes",
+      "settings": "Paramètres"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1470,6 +1471,84 @@
       },
       "orders": "Commandes récentes",
       "noOrders": "Aucune commande."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "intro": "Réglages de la plateforme. Ils s’appliquent pour la suite seulement : commandes, prix et gains passés ne changent pas. Chaque modification est journalisée.",
+      "save": "Enregistrer",
+      "saved": "Enregistré.",
+      "fixErrors": "Corrigez les champs en rouge.",
+      "enabled": "Activé",
+      "groups": {
+        "commerce": "Ventes et paiements",
+        "payouts": "Versements aux professeurs",
+        "protection": "Protection du contenu",
+        "catalog": "Catalogue et envois",
+        "learning": "Apprentissage",
+        "moderation": "Modération"
+      },
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "schedules": {
+        "weekly": "Chaque semaine",
+        "biweekly": "Toutes les deux semaines",
+        "monthly": "Chaque mois"
+      },
+      "commerce": {
+        "enabled_currencies": "Devises acceptées",
+        "default_currency": "Devise par défaut",
+        "default_revenue_share": "Part du professeur (%)",
+        "default_revenue_share_hint": "Par défaut ; modifiable par professeur et par cours. Figée sur chaque vente.",
+        "enabled_rails": "Opérateurs actifs",
+        "enabled_rails_hint": "Décochez un opérateur pour le mettre en pause pendant une panne.",
+        "enabled_gateways": "Passerelles de paiement actives",
+        "enabled_gateways_hint": "Noms des pilotes, séparés par des virgules.",
+        "price_limits": "Prix d’un cours en {currency} (min. / max.)",
+        "price_min": "Prix minimum en {currency}",
+        "price_max": "Prix maximum en {currency}",
+        "order_payment_timeout_minutes": "Délai de paiement d’une commande (minutes)",
+        "refund_window_days": "Délai de remboursement (jours)",
+        "refund_max_progress_pct": "Progression maximale pour un remboursement (%)",
+        "separate_payer": "Payer pour un autre élève"
+      },
+      "payouts": {
+        "earnings_hold_days": "Gains en attente (jours)",
+        "earnings_hold_days_hint": "Au moins le délai de remboursement.",
+        "schedule": "Rythme des versements",
+        "minimum": "Minimum de versement en {currency}",
+        "payout_method_change_hold_hours": "Attente après un changement de numéro (heures)",
+        "fees": "Frais de versement",
+        "platform_pays_disbursement_fees": "La plateforme paie les frais de l’opérateur"
+      },
+      "protection": {
+        "registered_device_limit": "Appareils mobiles par compte",
+        "concurrent_web_streams": "Lectures web simultanées par compte",
+        "offline_license_days": "Durée des téléchargements hors ligne (jours)",
+        "playback_token_ttl_minutes": "Durée d’un jeton de lecture (minutes)"
+      },
+      "catalog": {
+        "free_course_limit": "Cours gratuits par professeur",
+        "free_media_hours_limit": "Heures de vidéo/audio gratuites par professeur",
+        "unlimited_hint": "Laissez vide pour illimité.",
+        "max_preview_lessons": "Leçons en aperçu par cours",
+        "max_video_upload_mb": "Taille max. d’une vidéo (Mo)",
+        "max_audio_upload_mb": "Taille max. d’un audio (Mo)",
+        "max_document_upload_mb": "Taille max. d’un document (Mo)"
+      },
+      "learning": {
+        "certificate_min_completion_pct": "Progression pour le certificat (%)",
+        "review_min_progress_pct": "Progression pour laisser un avis (%)",
+        "quizzes": "Quiz",
+        "certificate_requires_quizzes_passed": "Tous les quiz réussis pour le certificat"
+      },
+      "moderation": {
+        "course_review_sla_hours": "Délai cible de relecture d’un cours (heures)",
+        "application_review_sla_hours": "Délai cible d’examen d’une candidature (heures)",
+        "application_reapply_cooldown_days": "Attente avant une nouvelle candidature (jours)"
+      }
     }
   }
 }
