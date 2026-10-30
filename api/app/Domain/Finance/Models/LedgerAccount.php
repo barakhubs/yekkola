@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Finance\Models;
 
 use App\Domain\Finance\Enums\LedgerAccountType;
+use App\Domain\Professors\Models\ProfessorProfile;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * A ledger account per type, owner, and currency (PRD-08 FR-01). Balances are derived from entries.
@@ -33,5 +36,23 @@ final class LedgerAccount extends Model
     protected function casts(): array
     {
         return ['type' => LedgerAccountType::class];
+    }
+
+    /**
+     * @return HasMany<LedgerEntry, $this>
+     */
+    public function entries(): HasMany
+    {
+        return $this->hasMany(LedgerEntry::class);
+    }
+
+    /**
+     * The professor a professor account belongs to (null for platform accounts).
+     *
+     * @return BelongsTo<ProfessorProfile, $this>
+     */
+    public function professor(): BelongsTo
+    {
+        return $this->belongsTo(ProfessorProfile::class, 'owner_id');
     }
 }

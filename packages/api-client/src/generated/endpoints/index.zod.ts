@@ -20,6 +20,7 @@ export * from "./guest-order/guest-order.zod";
 export * from "./kyc/kyc.zod";
 export * from "./kyc-submission/kyc-submission.zod";
 export * from "./learning/learning.zod";
+export * from "./ledger/ledger.zod";
 export * from "./ledger-adjustment/ledger-adjustment.zod";
 export * from "./logout/logout.zod";
 export * from "./media/media.zod";
