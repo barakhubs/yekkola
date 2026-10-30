@@ -260,6 +260,216 @@
                 }
             }
         },
+        "/admin/audit-log": {
+            "get": {
+                "operationId": "admin.audit-log.index",
+                "tags": [
+                    "AuditLog"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[event]",
+                        "in": "query",
+                        "description": "An event (`refund.approved`) or a family (`refund`).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[causer_id]",
+                        "in": "query",
+                        "description": "The staff member who acted.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[subject_id]",
+                        "in": "query",
+                        "description": "What they acted on (a user, refund, payout\u2026).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[from]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "filter[to]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AuditEntryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AuditEntryResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/professor/authoring-options": {
             "get": {
                 "operationId": "professor.authoring-options",
@@ -11392,6 +11602,338 @@
                 }
             }
         },
+        "/admin/staff": {
+            "get": {
+                "operationId": "admin.staff.index",
+                "tags": [
+                    "Staff"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `StaffMemberResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/StaffMemberResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "admin.staff.store",
+                "summary": "Gives an account (found or created from its phone number) a staff role. They sign in with an SMS code",
+                "tags": [
+                    "Staff"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InviteStaffRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`StaffMemberResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/StaffMemberResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/staff/permissions": {
+            "get": {
+                "operationId": "admin.staff.permissions",
+                "summary": "Permissions that can be added on top of a role, for the staff form",
+                "tags": [
+                    "Staff"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/staff/{user}": {
+            "put": {
+                "operationId": "admin.staff.update",
+                "tags": [
+                    "Staff"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StaffRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`StaffMemberResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/StaffMemberResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "admin.staff.destroy",
+                "summary": "Ends the account's staff access (roles and extra permissions) and signs it out everywhere",
+                "tags": [
+                    "Staff"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`StaffMemberResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/StaffMemberResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/professor/profile": {
             "get": {
                 "operationId": "professor.profile.show",
@@ -13896,6 +14438,74 @@
                 ],
                 "title": "Audience"
             },
+            "AuditEntryResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "event": {
+                        "type": "string",
+                        "description": "e.g. `refund.approved`, `settings.updated`."
+                    },
+                    "subject_type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "The kind of record acted on (e.g. `Refund`, `User`)."
+                    },
+                    "subject_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "causer": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "details": {
+                        "type": "object",
+                        "description": "Details: before/after, reason, amounts\u2026",
+                        "additionalProperties": {}
+                    },
+                    "ip": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "event",
+                    "subject_type",
+                    "subject_id",
+                    "causer",
+                    "details",
+                    "ip",
+                    "created_at"
+                ],
+                "title": "AuditEntryResource"
+            },
             "BuildPayoutBatchRequest": {
                 "type": "object",
                 "properties": {
@@ -15335,6 +15945,38 @@
                 ],
                 "title": "HeartbeatRequest"
             },
+            "InviteStaffRequest": {
+                "type": "object",
+                "description": "Staff access for the account with this phone number (created if it doesn't exist), PRD-09 FR-17.",
+                "properties": {
+                    "phone": {
+                        "type": "string",
+                        "maxLength": 32
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "moderator",
+                            "admin",
+                            "super-admin"
+                        ]
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "description": "Extra permissions on top of the role's (e.g. finance).",
+                        "items": {
+                            "$ref": "#/components/schemas/Permission"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "phone",
+                    "role",
+                    "permissions"
+                ],
+                "title": "InviteStaffRequest"
+            },
             "KycDocumentType": {
                 "type": "string",
                 "enum": [
@@ -16390,6 +17032,32 @@
                     "paid_at"
                 ],
                 "title": "PayoutResource"
+            },
+            "Permission": {
+                "type": "string",
+                "description": "Staff permissions (PRD-09 \u00a73). Policies check these, never role names.\n| |\n|---|\n| `users.view` <br/>  |\n| `users.manage` <br/>  |\n| `professors.manage` <br/>  |\n| `moderation.review` <br/>  |\n| `moderation.reports` <br/>  |\n| `catalog.view` <br/>  |\n| `catalog.manage` <br/>  |\n| `commerce.view` <br/>  |\n| `finance.view` <br/>  |\n| `finance.refunds` <br/>  |\n| `finance.payouts` <br/>  |\n| `finance.adjustments` <br/>  |\n| `promotions.manage` <br/> Coupons and bundles: they spend platform money and change what professors earn (PRD-09 FR-13). |\n| `settings.manage` <br/>  |\n| `staff.manage` <br/>  |\n| `staff.roles` <br/> Assign or change staff roles \u2014 super admin only (PRD-09 \u00a73). |\n| `audit.view` <br/>  |\n| `kyc.view` <br/>  |\n| `kyc.review` <br/> Verify or reject identity checks (unblocks payouts). |",
+                "enum": [
+                    "users.view",
+                    "users.manage",
+                    "professors.manage",
+                    "moderation.review",
+                    "moderation.reports",
+                    "catalog.view",
+                    "catalog.manage",
+                    "commerce.view",
+                    "finance.view",
+                    "finance.refunds",
+                    "finance.payouts",
+                    "finance.adjustments",
+                    "promotions.manage",
+                    "settings.manage",
+                    "staff.manage",
+                    "staff.roles",
+                    "audit.view",
+                    "kyc.view",
+                    "kyc.review"
+                ],
+                "title": "Permission"
             },
             "PlaybackResource": {
                 "type": "object",
@@ -17653,6 +18321,65 @@
                 ],
                 "title": "SectionRequest"
             },
+            "StaffMemberResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "moderator, admin or super-admin; null once staff access has ended."
+                    },
+                    "extra_permissions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "last_seen_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "phone",
+                    "status",
+                    "role",
+                    "extra_permissions",
+                    "permissions",
+                    "last_seen_at"
+                ],
+                "title": "StaffMemberResource"
+            },
             "StaffNoteRequest": {
                 "type": "object",
                 "description": "A staff decision with a note/reason (PRD-09 FR-18: destructive actions need a typed reason).\nPass `?required=0` semantics via the route: approve allows an empty note.",
@@ -17667,6 +18394,33 @@
                     "note"
                 ],
                 "title": "StaffNoteRequest"
+            },
+            "StaffRequest": {
+                "type": "object",
+                "description": "A staff member's role and extra permissions (PRD-09 FR-17).",
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "moderator",
+                            "admin",
+                            "super-admin"
+                        ]
+                    },
+                    "permissions": {
+                        "type": "array",
+                        "description": "Extra permissions on top of the role's (e.g. finance).",
+                        "items": {
+                            "$ref": "#/components/schemas/Permission"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "role",
+                    "permissions"
+                ],
+                "title": "StaffRequest"
             },
             "StartPaymentRequest": {
                 "type": "object",

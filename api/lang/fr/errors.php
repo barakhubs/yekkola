@@ -154,6 +154,7 @@ return [
     'user' => [
         'own_status' => 'Vous ne pouvez pas changer le statut de votre propre compte.',
         'staff_protected' => 'Seul un responsable du personnel peut changer le statut d’un membre du personnel.',
+        'not_staff_role' => 'Choisissez un rôle du personnel (modérateur, admin ou super admin).',
     ],
     'payout' => [
         'batch_open' => 'Un lot de versements est déjà ouvert dans cette devise.',

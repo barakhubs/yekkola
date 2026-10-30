@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Account\DeviceController;
 use App\Http\Controllers\Api\V1\Account\PhoneController;
 use App\Http\Controllers\Api\V1\Account\ProfileController;
 use App\Http\Controllers\Api\V1\Account\WishlistController;
+use App\Http\Controllers\Api\V1\Admin\AuditLogController;
 use App\Http\Controllers\Api\V1\Admin\BundleController as AdminBundleController;
 use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApp
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
 use App\Http\Controllers\Api\V1\Admin\SettingsController;
+use App\Http\Controllers\Api\V1\Admin\StaffController;
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
@@ -280,6 +282,18 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
     Route::middleware('can:'.Permission::SettingsManage->value)->group(function () {
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    });
+
+    // Audit log (PRD-09 FR-16)
+    Route::get('/audit-log', [AuditLogController::class, 'index'])->middleware('can:'.Permission::AuditView->value)->name('audit-log.index');
+
+    // Staff (PRD-09 FR-17)
+    Route::middleware('can:'.Permission::StaffManage->value)->group(function () {
+        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/staff/permissions', [StaffController::class, 'permissions'])->name('staff.permissions');
+        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::put('/staff/{user}', [StaffController::class, 'update'])->name('staff.update');
+        Route::delete('/staff/{user}', [StaffController::class, 'destroy'])->name('staff.destroy');
     });
 
     // Accounts (PRD-09 FR-04)

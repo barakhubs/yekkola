@@ -1,4 +1,5 @@
 export * from "./application/application.zod";
+export * from "./audit-log/audit-log.zod";
 export * from "./authoring-options/authoring-options.zod";
 export * from "./bundle/bundle.zod";
 export * from "./category/category.zod";
@@ -40,6 +41,7 @@ export * from "./receipt/receipt.zod";
 export * from "./refund/refund.zod";
 export * from "./review/review.zod";
 export * from "./settings/settings.zod";
+export * from "./staff/staff.zod";
 export * from "./studio-profile/studio-profile.zod";
 export * from "./user/user.zod";
 export * from "./video-webhook/video-webhook.zod";
