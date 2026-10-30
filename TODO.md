@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-10-28
+> Last updated: 2026-10-30
 
 ## Now
 
-- **Current branch:** `feature/prd-02-web-application` (PR #25 open — waiting for merge)
-- **Next up:** studio onboarding (profile, KYC, payout method) — 2.5
+- **Current branch:** `feature/prd-02-studio-onboarding` (studio onboarding: profile, KYC, payout method)
+- **Next up:** student account page (devices, data export, deletion) — 2.4
 
 ## Legend
 
@@ -383,7 +383,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 ### 2.5 Web app — professor studio — PRD-02, 03, 08
 
 - [x] Application flow + status: four steps with autosave, credential files, sample link, agreement, submitted / needs info / approved / rejected (with reapply date) / expired — #25
-- [ ] Onboarding checklist, profile, KYC upload, payout method
+- [x] Onboarding checklist (profile, identity, payout method, first course), public profile editor, KYC upload, payout method with SMS code, agreement re-acceptance gate — #PR
 - [x] Course list + course editor (details, cover, category/level/audience, curriculum DnD with keyboard, pricing, status banner) — #22
 - [x] Video/audio uploader (chunked, resumes offline, survives tab changes) + processing status — #22
 - [x] Document upload, quiz builder — #22

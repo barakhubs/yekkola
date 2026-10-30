@@ -741,6 +741,108 @@
       "backToLearning": "Back to my courses",
       "subjectsAdded": "Subjects added",
       "fieldOnStep": "{field} (step {step})"
+    },
+    "onboarding": {
+      "homeTitle": "Studio",
+      "nav": {
+        "label": "Studio",
+        "home": "Home",
+        "courses": "My courses",
+        "profile": "Profile",
+        "kyc": "Verification",
+        "payouts": "Payouts"
+      },
+      "welcome": "Hello {name}",
+      "progress": "{done} of {total} steps to be ready to teach and be paid.",
+      "done": "Done",
+      "todo": "To do",
+      "start": "Start",
+      "view": "View",
+      "steps": {
+        "profile_complete": {
+          "title": "Your public profile",
+          "body": "Photo, headline and bio: what students see first."
+        },
+        "kyc_verified": {
+          "title": "Identity check",
+          "body": "Identity verified."
+        },
+        "payout_method_set": {
+          "title": "Payout method",
+          "body": "The mobile money account your earnings go to."
+        },
+        "first_course": {
+          "title": "Your first course",
+          "body": "Create it and send it for review."
+        }
+      },
+      "kycStatus": {
+        "none": "ID and selfie to send before any payout.",
+        "pending": "Sent, being checked.",
+        "verified": "Identity verified.",
+        "rejected": "Rejected: please send your documents again."
+      },
+      "payable": "All set: your earnings can be paid out.",
+      "notPayable": "Earnings are paid once your identity is verified and your payout method is saved.",
+      "onHold": "Payouts on hold until {date} after your payout method changed (security).",
+      "termsTitle": "The professor agreement has changed",
+      "termsBody": "To keep using the studio, accept the new version ({version}) of the professor agreement.",
+      "termsAccept": "I accept the professor agreement",
+      "profileTitle": "Public profile",
+      "profileIntro": "What students see on your professor page.",
+      "viewPublic": "View my page",
+      "fields": {
+        "avatar": "Photo",
+        "displayName": "Display name",
+        "slug": "Your page address",
+        "headline": "Headline",
+        "bio": "About you",
+        "subjects": "Subjects",
+        "province": "Province (optional)",
+        "links": "Links (website, social)",
+        "documentType": "Document type",
+        "front": "Front of the document",
+        "back": "Back of the document",
+        "selfie": "Selfie holding your document",
+        "payoutPhone": "Mobile money number",
+        "payoutName": "Account holder’s name",
+        "code": "Code received by SMS"
+      },
+      "slugOnce": "Can be changed once.",
+      "slugLocked": "Already changed: it can’t change again.",
+      "headlineHint": "One sentence, e.g. “Maths teacher, 15 years’ experience”.",
+      "subjectsHint": "Separated by commas.",
+      "provinceNone": "I’d rather not say",
+      "linkLabel": "Link {number} label",
+      "linkUrl": "Link {number} address",
+      "removeLink": "Remove link {number}",
+      "addLink": "Add a link",
+      "save": "Save",
+      "saved": "Saved.",
+      "kycTitle": "Identity check",
+      "kycIntro": "Required to receive your earnings. You can create and publish courses before.",
+      "documentTypes": {
+        "national_id": "National ID card",
+        "voter_card": "Voter card",
+        "passport": "Passport"
+      },
+      "kycSubmit": "Send for verification",
+      "kycVerified": "Your identity is verified.",
+      "kycPending": "Documents sent on {date}, being checked by the Yekkola team.",
+      "kycRejected": "Your check was rejected: {reason} Please send your documents again below.",
+      "kycPrivacy": "Your documents are stored privately and only seen by the verification team.",
+      "payoutTitle": "Payout method",
+      "payoutIntro": "The mobile money account Yekkola pays your earnings to.",
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "change": "Change",
+      "sendCode": "Get a confirmation code",
+      "confirm": "Confirm",
+      "codeSent": "Code sent to your account’s number ({phone}).",
+      "holdNotice": "For security, payouts are on hold for 48 hours after each change."
     }
   },
   "admin": {
