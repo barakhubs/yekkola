@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-02-studio-onboarding` (PR #26 open — waiting for merge)
+- **Current branch:** `fix/symfony-mime-advisory` (security patch: symfony/mime CVE-2026-45070)
 - **Next up:** student account page (devices, data export, deletion) — 2.4
 
 ## Legend
