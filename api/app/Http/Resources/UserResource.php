@@ -36,6 +36,9 @@ final class UserResource extends JsonResource
             'is_staff' => $this->isStaff(),
             'permissions' => $this->permissionNames(),
             'deletion_requested_at' => $this->deletion_requested_at?->toIso8601String(),
+            /** @var string|null When the account is erased unless the request is cancelled (FR-11). */
+            'deletion_scheduled_for' => $this->deletion_requested_at
+                ?->copy()->addDays((int) config('yekkola.auth.deletion_grace_days'))->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
         ];
     }

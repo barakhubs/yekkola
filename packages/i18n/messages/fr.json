@@ -29,7 +29,8 @@
       "signIn": "Se connecter",
       "myCourses": "Mes cours",
       "orders": "Mes commandes",
-      "studio": "Studio"
+      "studio": "Studio",
+      "account": "Mon compte"
     },
     "home": {
       "title": "Apprends avec les meilleurs profs du Congo",
@@ -843,6 +844,60 @@
       "confirm": "Confirmer",
       "codeSent": "Code envoyé au numéro de votre compte ({phone}).",
       "holdNotice": "Par sécurité, les paiements sont suspendus 48 heures après chaque changement."
+    },
+    "account": {
+      "title": "Mon compte",
+      "intro": "Tes informations, ton numéro, tes appareils et tes données.",
+      "profile": "Profil",
+      "save": "Enregistrer",
+      "saved": "Enregistré.",
+      "cancel": "Annuler",
+      "change": "Changer",
+      "confirm": "Confirmer",
+      "sendCode": "Recevoir le code",
+      "fields": {
+        "name": "Nom complet",
+        "email": "E-mail (facultatif)",
+        "locale": "Langue",
+        "province": "Province (facultatif)",
+        "city": "Ville (facultatif)",
+        "newPhone": "Nouveau numéro",
+        "code": "Code à 6 chiffres"
+      },
+      "provinceNone": "Je préfère ne pas dire",
+      "phone": "Numéro de téléphone",
+      "phoneIntro": "C’est avec ce numéro que tu te connectes.",
+      "phoneNotice": "Après le changement, tes autres sessions et appareils seront déconnectés, et ton ancien numéro sera prévenu par SMS.",
+      "codeSent": "Code envoyé au {phone}.",
+      "reauth": "Pour changer de numéro, déconnecte-toi, reconnecte-toi, puis réessaie tout de suite.",
+      "devices": "Appareils",
+      "devicesIntro": "Les téléphones où l’application Yekkola est connectée et peut garder des téléchargements.",
+      "noDevices": "Aucun appareil enregistré.",
+      "thisDevice": "cet appareil",
+      "platforms": {
+        "android": "Android",
+        "ios": "iPhone"
+      },
+      "lastActive": "Dernière activité : {date}",
+      "registered": "Ajouté le {date}",
+      "remove": "Retirer",
+      "removeTitle": "Retirer cet appareil ?",
+      "removeBody": "Il sera déconnecté et ses téléchargements ne pourront plus être lus après sa prochaine connexion.",
+      "export": "Mes données",
+      "exportIntro": "Reçois une copie de toutes les données de ton compte.",
+      "exportPending": "Ta copie est en préparation…",
+      "exportFailed": "La préparation a échoué. Réessaie.",
+      "exportReady": "Ta copie est prête. Tu peux la télécharger jusqu’au {date}.",
+      "exportExpired": "Ta dernière copie a expiré.",
+      "download": "Télécharger",
+      "requestExport": "Demander une copie",
+      "deletion": "Supprimer mon compte",
+      "deletionIntro": "Ton compte et tes données personnelles seront effacés après un délai pendant lequel tu peux changer d’avis.",
+      "deleteAccount": "Supprimer mon compte",
+      "deleteTitle": "Supprimer ton compte ?",
+      "deleteBody": "Tu perdras l’accès à tes cours, ta progression et tes certificats. Tu peux annuler pendant le délai de suppression.",
+      "deletionScheduled": "Ton compte sera supprimé le {date}.",
+      "keepAccount": "Garder mon compte"
     }
   },
   "admin": {

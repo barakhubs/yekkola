@@ -19,6 +19,8 @@ import { CheckCircle2, Clock, ShieldCheck, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useState } from "react";
 
+import { setResource } from "@/lib/query-cache";
+
 import { fieldErrorsOf, useErrorText } from "../hooks";
 
 const TYPES: KycDocumentType[] = ["national_id", "voter_card", "passport"];
@@ -103,7 +105,7 @@ function SubmitForm() {
         }),
       ).data,
     onSuccess: async (saved) => {
-      queryClient.setQueryData(getProfessorKycShowQueryKey(), saved);
+      setResource(queryClient, getProfessorKycShowQueryKey(), saved);
       await queryClient.invalidateQueries({ queryKey: getProfessorProfileShowQueryKey() });
     },
   });

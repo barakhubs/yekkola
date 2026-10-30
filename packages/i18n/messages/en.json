@@ -29,7 +29,8 @@
       "signIn": "Sign in",
       "myCourses": "My courses",
       "orders": "My orders",
-      "studio": "Studio"
+      "studio": "Studio",
+      "account": "My account"
     },
     "home": {
       "title": "Learn from Congo’s best teachers",
@@ -843,6 +844,60 @@
       "confirm": "Confirm",
       "codeSent": "Code sent to your account’s number ({phone}).",
       "holdNotice": "For security, payouts are on hold for 48 hours after each change."
+    },
+    "account": {
+      "title": "My account",
+      "intro": "Your details, phone number, devices and data.",
+      "profile": "Profile",
+      "save": "Save",
+      "saved": "Saved.",
+      "cancel": "Cancel",
+      "change": "Change",
+      "confirm": "Confirm",
+      "sendCode": "Get the code",
+      "fields": {
+        "name": "Full name",
+        "email": "Email (optional)",
+        "locale": "Language",
+        "province": "Province (optional)",
+        "city": "City (optional)",
+        "newPhone": "New number",
+        "code": "6-digit code"
+      },
+      "provinceNone": "I'd rather not say",
+      "phone": "Phone number",
+      "phoneIntro": "This is the number you sign in with.",
+      "phoneNotice": "After the change, your other sessions and devices will be signed out, and your old number will get an SMS.",
+      "codeSent": "Code sent to {phone}.",
+      "reauth": "To change your number, sign out, sign back in, then try again right away.",
+      "devices": "Devices",
+      "devicesIntro": "Phones where the Yekkola app is signed in and can keep downloads.",
+      "noDevices": "No registered devices.",
+      "thisDevice": "this device",
+      "platforms": {
+        "android": "Android",
+        "ios": "iPhone"
+      },
+      "lastActive": "Last active: {date}",
+      "registered": "Added on {date}",
+      "remove": "Remove",
+      "removeTitle": "Remove this device?",
+      "removeBody": "It will be signed out, and its downloads won't play after it next goes online.",
+      "export": "My data",
+      "exportIntro": "Get a copy of all the data in your account.",
+      "exportPending": "Your copy is being prepared…",
+      "exportFailed": "Preparing your copy failed. Try again.",
+      "exportReady": "Your copy is ready. You can download it until {date}.",
+      "exportExpired": "Your last copy has expired.",
+      "download": "Download",
+      "requestExport": "Request a copy",
+      "deletion": "Delete my account",
+      "deletionIntro": "Your account and personal data will be erased after a waiting period during which you can change your mind.",
+      "deleteAccount": "Delete my account",
+      "deleteTitle": "Delete your account?",
+      "deleteBody": "You'll lose access to your courses, progress and certificates. You can cancel during the waiting period.",
+      "deletionScheduled": "Your account will be deleted on {date}.",
+      "keepAccount": "Keep my account"
     }
   },
   "admin": {

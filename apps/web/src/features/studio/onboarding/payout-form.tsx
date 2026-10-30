@@ -19,6 +19,7 @@ import { type FormEvent, useState } from "react";
 
 import { useSession } from "@/features/auth/hooks/use-session";
 import { RailPicker } from "@/features/checkout/components/rail-picker";
+import { setResource } from "@/lib/query-cache";
 
 import { fieldErrorsOf, useErrorText } from "../hooks";
 import { useStudioProfile } from "./professor-shell";
@@ -64,7 +65,7 @@ function Editor({ profile }: { profile: ProfessorProfileResource }) {
         }),
       ).data,
     onSuccess: (saved) => {
-      queryClient.setQueryData(getProfessorProfileShowQueryKey(), saved);
+      setResource(queryClient, getProfessorProfileShowQueryKey(), saved);
       setEditing(false);
       setCodeSent(false);
       setCode("");

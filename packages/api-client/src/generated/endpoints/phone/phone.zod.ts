@@ -60,6 +60,10 @@ export const MePhoneUpdateResponse = zod.object({
         ),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
+      deletion_scheduled_for: zod
+        .string()
+        .nullable()
+        .describe("When the account is erased unless the request is cancelled (FR-11)."),
       created_at: zod.string(),
     })
     .and(zod.looseObject({})),

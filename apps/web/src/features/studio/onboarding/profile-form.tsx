@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl";
 import { type FormEvent, type ReactNode, useState } from "react";
 
 import { Link } from "@/i18n/navigation";
+import { setResource } from "@/lib/query-cache";
 
 import { fieldErrorsOf, useErrorText } from "../hooks";
 import { selectClass } from "../styles";
@@ -45,7 +46,7 @@ function Editor({ profile }: { profile: ProfessorProfileResource }) {
   const [links, setLinks] = useState(profile.links);
   const [provinceId, setProvinceId] = useState(profile.province?.id ?? "");
   const store = (next: ProfessorProfileResource) =>
-    queryClient.setQueryData(getProfessorProfileShowQueryKey(), next);
+    setResource(queryClient, getProfessorProfileShowQueryKey(), next);
 
   const save = useMutation({
     mutationFn: async () =>

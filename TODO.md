@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `fix/symfony-mime-advisory` (security patch: symfony/mime CVE-2026-45070)
-- **Next up:** student account page (devices, data export, deletion) — 2.4
+- **Current branch:** `feature/prd-01-web-account` (student account page, PR #28 waiting for merge)
+- **Next up:** refund request + buy for someone else in the web checkout — 2.4
 
 ## Legend
 
@@ -356,7 +356,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 ### 2.4 Web app — students — PRD-01, 05, 06, 07
 
 - [x] Sign-in (phone + OTP, Turnstile, first-time name + optional province, safe `?next=`) — #19
-- [ ] Account, devices, notification preferences, data export/deletion
+- [x] Account page: profile, phone change, devices, data export, deletion — #28
+- [ ] Notification preferences page (needs the preferences API from 1.12)
 - [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout) — #19
 - [x] Checkout on the fake gateway: quote, coupon, rail picker, payer number, waiting screen with countdown, results, retry with another operator or number — #21
 - [x] Orders list + receipt PDF links — #21
