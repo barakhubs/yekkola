@@ -473,7 +473,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/payments/{id}/refund | Send back a payment's unapplied money (`finance.refunds`) |
 | GET / POST / GET {id} / PATCH {id} | /admin/coupons | Coupons with usage — platform-funded only (`promotions.manage`, audited) |
 | GET / POST / PATCH {id} | /admin/bundles | Bundles (`promotions.manage`, audited); archiving never re-validates prices |
-| GET | /admin/ledger/accounts, /admin/ledger/transactions | Finance views |
+| GET | /admin/ledger/accounts, /admin/ledger/transactions | Ledger explorer (`finance.view`): accounts with debits/credits/balance and the professor's name (filters: type, currency, owner); transactions with entries (filters: type, reference, account, dates) |
 | POST | /admin/ledger/adjustments | Manual adjustment `{professor_profile_id, currency, amount_minor, direction, label, reason}`: platform revenue ↔ professor available (`finance.adjustments`, `Idempotency-Key`, reason audited, label on the statement) |
 | GET / POST | /admin/payout-batches | List / build |
 | GET | /admin/payout-batches/{id} | Batch with its lines |

@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-finance` (back-office refunds + payout batches, PR #35 waiting for merge)
-- **Next up:** ledger explorer API + screen, adjustment form (1.11 / 2.2 Finance)
+- **Current branch:** `feature/prd-09-ledger-explorer` (ledger explorer + adjustment form, PR #36 waiting for merge)
+- **Next up:** back-office orders & payments (timeline, recheck) — admin API + screens (1.11 / 2.2)
 
 ## Legend
 
@@ -271,7 +271,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Moderation (reports, reviews, threads)
 - [ ] Orders, payments (recheck), refunds — refunds: staff resource with `policy` + `can` — #35
 - [ ] Coupons, bundles
-- [ ] Ledger explorer, adjustments, payout batches
+- [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
 - [ ] Settings + audit log + staff endpoints — settings update action validates invariants (bps 0–10000, limits per enabled currency, hold ≥ refund window, schedule enum) and wraps save in a transaction
 
 ### 1.12 Notifications — PRD-10
@@ -335,7 +335,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Moderation (reports, reviews, Q&A)
 - [ ] Orders, payments (timeline, recheck) — refunds queue + decisions done in #35
 - [ ] Coupons, bundles
-- [ ] Finance: ledger explorer, adjustments — payout batches done in #35
+- [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [ ] Settings, audit log, staff
 - [ ] Playwright: admin approval journeys
 
