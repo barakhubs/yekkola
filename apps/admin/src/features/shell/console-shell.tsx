@@ -9,11 +9,13 @@ import {
   BookCheck,
   BookOpenText,
   GraduationCap,
+  History,
   LayoutDashboard,
   LogOut,
   ReceiptText,
   Settings,
   ShieldAlert,
+  ShieldCheck,
   ShoppingCart,
   Users,
   Wallet,
@@ -37,6 +39,8 @@ const NAV = [
   { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
   { href: "/finance/ledger", key: "ledger", icon: BookOpenText, permission: "finance.view" },
   { href: "/settings", key: "settings", icon: Settings, permission: "settings.manage" },
+  { href: "/staff", key: "staff", icon: ShieldCheck, permission: "staff.manage" },
+  { href: "/audit-log", key: "audit", icon: History, permission: "audit.view" },
 ] as const;
 
 /**

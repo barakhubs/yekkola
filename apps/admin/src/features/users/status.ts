@@ -14,4 +14,4 @@ export function userStateOf(status: string): UserState {
   return status in USER_TONES ? (status as UserState) : "active";
 }
 
-export const ROLES = ["student", "professor", "moderator", "admin", "super_admin"] as const;
+export const ROLES = ["student", "professor", "moderator", "admin", "super-admin"] as const;
