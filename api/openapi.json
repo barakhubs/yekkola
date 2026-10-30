@@ -6665,6 +6665,322 @@
                 }
             }
         },
+        "/admin/orders": {
+            "get": {
+                "operationId": "admin.orders.index",
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "One order status or several, comma-separated.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[number]",
+                        "in": "query",
+                        "description": "Order number (exact).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[phone]",
+                        "in": "query",
+                        "description": "Student or buyer phone number.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[flag]",
+                        "in": "query",
+                        "description": "Only flagged orders: a flag, or `any`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[currency]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[stuck]",
+                        "in": "query",
+                        "description": "`1`: orders with a payment still waiting after 10 minutes.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` or `total_minor`; prefix `-` for newest/largest first (default `-created_at`).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AdminOrderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminOrderResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/orders/{order}": {
+            "get": {
+                "operationId": "admin.orders.show",
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "required": true,
+                        "description": "The order ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AdminOrderDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminOrderDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/payments/{payment}/recheck": {
+            "post": {
+                "operationId": "admin.payments.recheck",
+                "summary": "Asks the gateway again about one payment (the status API is the source of truth) and shows the order as it\nnow stands. Safe to repeat",
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "payment",
+                        "in": "path",
+                        "required": true,
+                        "description": "The payment ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AdminOrderDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminOrderDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/auth/otp/request": {
             "post": {
                 "operationId": "auth.otp.request",
@@ -11202,6 +11518,573 @@
                     "professor"
                 ],
                 "title": "AdminCourseVersionResource"
+            },
+            "AdminOrderDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "flag": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "late_success, amount_mismatch, reversed, duplicate_payment, already_enrolled, coupon_over_limit"
+                    },
+                    "total": {
+                        "type": "object",
+                        "properties": {
+                            "amount_minor": {
+                                "type": "integer"
+                            },
+                            "currency": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "amount_minor",
+                            "currency"
+                        ]
+                    },
+                    "student": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "phone"
+                        ]
+                    },
+                    "buyer": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "The person who paid, when not the student.",
+                        "properties": {
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "phone"
+                        ]
+                    },
+                    "courses": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "latest_payment_status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "paid_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "subtotal": {
+                        "type": "object",
+                        "properties": {
+                            "amount_minor": {
+                                "type": "integer"
+                            },
+                            "currency": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "amount_minor",
+                            "currency"
+                        ]
+                    },
+                    "discount": {
+                        "type": "object",
+                        "properties": {
+                            "amount_minor": {
+                                "type": "integer"
+                            },
+                            "currency": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "amount_minor",
+                            "currency"
+                        ]
+                    },
+                    "expires_at": {
+                        "type": "string"
+                    },
+                    "paid_payment_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "course_id": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "price": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount_minor": {
+                                            "type": "integer"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount_minor",
+                                        "currency"
+                                    ]
+                                },
+                                "granted_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "enrollment_status": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "course_id",
+                                "title",
+                                "price",
+                                "granted_at",
+                                "enrollment_status"
+                            ]
+                        }
+                    },
+                    "payments": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "string"
+                                },
+                                "rail": {
+                                    "type": "string"
+                                },
+                                "msisdn": {
+                                    "type": "string"
+                                },
+                                "amount": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount_minor": {
+                                            "type": "integer"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount_minor",
+                                        "currency"
+                                    ]
+                                },
+                                "confirmed_amount_minor": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "fee_minor": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "operator_reference": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "failure_code": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "failure_message": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "flag": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "checks": {
+                                    "type": "integer"
+                                },
+                                "last_checked_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": "string"
+                                },
+                                "succeeded_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "events": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "event_id": {
+                                                "type": "string"
+                                            },
+                                            "received_at": {
+                                                "type": "string"
+                                            },
+                                            "processed_at": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "error": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "attempts": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": [
+                                            "event_id",
+                                            "received_at",
+                                            "processed_at",
+                                            "error",
+                                            "attempts"
+                                        ]
+                                    }
+                                },
+                                "can": {
+                                    "type": "object",
+                                    "description": "A reversed payment is over; anything else may still change at the gateway.",
+                                    "properties": {
+                                        "recheck": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "recheck"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "status",
+                                "rail",
+                                "msisdn",
+                                "amount",
+                                "confirmed_amount_minor",
+                                "fee_minor",
+                                "operator_reference",
+                                "failure_code",
+                                "failure_message",
+                                "flag",
+                                "checks",
+                                "last_checked_at",
+                                "created_at",
+                                "succeeded_at",
+                                "events",
+                                "can"
+                            ]
+                        }
+                    },
+                    "refunds": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "status": {
+                                    "type": "string"
+                                },
+                                "course": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "amount": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount_minor": {
+                                            "type": "integer"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount_minor",
+                                        "currency"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "status",
+                                "course",
+                                "amount",
+                                "created_at"
+                            ]
+                        }
+                    },
+                    "ledger": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "reference_type": {
+                                    "type": "string"
+                                },
+                                "memo": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "created_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "type",
+                                "reference_type",
+                                "memo",
+                                "created_at"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "status",
+                    "flag",
+                    "total",
+                    "student",
+                    "buyer",
+                    "courses",
+                    "latest_payment_status",
+                    "created_at",
+                    "paid_at",
+                    "subtotal",
+                    "discount",
+                    "expires_at",
+                    "paid_payment_id",
+                    "items",
+                    "payments",
+                    "refunds",
+                    "ledger"
+                ],
+                "title": "AdminOrderDetailResource"
+            },
+            "AdminOrderResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "number": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "flag": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "late_success, amount_mismatch, reversed, duplicate_payment, already_enrolled, coupon_over_limit"
+                    },
+                    "total": {
+                        "type": "object",
+                        "properties": {
+                            "amount_minor": {
+                                "type": "integer"
+                            },
+                            "currency": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "amount_minor",
+                            "currency"
+                        ]
+                    },
+                    "student": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "phone"
+                        ]
+                    },
+                    "buyer": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "The person who paid, when not the student.",
+                        "properties": {
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "phone"
+                        ]
+                    },
+                    "courses": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "latest_payment_status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "paid_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "number",
+                    "status",
+                    "flag",
+                    "total",
+                    "student",
+                    "buyer",
+                    "courses",
+                    "latest_payment_status",
+                    "created_at",
+                    "paid_at"
+                ],
+                "title": "AdminOrderResource"
             },
             "AdminProfessorApplicationResource": {
                 "type": "object",

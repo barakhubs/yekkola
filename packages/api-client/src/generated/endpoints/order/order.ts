@@ -18,6 +18,11 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AdminOrdersIndex200,
+  AdminOrdersIndexParams,
+  AdminOrdersShow200,
+  AdminPaymentsRecheck200,
+  AuthorizationExceptionResponse,
   CourseSelectionRequest,
   MeOrdersIndex200,
   MeOrdersIndexParams,
@@ -654,6 +659,449 @@ export function useMeOrdersIndex<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getMeOrdersIndexQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminOrdersIndexResponse200 = {
+  data: AdminOrdersIndex200;
+  status: 200;
+};
+
+export type adminOrdersIndexResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminOrdersIndexResponseSuccess = adminOrdersIndexResponse200 & {
+  headers: Headers;
+};
+export type adminOrdersIndexResponseError = adminOrdersIndexResponse403 & {
+  headers: Headers;
+};
+
+export type adminOrdersIndexResponse = adminOrdersIndexResponseSuccess | adminOrdersIndexResponseError;
+
+export const getAdminOrdersIndexUrl = (params?: AdminOrdersIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/admin/orders?${stringifiedParams}` : `/admin/orders`;
+};
+
+export const adminOrdersIndex = async (
+  params?: AdminOrdersIndexParams,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminOrdersIndexResponse> => {
+  return apiFetch<adminOrdersIndexResponse>(getAdminOrdersIndexUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminOrdersIndexQueryKey = (params?: AdminOrdersIndexParams) => {
+  return [`/admin/orders`, ...(params ? [params] : [])] as const;
+};
+
+export const getAdminOrdersIndexQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminOrdersIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminOrdersIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminOrdersIndexQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminOrdersIndex>>> = ({ signal }) =>
+    adminOrdersIndex(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminOrdersIndex>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminOrdersIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminOrdersIndex>>>;
+export type AdminOrdersIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
+
+export function useAdminOrdersIndex<
+  TData = Awaited<ReturnType<typeof adminOrdersIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params: undefined | AdminOrdersIndexParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersIndex>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminOrdersIndex>>,
+          TError,
+          Awaited<ReturnType<typeof adminOrdersIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminOrdersIndex<
+  TData = Awaited<ReturnType<typeof adminOrdersIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminOrdersIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersIndex>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminOrdersIndex>>,
+          TError,
+          Awaited<ReturnType<typeof adminOrdersIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminOrdersIndex<
+  TData = Awaited<ReturnType<typeof adminOrdersIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminOrdersIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminOrdersIndex<
+  TData = Awaited<ReturnType<typeof adminOrdersIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminOrdersIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminOrdersIndexQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminOrdersShowResponse200 = {
+  data: AdminOrdersShow200;
+  status: 200;
+};
+
+export type adminOrdersShowResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminOrdersShowResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminOrdersShowResponseSuccess = adminOrdersShowResponse200 & {
+  headers: Headers;
+};
+export type adminOrdersShowResponseError = (adminOrdersShowResponse403 | adminOrdersShowResponse404) & {
+  headers: Headers;
+};
+
+export type adminOrdersShowResponse = adminOrdersShowResponseSuccess | adminOrdersShowResponseError;
+
+export const getAdminOrdersShowUrl = (order: string) => {
+  return `/admin/orders/${order}`;
+};
+
+export const adminOrdersShow = async (
+  order: string,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminOrdersShowResponse> => {
+  return apiFetch<adminOrdersShowResponse>(getAdminOrdersShowUrl(order), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminOrdersShowQueryKey = (order: string) => {
+  return [`/admin/orders/${order}`] as const;
+};
+
+export const getAdminOrdersShowQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminOrdersShow>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  order: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersShow>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminOrdersShowQueryKey(order);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminOrdersShow>>> = ({ signal }) =>
+    adminOrdersShow(order, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: order !== null && order !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminOrdersShow>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminOrdersShowQueryResult = NonNullable<Awaited<ReturnType<typeof adminOrdersShow>>>;
+export type AdminOrdersShowQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
+
+export function useAdminOrdersShow<
+  TData = Awaited<ReturnType<typeof adminOrdersShow>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  order: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersShow>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminOrdersShow>>,
+          TError,
+          Awaited<ReturnType<typeof adminOrdersShow>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminOrdersShow<
+  TData = Awaited<ReturnType<typeof adminOrdersShow>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  order: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersShow>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminOrdersShow>>,
+          TError,
+          Awaited<ReturnType<typeof adminOrdersShow>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminOrdersShow<
+  TData = Awaited<ReturnType<typeof adminOrdersShow>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  order: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersShow>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminOrdersShow<
+  TData = Awaited<ReturnType<typeof adminOrdersShow>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  order: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminOrdersShow>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminOrdersShowQueryOptions(order, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminPaymentsRecheckResponse200 = {
+  data: AdminPaymentsRecheck200;
+  status: 200;
+};
+
+export type adminPaymentsRecheckResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminPaymentsRecheckResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminPaymentsRecheckResponseSuccess = adminPaymentsRecheckResponse200 & {
+  headers: Headers;
+};
+export type adminPaymentsRecheckResponseError = (
+  adminPaymentsRecheckResponse403 | adminPaymentsRecheckResponse404
+) & {
+  headers: Headers;
+};
+
+export type adminPaymentsRecheckResponse =
+  adminPaymentsRecheckResponseSuccess | adminPaymentsRecheckResponseError;
+
+export const getAdminPaymentsRecheckUrl = (payment: string) => {
+  return `/admin/payments/${payment}/recheck`;
+};
+
+/**
+ * @summary Asks the gateway again about one payment (the status API is the source of truth) and shows the order as it
+now stands. Safe to repeat
+ */
+export const adminPaymentsRecheck = async (
+  payment: string,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminPaymentsRecheckResponse> => {
+  return apiFetch<adminPaymentsRecheckResponse>(getAdminPaymentsRecheckUrl(payment), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getAdminPaymentsRecheckQueryKey = (payment: string) => {
+  return ["POST", `/admin/payments/${payment}/recheck`] as const;
+};
+
+export const getAdminPaymentsRecheckQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  payment: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRecheck>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminPaymentsRecheckQueryKey(payment);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminPaymentsRecheck>>> = ({ signal }) =>
+    adminPaymentsRecheck(payment, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: payment !== null && payment !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRecheck>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminPaymentsRecheckQueryResult = NonNullable<Awaited<ReturnType<typeof adminPaymentsRecheck>>>;
+export type AdminPaymentsRecheckQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
+
+export function useAdminPaymentsRecheck<
+  TData = Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  payment: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRecheck>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+          TError,
+          Awaited<ReturnType<typeof adminPaymentsRecheck>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminPaymentsRecheck<
+  TData = Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  payment: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRecheck>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+          TError,
+          Awaited<ReturnType<typeof adminPaymentsRecheck>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminPaymentsRecheck<
+  TData = Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  payment: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRecheck>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Asks the gateway again about one payment (the status API is the source of truth) and shows the order as it
+now stands. Safe to repeat
+ */
+
+export function useAdminPaymentsRecheck<
+  TData = Awaited<ReturnType<typeof adminPaymentsRecheck>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  payment: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPaymentsRecheck>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminPaymentsRecheckQueryOptions(payment, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
