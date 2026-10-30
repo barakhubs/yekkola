@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-05-web-refund-payer` (refund request + buy for another student, PR #29 waiting for merge)
-- **Next up:** guest checkout for parents without an account (public page, order token) — 2.4
+- **Current branch:** `feature/prd-05-web-guest-checkout` (guest checkout, PR #30 waiting for merge)
+- **Next up:** bundles in the web checkout (PRD-05 FR-11) — 2.4
 
 ## Legend
 
@@ -363,7 +363,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Orders list + receipt PDF links — #21
 - [x] Refund request from the orders page (PRD-05 FR-16) — #29
 - [x] Buy for another student in the signed-in checkout (PRD-05 FR-14) — #29
-- [ ] Guest checkout: a parent without an account pays for a student (public page, Turnstile, order token; PRD-05 FR-14)
+- [x] Guest checkout: a parent without an account pays for a student (`/courses/[slug]/gift`, token in the link after `#`; PRD-05 FR-14) — #30
+- [ ] Guest receipt download (the API needs the order token header; a plain link can't send it)
 - [ ] Gift a course the buyer already owns (the quote is for the buyer, so checkout currently stops at "already owned")
 - [ ] Bundles in the web checkout (course page "bundle" offers, PRD-05 FR-11)
 - [ ] Operator-specific hints on the waiting screen (USSD code, "check *144#") once the real aggregator is chosen
