@@ -151,6 +151,13 @@ return [
         'exhausted' => 'This promo code has reached its maximum number of uses.',
         'already_used' => 'You have already used this promo code.',
     ],
+    'payout' => [
+        'batch_open' => 'A payout batch is already open in this currency.',
+        'nothing_to_pay' => 'No professor can be paid right now.',
+        'batch_not_draft' => 'This batch is no longer a draft.',
+        'not_pending' => 'This payout is no longer pending.',
+        'own_payout' => 'You can\'t approve a batch that pays you.',
+    ],
     'refund' => [
         'not_refundable' => 'This course cannot be refunded.',
         'window_closed' => 'The :days-day refund period has passed.',

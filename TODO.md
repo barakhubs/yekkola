@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-08-ledger-release` (earnings release, PR #32 waiting for merge)
-- **Next up:** payout batches with the fake disbursement driver (1.10, PRD-08 FR-06–08, FR-13)
+- **Current branch:** `feature/prd-08-payout-batches` (payout batches, PR #33 waiting for merge)
+- **Next up:** earnings + statement endpoints, manual adjustments, ledger integrity job (1.10, PRD-08 FR-09, FR-11, FR-12)
 
 ## Legend
 
@@ -250,8 +250,11 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 
 - [x] Ledger accounts/transactions/entries + posting service (FR-01) — core in 1.7a, #10
 - [x] Sale, release, refund postings (FR-02–05) — release job + refunds from available after release, #32
-- [ ] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13)
-- [ ] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward (shares can hold centimes)
+- [x] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13) — #33
+- [ ] Second approver above a threshold for payout batches (PRD-08 FR-07, Should)
+- [ ] If professors bear disbursement fees (setting off): size each payout so balance − fee stays ≥ 0 (needs the aggregator's fee schedule)
+- [ ] Back-office payout batch screens (with 2.2 Finance)
+- [x] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward — #33
 - [x] Sale reversal and refunds after release: take the professor part from available — #32
 - [ ] Earnings + statement endpoints (FR-09)
 - [ ] Manual adjustments (FR-11)

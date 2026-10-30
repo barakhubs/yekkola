@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Domain\Commerce\Console\ReconcilePayments;
+use App\Domain\Finance\Console\BuildDuePayoutBatches;
 use App\Domain\Finance\Console\ReleaseDueEarnings;
+use App\Domain\Finance\Console\SyncPayouts;
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
 use App\Domain\Professors\Console\ExpireStaleApplications;
 use App\Domain\Shared\Exceptions\DomainException;
@@ -32,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ExpireStaleApplications::class,
         ReconcilePayments::class,
         ReleaseDueEarnings::class,
+        BuildDuePayoutBatches::class,
+        SyncPayouts::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.

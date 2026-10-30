@@ -24,6 +24,7 @@ export * from "./media/media.zod";
 export * from "./order/order.zod";
 export * from "./otp/otp.zod";
 export * from "./payment-webhook/payment-webhook.zod";
+export * from "./payout-batch/payout-batch.zod";
 export * from "./payout-method/payout-method.zod";
 export * from "./phone/phone.zod";
 export * from "./playback/playback.zod";

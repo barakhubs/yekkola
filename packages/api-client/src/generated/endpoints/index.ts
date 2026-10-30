@@ -24,6 +24,7 @@ export * from "./media/media";
 export * from "./order/order";
 export * from "./otp/otp";
 export * from "./payment-webhook/payment-webhook";
+export * from "./payout-batch/payout-batch";
 export * from "./payout-method/payout-method";
 export * from "./phone/phone";
 export * from "./playback/playback";

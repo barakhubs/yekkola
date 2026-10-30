@@ -106,9 +106,9 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 3. Completion events trigger certificate eligibility checks (queued).
 
 **G. Payout run**
-1. Scheduled job (per setting) builds a `PayoutBatch(draft)` from professors whose **available** balance ≥ minimum.
-2. Admin (finance permission) reviews and approves → queue sends each payout via `PaymentGateway::disburse()`.
-3. Webhook/poll → `Payout(paid|failed)` → ledger: professor payable → gateway clearing. Failed payouts return funds to available balance.
+1. `finance:build-payout-batches` (daily; builds on the days the schedule setting says) or `POST /admin/payout-batches` builds a `PayoutBatch(draft)` per currency: professors active, KYC verified, with a payout method, not under the method-change hold, whose **available** balance ≥ the minimum. Each line pays the balance rounded down to the currency's step (whole francs for CDF); the rest stays available. One open batch per currency.
+2. Finance (`finance.payouts`) leaves lines out with a reason, then approves (never a batch that pays the approver) → `ExecutePayout` per line on the `payments` queue: eligibility, payout method and balance are checked again, then `PaymentGateway::disburse()` under `P-{payout id}`.
+3. Webhook (`P-` disbursement events) or `finance:sync-payouts` (every 5 min) → status API → `Payout(paid|failed)`. Only a confirmed payout is posted (`payout`: professor available → gateway clearing, fee to `gateway_fees` or the professor per setting). A failed payout posts nothing (the money stays available); its professor is left out of runs for 48 h in case the gateway reports a late success (still posted, logged critical). A reversal after success is mirrored (`payout_failed`) and can't turn back into a success. The sync also sends lines an approved batch left pending (lost job). A refund approved while a payout is in flight, or a fee borne by the professor, can take available below zero: carried forward (FR-05).
 
 ---
 
@@ -296,8 +296,8 @@ PostgreSQL. Conventions:
 | `ledger_accounts` | id, type, owner_type (`platform`/`professor`), owner_id (null for platform), currency, unique `(type, owner_type, owner_id, currency)` NULLS NOT DISTINCT | Types: `gateway_clearing`, `gateway_fees` (aggregator collection/disbursement fees), `platform_revenue`, `professor_held`, `professor_available`, `professor_paid_out`, `refunds_payable`, `discounts_platform`, `payer_receivable` (money paid out twice to a payer). |
 | `ledger_transactions` | id, type (`sale`/`sale_reversal`/`unapplied_receipt`/`unapplied_receipt_reversal`/`release`/`refund`/`refund_paid`/`refund_reversal`/`refund_debt`/`refund_settled`/`refund_overpaid`/`refund_paid_reversal`/`payout`/`payout_failed`/`adjustment`), reference_type, reference_id, memo, created_by (null), created_at | Unique `(type, reference_type, reference_id)`: a replay can never post twice. Append-only (DB triggers, incl. TRUNCATE). Written only by `PostLedgerTransaction`. |
 | `ledger_entries` | id, ledger_transaction_id, ledger_account_id, direction (`debit`/`credit`), amount_minor (> 0, CHECK), currency, created_at | Sum of debits = sum of credits per transaction (enforced in `PostLedgerTransaction`, checked in tests and by the integrity job). Append-only (DB trigger). |
-| `payout_batches` | id, status (`draft`/`approved`/`processing`/`completed`/`partially_failed`), currency, period_end, created_by, approved_by, approved_at | |
-| `payouts` | id, payout_batch_id, professor_id, amount_minor, currency, rail, msisdn (encrypted), status (`pending`/`processing`/`paid`/`failed`), gateway_reference, failure_reason, paid_at | |
+| `payout_batches` | id, status (`draft`/`processing`/`completed`/`partially_failed`), currency, created_by (null = scheduled), approved_by, approved_at | One open (`draft`/`processing`) batch per currency (partial unique index). |
+| `payouts` | id, payout_batch_id, professor_profile_id, amount_minor, currency, rail, msisdn (encrypted), name, reference (`P-{id}`, unique), status (`pending`/`excluded`/`processing`/`paid`/`failed`), gateway, gateway_reference, operator_reference, fee_minor, failure_code, failure_message, excluded_reason, checks, sent_at, last_checked_at, paid_at | Payout method snapshotted at build. |
 
 Balances (`held`, `available`, `paid_out`) are computed from entries; a cached balance per account may be kept in Redis/materialized view but is never the source of truth.
 
@@ -476,7 +476,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/ledger/accounts, /admin/ledger/transactions | Finance views |
 | POST | /admin/ledger/adjustments | Manual adjustment (finance, audited) |
 | GET / POST | /admin/payout-batches | List / build |
-| POST | /admin/payout-batches/{id}/(approve\|execute) | Run payouts |
+| GET | /admin/payout-batches/{id} | Batch with its lines |
+| POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
+| POST | /admin/payouts/{id}/exclude | Leave a line out of a draft batch `{note}` |
 | GET / PUT | /admin/settings | Platform settings |
 | GET | /admin/audit-log | Activity log |
 | CRUD | /admin/staff | Staff accounts + roles |

@@ -9,6 +9,8 @@ use App\Domain\Commerce\Actions\SyncPayment;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Commerce\Models\PaymentEvent;
 use App\Domain\Commerce\Models\RefundAttempt;
+use App\Domain\Finance\Actions\PayoutLifecycle;
+use App\Domain\Finance\Models\Payout;
 use App\Integrations\Payments\TransactionKind;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,7 +39,7 @@ final class ProcessPaymentEvent implements ShouldQueue
         $this->onQueue('payments');
     }
 
-    public function handle(SyncPayment $sync, RefundLifecycle $refunds): void
+    public function handle(SyncPayment $sync, RefundLifecycle $refunds, PayoutLifecycle $payouts): void
     {
         $event = PaymentEvent::query()->find($this->paymentEventId);
         if ($event === null || $event->processed_at !== null) {
@@ -47,8 +49,12 @@ final class ProcessPaymentEvent implements ShouldQueue
         $event->forceFill(['attempts' => $event->attempts + 1])->save();
 
         if ($event->kind === TransactionKind::Disbursement->value) {
+            if (str_starts_with($event->reference, 'P-')) {
+                $this->payout($event, $payouts); // professor payouts (PRD-08 FR-08)
+
+                return;
+            }
             if (! str_starts_with($event->reference, 'R-')) {
-                // Payouts (1.10) get their handler later; kept unprocessed until then.
                 $event->forceFill(['error' => 'kind_not_handled'])->save();
 
                 return;
@@ -89,5 +95,23 @@ final class ProcessPaymentEvent implements ShouldQueue
     public function failed(Throwable $e): void
     {
         PaymentEvent::query()->whereKey($this->paymentEventId)->update(['error' => mb_substr($e->getMessage(), 0, 255)]);
+    }
+
+    /** A payout's event: the payout is re-queried; kept for later if unknown yet or the gateway can't answer. */
+    private function payout(PaymentEvent $event, PayoutLifecycle $payouts): void
+    {
+        if (! Payout::query()->where('reference', $event->reference)->exists()) {
+            $event->forceFill(['error' => 'unknown_reference'])->save();
+            $this->release($this->backoff[min($this->attempts() - 1, count($this->backoff) - 1)]);
+
+            return;
+        }
+        if (! $payouts->syncReference($event->reference)) {
+            $event->forceFill(['error' => 'gateway_unavailable'])->save();
+            $this->release($this->backoff[min($this->attempts() - 1, count($this->backoff) - 1)]);
+
+            return;
+        }
+        $event->forceFill(['processed_at' => now(), 'error' => null])->save();
     }
 }
