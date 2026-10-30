@@ -25,9 +25,5 @@ export interface RefundResource {
   completed_at: string | null;
   /** @nullable */
   failure_code: string | null;
-  /** @nullable */
-  flag?: string | null;
   created_at: string;
-  /** @nullable */
-  policy?: null;
 }

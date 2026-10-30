@@ -4,12 +4,12 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminRefundResource } from "./adminRefundResource";
 import type { AdminRefundsIndex200Links } from "./adminRefundsIndex200Links";
 import type { AdminRefundsIndex200Meta } from "./adminRefundsIndex200Meta";
-import type { RefundResource } from "./refundResource";
 
 export type AdminRefundsIndex200 = {
-  data: RefundResource[];
+  data: AdminRefundResource[];
   links: AdminRefundsIndex200Links;
   meta: AdminRefundsIndex200Meta;
 };

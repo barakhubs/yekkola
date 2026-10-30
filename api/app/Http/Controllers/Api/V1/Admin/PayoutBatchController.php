@@ -25,6 +25,11 @@ use Spatie\QueryBuilder\QueryBuilder;
  */
 final class PayoutBatchController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: 'draft, processing, completed or partially_failed.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[currency]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at`; prefix `-` for newest first (default).', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $batches = QueryBuilder::for(PayoutBatch::query()->with('payouts'))

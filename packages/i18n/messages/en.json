@@ -959,7 +959,9 @@
       "label": "Back-office sections",
       "home": "Home",
       "applications": "Applications",
-      "courseReviews": "Course reviews"
+      "courseReviews": "Course reviews",
+      "refunds": "Refunds",
+      "payouts": "Payouts"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1135,6 +1137,112 @@
       "explanation": "Explanation: {text}"
     },
     "suspendedTitle": "Your account is suspended",
-    "suspendedBody": "The back office isn’t available while an account is suspended. Contact an administrator."
+    "suspendedBody": "The back office isn’t available while an account is suspended. Contact an administrator.",
+    "refunds": {
+      "title": "Refunds",
+      "intro": "Student requests and refund payouts. The money goes back to the number that paid.",
+      "filterStatus": "Status",
+      "allStatuses": "All statuses",
+      "empty": "No requests here.",
+      "unapplied": "Unapplied payment",
+      "columns": {
+        "order": "Order",
+        "course": "Course",
+        "amount": "Amount",
+        "status": "Status",
+        "requested": "Requested"
+      },
+      "status": {
+        "requested": "Requested",
+        "approved": "Approved",
+        "rejected": "Declined",
+        "processing": "Paying out",
+        "completed": "Refunded",
+        "failed": "Payout failed",
+        "cancelled": "Cancelled"
+      },
+      "flags": {
+        "paid_twice": "Paid twice",
+        "amount_mismatch": "Amount differs",
+        "paid_after_reversal": "Paid after reversal",
+        "payout_reversed": "Payout reversed",
+        "stuck": "Stuck"
+      },
+      "back": "All refunds",
+      "detailTitle": "Refund — order {order}",
+      "course": "Course",
+      "reason": "Reason given",
+      "daysSincePayment": "Days since payment",
+      "progress": "Progress",
+      "ofLimit": "{value} (limit: {limit})",
+      "ofLimitPct": "{value}% (limit: {limit}%)",
+      "decisionNote": "Decision note",
+      "failure": "Failure",
+      "completed": "Refunded on",
+      "approve": "Approve",
+      "approveConfirm": "Refund {amount}?",
+      "approveHint": "Access to the course is removed and the money goes back to the number that paid.",
+      "reject": "Decline",
+      "rejectConfirm": "Decline this refund?",
+      "rejectHint": "The student keeps access. They see the note.",
+      "noteToStudent": "Note to the student",
+      "retry": "Retry the payout",
+      "retryConfirm": "Retry the payout?",
+      "retryHint": "The last attempt is checked with the operator first.",
+      "internalNote": "Internal note"
+    },
+    "payouts": {
+      "title": "Professor payouts",
+      "intro": "Payout batches per currency. A batch is built on the schedule; you can also build one now.",
+      "filterStatus": "Status",
+      "allStatuses": "All statuses",
+      "empty": "No batches yet.",
+      "build": "Build a batch",
+      "openIt": "Open the current batch",
+      "columns": {
+        "created": "Built",
+        "currency": "Currency",
+        "total": "Total",
+        "lines": "Payouts",
+        "status": "Status",
+        "professor": "Professor",
+        "number": "Number",
+        "amount": "Amount",
+        "actions": "Actions"
+      },
+      "linesSummary": "{paid} of {lines} paid",
+      "status": {
+        "draft": "Draft",
+        "processing": "Paying",
+        "completed": "Completed",
+        "partially_failed": "Some failed"
+      },
+      "lineStatus": {
+        "pending": "Pending",
+        "excluded": "Left out",
+        "processing": "Sending",
+        "paid": "Paid",
+        "failed": "Failed"
+      },
+      "rails": {
+        "orange": "Orange Money",
+        "airtel": "Airtel Money",
+        "mpesa": "M-Pesa"
+      },
+      "back": "All batches",
+      "detailTitle": "{currency} batch of {date}",
+      "bySchedule": "Built on schedule",
+      "byHand": "Built by hand",
+      "paidSoFar": "{amount} paid",
+      "linesCaption": "Payouts in this batch",
+      "approve": "Approve and pay",
+      "approveConfirm": "Pay {amount}?",
+      "approveHint": "Each payout is sent to the operator. Failed ones stay available for the next batch.",
+      "draftHint": "Leave out any payout that shouldn't be paid first.",
+      "exclude": "Leave out",
+      "excludeConfirm": "Leave out {name}'s payout?",
+      "excludeHint": "The money stays available for a later batch.",
+      "excludeReason": "Reason"
+    }
   }
 }

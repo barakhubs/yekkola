@@ -5,7 +5,16 @@ import { EmptyState } from "@yekkola/ui/blocks/empty-state";
 import { Button } from "@yekkola/ui/components/button";
 import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { cn } from "@yekkola/ui/lib/utils";
-import { BookCheck, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, WifiOff } from "lucide-react";
+import {
+  BookCheck,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  ReceiptText,
+  ShieldAlert,
+  Wallet,
+  WifiOff,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
@@ -18,6 +27,8 @@ const NAV = [
   { href: "/", key: "home", icon: LayoutDashboard, permission: null },
   { href: "/applications", key: "applications", icon: GraduationCap, permission: "moderation.review" },
   { href: "/moderation/courses", key: "courseReviews", icon: BookCheck, permission: "moderation.review" },
+  { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
+  { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
 ] as const;
 
 /**

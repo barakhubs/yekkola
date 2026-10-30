@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-08-earnings-adjustments` (earnings, adjustments, ledger check, PR #34 waiting for merge)
-- **Next up:** admin API (1.11) with its back-office screens — finance views first (ledger explorer, payout batches, refunds)
+- **Current branch:** `feature/prd-09-admin-finance` (back-office refunds + payout batches, PR #35 waiting for merge)
+- **Next up:** ledger explorer API + screen, adjustment form (1.11 / 2.2 Finance)
 
 ## Legend
 
@@ -253,7 +253,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Payout batches: build, approve, execute (fake disbursement), results (FR-06–08, FR-13) — #33
 - [ ] Second approver above a threshold for payout batches (PRD-08 FR-07, Should)
 - [ ] If professors bear disbursement fees (setting off): size each payout so balance − fee stays ≥ 0 (needs the aggregator's fee schedule)
-- [ ] Back-office payout batch screens (with 2.2 Finance)
+- [x] Back-office payout batch screens — #35
 - [x] Payouts round CDF down to whole francs (`collectionStepMinor`) and carry the centimes forward — #33
 - [x] Sale reversal and refunds after release: take the professor part from available — #32
 - [x] Earnings + statement endpoints, CSV (FR-09) — #34
@@ -269,7 +269,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
 - [ ] Courses, categories, featured, takedown
 - [ ] Moderation (reports, reviews, threads)
-- [ ] Orders, payments (recheck), refunds
+- [ ] Orders, payments (recheck), refunds — refunds: staff resource with `policy` + `can` — #35
 - [ ] Coupons, bundles
 - [ ] Ledger explorer, adjustments, payout batches
 - [ ] Settings + audit log + staff endpoints — settings update action validates invariants (bps 0–10000, limits per enabled currency, hold ≥ refund window, schedule enum) and wraps save in a transaction
@@ -333,9 +333,9 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [ ] Courses, categories (tree + ordering), featured
 - [ ] Moderation (reports, reviews, Q&A)
-- [ ] Orders, payments (timeline, recheck), refunds
+- [ ] Orders, payments (timeline, recheck) — refunds queue + decisions done in #35
 - [ ] Coupons, bundles
-- [ ] Finance: ledger explorer, adjustments, payout batches
+- [ ] Finance: ledger explorer, adjustments — payout batches done in #35
 - [ ] Settings, audit log, staff
 - [ ] Playwright: admin approval journeys
 

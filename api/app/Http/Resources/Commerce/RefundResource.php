@@ -9,27 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * A refund as the student sees it (PRD-05 FR-16). Staff get the policy facts too (withPolicy()).
+ * A refund as the student sees it (PRD-05 FR-16). Staff see AdminRefundResource.
  *
  * @mixin Refund
  */
 final class RefundResource extends JsonResource
 {
-    /** @var array<string, mixed>|null */
-    private ?array $policy = null;
-
-    /**
-     * Facts staff decide on (PRD-09 FR-12): days since payment, progress, and the limits.
-     *
-     * @param  array<string, mixed>  $policy
-     */
-    public function withPolicy(array $policy): self
-    {
-        $this->policy = $policy;
-
-        return $this;
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -48,9 +33,7 @@ final class RefundResource extends JsonResource
             'decided_at' => $this->decided_at?->toIso8601String(),
             'completed_at' => $this->completed_at?->toIso8601String(),
             'failure_code' => $this->failure_code,
-            'flag' => $this->when($this->policy !== null, fn () => $this->flag),
             'created_at' => $this->created_at->toIso8601String(),
-            'policy' => $this->when($this->policy !== null, fn () => $this->policy),
         ];
     }
 }
