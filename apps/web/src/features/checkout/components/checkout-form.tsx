@@ -29,14 +29,17 @@ function useMoney() {
   return (money: { amount_minor: number; currency: string }) => formatMoney(money, locale);
 }
 
-const quoteKey = (courseId: string, coupon: string | null) => ["checkout-quote", courseId, coupon];
+const quoteKey = (item: string, coupon: string | null) => ["checkout-quote", item, coupon];
 
 /**
  * Checkout for one course (PRD-05 FR-02–FR-05): the server's quote (with an optional coupon), then the
  * operator and paying number. Creating the order and starting the payment are both idempotent, so a double tap
  * or a retry never charges twice. The waiting screen takes over once the payment request is sent.
  */
-export function CheckoutForm({ courseId }: { courseId: string }) {
+export function CheckoutForm({ courseId, bundleId }: { courseId?: string; bundleId?: string }) {
+  // One course, or a bundle at its own price (PRD-05 FR-13).
+  const selection = bundleId ? { bundle_id: bundleId } : { course_ids: [courseId ?? ""] };
+  const item = bundleId ?? courseId ?? "";
   const t = useTranslations("web.checkout");
   const errors = useTranslations("errors");
   const money = useMoney();
@@ -54,9 +57,8 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
   const [order, setOrder] = useState<OrderResource | null>(null);
 
   const quote = useQuery({
-    queryKey: quoteKey(courseId, appliedCoupon),
-    queryFn: async () =>
-      success(await checkoutQuote({ course_ids: [courseId], coupon_code: appliedCoupon })).data,
+    queryKey: quoteKey(item, appliedCoupon),
+    queryFn: async () => success(await checkoutQuote({ ...selection, coupon_code: appliedCoupon })).data,
     retry: false,
     // A refetch could turn an applied coupon that has since run out into a full-page error; the API checks the
     // coupon again when the order is created and the message shows by the pay button.
@@ -70,9 +72,9 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
   // A code is checked before it replaces the quote, so a bad code is an inline message, not a lost page.
   const applyCoupon = useMutation({
     mutationFn: async (code: string) =>
-      success(await checkoutQuote({ course_ids: [courseId], coupon_code: code })).data,
+      success(await checkoutQuote({ ...selection, coupon_code: code })).data,
     onSuccess: (data, code) => {
-      queryClient.setQueryData(quoteKey(courseId, code), data);
+      queryClient.setQueryData(quoteKey(item, code), data);
       setAppliedCoupon(code);
       setCoupon("");
     },
@@ -88,11 +90,11 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
       const current =
         order ??
         (await withIdempotencyKey(
-          `order:${courseId}:${appliedCoupon ?? ""}:${beneficiary ?? ""}`,
+          `order:${item}:${appliedCoupon ?? ""}:${beneficiary ?? ""}`,
           async (key) =>
             success(
               await ordersStore(
-                { course_ids: [courseId], coupon_code: appliedCoupon, beneficiary_phone: beneficiary },
+                { ...selection, coupon_code: appliedCoupon, beneficiary_phone: beneficiary },
                 { headers: { "Idempotency-Key": key } },
               ),
             ).data,
@@ -149,7 +151,7 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
           action={
             owned ? (
               <Button asChild>
-                <Link href={`/learn/${courseId}`}>{t("goToCourse")}</Link>
+                <Link href={courseId ? `/learn/${courseId}` : "/my-courses"}>{t("goToCourse")}</Link>
               </Button>
             ) : undefined
           }
@@ -178,6 +180,12 @@ export function CheckoutForm({ courseId }: { courseId: string }) {
         <h2 id="order-summary" className="font-bold">
           {t("summary")}
         </h2>
+        {q.bundle ? <p className="font-semibold">{q.bundle.title}</p> : null}
+        {q.excluded_course_ids.length > 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {t("ownedExcluded", { count: q.excluded_course_ids.length })}
+          </p>
+        ) : null}
         <ul className="grid gap-2">
           {q.items.map((item) => (
             <li key={item.course_id} className="flex justify-between gap-4">

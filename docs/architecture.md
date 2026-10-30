@@ -165,6 +165,7 @@ yekkola/
 │   │   │   ├── (marketing)/               /, /courses, /courses/[slug], /categories/[slug], /professors/[slug],
 │   │   │   │                              /certificates/[serial], /teach, legal pages      ← server components, SSR/ISR
 │   │   │   │                              /courses/[slug]/gift, /gift/[orderId]#token  ← guest checkout (noindex)
+│   │   │   │                              /bundles/[slug]                                ← bundle offer
 │   │   │   ├── (auth)/                    /login, /verify
 │   │   │   ├── (student)/                 /my-courses, /learn/[course]/[lesson], /checkout/[orderId],
 │   │   │   │                              /orders, /certificates, /wishlist, /account     ← client, auth-guarded
