@@ -118,6 +118,7 @@ final class AppServiceProvider extends ServiceProvider
         // Web app caches: refresh public pages when what they show changes (PRD-04 FR-11, FR-12).
         Event::listen('eloquent.saved: '.Course::class, [RevalidateWebOnChange::class, 'courseSaved']);
         Event::listen('eloquent.deleted: '.Course::class, [RevalidateWebOnChange::class, 'courseDeleted']);
+        Event::listen(['eloquent.saved: '.Category::class, 'eloquent.deleted: '.Category::class], [RevalidateWebOnChange::class, 'categoryChanged']);
         Event::listen('eloquent.saved: '.ProfessorProfile::class, [RevalidateWebOnChange::class, 'professorSaved']);
 
         // Catch lazy loading, silently discarded attributes, and missing attributes outside production.

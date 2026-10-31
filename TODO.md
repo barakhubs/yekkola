@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-courses` (back-office courses + takedown, PR #42 waiting for merge)
-- **Next up:** back-office categories (tree, ordering, fr/en names) — 1.11 / 2.2
+- **Current branch:** `feature/prd-09-admin-categories` (back-office categories, PR #43 waiting for merge)
+- **Next up:** staff sign-in with email + password, a default super admin, super-admin impersonation (owner request, 2026-10-31) — then moderation
 
 ## Legend
 
@@ -271,7 +271,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Notify the account when it is suspended or banned (with 1.12)
 - [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
 - [x] Courses (list, unpublish/republish), featured, takedown/restore — #42
-- [ ] Categories CRUD + ordering
+- [x] Categories CRUD + ordering — #43
 - [ ] Transfer course ownership (super admin, PRD-09 FR-08)
 - [ ] Tell the professor about a takedown (with 1.12)
 - [ ] Moderation (reports, reviews, threads)
@@ -339,7 +339,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Lesson preview with the player in the review screen (needs an admin playback/document endpoint)
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [x] Courses + featured — #42
-- [ ] Categories (tree + ordering)
+- [x] Categories (tree + ordering) — #43
 - [ ] Moderation (reports, reviews, Q&A)
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles

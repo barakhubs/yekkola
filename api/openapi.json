@@ -1191,6 +1191,237 @@
                 }
             }
         },
+        "/admin/categories": {
+            "get": {
+                "operationId": "admin.categories.index",
+                "summary": "All categories, top level first then each one's sub-categories, in display order",
+                "tags": [
+                    "Category"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `AdminCategoryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminCategoryResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "admin.categories.store",
+                "tags": [
+                    "Category"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`AdminCategoryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminCategoryResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/categories/order": {
+            "put": {
+                "operationId": "admin.categories.order",
+                "summary": "Orders one level: `ids` are exactly the categories under `parent_id` (null: the top level), in display order",
+                "tags": [
+                    "Category"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "parent_id": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1,
+                                        "uniqueItems": true
+                                    }
+                                },
+                                "required": [
+                                    "ids"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Array of `AdminCategoryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminCategoryResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/categories/{category}": {
+            "patch": {
+                "operationId": "admin.categories.update",
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "description": "The category ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminCategoryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminCategoryResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "admin.categories.destroy",
+                "summary": "Only when no course and no sub-category uses it (409 `category.in_use`): hide it otherwise",
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "description": "The category ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/me/certificates": {
             "get": {
                 "operationId": "me.certificates.index",
@@ -13517,6 +13748,102 @@
                 ],
                 "title": "AdjustmentRequest"
             },
+            "AdminCategoryResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "parent_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "object",
+                        "properties": {
+                            "fr": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "en": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "fr",
+                            "en"
+                        ]
+                    },
+                    "description": {
+                        "type": "object",
+                        "properties": {
+                            "fr": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "en": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "fr",
+                            "en"
+                        ]
+                    },
+                    "icon": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "position": {
+                        "type": "integer"
+                    },
+                    "is_visible": {
+                        "type": "boolean"
+                    },
+                    "course_count": {
+                        "type": "integer",
+                        "description": "Courses filed directly under this category."
+                    },
+                    "children_count": {
+                        "type": "integer"
+                    },
+                    "can_delete": {
+                        "type": "boolean",
+                        "description": "Deletion is possible only when nothing uses it."
+                    }
+                },
+                "required": [
+                    "id",
+                    "parent_id",
+                    "slug",
+                    "name",
+                    "description",
+                    "icon",
+                    "position",
+                    "is_visible",
+                    "course_count",
+                    "children_count",
+                    "can_delete"
+                ],
+                "title": "AdminCategoryResource"
+            },
             "AdminCourseResource": {
                 "type": "object",
                 "properties": {
@@ -15522,6 +15849,81 @@
                     "archived"
                 ],
                 "title": "BundleStatus"
+            },
+            "CategoryRequest": {
+                "type": "object",
+                "properties": {
+                    "parent_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "A top-level category to sit under (two levels at most); null for the top level."
+                    },
+                    "slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Generated from the French name when left out; made unique.",
+                        "maxLength": 80
+                    },
+                    "name": {
+                        "type": "object",
+                        "properties": {
+                            "fr": {
+                                "type": "string",
+                                "minLength": 2,
+                                "maxLength": 80
+                            },
+                            "en": {
+                                "type": "string",
+                                "minLength": 2,
+                                "maxLength": 80
+                            }
+                        },
+                        "required": [
+                            "fr",
+                            "en"
+                        ]
+                    },
+                    "description": {
+                        "type": "object",
+                        "properties": {
+                            "fr": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "maxLength": 500
+                            },
+                            "en": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "maxLength": 500
+                            }
+                        }
+                    },
+                    "icon": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "A Lucide icon name.",
+                        "pattern": "^[a-z0-9-]+$",
+                        "maxLength": 40
+                    },
+                    "is_visible": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name",
+                    "is_visible"
+                ],
+                "title": "CategoryRequest"
             },
             "CategoryResource": {
                 "type": "object",

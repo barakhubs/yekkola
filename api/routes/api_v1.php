@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Account\ProfileController;
 use App\Http\Controllers\Api\V1\Account\WishlistController;
 use App\Http\Controllers\Api\V1\Admin\AuditLogController;
 use App\Http\Controllers\Api\V1\Admin\BundleController as AdminBundleController;
+use App\Http\Controllers\Api\V1\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\V1\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
@@ -262,6 +263,11 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::post('/courses/{course}/republish', [AdminCourseController::class, 'republish'])->name('courses.republish');
         Route::post('/courses/{course}/take-down', [AdminCourseController::class, 'takeDown'])->name('courses.take-down');
         Route::post('/courses/{course}/restore', [AdminCourseController::class, 'restore'])->name('courses.restore');
+        Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/order', [AdminCategoryController::class, 'order'])->name('categories.order');
+        Route::patch('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
         Route::get('/featured-courses', [FeaturedCourseController::class, 'index'])->name('featured-courses.index');
         Route::put('/featured-courses', [FeaturedCourseController::class, 'update'])->name('featured-courses.update');
 

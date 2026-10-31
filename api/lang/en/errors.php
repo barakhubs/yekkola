@@ -94,6 +94,11 @@ return [
         'not_found' => 'No identity check found.',
         'not_pending' => 'This check has already been handled.',
     ],
+    'category' => [
+        'in_use' => 'This category has courses or sub-categories: hide it instead.',
+        'invalid_parent' => 'A category can only go under a top-level category (two levels at most).',
+        'order_mismatch' => 'The list doesn\'t match the categories at this level. Reload the page.',
+    ],
     'course' => [
         'availability_transition' => 'This course is no longer in a state that allows this.',
         'draft_not_editable' => 'This draft is in review and cannot be edited.',
