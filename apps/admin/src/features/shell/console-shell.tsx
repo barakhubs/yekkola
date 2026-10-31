@@ -28,6 +28,7 @@ import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
 
+import { ImpersonationBanner } from "@/features/auth/impersonation-banner";
 import { ChangePassword } from "@/features/auth/password-sign-in";
 import { useSession, useSignOut } from "@/features/auth/session";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
@@ -126,50 +127,53 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
   const isCurrent = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
-    <div className="flex min-h-dvh flex-col lg:flex-row">
-      <aside className="border-b bg-background lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-64 lg:shrink-0 lg:flex-col lg:border-r lg:border-b-0">
-        <div className="flex h-14 items-center justify-between gap-2 px-4 lg:h-16">
-          <Link href="/" className="font-extrabold tracking-wide text-primary">
-            {t("brand")}
-          </Link>
-          <div className="flex items-center gap-1 lg:hidden">
-            <LocaleLink />
-            <SignOutButton onClick={() => signOut.mutate()} disabled={signOut.isPending} />
+    <>
+      <ImpersonationBanner />
+      <div className="flex min-h-dvh flex-col lg:flex-row">
+        <aside className="border-b bg-background lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-64 lg:shrink-0 lg:flex-col lg:border-r lg:border-b-0">
+          <div className="flex h-14 items-center justify-between gap-2 px-4 lg:h-16">
+            <Link href="/" className="font-extrabold tracking-wide text-primary">
+              {t("brand")}
+            </Link>
+            <div className="flex items-center gap-1 lg:hidden">
+              <LocaleLink />
+              <SignOutButton onClick={() => signOut.mutate()} disabled={signOut.isPending} />
+            </div>
           </div>
-        </div>
-        <nav aria-label={t("nav.label")} className="overflow-x-auto px-2 pb-2 lg:flex-1 lg:px-3">
-          <ul className="flex gap-1 lg:grid">
-            {items.map(({ href, key, icon: Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  aria-current={isCurrent(href) ? "page" : undefined}
-                  className={cn(
-                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap",
-                    isCurrent(href)
-                      ? "bg-accent text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  <Icon aria-hidden className="size-4" />
-                  {t(`nav.${key}`)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="hidden gap-2 border-t p-3 lg:grid">
-          <p className="truncate text-sm font-semibold">{session.user.name ?? session.user.phone}</p>
-          <div className="flex items-center gap-1">
-            <LocaleLink />
-            <SignOutButton onClick={() => signOut.mutate()} disabled={signOut.isPending} />
+          <nav aria-label={t("nav.label")} className="overflow-x-auto px-2 pb-2 lg:flex-1 lg:px-3">
+            <ul className="flex gap-1 lg:grid">
+              {items.map(({ href, key, icon: Icon }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={isCurrent(href) ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap",
+                      isCurrent(href)
+                        ? "bg-accent text-primary"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    )}
+                  >
+                    <Icon aria-hidden className="size-4" />
+                    {t(`nav.${key}`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="hidden gap-2 border-t p-3 lg:grid">
+            <p className="truncate text-sm font-semibold">{session.user.name ?? session.user.phone}</p>
+            <div className="flex items-center gap-1">
+              <LocaleLink />
+              <SignOutButton onClick={() => signOut.mutate()} disabled={signOut.isPending} />
+            </div>
           </div>
-        </div>
-      </aside>
-      <main id="content" className="min-w-0 flex-1 bg-muted/30">
-        {children}
-      </main>
-    </div>
+        </aside>
+        <main id="content" className="min-w-0 flex-1 bg-muted/30">
+          {children}
+        </main>
+      </div>
+    </>
   );
 }
 
