@@ -150,4 +150,19 @@ final class IdentityException extends DomainException
     {
         return new self('user.not_staff_role', 422);
     }
+
+    public static function invalidCredentials(): self
+    {
+        return new self('auth.invalid_credentials', 422);
+    }
+
+    public static function currentPasswordWrong(): self
+    {
+        return new self('auth.current_password_wrong', 422);
+    }
+
+    public static function passwordChangeRequired(): self
+    {
+        return new self('auth.password_change_required', 403);
+    }
 }

@@ -43,6 +43,7 @@ export * from "./refund/refund.zod";
 export * from "./review/review.zod";
 export * from "./settings/settings.zod";
 export * from "./staff/staff.zod";
+export * from "./staff-password/staff-password.zod";
 export * from "./studio-profile/studio-profile.zod";
 export * from "./user/user.zod";
 export * from "./video-webhook/video-webhook.zod";

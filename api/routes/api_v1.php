@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\V1\Admin\StaffController;
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
+use App\Http\Controllers\Api\V1\Auth\StaffPasswordController;
 use App\Http\Controllers\Api\V1\Commerce\CheckoutController;
 use App\Http\Controllers\Api\V1\Commerce\EnrollmentController;
 use App\Http\Controllers\Api\V1\Commerce\GuestOrderController;
@@ -126,6 +127,8 @@ Route::get('/featured', [PublicCourseController::class, 'featured'])->name('feat
 
 // Auth (PRD-01)
 Route::prefix('auth')->name('auth.')->group(function () {
+    // Staff only: email + password into the back office (owner decision, 2026-10-31).
+    Route::post('/staff/sign-in', [StaffPasswordController::class, 'signIn'])->middleware('throttle:staff-sign-in')->name('staff.sign-in');
     Route::post('/otp/request', [OtpController::class, 'request'])->name('otp.request');
     Route::post('/otp/verify', [OtpController::class, 'verify'])->middleware('throttle:otp-verify')->name('otp.verify');
     Route::post('/logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
@@ -134,6 +137,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 // Account (any signed-in user)
 Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('show');
+    Route::put('/password', [StaffPasswordController::class, 'change'])->middleware('throttle:staff-sign-in')->name('password');
     Route::patch('/', [ProfileController::class, 'update'])->middleware('throttle:profile-update')->name('update');
     Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
     Route::delete('/deletion', [ProfileController::class, 'cancelDeletion'])->name('deletion.cancel');
@@ -228,7 +232,7 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
 });
 
 // Back office (PRD-09): staff only; each group checks a permission.
-Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->name('admin.')->group(function () {
     Route::middleware('can:'.Permission::ModerationReview->value)->group(function () {
         Route::get('/professor-applications', [AdminApplicationController::class, 'index'])->name('professor-applications.index');
         Route::get('/professor-applications/{application}', [AdminApplicationController::class, 'show'])->name('professor-applications.show');
@@ -311,6 +315,7 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
         Route::put('/staff/{user}', [StaffController::class, 'update'])->name('staff.update');
         Route::delete('/staff/{user}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        Route::put('/staff/{user}/password', [StaffPasswordController::class, 'setFor'])->name('staff.password');
     });
 
     // Accounts (PRD-09 FR-04)

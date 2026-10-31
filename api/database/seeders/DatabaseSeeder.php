@@ -23,6 +23,11 @@ final class DatabaseSeeder extends Seeder
             CategorySeeder::class,
         ]);
 
+        // Default super admin with email + password, when its env vars are set (SUPER_ADMIN_*). Never a password in code.
+        if (is_string(config('yekkola.super_admin.email')) && config('yekkola.super_admin.email') !== '') {
+            $this->command->call('admin:create-super-admin');
+        }
+
         // Local/staging demo admin — only when a number you control is configured (never a guessed real number).
         $demoAdminPhone = config('yekkola.demo_admin_phone');
         if (app()->environment(['local', 'staging']) && is_string($demoAdminPhone) && $demoAdminPhone !== '') {

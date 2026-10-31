@@ -65,6 +65,11 @@ final class AppServiceProvider extends ServiceProvider
 
         // OTP verification (sign-in, phone change): coarse per-IP cap on top of the per-challenge attempt limit.
         RateLimiter::for('otp-verify', fn (Request $request) => Limit::perMinutes(10, 30)->by($request->ip()));
+        // Staff password sign-in and changes: per email+IP and per IP, against guessing.
+        RateLimiter::for('staff-sign-in', fn (Request $request) => [
+            Limit::perMinute(5)->by('email:'.mb_strtolower((string) $request->input('email')).'|'.$request->ip()),
+            Limit::perHour(30)->by('ip:'.$request->ip()),
+        ]);
         // Provider webhooks: generous, but bounded.
         RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(600)->by($request->ip()));
         // File uploads (credentials, avatar, KYC).

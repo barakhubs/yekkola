@@ -91,6 +91,14 @@ return [
     // Local/staging seed: phone number (one you control) for the demo super admin. Empty = not seeded.
     'demo_admin_phone' => env('DEMO_ADMIN_PHONE'),
 
+    // Default super admin (`admin:create-super-admin`): email + password into the back office, phone for SMS codes.
+    'super_admin' => [
+        'email' => env('SUPER_ADMIN_EMAIL'),
+        'password' => env('SUPER_ADMIN_PASSWORD'),
+        'phone' => env('SUPER_ADMIN_PHONE'),
+        'name' => env('SUPER_ADMIN_NAME', 'Super admin'),
+    ],
+
     'mux' => [
         'token_id' => env('MUX_TOKEN_ID'),
         'token_secret' => env('MUX_TOKEN_SECRET'),

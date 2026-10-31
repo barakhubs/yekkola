@@ -7,6 +7,7 @@ use App\Domain\Finance\Console\BuildDuePayoutBatches;
 use App\Domain\Finance\Console\CheckLedger;
 use App\Domain\Finance\Console\ReleaseDueEarnings;
 use App\Domain\Finance\Console\SyncPayouts;
+use App\Domain\Identity\Console\CreateSuperAdmin;
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
 use App\Domain\Platform\Console\RollupPlatformStatsCommand;
 use App\Domain\Professors\Console\ExpireStaleApplications;
@@ -14,6 +15,7 @@ use App\Domain\Shared\Exceptions\DomainException;
 use App\Http\ApiErrorResponse;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureIdempotency;
+use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsureProfessor;
 use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\SetLocaleFromHeader;
@@ -35,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
         PurgeDeletedAccounts::class,
         ExpireStaleApplications::class,
         ReconcilePayments::class,
+        CreateSuperAdmin::class,
         ReleaseDueEarnings::class,
         BuildDuePayoutBatches::class,
         SyncPayouts::class,
@@ -54,6 +57,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureAccountActive::class,
             'professor' => EnsureProfessor::class,
             'staff' => EnsureStaff::class,
+            'password-changed' => EnsurePasswordChanged::class,
         ]);
         // Every signed-in route uses this group, so the account checks can't be forgotten.
         $middleware->group('signed-in', ['auth:sanctum', 'active']);

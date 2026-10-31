@@ -22,6 +22,9 @@ export interface UserResource {
   roles: string[];
   /** What the back office may show (it hides what the API would refuse; the API still checks). */
   is_staff: boolean;
+  /** Staff: whether a back-office password is set, and whether they must choose a new one now. */
+  has_password: boolean;
+  must_change_password: boolean;
   permissions: string[];
   /** @nullable */
   deletion_requested_at: string | null;
