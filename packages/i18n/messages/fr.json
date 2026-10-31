@@ -987,7 +987,8 @@
       "users": "Comptes",
       "settings": "Paramètres",
       "staff": "Personnel",
-      "audit": "Journal d’audit"
+      "audit": "Journal d’audit",
+      "courses": "Cours"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1615,6 +1616,53 @@
         "admin": "Admin",
         "super-admin": "Super admin"
       }
+    },
+    "courses": {
+      "title": "Cours",
+      "intro": "Tous les cours. Dépublier retire un cours du catalogue (les inscrits gardent l’accès) ; retirer (takedown) le ferme à tous, inscrits compris.",
+      "search": "Rechercher un titre",
+      "allStatuses": "Tous les statuts",
+      "empty": "Aucun cours.",
+      "noCategory": "sans catégorie",
+      "free": "Gratuit",
+      "takenDown": "Retiré",
+      "featured": "En vedette",
+      "feature": "Mettre en vedette",
+      "columns": {
+        "title": "Cours",
+        "status": "Statut",
+        "price": "Prix",
+        "enrollments": "Inscrits",
+        "published": "Publié le",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "in_review": "En relecture",
+        "published": "Publié",
+        "unpublished": "Dépublié",
+        "archived": "Archivé"
+      },
+      "actions": {
+        "unpublish": "Dépublier",
+        "republish": "Republier",
+        "take_down": "Retirer",
+        "restore": "Rétablir"
+      },
+      "hints": {
+        "unpublish": "Le cours quitte le catalogue. Les étudiants déjà inscrits gardent leur accès.",
+        "republish": "Le cours revient au catalogue.",
+        "take_down": "Le cours quitte le catalogue et plus personne ne peut le suivre, inscrits compris. Les téléchargements sont effacés à la prochaine synchronisation.",
+        "restore": "Le cours est de nouveau publié et ouvert aux inscrits."
+      },
+      "confirmTitle": "{action} « {title} » ?",
+      "reason": "Raison (gardée dans le journal d’audit)",
+      "featuredTitle": "Cours en vedette",
+      "featuredHint": "Affichés dans cet ordre sur la page d’accueil.",
+      "noFeatured": "Aucun cours en vedette.",
+      "moveUp": "Monter « {title} »",
+      "moveDown": "Descendre « {title} »",
+      "unfeature": "Retirer « {title} » de la vedette"
     }
   }
 }

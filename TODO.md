@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-dashboard` (admin dashboard, PR #41 waiting for merge)
-- **Next up:** back-office courses, categories, featured + takedown (1.11 / 2.2)
+- **Current branch:** `feature/prd-09-admin-courses` (back-office courses + takedown, PR #42 waiting for merge)
+- **Next up:** back-office categories (tree, ordering, fr/en names) — 1.11 / 2.2
 
 ## Legend
 
@@ -240,7 +240,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Check documents uploaded before the stamper check (`inspect`) and tell professors which ones must be re-exported
 - [ ] Quiz attempts on preview lessons: also require the course to be listed (`CourseAccess::previewAllowed`, as playback and documents do)
 - [ ] Shorter web playback tokens refreshed only for a live stream session, so the web stream limit doesn't rely on the player (FR-05)
-- [ ] Takedown/revocation effects (FR-15)
+- [x] Takedown: no new playback/document tokens for anyone — #42; offline removal at next sync comes with entitlement sync
 
 ### 1.9b Copy
 
@@ -270,7 +270,10 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Grant an enrollment from the back office (PRD-09 FR-04)
 - [ ] Notify the account when it is suspended or banned (with 1.12)
 - [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
-- [ ] Courses, categories, featured, takedown
+- [x] Courses (list, unpublish/republish), featured, takedown/restore — #42
+- [ ] Categories CRUD + ordering
+- [ ] Transfer course ownership (super admin, PRD-09 FR-08)
+- [ ] Tell the professor about a takedown (with 1.12)
 - [ ] Moderation (reports, reviews, threads)
 - [x] Orders, payments (recheck), refunds — #35, #37
 - [ ] Coupons, bundles
@@ -335,7 +338,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #23
 - [ ] Lesson preview with the player in the review screen (needs an admin playback/document endpoint)
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
-- [ ] Courses, categories (tree + ordering), featured
+- [x] Courses + featured — #42
+- [ ] Categories (tree + ordering)
 - [ ] Moderation (reports, reviews, Q&A)
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles

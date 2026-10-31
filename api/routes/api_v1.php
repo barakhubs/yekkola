@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\Account\WishlistController;
 use App\Http\Controllers\Api\V1\Admin\AuditLogController;
 use App\Http\Controllers\Api\V1\Admin\BundleController as AdminBundleController;
 use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Api\V1\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
 use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
@@ -254,7 +255,13 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::post('/kyc-submissions/{submission}/reject', [KycSubmissionController::class, 'reject'])->name('kyc-submissions.reject');
     });
 
+    Route::get('/courses', [AdminCourseController::class, 'index'])->middleware('can:'.Permission::CatalogView->value)->name('courses.index');
+
     Route::middleware('can:'.Permission::CatalogManage->value)->group(function () {
+        Route::post('/courses/{course}/unpublish', [AdminCourseController::class, 'unpublish'])->name('courses.unpublish');
+        Route::post('/courses/{course}/republish', [AdminCourseController::class, 'republish'])->name('courses.republish');
+        Route::post('/courses/{course}/take-down', [AdminCourseController::class, 'takeDown'])->name('courses.take-down');
+        Route::post('/courses/{course}/restore', [AdminCourseController::class, 'restore'])->name('courses.restore');
         Route::get('/featured-courses', [FeaturedCourseController::class, 'index'])->name('featured-courses.index');
         Route::put('/featured-courses', [FeaturedCourseController::class, 'update'])->name('featured-courses.update');
 

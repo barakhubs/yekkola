@@ -1228,3 +1228,308 @@ export const ProfessorCoursesArchiveResponse = zod.object({
     }),
   }),
 });
+
+export const adminCoursesIndexQueryPageDefault = 1;
+export const adminCoursesIndexQueryPerPageDefault = 15;
+
+export const AdminCoursesIndexQueryParams = zod.object({
+  page: zod.int().default(adminCoursesIndexQueryPageDefault),
+  per_page: zod.int().default(adminCoursesIndexQueryPerPageDefault),
+  "filter[q]": zod.string().optional().describe("Part of the title or slug."),
+  "filter[status]": zod.string().optional().describe("draft, in_review, published, unpublished or archived."),
+  "filter[taken_down]": zod.string().optional().describe("`1`: only taken-down courses."),
+  "filter[professor_profile_id]": zod.string().optional(),
+  sort: zod
+    .string()
+    .optional()
+    .describe(
+      "`created_at`, `published_at` or `enrollment_count`; prefix `-` for descending (default `-created_at`).",
+    ),
+});
+
+export const adminCoursesIndexResponseMetaPerPageMin = 0;
+
+export const adminCoursesIndexResponseMetaTotalMin = 0;
+
+export const AdminCoursesIndexResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.string(),
+      slug: zod.string(),
+      title: zod
+        .string()
+        .nullable()
+        .describe("The live version's title (or the draft's, before the first approval)."),
+      professor: zod.object({
+        id: zod.string(),
+        display_name: zod.string(),
+      }),
+      category: zod.string().nullable(),
+      status: zod.string(),
+      is_free: zod.boolean(),
+      price: zod
+        .object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        })
+        .nullable(),
+      enrollment_count: zod.int(),
+      rating_avg: zod.number(),
+      rating_count: zod.int(),
+      featured_position: zod.int().nullable(),
+      published_at: zod.string().nullable(),
+      taken_down_at: zod.string().nullable(),
+      takedown_reason: zod.string().nullable(),
+      can: zod.object({
+        unpublish: zod.string(),
+        republish: zod.string(),
+        take_down: zod.string(),
+        restore: zod.boolean(),
+      }),
+    }),
+  ),
+  links: zod.object({
+    first: zod.string().nullable(),
+    last: zod.string().nullable(),
+    prev: zod.string().nullable(),
+    next: zod.string().nullable(),
+  }),
+  meta: zod.object({
+    current_page: zod.int().min(1),
+    from: zod.int().min(1).nullable(),
+    last_page: zod.int().min(1),
+    links: zod
+      .array(
+        zod.object({
+          url: zod.string().nullable(),
+          label: zod.string(),
+          active: zod.boolean(),
+        }),
+      )
+      .describe("Generated paginator links."),
+    path: zod.string().nullable().describe("Base path for paginator generated URLs."),
+    per_page: zod
+      .int()
+      .min(adminCoursesIndexResponseMetaPerPageMin)
+      .describe("Number of items shown per page."),
+    to: zod.int().min(1).nullable().describe("Number of the last item in the slice."),
+    total: zod
+      .int()
+      .min(adminCoursesIndexResponseMetaTotalMin)
+      .describe("Total number of items being paginated."),
+  }),
+});
+
+/**
+ * @summary Off the catalogue for new students; enrolled students keep access
+ */
+export const AdminCoursesUnpublishParams = zod.object({
+  course: zod.string().describe("The course ID"),
+});
+
+export const adminCoursesUnpublishBodyNoteMin = 3;
+export const adminCoursesUnpublishBodyNoteMax = 2000;
+
+export const AdminCoursesUnpublishBody = zod
+  .object({
+    note: zod.string().min(adminCoursesUnpublishBodyNoteMin).max(adminCoursesUnpublishBodyNoteMax),
+  })
+  .describe(
+    "A staff decision with a note/reason (PRD-09 FR-18: destructive actions need a typed reason).\nPass `?required=0` semantics via the route: approve allows an empty note.",
+  );
+
+export const AdminCoursesUnpublishResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    slug: zod.string(),
+    title: zod
+      .string()
+      .nullable()
+      .describe("The live version's title (or the draft's, before the first approval)."),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+    }),
+    category: zod.string().nullable(),
+    status: zod.string(),
+    is_free: zod.boolean(),
+    price: zod
+      .object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      })
+      .nullable(),
+    enrollment_count: zod.int(),
+    rating_avg: zod.number(),
+    rating_count: zod.int(),
+    featured_position: zod.int().nullable(),
+    published_at: zod.string().nullable(),
+    taken_down_at: zod.string().nullable(),
+    takedown_reason: zod.string().nullable(),
+    can: zod.object({
+      unpublish: zod.string(),
+      republish: zod.string(),
+      take_down: zod.string(),
+      restore: zod.boolean(),
+    }),
+  }),
+});
+
+export const AdminCoursesRepublishParams = zod.object({
+  course: zod.string().describe("The course ID"),
+});
+
+export const adminCoursesRepublishBodyNoteMin = 3;
+export const adminCoursesRepublishBodyNoteMax = 2000;
+
+export const AdminCoursesRepublishBody = zod
+  .object({
+    note: zod.string().min(adminCoursesRepublishBodyNoteMin).max(adminCoursesRepublishBodyNoteMax),
+  })
+  .describe(
+    "A staff decision with a note/reason (PRD-09 FR-18: destructive actions need a typed reason).\nPass `?required=0` semantics via the route: approve allows an empty note.",
+  );
+
+export const AdminCoursesRepublishResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    slug: zod.string(),
+    title: zod
+      .string()
+      .nullable()
+      .describe("The live version's title (or the draft's, before the first approval)."),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+    }),
+    category: zod.string().nullable(),
+    status: zod.string(),
+    is_free: zod.boolean(),
+    price: zod
+      .object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      })
+      .nullable(),
+    enrollment_count: zod.int(),
+    rating_avg: zod.number(),
+    rating_count: zod.int(),
+    featured_position: zod.int().nullable(),
+    published_at: zod.string().nullable(),
+    taken_down_at: zod.string().nullable(),
+    takedown_reason: zod.string().nullable(),
+    can: zod.object({
+      unpublish: zod.string(),
+      republish: zod.string(),
+      take_down: zod.string(),
+      restore: zod.boolean(),
+    }),
+  }),
+});
+
+/**
+ * @summary Off the catalogue and closed to everyone, enrolled students included (no new playback or documents)
+ */
+export const AdminCoursesTakeDownParams = zod.object({
+  course: zod.string().describe("The course ID"),
+});
+
+export const adminCoursesTakeDownBodyNoteMin = 3;
+export const adminCoursesTakeDownBodyNoteMax = 2000;
+
+export const AdminCoursesTakeDownBody = zod
+  .object({
+    note: zod.string().min(adminCoursesTakeDownBodyNoteMin).max(adminCoursesTakeDownBodyNoteMax),
+  })
+  .describe(
+    "A staff decision with a note/reason (PRD-09 FR-18: destructive actions need a typed reason).\nPass `?required=0` semantics via the route: approve allows an empty note.",
+  );
+
+export const AdminCoursesTakeDownResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    slug: zod.string(),
+    title: zod
+      .string()
+      .nullable()
+      .describe("The live version's title (or the draft's, before the first approval)."),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+    }),
+    category: zod.string().nullable(),
+    status: zod.string(),
+    is_free: zod.boolean(),
+    price: zod
+      .object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      })
+      .nullable(),
+    enrollment_count: zod.int(),
+    rating_avg: zod.number(),
+    rating_count: zod.int(),
+    featured_position: zod.int().nullable(),
+    published_at: zod.string().nullable(),
+    taken_down_at: zod.string().nullable(),
+    takedown_reason: zod.string().nullable(),
+    can: zod.object({
+      unpublish: zod.string(),
+      republish: zod.string(),
+      take_down: zod.string(),
+      restore: zod.boolean(),
+    }),
+  }),
+});
+
+export const AdminCoursesRestoreParams = zod.object({
+  course: zod.string().describe("The course ID"),
+});
+
+export const adminCoursesRestoreBodyNoteMin = 3;
+export const adminCoursesRestoreBodyNoteMax = 2000;
+
+export const AdminCoursesRestoreBody = zod
+  .object({
+    note: zod.string().min(adminCoursesRestoreBodyNoteMin).max(adminCoursesRestoreBodyNoteMax),
+  })
+  .describe(
+    "A staff decision with a note/reason (PRD-09 FR-18: destructive actions need a typed reason).\nPass `?required=0` semantics via the route: approve allows an empty note.",
+  );
+
+export const AdminCoursesRestoreResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    slug: zod.string(),
+    title: zod
+      .string()
+      .nullable()
+      .describe("The live version's title (or the draft's, before the first approval)."),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+    }),
+    category: zod.string().nullable(),
+    status: zod.string(),
+    is_free: zod.boolean(),
+    price: zod
+      .object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      })
+      .nullable(),
+    enrollment_count: zod.int(),
+    rating_avg: zod.number(),
+    rating_count: zod.int(),
+    featured_position: zod.int().nullable(),
+    published_at: zod.string().nullable(),
+    taken_down_at: zod.string().nullable(),
+    takedown_reason: zod.string().nullable(),
+    can: zod.object({
+      unpublish: zod.string(),
+      republish: zod.string(),
+      take_down: zod.string(),
+      restore: zod.boolean(),
+    }),
+  }),
+});

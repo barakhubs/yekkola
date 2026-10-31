@@ -18,11 +18,19 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AdminCoursesIndex200,
+  AdminCoursesIndexParams,
+  AdminCoursesRepublish200,
+  AdminCoursesRestore200,
+  AdminCoursesTakeDown200,
+  AdminCoursesUnpublish200,
+  AuthorizationExceptionResponse,
   CoursesIndex200,
   CoursesIndexParams,
   CoursesShow200,
   CreateCourseRequest,
   Featured200,
+  ModelNotFoundExceptionResponse,
   ProfessorCoursesArchive200,
   ProfessorCoursesDraftStart201,
   ProfessorCoursesIndex200,
@@ -34,6 +42,7 @@ import type {
   ProfessorCoursesUnpublish200,
   ProfessorCoursesUpdate200,
   ProfessorCoursesWithdraw200,
+  StaffNoteRequest,
   UpdateCourseSettingsRequest,
   ValidationExceptionResponse,
 } from "../../model";
@@ -1945,6 +1954,918 @@ export function useProfessorCoursesArchive<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getProfessorCoursesArchiveQueryOptions(course, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCoursesIndexResponse200 = {
+  data: AdminCoursesIndex200;
+  status: 200;
+};
+
+export type adminCoursesIndexResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCoursesIndexResponseSuccess = adminCoursesIndexResponse200 & {
+  headers: Headers;
+};
+export type adminCoursesIndexResponseError = adminCoursesIndexResponse403 & {
+  headers: Headers;
+};
+
+export type adminCoursesIndexResponse = adminCoursesIndexResponseSuccess | adminCoursesIndexResponseError;
+
+export const getAdminCoursesIndexUrl = (params?: AdminCoursesIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/admin/courses?${stringifiedParams}` : `/admin/courses`;
+};
+
+export const adminCoursesIndex = async (
+  params?: AdminCoursesIndexParams,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCoursesIndexResponse> => {
+  return apiFetch<adminCoursesIndexResponse>(getAdminCoursesIndexUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminCoursesIndexQueryKey = (params?: AdminCoursesIndexParams) => {
+  return [`/admin/courses`, ...(params ? [params] : [])] as const;
+};
+
+export const getAdminCoursesIndexQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCoursesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminCoursesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCoursesIndexQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCoursesIndex>>> = ({ signal }) =>
+    adminCoursesIndex(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminCoursesIndex>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminCoursesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminCoursesIndex>>>;
+export type AdminCoursesIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
+
+export function useAdminCoursesIndex<
+  TData = Awaited<ReturnType<typeof adminCoursesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params: undefined | AdminCoursesIndexParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesIndex>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesIndex>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesIndex<
+  TData = Awaited<ReturnType<typeof adminCoursesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminCoursesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesIndex>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesIndex>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesIndex<
+  TData = Awaited<ReturnType<typeof adminCoursesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminCoursesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminCoursesIndex<
+  TData = Awaited<ReturnType<typeof adminCoursesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  params?: AdminCoursesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCoursesIndexQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCoursesUnpublishResponse200 = {
+  data: AdminCoursesUnpublish200;
+  status: 200;
+};
+
+export type adminCoursesUnpublishResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCoursesUnpublishResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCoursesUnpublishResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCoursesUnpublishResponseSuccess = adminCoursesUnpublishResponse200 & {
+  headers: Headers;
+};
+export type adminCoursesUnpublishResponseError = (
+  adminCoursesUnpublishResponse403 | adminCoursesUnpublishResponse404 | adminCoursesUnpublishResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCoursesUnpublishResponse =
+  adminCoursesUnpublishResponseSuccess | adminCoursesUnpublishResponseError;
+
+export const getAdminCoursesUnpublishUrl = (course: string) => {
+  return `/admin/courses/${course}/unpublish`;
+};
+
+/**
+ * @summary Off the catalogue for new students; enrolled students keep access
+ */
+export const adminCoursesUnpublish = async (
+  course: string,
+  staffNoteRequest: StaffNoteRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCoursesUnpublishResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCoursesUnpublishResponse>(getAdminCoursesUnpublishUrl(course), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(staffNoteRequest),
+  });
+};
+
+export const getAdminCoursesUnpublishQueryKey = (
+  course: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
+  return ["POST", `/admin/courses/${course}/unpublish`, staffNoteRequest] as const;
+};
+
+export const getAdminCoursesUnpublishQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesUnpublish>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCoursesUnpublishQueryKey(course, staffNoteRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCoursesUnpublish>>> = ({ signal }) =>
+    adminCoursesUnpublish(course, staffNoteRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: course !== null && course !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCoursesUnpublish>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCoursesUnpublishQueryResult = NonNullable<Awaited<ReturnType<typeof adminCoursesUnpublish>>>;
+export type AdminCoursesUnpublishQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCoursesUnpublish<
+  TData = Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesUnpublish>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesUnpublish>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesUnpublish<
+  TData = Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesUnpublish>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesUnpublish>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesUnpublish<
+  TData = Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesUnpublish>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Off the catalogue for new students; enrolled students keep access
+ */
+
+export function useAdminCoursesUnpublish<
+  TData = Awaited<ReturnType<typeof adminCoursesUnpublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesUnpublish>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCoursesUnpublishQueryOptions(course, staffNoteRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCoursesRepublishResponse200 = {
+  data: AdminCoursesRepublish200;
+  status: 200;
+};
+
+export type adminCoursesRepublishResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCoursesRepublishResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCoursesRepublishResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCoursesRepublishResponseSuccess = adminCoursesRepublishResponse200 & {
+  headers: Headers;
+};
+export type adminCoursesRepublishResponseError = (
+  adminCoursesRepublishResponse403 | adminCoursesRepublishResponse404 | adminCoursesRepublishResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCoursesRepublishResponse =
+  adminCoursesRepublishResponseSuccess | adminCoursesRepublishResponseError;
+
+export const getAdminCoursesRepublishUrl = (course: string) => {
+  return `/admin/courses/${course}/republish`;
+};
+
+export const adminCoursesRepublish = async (
+  course: string,
+  staffNoteRequest: StaffNoteRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCoursesRepublishResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCoursesRepublishResponse>(getAdminCoursesRepublishUrl(course), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(staffNoteRequest),
+  });
+};
+
+export const getAdminCoursesRepublishQueryKey = (
+  course: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
+  return ["POST", `/admin/courses/${course}/republish`, staffNoteRequest] as const;
+};
+
+export const getAdminCoursesRepublishQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCoursesRepublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRepublish>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCoursesRepublishQueryKey(course, staffNoteRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCoursesRepublish>>> = ({ signal }) =>
+    adminCoursesRepublish(course, staffNoteRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: course !== null && course !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRepublish>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCoursesRepublishQueryResult = NonNullable<Awaited<ReturnType<typeof adminCoursesRepublish>>>;
+export type AdminCoursesRepublishQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCoursesRepublish<
+  TData = Awaited<ReturnType<typeof adminCoursesRepublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRepublish>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesRepublish>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesRepublish>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesRepublish<
+  TData = Awaited<ReturnType<typeof adminCoursesRepublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRepublish>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesRepublish>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesRepublish>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesRepublish<
+  TData = Awaited<ReturnType<typeof adminCoursesRepublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRepublish>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminCoursesRepublish<
+  TData = Awaited<ReturnType<typeof adminCoursesRepublish>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRepublish>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCoursesRepublishQueryOptions(course, staffNoteRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCoursesTakeDownResponse200 = {
+  data: AdminCoursesTakeDown200;
+  status: 200;
+};
+
+export type adminCoursesTakeDownResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCoursesTakeDownResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCoursesTakeDownResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCoursesTakeDownResponseSuccess = adminCoursesTakeDownResponse200 & {
+  headers: Headers;
+};
+export type adminCoursesTakeDownResponseError = (
+  adminCoursesTakeDownResponse403 | adminCoursesTakeDownResponse404 | adminCoursesTakeDownResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCoursesTakeDownResponse =
+  adminCoursesTakeDownResponseSuccess | adminCoursesTakeDownResponseError;
+
+export const getAdminCoursesTakeDownUrl = (course: string) => {
+  return `/admin/courses/${course}/take-down`;
+};
+
+/**
+ * @summary Off the catalogue and closed to everyone, enrolled students included (no new playback or documents)
+ */
+export const adminCoursesTakeDown = async (
+  course: string,
+  staffNoteRequest: StaffNoteRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCoursesTakeDownResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCoursesTakeDownResponse>(getAdminCoursesTakeDownUrl(course), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(staffNoteRequest),
+  });
+};
+
+export const getAdminCoursesTakeDownQueryKey = (
+  course: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
+  return ["POST", `/admin/courses/${course}/take-down`, staffNoteRequest] as const;
+};
+
+export const getAdminCoursesTakeDownQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTakeDown>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCoursesTakeDownQueryKey(course, staffNoteRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCoursesTakeDown>>> = ({ signal }) =>
+    adminCoursesTakeDown(course, staffNoteRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: course !== null && course !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTakeDown>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCoursesTakeDownQueryResult = NonNullable<Awaited<ReturnType<typeof adminCoursesTakeDown>>>;
+export type AdminCoursesTakeDownQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCoursesTakeDown<
+  TData = Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTakeDown>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesTakeDown>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesTakeDown<
+  TData = Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTakeDown>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesTakeDown>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesTakeDown<
+  TData = Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTakeDown>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Off the catalogue and closed to everyone, enrolled students included (no new playback or documents)
+ */
+
+export function useAdminCoursesTakeDown<
+  TData = Awaited<ReturnType<typeof adminCoursesTakeDown>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTakeDown>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCoursesTakeDownQueryOptions(course, staffNoteRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCoursesRestoreResponse200 = {
+  data: AdminCoursesRestore200;
+  status: 200;
+};
+
+export type adminCoursesRestoreResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCoursesRestoreResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCoursesRestoreResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCoursesRestoreResponseSuccess = adminCoursesRestoreResponse200 & {
+  headers: Headers;
+};
+export type adminCoursesRestoreResponseError = (
+  adminCoursesRestoreResponse403 | adminCoursesRestoreResponse404 | adminCoursesRestoreResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCoursesRestoreResponse =
+  adminCoursesRestoreResponseSuccess | adminCoursesRestoreResponseError;
+
+export const getAdminCoursesRestoreUrl = (course: string) => {
+  return `/admin/courses/${course}/restore`;
+};
+
+export const adminCoursesRestore = async (
+  course: string,
+  staffNoteRequest: StaffNoteRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCoursesRestoreResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCoursesRestoreResponse>(getAdminCoursesRestoreUrl(course), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(staffNoteRequest),
+  });
+};
+
+export const getAdminCoursesRestoreQueryKey = (
+  course: string,
+  staffNoteRequest?: BodyType<StaffNoteRequest>,
+) => {
+  return ["POST", `/admin/courses/${course}/restore`, staffNoteRequest] as const;
+};
+
+export const getAdminCoursesRestoreQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCoursesRestore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRestore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCoursesRestoreQueryKey(course, staffNoteRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCoursesRestore>>> = ({ signal }) =>
+    adminCoursesRestore(course, staffNoteRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: course !== null && course !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRestore>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCoursesRestoreQueryResult = NonNullable<Awaited<ReturnType<typeof adminCoursesRestore>>>;
+export type AdminCoursesRestoreQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCoursesRestore<
+  TData = Awaited<ReturnType<typeof adminCoursesRestore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRestore>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesRestore>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesRestore>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesRestore<
+  TData = Awaited<ReturnType<typeof adminCoursesRestore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRestore>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesRestore>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesRestore>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesRestore<
+  TData = Awaited<ReturnType<typeof adminCoursesRestore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRestore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminCoursesRestore<
+  TData = Awaited<ReturnType<typeof adminCoursesRestore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  staffNoteRequest: BodyType<StaffNoteRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesRestore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCoursesRestoreQueryOptions(course, staffNoteRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

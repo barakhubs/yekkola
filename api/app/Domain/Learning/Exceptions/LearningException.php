@@ -55,4 +55,9 @@ final class LearningException extends DomainException
     {
         return new self('review.exists', 409);
     }
+
+    public static function courseTakenDown(): self
+    {
+        return new self('enrollment.course_taken_down', 403);
+    }
 }

@@ -41,6 +41,8 @@ use Laravel\Scout\Searchable;
  * @property int|null $revenue_share_bps
  * @property int|null $featured_position
  * @property \Illuminate\Support\Carbon|null $published_at
+ * @property \Illuminate\Support\Carbon|null $taken_down_at
+ * @property string|null $takedown_reason
  * @property int $enrollment_count
  * @property float $rating_avg
  * @property int $rating_count
@@ -84,6 +86,7 @@ final class Course extends Model
             'price_minor' => 'integer',
             'revenue_share_bps' => 'integer',
             'published_at' => 'datetime',
+            'taken_down_at' => 'datetime',
             'enrollment_count' => 'integer',
             'total_duration_seconds' => 'integer',
         ];
