@@ -988,7 +988,8 @@
       "settings": "Paramètres",
       "staff": "Personnel",
       "audit": "Journal d’audit",
-      "courses": "Cours"
+      "courses": "Cours",
+      "categories": "Catégories"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1663,6 +1664,31 @@
       "moveUp": "Monter « {title} »",
       "moveDown": "Descendre « {title} »",
       "unfeature": "Retirer « {title} » de la vedette"
+    },
+    "categories": {
+      "title": "Catégories",
+      "intro": "L’arbre du catalogue : catégories et sous-catégories (deux niveaux), noms en français et en anglais, ordre et visibilité.",
+      "create": "Nouvelle catégorie",
+      "edit": "Modifier",
+      "editTitle": "Modifier « {name} »",
+      "formHint": "L’adresse (slug) est créée à partir du nom français si vous la laissez vide.",
+      "nameFr": "Nom (français)",
+      "nameEn": "Nom (anglais)",
+      "descFr": "Description (français)",
+      "descEn": "Description (anglais)",
+      "slug": "Adresse (slug)",
+      "icon": "Icône (nom Lucide)",
+      "parent": "Placée sous",
+      "topLevel": "— Catégorie principale —",
+      "visible": "Visible dans le catalogue",
+      "save": "Enregistrer",
+      "hidden": "Masquée",
+      "courseCount": "{count, plural, =0 {aucun cours} one {# cours} other {# cours}}",
+      "empty": "Aucune catégorie.",
+      "moveUp": "Monter « {name} »",
+      "moveDown": "Descendre « {name} »",
+      "delete": "Supprimer",
+      "deleteConfirm": "Supprimer « {name} » ?"
     }
   }
 }
