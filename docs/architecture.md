@@ -338,6 +338,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | Method | Path | Purpose |
 |---|---|---|
 | POST | /auth/otp/request | Send OTP to phone |
+| POST | /auth/staff/sign-in | Staff only, browsers only: email + password + bot token → session (`throttle:staff-sign-in`); same `auth.invalid_credentials` for every failure |
+| PUT | /me/password | Staff: set one's own password (`current_password` when one exists, else a recent sign-in); other sessions end |
+| PUT | /admin/staff/{user}/password | Staff manager sets a staff member's password; they must change it (`must_change_password`; admin routes answer `auth.password_change_required` until then) |
 | POST | /auth/otp/verify | Verify OTP → `{user, is_new_user, token, device}`: session cookie on web (`token`/`device` null), token on mobile (with device payload) |
 | POST | /auth/logout | End session / revoke current token |
 | GET / PATCH | /me | Profile (name, email, locale, province); GET also says `is_staff` and lists `permissions`, so the back office hides what the API would refuse |
