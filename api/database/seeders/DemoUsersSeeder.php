@@ -59,6 +59,6 @@ final class DemoUsersSeeder extends Seeder
             $user->syncPermissions(array_map(fn (Permission $p) => $p->value, $account['extra']));
         }
 
-        $this->command?->info('Demo users ready: student, moderator, admin, finance, support ('.$prefix.'9001–9005).');
+        $this->command->info('Demo users ready: student, moderator, admin, finance, support ('.$prefix.'9001–9005).');
     }
 }
