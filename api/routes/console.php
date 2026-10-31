@@ -20,3 +20,6 @@ Schedule::command('finance:release-earnings')->hourly()->withoutOverlapping(60)-
 Schedule::command('finance:build-payout-batches')->dailyAt('04:00')->onOneServer();
 Schedule::command('finance:sync-payouts')->everyFiveMinutes()->withoutOverlapping(10)->onOneServer();
 Schedule::command('finance:check-ledger')->dailyAt('05:00')->onOneServer();
+
+// Admin dashboard (PRD-09 FR-01)
+Schedule::command('stats:rollup-platform')->hourlyAt(5)->withoutOverlapping(30)->onOneServer();

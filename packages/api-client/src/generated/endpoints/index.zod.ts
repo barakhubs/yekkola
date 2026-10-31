@@ -8,6 +8,7 @@ export * from "./checkout/checkout.zod";
 export * from "./coupon/coupon.zod";
 export * from "./course/course.zod";
 export * from "./course-version/course-version.zod";
+export * from "./dashboard/dashboard.zod";
 export * from "./data-export/data-export.zod";
 export * from "./default/default.zod";
 export * from "./device/device.zod";

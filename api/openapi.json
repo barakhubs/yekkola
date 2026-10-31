@@ -3585,6 +3585,305 @@
                 }
             }
         },
+        "/admin/dashboard": {
+            "get": {
+                "operationId": "admin.dashboard.show",
+                "tags": [
+                    "Dashboard"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "from": {
+                                                    "type": "string"
+                                                },
+                                                "to": {
+                                                    "type": "string"
+                                                },
+                                                "kpis": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "signups": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "value": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "previous": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "value",
+                                                                "previous"
+                                                            ]
+                                                        },
+                                                        "enrollments": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "value": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "previous": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "value",
+                                                                "previous"
+                                                            ]
+                                                        },
+                                                        "orders_paid": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "value": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "previous": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "value",
+                                                                "previous"
+                                                            ]
+                                                        },
+                                                        "paid_conversion_pct": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "value": {
+                                                                    "type": [
+                                                                        "integer",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "previous": {
+                                                                    "type": [
+                                                                        "integer",
+                                                                        "null"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "value",
+                                                                "previous"
+                                                            ]
+                                                        },
+                                                        "courses_published": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "value": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "previous": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "value",
+                                                                "previous"
+                                                            ]
+                                                        },
+                                                        "active_students_7d": {
+                                                            "type": "integer"
+                                                        },
+                                                        "active_students_30d": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "signups",
+                                                        "enrollments",
+                                                        "orders_paid",
+                                                        "paid_conversion_pct",
+                                                        "courses_published",
+                                                        "active_students_7d",
+                                                        "active_students_30d"
+                                                    ]
+                                                },
+                                                "money": {
+                                                    "type": [
+                                                        "object",
+                                                        "null"
+                                                    ],
+                                                    "properties": {
+                                                        "gmv": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "value": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "previous": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "value",
+                                                                    "previous"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "net_revenue": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "value": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "previous": {
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "value",
+                                                                    "previous"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "gmv",
+                                                        "net_revenue"
+                                                    ]
+                                                },
+                                                "series": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "date": {
+                                                                "type": "string"
+                                                            },
+                                                            "signups": {
+                                                                "type": "integer"
+                                                            },
+                                                            "enrollments": {
+                                                                "type": "integer"
+                                                            },
+                                                            "orders_paid": {
+                                                                "type": "integer"
+                                                            },
+                                                            "gmv_minor": {
+                                                                "type": "object",
+                                                                "additionalProperties": {
+                                                                    "type": "integer"
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "date",
+                                                            "signups",
+                                                            "enrollments",
+                                                            "orders_paid",
+                                                            "gmv_minor"
+                                                        ]
+                                                    }
+                                                },
+                                                "queues": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "applications": {
+                                                            "type": [
+                                                                "object",
+                                                                "null"
+                                                            ],
+                                                            "properties": {
+                                                                "count": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "overdue": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "count",
+                                                                "overdue"
+                                                            ]
+                                                        },
+                                                        "course_reviews": {
+                                                            "type": [
+                                                                "object",
+                                                                "null"
+                                                            ],
+                                                            "properties": {
+                                                                "count": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "overdue": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "count",
+                                                                "overdue"
+                                                            ]
+                                                        },
+                                                        "kyc": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "refunds": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "stuck_payments": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "failed_payouts": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "applications",
+                                                        "course_reviews",
+                                                        "kyc",
+                                                        "refunds",
+                                                        "stuck_payments",
+                                                        "failed_payouts"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "from",
+                                                "to",
+                                                "kpis",
+                                                "money",
+                                                "series",
+                                                "queues"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/me/export": {
             "post": {
                 "operationId": "me.export.store",

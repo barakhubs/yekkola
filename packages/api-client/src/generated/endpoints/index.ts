@@ -8,6 +8,7 @@ export * from "./checkout/checkout";
 export * from "./coupon/coupon";
 export * from "./course/course";
 export * from "./course-version/course-version";
+export * from "./dashboard/dashboard";
 export * from "./data-export/data-export";
 export * from "./default/default";
 export * from "./device/device";
