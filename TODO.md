@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-audit-staff` (audit log + staff, PR #40 waiting for merge)
-- **Next up:** admin dashboard stats + rollups, then courses/categories/featured and moderation (1.11 / 2.2)
+- **Current branch:** `feature/prd-09-dashboard` (admin dashboard, PR #41 waiting for merge)
+- **Next up:** back-office courses, categories, featured + takedown (1.11 / 2.2)
 
 ## Legend
 
@@ -263,7 +263,8 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 
 ### 1.11 Admin API — PRD-09
 
-- [ ] Dashboard stats + rollup jobs (`course_daily_stats`, `platform_daily_stats`)
+- [x] Dashboard stats + `platform_daily_stats` rollup — #41
+- [ ] `course_daily_stats` rollup (professor analytics, with 2.5)
 - [x] Professor applications, professors, KYC endpoints — #7; staff-typed applications with `can` — #23
 - [x] Users endpoints (list, detail, suspend/ban, sign out everywhere, remove device) — #38
 - [ ] Grant an enrollment from the back office (PRD-09 FR-04)
@@ -327,7 +328,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 - [x] App shell: staff sign-in, sidebar by permission, locale switch, sign-out, shared `DataTable` — #23
 - [ ] Command palette (search users / courses / orders by ID or phone) and breadcrumbs
-- [ ] Dashboard (KPIs, charts, attention queues)
+- [x] Dashboard (KPIs, daily bars, attention queues) — #41; richer charts with `ChartCard` (Recharts) later
 - [x] Users (list, detail, actions) — #38
 - [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #23
 - [ ] Professors + KYC viewer
