@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/super-admin-impersonation` ("View as" + demo users per role, PR #45 waiting for merge)
-- **Next up:** moderation (reports, reviews, Q&A) — 1.11 / 2.2
+- **Current branch:** `feature/prd-09-moderation` (review moderation, PR #46 waiting for merge)
+- **Next up:** reports (students report reviews, courses, professors; staff queue) — PRD-06 FR-14, PRD-09 FR-10
 
 ## Legend
 
@@ -224,7 +224,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] b: Certificates: rule, PDF with QR, serial, verification endpoint, revocation on refund/reversal (FR-10, FR-11, PRD-04 FR-09) — #15
 - [x] b: Reviews + professor reply; course and professor ratings kept from published reviews (FR-12, BR-03, BR-04) — #15
 - [ ] Notify students on certificate issued and professors on new reviews (`CertificateIssued`; reviews) — with 1.12
-- [ ] Admin hide/restore reviews (`ReviewStatus::Hidden` exists) — with moderation in 1.11; the ban action must refresh ratings (`RefreshCourseRatings`) if it bypasses Eloquent `saved` events
+- [x] Admin hide/restore reviews — #46
 - [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
 - [ ] c: Lesson Q&A threads (FR-13)
 - [ ] c: Reports (FR-14)
@@ -277,7 +277,8 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Categories CRUD + ordering — #43
 - [ ] Transfer course ownership (super admin, PRD-09 FR-08)
 - [ ] Tell the professor about a takedown (with 1.12)
-- [ ] Moderation (reports, reviews, threads)
+- [x] Review moderation — #46
+- [ ] Reports queue; Q&A threads moderation (with 1.8c)
 - [x] Orders, payments (recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
@@ -343,7 +344,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [x] Courses + featured — #42
 - [x] Categories (tree + ordering) — #43
-- [ ] Moderation (reports, reviews, Q&A)
+- [x] Review moderation screen — #46
+- [ ] Reports and Q&A moderation screens
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
