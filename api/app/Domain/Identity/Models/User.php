@@ -43,10 +43,13 @@ use Spatie\Permission\Traits\HasRoles;
  * @property \Illuminate\Support\Carbon|null $last_login_at
  * @property \Illuminate\Support\Carbon|null $last_seen_at
  * @property \Illuminate\Support\Carbon|null $deletion_requested_at
+ * @property string|null $password Staff only: hashed; students and professors sign in by SMS code.
+ * @property \Illuminate\Support\Carbon|null $password_changed_at
+ * @property bool $must_change_password
  * @property \Illuminate\Support\Carbon $created_at
  */
 #[Fillable(['phone_e164', 'name', 'email', 'locale', 'province_id', 'city'])]
-#[Hidden(['phone_e164', 'email'])]
+#[Hidden(['phone_e164', 'email', 'password'])]
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable
 {
@@ -71,6 +74,9 @@ final class User extends Authenticatable
         'last_login_at' => null,
         'last_seen_at' => null,
         'deletion_requested_at' => null,
+        'password' => null,
+        'password_changed_at' => null,
+        'must_change_password' => false,
         'province_id' => null,
         'city' => null,
     ];
@@ -86,6 +92,8 @@ final class User extends Authenticatable
             'last_login_at' => 'datetime',
             'last_seen_at' => 'datetime',
             'deletion_requested_at' => 'datetime',
+            'password_changed_at' => 'datetime',
+            'must_change_password' => 'boolean',
             'auth_epoch' => 'integer',
             'status' => UserStatus::class,
         ];

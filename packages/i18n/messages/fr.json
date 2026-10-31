@@ -989,11 +989,12 @@
       "staff": "Personnel",
       "audit": "Journal d’audit",
       "courses": "Cours",
-      "categories": "Catégories"
+      "categories": "Catégories",
+      "password": "Mot de passe"
     },
     "auth": {
       "title": "Connexion de l’équipe",
-      "subtitle": "Saisissez votre numéro : vous recevrez un code par SMS.",
+      "subtitle": "Avec votre numéro (code par SMS), ou votre e-mail et votre mot de passe du personnel.",
       "phoneLabel": "Numéro de téléphone",
       "phoneHint": "Exemple : 0812 345 678",
       "sendCode": "Recevoir le code",
@@ -1001,7 +1002,24 @@
       "codeLabel": "Code à 6 chiffres",
       "verify": "Valider",
       "changeNumber": "Changer de numéro",
-      "signOut": "Se déconnecter"
+      "signOut": "Se déconnecter",
+      "method": "Méthode de connexion",
+      "methods": {
+        "sms": "Code SMS",
+        "password": "E-mail et mot de passe"
+      },
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "signInWithPassword": "Se connecter",
+      "changeTitle": "Mot de passe",
+      "changeRequired": "Choisissez votre propre mot de passe avant de continuer.",
+      "changeHint": "Votre mot de passe pour le back-office.",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmez le nouveau mot de passe",
+      "passwordRule": "Au moins 12 caractères, avec des lettres et des chiffres.",
+      "savePassword": "Enregistrer le mot de passe",
+      "passwordSaved": "Mot de passe enregistré."
     },
     "table": {
       "previous": "Précédent",
@@ -1616,7 +1634,11 @@
         "moderator": "Modérateur",
         "admin": "Admin",
         "super-admin": "Super admin"
-      }
+      },
+      "setPassword": "Mot de passe",
+      "setPasswordTitle": "Mot de passe de {name}",
+      "setPasswordHint": "Donnez-lui ce mot de passe temporaire : il en choisira un autre à sa prochaine connexion. Ses sessions sont fermées.",
+      "temporaryPassword": "Mot de passe temporaire (12+ caractères, lettres et chiffres)"
     },
     "courses": {
       "title": "Cours",

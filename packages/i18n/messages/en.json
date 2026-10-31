@@ -989,11 +989,12 @@
       "staff": "Staff",
       "audit": "Audit log",
       "courses": "Courses",
-      "categories": "Categories"
+      "categories": "Categories",
+      "password": "Password"
     },
     "auth": {
       "title": "Team sign-in",
-      "subtitle": "Enter your number: we’ll send you a code by SMS.",
+      "subtitle": "With your number (SMS code), or your staff email and password.",
       "phoneLabel": "Phone number",
       "phoneHint": "Example: 0812 345 678",
       "sendCode": "Get the code",
@@ -1001,7 +1002,24 @@
       "codeLabel": "6-digit code",
       "verify": "Confirm",
       "changeNumber": "Change number",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "method": "Sign-in method",
+      "methods": {
+        "sms": "SMS code",
+        "password": "Email and password"
+      },
+      "email": "Email",
+      "password": "Password",
+      "signInWithPassword": "Sign in",
+      "changeTitle": "Password",
+      "changeRequired": "Choose your own password before you continue.",
+      "changeHint": "Your back-office password.",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm the new password",
+      "passwordRule": "At least 12 characters, with letters and numbers.",
+      "savePassword": "Save the password",
+      "passwordSaved": "Password saved."
     },
     "table": {
       "previous": "Previous",
@@ -1616,7 +1634,11 @@
         "moderator": "Moderator",
         "admin": "Admin",
         "super-admin": "Super admin"
-      }
+      },
+      "setPassword": "Password",
+      "setPasswordTitle": "{name}'s password",
+      "setPasswordHint": "Give them this temporary password: they'll choose another at next sign-in. Their sessions are closed.",
+      "temporaryPassword": "Temporary password (12+ characters, letters and numbers)"
     },
     "courses": {
       "title": "Courses",

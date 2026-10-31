@@ -34,6 +34,9 @@ final class UserResource extends JsonResource
             'roles' => $this->getRoleNames()->values()->all(),
             // What the back office may show (it hides what the API would refuse; the API still checks).
             'is_staff' => $this->isStaff(),
+            /** Staff: whether a back-office password is set, and whether they must choose a new one now. */
+            'has_password' => $this->hasPassword(),
+            'must_change_password' => (bool) $this->must_change_password,
             'permissions' => $this->permissionNames(),
             'deletion_requested_at' => $this->deletion_requested_at?->toIso8601String(),
             /** @var string|null When the account is erased unless the request is cancelled (FR-11). */
@@ -41,6 +44,11 @@ final class UserResource extends JsonResource
                 ?->copy()->addDays((int) config('yekkola.auth.deletion_grace_days'))->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
         ];
+    }
+
+    private function hasPassword(): bool
+    {
+        return is_string($this->password) && $this->password !== '';
     }
 
     /**

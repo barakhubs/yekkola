@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-categories` (back-office categories, PR #43 waiting for merge)
-- **Next up:** staff sign-in with email + password, a default super admin, super-admin impersonation (owner request, 2026-10-31) — then moderation
+- **Current branch:** `feature/staff-password-sign-in` (staff email + password, default super admin, PR #44 waiting for merge)
+- **Next up:** super-admin impersonation (owner request, 2026-10-31) — then moderation
 
 ## Legend
 
@@ -120,6 +120,9 @@ Cannot be defaulted:
 - [x] Change phone with OTP to the new number; other sessions/devices signed out (FR-09) — #6
 - [x] Suspend/ban behaviour + "sign out everywhere" via auth_epoch (FR-15) — #6
 - [x] Account deletion (14-day grace, anonymisation command) + data export (FR-11, FR-12) — #6
+- [x] Staff email + password sign-in, default super admin (`admin:create-super-admin`), staff managers set passwords, forced change — #44 (owner decision, 2026-10-31)
+- [ ] Super-admin impersonation (owner request, 2026-10-31)
+- [ ] Staff password reset by email, once an email provider is chosen
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
 - [ ] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — with offline licenses (1.9)

@@ -9,6 +9,9 @@ return [
         'failed' => 'Some of the information is invalid.',
     ],
     'auth' => [
+        'invalid_credentials' => 'Wrong email or password.',
+        'current_password_wrong' => 'The current password is wrong.',
+        'password_change_required' => 'Choose a new password before you continue.',
         'unauthenticated' => 'Please sign in to continue.',
         'forbidden' => 'You are not allowed to do this.',
         'csrf_mismatch' => 'Your session expired. Please try again.',

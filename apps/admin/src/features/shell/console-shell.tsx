@@ -10,6 +10,7 @@ import {
   BookOpenText,
   GraduationCap,
   History,
+  KeyRound,
   FolderTree,
   LayoutDashboard,
   LibraryBig,
@@ -27,6 +28,7 @@ import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
 
+import { ChangePassword } from "@/features/auth/password-sign-in";
 import { useSession, useSignOut } from "@/features/auth/session";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 
@@ -45,6 +47,7 @@ const NAV = [
   { href: "/settings", key: "settings", icon: Settings, permission: "settings.manage" },
   { href: "/staff", key: "staff", icon: ShieldCheck, permission: "staff.manage" },
   { href: "/audit-log", key: "audit", icon: History, permission: "audit.view" },
+  { href: "/password", key: "password", icon: KeyRound, permission: null },
 ] as const;
 
 /**
@@ -106,6 +109,15 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  // A password set for them (first sign-in, or by a staff manager): they choose their own before anything else.
+  if (session.user.must_change_password) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16">
+        <ChangePassword required />
       </div>
     );
   }

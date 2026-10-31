@@ -43,6 +43,7 @@ export * from "./refund/refund";
 export * from "./review/review";
 export * from "./settings/settings";
 export * from "./staff/staff";
+export * from "./staff-password/staff-password";
 export * from "./studio-profile/studio-profile";
 export * from "./user/user";
 export * from "./video-webhook/video-webhook";

@@ -48,7 +48,7 @@ Students and professors sign in with their **phone number and a one-time SMS cod
 | FR-11 | Account deletion: request → 14-day grace → anonymize personal data; keep financial records (legal requirement) linked to an anonymized ID. | Must |
 | FR-12 | Data export: JSON of profile, devices (later: enrollments, orders, certificates), one per day, downloadable for 7 days (signed link on object storage), then deleted. | Should |
 | FR-13 | Roles: student (default), professor (after approval, PRD-02), moderator, admin (+ permission sets e.g. `finance.*`). | Must |
-| FR-14 | Staff sign-in to admin requires an active staff role; sessions expire after 12 h; optional second factor (TOTP) for admins. | Should (TOTP: Should) |
+| FR-14 | Staff sign-in to admin requires an active staff role; sessions expire after 12 h; optional second factor (TOTP) for admins. Staff may also sign in with email + password (owner decision, 2026-10-31): hashed, 12+ characters with letters and numbers, rate-limited, bot-checked, one answer for every failure; a password set by someone else must be changed at next sign-in. | Should (TOTP: Should); password sign-in: Must |
 | FR-15 | Suspended users can sign in but only see an explanation screen; banned users cannot sign in. | Must |
 | FR-16 | `SmsSender` log driver in local/staging; production refuses to boot with it (see project-context). | Must |
 

@@ -34,6 +34,12 @@ export const MeShowResponse = zod.object({
         .describe(
           "What the back office may show (it hides what the API would refuse; the API still checks).",
         ),
+      has_password: zod
+        .boolean()
+        .describe(
+          "Staff: whether a back-office password is set, and whether they must choose a new one now.",
+        ),
+      must_change_password: zod.boolean(),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
@@ -88,6 +94,12 @@ export const MeUpdateResponse = zod.object({
         .describe(
           "What the back office may show (it hides what the API would refuse; the API still checks).",
         ),
+      has_password: zod
+        .boolean()
+        .describe(
+          "Staff: whether a back-office password is set, and whether they must choose a new one now.",
+        ),
+      must_change_password: zod.boolean(),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
@@ -127,6 +139,12 @@ export const MeDestroyResponse = zod.object({
         .describe(
           "What the back office may show (it hides what the API would refuse; the API still checks).",
         ),
+      has_password: zod
+        .boolean()
+        .describe(
+          "Staff: whether a back-office password is set, and whether they must choose a new one now.",
+        ),
+      must_change_password: zod.boolean(),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
@@ -166,6 +184,12 @@ export const MeDeletionCancelResponse = zod.object({
         .describe(
           "What the back office may show (it hides what the API would refuse; the API still checks).",
         ),
+      has_password: zod
+        .boolean()
+        .describe(
+          "Staff: whether a back-office password is set, and whether they must choose a new one now.",
+        ),
+      must_change_password: zod.boolean(),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
