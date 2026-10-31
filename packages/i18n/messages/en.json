@@ -994,7 +994,8 @@
       "audit": "Audit log",
       "courses": "Courses",
       "categories": "Categories",
-      "password": "Password"
+      "password": "Password",
+      "reviews": "Reviews"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1722,6 +1723,26 @@
     "impersonation": {
       "banner": "You are viewing the back office as {name} ({by}'s session, until {until}). Sensitive actions are blocked.",
       "stop": "Back to my account"
+    },
+    "reviewModeration": {
+      "title": "Reviews",
+      "intro": "Every student review. Hide one that breaks the rules: it leaves the course page and the ratings at once.",
+      "search": "Search the text",
+      "status": "Status",
+      "rating": "Rating",
+      "all": "All",
+      "visible": "Visible",
+      "hidden": "Hidden",
+      "stars": "{count, plural, one {# star} other {# stars}}",
+      "empty": "No reviews.",
+      "hiddenBecause": "Hidden: {reason}",
+      "hide": "Hide",
+      "restore": "Restore",
+      "hideConfirm": "Hide this review?",
+      "restoreConfirm": "Restore this review?",
+      "hideHint": "It leaves the course page and no longer counts in the course's and professor's ratings.",
+      "restoreHint": "It comes back on the course page and in the ratings.",
+      "reason": "Reason (kept in the audit log)"
     }
   }
 }
