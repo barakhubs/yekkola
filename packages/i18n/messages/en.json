@@ -987,7 +987,8 @@
       "users": "Accounts",
       "settings": "Settings",
       "staff": "Staff",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "courses": "Courses"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1615,6 +1616,53 @@
         "admin": "Admin",
         "super-admin": "Super admin"
       }
+    },
+    "courses": {
+      "title": "Courses",
+      "intro": "Every course. Unpublishing takes a course off the catalogue (enrolled students keep access); a takedown closes it to everyone, enrolled students included.",
+      "search": "Search a title",
+      "allStatuses": "All statuses",
+      "empty": "No courses.",
+      "noCategory": "no category",
+      "free": "Free",
+      "takenDown": "Taken down",
+      "featured": "Featured",
+      "feature": "Feature",
+      "columns": {
+        "title": "Course",
+        "status": "Status",
+        "price": "Price",
+        "enrollments": "Enrolled",
+        "published": "Published",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Draft",
+        "in_review": "In review",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "archived": "Archived"
+      },
+      "actions": {
+        "unpublish": "Unpublish",
+        "republish": "Republish",
+        "take_down": "Take down",
+        "restore": "Restore"
+      },
+      "hints": {
+        "unpublish": "The course leaves the catalogue. Students already enrolled keep their access.",
+        "republish": "The course comes back to the catalogue.",
+        "take_down": "The course leaves the catalogue and nobody can follow it any more, enrolled students included. Downloads are removed at the next sync.",
+        "restore": "The course is published again and open to enrolled students."
+      },
+      "confirmTitle": "{action} “{title}”?",
+      "reason": "Reason (kept in the audit log)",
+      "featuredTitle": "Featured courses",
+      "featuredHint": "Shown in this order on the home page.",
+      "noFeatured": "No featured courses.",
+      "moveUp": "Move “{title}” up",
+      "moveDown": "Move “{title}” down",
+      "unfeature": "Remove “{title}” from featured"
     }
   }
 }
