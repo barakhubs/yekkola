@@ -136,6 +136,7 @@ export const AdminUsersShowResponse = zod.object({
       reactivate: zod.string(),
       sign_out: zod.string(),
       remove_device: zod.string(),
+      impersonate: zod.boolean(),
     }),
   }),
 });
@@ -218,6 +219,7 @@ export const AdminUsersStatusResponse = zod.object({
       reactivate: zod.string(),
       sign_out: zod.string(),
       remove_device: zod.string(),
+      impersonate: zod.boolean(),
     }),
   }),
 });
@@ -287,6 +289,7 @@ export const AdminUsersSignOutResponse = zod.object({
       reactivate: zod.string(),
       sign_out: zod.string(),
       remove_device: zod.string(),
+      impersonate: zod.boolean(),
     }),
   }),
 });
@@ -357,6 +360,7 @@ export const AdminUsersDevicesDestroyResponse = zod.object({
       reactivate: zod.string(),
       sign_out: zod.string(),
       remove_device: zod.string(),
+      impersonate: zod.boolean(),
     }),
   }),
 });

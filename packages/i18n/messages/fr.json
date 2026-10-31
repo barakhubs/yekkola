@@ -940,6 +940,10 @@
       "courses": "{count, plural, one {# cours} other {# cours}} dans ce pack",
       "alsoIn": "Aussi dans ces packs",
       "summary": "{count, plural, one {# cours} other {# cours}}"
+    },
+    "impersonation": {
+      "banner": "Un membre de l’équipe Yekkola ({by}) voit le site comme {name}, jusqu’à {until}. Paiements et modifications du compte sont bloqués.",
+      "stop": "Revenir au back-office"
     }
   },
   "admin": {
@@ -1512,7 +1516,10 @@
         "revoked": "accès retiré"
       },
       "orders": "Commandes récentes",
-      "noOrders": "Aucune commande."
+      "noOrders": "Aucune commande.",
+      "viewAs": "Voir comme",
+      "viewAsConfirm": "Voir la plateforme comme {name} ?",
+      "viewAsHint": "Pendant une heure au plus, vous voyez ce que ce compte voit (site ou back-office). Paiements, remboursements, versements et modifications du compte sont bloqués. Tout est journalisé."
     },
     "settings": {
       "title": "Paramètres",
@@ -1711,6 +1718,10 @@
       "moveDown": "Descendre « {name} »",
       "delete": "Supprimer",
       "deleteConfirm": "Supprimer « {name} » ?"
+    },
+    "impersonation": {
+      "banner": "Vous voyez le back-office comme {name} (session de {by}, jusqu’à {until}). Les actions sensibles sont bloquées.",
+      "stop": "Revenir à mon compte"
     }
   }
 }

@@ -940,6 +940,10 @@
       "courses": "{count, plural, one {# course} other {# courses}} in this bundle",
       "alsoIn": "Also in these bundles",
       "summary": "{count, plural, one {# course} other {# courses}}"
+    },
+    "impersonation": {
+      "banner": "A Yekkola team member ({by}) is viewing the site as {name}, until {until}. Payments and account changes are blocked.",
+      "stop": "Back to the back office"
     }
   },
   "admin": {
@@ -1512,7 +1516,10 @@
         "revoked": "access removed"
       },
       "orders": "Recent orders",
-      "noOrders": "No orders."
+      "noOrders": "No orders.",
+      "viewAs": "View as",
+      "viewAsConfirm": "View the platform as {name}?",
+      "viewAsHint": "For up to an hour you see what this account sees (site or back office). Payments, refunds, payouts and account changes are blocked. Everything is logged."
     },
     "settings": {
       "title": "Settings",
@@ -1711,6 +1718,10 @@
       "moveDown": "Move “{name}” down",
       "delete": "Delete",
       "deleteConfirm": "Delete “{name}”?"
+    },
+    "impersonation": {
+      "banner": "You are viewing the back office as {name} ({by}'s session, until {until}). Sensitive actions are blocked.",
+      "stop": "Back to my account"
     }
   }
 }

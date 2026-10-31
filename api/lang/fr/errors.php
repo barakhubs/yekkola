@@ -9,6 +9,9 @@ return [
         'failed' => 'Certaines informations sont invalides.',
     ],
     'auth' => [
+        'impersonation_not_allowed' => 'Vous ne pouvez pas voir la plateforme comme ce compte.',
+        'impersonation_forbidden' => 'Action impossible pendant que vous voyez la plateforme comme quelqu’un d’autre.',
+        'impersonation_ended' => 'La session « voir comme » est terminée : vous êtes revenu à votre compte.',
         'invalid_credentials' => 'E-mail ou mot de passe incorrect.',
         'current_password_wrong' => 'Le mot de passe actuel est incorrect.',
         'password_change_required' => 'Choisissez un nouveau mot de passe avant de continuer.',

@@ -28,6 +28,11 @@ final class DatabaseSeeder extends Seeder
             $this->command->call('admin:create-super-admin');
         }
 
+        // Local/staging: one test account per role, to try the back office and "View as".
+        if (app()->environment(['local', 'staging'])) {
+            $this->call(DemoUsersSeeder::class);
+        }
+
         // Local/staging demo admin — only when a number you control is configured (never a guessed real number).
         $demoAdminPhone = config('yekkola.demo_admin_phone');
         if (app()->environment(['local', 'staging']) && is_string($demoAdminPhone) && $demoAdminPhone !== '') {

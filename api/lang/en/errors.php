@@ -9,6 +9,9 @@ return [
         'failed' => 'Some of the information is invalid.',
     ],
     'auth' => [
+        'impersonation_not_allowed' => 'You can\'t view the platform as this account.',
+        'impersonation_forbidden' => 'Not possible while you view the platform as someone else.',
+        'impersonation_ended' => 'The "view as" session is over: you are back on your own account.',
         'invalid_credentials' => 'Wrong email or password.',
         'current_password_wrong' => 'The current password is wrong.',
         'password_change_required' => 'Choose a new password before you continue.',

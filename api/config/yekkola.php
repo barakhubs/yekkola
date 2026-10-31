@@ -11,6 +11,7 @@ return [
 
     // Public web app (certificate verification links, PRD-06 FR-10).
     'web_url' => env('FRONTEND_WEB_URL', 'http://localhost:3000'),
+    'admin_url' => env('FRONTEND_ADMIN_URL', 'http://localhost:3001'),
     // Shared with the web app: proves its server-side requests (and the visitor IP it forwards, for rate limits).
     'web_server_key' => env('WEB_SERVER_KEY', ''),
     // Shared with the web app: signs "drop these cached pages" calls. Empty = don't call (local without the web app).
@@ -90,6 +91,9 @@ return [
 
     // Local/staging seed: phone number (one you control) for the demo super admin. Empty = not seeded.
     'demo_admin_phone' => env('DEMO_ADMIN_PHONE'),
+
+    // Local/staging: password for the demo staff accounts (DemoUsersSeeder); empty = no password (use SMS or "View as").
+    'demo_staff_password' => env('DEMO_STAFF_PASSWORD'),
 
     // Default super admin (`admin:create-super-admin`): email + password into the back office, phone for SMS codes.
     'super_admin' => [

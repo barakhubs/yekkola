@@ -165,4 +165,19 @@ final class IdentityException extends DomainException
     {
         return new self('auth.password_change_required', 403);
     }
+
+    public static function impersonationNotAllowed(): self
+    {
+        return new self('auth.impersonation_not_allowed', 403);
+    }
+
+    public static function impersonationForbidden(): self
+    {
+        return new self('auth.impersonation_forbidden', 403);
+    }
+
+    public static function impersonationEnded(): self
+    {
+        return new self('auth.impersonation_ended', 409);
+    }
 }

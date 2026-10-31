@@ -15,6 +15,7 @@ use App\Domain\Shared\Exceptions\DomainException;
 use App\Http\ApiErrorResponse;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureIdempotency;
+use App\Http\Middleware\EnsureImpersonationLimits;
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsureProfessor;
 use App\Http\Middleware\EnsureStaff;
@@ -60,7 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password-changed' => EnsurePasswordChanged::class,
         ]);
         // Every signed-in route uses this group, so the account checks can't be forgotten.
-        $middleware->group('signed-in', ['auth:sanctum', 'active']);
+        $middleware->group('signed-in', ['auth:sanctum', 'active', EnsureImpersonationLimits::class]);
         // Authentication always runs before idempotency, whatever the order on the route.
         $middleware->appendToPriorityList(Authenticate::class, EnsureIdempotency::class);
     })

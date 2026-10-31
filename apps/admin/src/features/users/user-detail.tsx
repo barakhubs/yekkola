@@ -11,6 +11,7 @@ import {
   useAdminUsersShow,
 } from "@yekkola/api-client/endpoints/user";
 import type { AdminUserDetailResource, UserStatus } from "@yekkola/api-client/model";
+import { adminUsersImpersonate } from "@yekkola/api-client/endpoints/impersonation";
 import { formatDateTime, formatMoney, type Locale } from "@yekkola/i18n";
 import { ConfirmDialog } from "@yekkola/ui/blocks/confirm-dialog";
 import { EmptyState } from "@yekkola/ui/blocks/empty-state";
@@ -121,6 +122,20 @@ export function UserDetail({ id }: { id: string }) {
           {u.can.reactivate ? statusAction("active", t("reactivate"), t("reactivateHint")) : null}
           {u.can.suspend ? statusAction("suspended", t("suspend"), t("suspendHint")) : null}
           {u.can.ban ? statusAction("banned", t("ban"), t("banHint"), true) : null}
+          {u.can.impersonate ? (
+            <ConfirmDialog
+              trigger={<Button variant="outline">{t("viewAs")}</Button>}
+              title={t("viewAsConfirm", { name: u.name ?? "—" })}
+              description={t("viewAsHint")}
+              confirmLabel={t("viewAs")}
+              cancelLabel={common("cancel")}
+              onConfirm={async () => {
+                const data = success(await adminUsersImpersonate(id)).data;
+                // A full load in the other account's session: nothing cached from this one.
+                window.location.assign(data.redirect_to);
+              }}
+            />
+          ) : null}
           {u.can.sign_out ? (
             <ConfirmDialog
               trigger={<Button variant="outline">{t("signOut")}</Button>}

@@ -19,6 +19,7 @@ export * from "./enrollment/enrollment";
 export * from "./fake-video-upload/fake-video-upload";
 export * from "./featured-course/featured-course";
 export * from "./guest-order/guest-order";
+export * from "./impersonation/impersonation";
 export * from "./kyc/kyc";
 export * from "./kyc-submission/kyc-submission";
 export * from "./learning/learning";

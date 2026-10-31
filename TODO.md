@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/staff-password-sign-in` (staff email + password, default super admin, PR #44 waiting for merge)
-- **Next up:** super-admin impersonation (owner request, 2026-10-31) — then moderation
+- **Current branch:** `feature/super-admin-impersonation` ("View as" + demo users per role, PR #45 waiting for merge)
+- **Next up:** moderation (reports, reviews, Q&A) — 1.11 / 2.2
 
 ## Legend
 
@@ -121,7 +121,7 @@ Cannot be defaulted:
 - [x] Suspend/ban behaviour + "sign out everywhere" via auth_epoch (FR-15) — #6
 - [x] Account deletion (14-day grace, anonymisation command) + data export (FR-11, FR-12) — #6
 - [x] Staff email + password sign-in, default super admin (`admin:create-super-admin`), staff managers set passwords, forced change — #44 (owner decision, 2026-10-31)
-- [ ] Super-admin impersonation (owner request, 2026-10-31)
+- [x] Super-admin impersonation + demo users per role (local/staging) — #45
 - [ ] Staff password reset by email, once an email provider is chosen
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
