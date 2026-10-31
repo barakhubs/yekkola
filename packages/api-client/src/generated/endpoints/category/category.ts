@@ -17,10 +17,21 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { CategoriesIndex200 } from "../../model";
+import type {
+  AdminCategoriesIndex200,
+  AdminCategoriesOrder200,
+  AdminCategoriesOrderBody,
+  AdminCategoriesStore201,
+  AdminCategoriesUpdate200,
+  AuthorizationExceptionResponse,
+  CategoriesIndex200,
+  CategoryRequest,
+  ModelNotFoundExceptionResponse,
+  ValidationExceptionResponse,
+} from "../../model";
 
 import { apiFetch } from "../../../fetcher";
-import type { ErrorType } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -154,6 +165,815 @@ export function useCategoriesIndex<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getCategoriesIndexQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCategoriesIndexResponse200 = {
+  data: AdminCategoriesIndex200;
+  status: 200;
+};
+
+export type adminCategoriesIndexResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCategoriesIndexResponseSuccess = adminCategoriesIndexResponse200 & {
+  headers: Headers;
+};
+export type adminCategoriesIndexResponseError = adminCategoriesIndexResponse403 & {
+  headers: Headers;
+};
+
+export type adminCategoriesIndexResponse =
+  adminCategoriesIndexResponseSuccess | adminCategoriesIndexResponseError;
+
+export const getAdminCategoriesIndexUrl = () => {
+  return `/admin/categories`;
+};
+
+/**
+ * @summary All categories, top level first then each one's sub-categories, in display order
+ */
+export const adminCategoriesIndex = async (
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCategoriesIndexResponse> => {
+  return apiFetch<adminCategoriesIndexResponse>(getAdminCategoriesIndexUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminCategoriesIndexQueryKey = () => {
+  return [`/admin/categories`] as const;
+};
+
+export const getAdminCategoriesIndexQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCategoriesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesIndex>>, TError, TData>>;
+  request?: SecondParameter<typeof apiFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCategoriesIndexQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCategoriesIndex>>> = ({ signal }) =>
+    adminCategoriesIndex({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminCategoriesIndex>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminCategoriesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof adminCategoriesIndex>>>;
+export type AdminCategoriesIndexQueryError = ErrorType<AuthorizationExceptionResponse>;
+
+export function useAdminCategoriesIndex<
+  TData = Awaited<ReturnType<typeof adminCategoriesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesIndex>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesIndex>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesIndex<
+  TData = Awaited<ReturnType<typeof adminCategoriesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesIndex>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesIndex>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesIndex<
+  TData = Awaited<ReturnType<typeof adminCategoriesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary All categories, top level first then each one's sub-categories, in display order
+ */
+
+export function useAdminCategoriesIndex<
+  TData = Awaited<ReturnType<typeof adminCategoriesIndex>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCategoriesIndexQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCategoriesStoreResponse201 = {
+  data: AdminCategoriesStore201;
+  status: 201;
+};
+
+export type adminCategoriesStoreResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCategoriesStoreResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCategoriesStoreResponseSuccess = adminCategoriesStoreResponse201 & {
+  headers: Headers;
+};
+export type adminCategoriesStoreResponseError = (
+  adminCategoriesStoreResponse403 | adminCategoriesStoreResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCategoriesStoreResponse =
+  adminCategoriesStoreResponseSuccess | adminCategoriesStoreResponseError;
+
+export const getAdminCategoriesStoreUrl = () => {
+  return `/admin/categories`;
+};
+
+export const adminCategoriesStore = async (
+  categoryRequest: CategoryRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCategoriesStoreResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCategoriesStoreResponse>(getAdminCategoriesStoreUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(categoryRequest),
+  });
+};
+
+export const getAdminCategoriesStoreQueryKey = (categoryRequest?: BodyType<CategoryRequest>) => {
+  return ["POST", `/admin/categories`, categoryRequest] as const;
+};
+
+export const getAdminCategoriesStoreQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCategoriesStore>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesStore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCategoriesStoreQueryKey(categoryRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCategoriesStore>>> = ({ signal }) =>
+    adminCategoriesStore(categoryRequest, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminCategoriesStore>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminCategoriesStoreQueryResult = NonNullable<Awaited<ReturnType<typeof adminCategoriesStore>>>;
+export type AdminCategoriesStoreQueryError = ErrorType<
+  AuthorizationExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCategoriesStore<
+  TData = Awaited<ReturnType<typeof adminCategoriesStore>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  categoryRequest: BodyType<CategoryRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesStore>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesStore>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesStore>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesStore<
+  TData = Awaited<ReturnType<typeof adminCategoriesStore>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesStore>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesStore>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesStore>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesStore<
+  TData = Awaited<ReturnType<typeof adminCategoriesStore>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesStore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminCategoriesStore<
+  TData = Awaited<ReturnType<typeof adminCategoriesStore>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesStore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCategoriesStoreQueryOptions(categoryRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCategoriesOrderResponse200 = {
+  data: AdminCategoriesOrder200;
+  status: 200;
+};
+
+export type adminCategoriesOrderResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCategoriesOrderResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCategoriesOrderResponseSuccess = adminCategoriesOrderResponse200 & {
+  headers: Headers;
+};
+export type adminCategoriesOrderResponseError = (
+  adminCategoriesOrderResponse403 | adminCategoriesOrderResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCategoriesOrderResponse =
+  adminCategoriesOrderResponseSuccess | adminCategoriesOrderResponseError;
+
+export const getAdminCategoriesOrderUrl = () => {
+  return `/admin/categories/order`;
+};
+
+/**
+ * @summary Orders one level: `ids` are exactly the categories under `parent_id` (null: the top level), in display order
+ */
+export const adminCategoriesOrder = async (
+  adminCategoriesOrderBody: AdminCategoriesOrderBody,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCategoriesOrderResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCategoriesOrderResponse>(getAdminCategoriesOrderUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(adminCategoriesOrderBody),
+  });
+};
+
+export const getAdminCategoriesOrderQueryKey = (
+  adminCategoriesOrderBody?: BodyType<AdminCategoriesOrderBody>,
+) => {
+  return ["PUT", `/admin/categories/order`, adminCategoriesOrderBody] as const;
+};
+
+export const getAdminCategoriesOrderQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCategoriesOrder>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  adminCategoriesOrderBody: BodyType<AdminCategoriesOrderBody>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesOrder>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCategoriesOrderQueryKey(adminCategoriesOrderBody);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCategoriesOrder>>> = ({ signal }) =>
+    adminCategoriesOrder(adminCategoriesOrderBody, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminCategoriesOrder>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminCategoriesOrderQueryResult = NonNullable<Awaited<ReturnType<typeof adminCategoriesOrder>>>;
+export type AdminCategoriesOrderQueryError = ErrorType<
+  AuthorizationExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCategoriesOrder<
+  TData = Awaited<ReturnType<typeof adminCategoriesOrder>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  adminCategoriesOrderBody: BodyType<AdminCategoriesOrderBody>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesOrder>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesOrder>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesOrder>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesOrder<
+  TData = Awaited<ReturnType<typeof adminCategoriesOrder>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  adminCategoriesOrderBody: BodyType<AdminCategoriesOrderBody>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesOrder>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesOrder>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesOrder>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesOrder<
+  TData = Awaited<ReturnType<typeof adminCategoriesOrder>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  adminCategoriesOrderBody: BodyType<AdminCategoriesOrderBody>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesOrder>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Orders one level: `ids` are exactly the categories under `parent_id` (null: the top level), in display order
+ */
+
+export function useAdminCategoriesOrder<
+  TData = Awaited<ReturnType<typeof adminCategoriesOrder>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ValidationExceptionResponse>,
+>(
+  adminCategoriesOrderBody: BodyType<AdminCategoriesOrderBody>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesOrder>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCategoriesOrderQueryOptions(adminCategoriesOrderBody, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCategoriesUpdateResponse200 = {
+  data: AdminCategoriesUpdate200;
+  status: 200;
+};
+
+export type adminCategoriesUpdateResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCategoriesUpdateResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCategoriesUpdateResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCategoriesUpdateResponseSuccess = adminCategoriesUpdateResponse200 & {
+  headers: Headers;
+};
+export type adminCategoriesUpdateResponseError = (
+  adminCategoriesUpdateResponse403 | adminCategoriesUpdateResponse404 | adminCategoriesUpdateResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCategoriesUpdateResponse =
+  adminCategoriesUpdateResponseSuccess | adminCategoriesUpdateResponseError;
+
+export const getAdminCategoriesUpdateUrl = (category: string) => {
+  return `/admin/categories/${category}`;
+};
+
+export const adminCategoriesUpdate = async (
+  category: string,
+  categoryRequest: CategoryRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCategoriesUpdateResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCategoriesUpdateResponse>(getAdminCategoriesUpdateUrl(category), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(categoryRequest),
+  });
+};
+
+export const getAdminCategoriesUpdateQueryKey = (
+  category: string,
+  categoryRequest?: BodyType<CategoryRequest>,
+) => {
+  return ["PATCH", `/admin/categories/${category}`, categoryRequest] as const;
+};
+
+export const getAdminCategoriesUpdateQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  category: string,
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesUpdate>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCategoriesUpdateQueryKey(category, categoryRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCategoriesUpdate>>> = ({ signal }) =>
+    adminCategoriesUpdate(category, categoryRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: category !== null && category !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesUpdate>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCategoriesUpdateQueryResult = NonNullable<Awaited<ReturnType<typeof adminCategoriesUpdate>>>;
+export type AdminCategoriesUpdateQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCategoriesUpdate<
+  TData = Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  category: string,
+  categoryRequest: BodyType<CategoryRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesUpdate>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesUpdate>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesUpdate<
+  TData = Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  category: string,
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesUpdate>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesUpdate>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesUpdate<
+  TData = Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  category: string,
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesUpdate>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useAdminCategoriesUpdate<
+  TData = Awaited<ReturnType<typeof adminCategoriesUpdate>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  category: string,
+  categoryRequest: BodyType<CategoryRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesUpdate>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCategoriesUpdateQueryOptions(category, categoryRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCategoriesDestroyResponse204 = {
+  data: void;
+  status: 204;
+};
+
+export type adminCategoriesDestroyResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCategoriesDestroyResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCategoriesDestroyResponseSuccess = adminCategoriesDestroyResponse204 & {
+  headers: Headers;
+};
+export type adminCategoriesDestroyResponseError = (
+  adminCategoriesDestroyResponse403 | adminCategoriesDestroyResponse404
+) & {
+  headers: Headers;
+};
+
+export type adminCategoriesDestroyResponse =
+  adminCategoriesDestroyResponseSuccess | adminCategoriesDestroyResponseError;
+
+export const getAdminCategoriesDestroyUrl = (category: string) => {
+  return `/admin/categories/${category}`;
+};
+
+/**
+ * @summary Only when no course and no sub-category uses it (409 `category.in_use`): hide it otherwise
+ */
+export const adminCategoriesDestroy = async (
+  category: string,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCategoriesDestroyResponse> => {
+  return apiFetch<adminCategoriesDestroyResponse>(getAdminCategoriesDestroyUrl(category), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getAdminCategoriesDestroyQueryKey = (category: string) => {
+  return ["DELETE", `/admin/categories/${category}`] as const;
+};
+
+export const getAdminCategoriesDestroyQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  category: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesDestroy>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCategoriesDestroyQueryKey(category);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCategoriesDestroy>>> = ({ signal }) =>
+    adminCategoriesDestroy(category, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: category !== null && category !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesDestroy>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCategoriesDestroyQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminCategoriesDestroy>>
+>;
+export type AdminCategoriesDestroyQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse
+>;
+
+export function useAdminCategoriesDestroy<
+  TData = Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  category: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesDestroy>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesDestroy>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesDestroy<
+  TData = Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  category: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesDestroy>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+          TError,
+          Awaited<ReturnType<typeof adminCategoriesDestroy>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCategoriesDestroy<
+  TData = Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  category: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesDestroy>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Only when no course and no sub-category uses it (409 `category.in_use`): hide it otherwise
+ */
+
+export function useAdminCategoriesDestroy<
+  TData = Awaited<ReturnType<typeof adminCategoriesDestroy>>,
+  TError = ErrorType<AuthorizationExceptionResponse | ModelNotFoundExceptionResponse>,
+>(
+  category: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCategoriesDestroy>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCategoriesDestroyQueryOptions(category, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

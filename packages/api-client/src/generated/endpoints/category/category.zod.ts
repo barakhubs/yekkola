@@ -32,3 +32,210 @@ export const CategoriesIndexResponse = zod.object({
     }),
   ),
 });
+
+/**
+ * @summary All categories, top level first then each one's sub-categories, in display order
+ */
+export const AdminCategoriesIndexResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.string(),
+      parent_id: zod.string().nullable(),
+      slug: zod.string(),
+      name: zod.object({
+        fr: zod.string().nullable(),
+        en: zod.string().nullable(),
+      }),
+      description: zod.object({
+        fr: zod.string().nullable(),
+        en: zod.string().nullable(),
+      }),
+      icon: zod.string().nullable(),
+      position: zod.int(),
+      is_visible: zod.boolean(),
+      course_count: zod.int().describe("Courses filed directly under this category."),
+      children_count: zod.int(),
+      can_delete: zod.boolean().describe("Deletion is possible only when nothing uses it."),
+    }),
+  ),
+});
+
+export const adminCategoriesStoreBodySlugMax = 80;
+
+export const adminCategoriesStoreBodyNameFrMin = 2;
+export const adminCategoriesStoreBodyNameFrMax = 80;
+
+export const adminCategoriesStoreBodyNameEnMin = 2;
+export const adminCategoriesStoreBodyNameEnMax = 80;
+
+export const adminCategoriesStoreBodyDescriptionFrMax = 500;
+
+export const adminCategoriesStoreBodyDescriptionEnMax = 500;
+
+export const adminCategoriesStoreBodyIconMax = 40;
+
+export const adminCategoriesStoreBodyIconRegExp = new RegExp("^[a-z0-9-]+$");
+
+export const AdminCategoriesStoreBody = zod.object({
+  parent_id: zod
+    .string()
+    .nullish()
+    .describe("A top-level category to sit under (two levels at most); null for the top level."),
+  slug: zod
+    .string()
+    .max(adminCategoriesStoreBodySlugMax)
+    .nullish()
+    .describe("Generated from the French name when left out; made unique."),
+  name: zod.object({
+    fr: zod.string().min(adminCategoriesStoreBodyNameFrMin).max(adminCategoriesStoreBodyNameFrMax),
+    en: zod.string().min(adminCategoriesStoreBodyNameEnMin).max(adminCategoriesStoreBodyNameEnMax),
+  }),
+  description: zod
+    .object({
+      fr: zod.string().max(adminCategoriesStoreBodyDescriptionFrMax).nullish(),
+      en: zod.string().max(adminCategoriesStoreBodyDescriptionEnMax).nullish(),
+    })
+    .optional(),
+  icon: zod
+    .string()
+    .max(adminCategoriesStoreBodyIconMax)
+    .regex(adminCategoriesStoreBodyIconRegExp)
+    .nullish()
+    .describe("A Lucide icon name."),
+  is_visible: zod.boolean(),
+});
+
+export const AdminCategoriesStoreResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    parent_id: zod.string().nullable(),
+    slug: zod.string(),
+    name: zod.object({
+      fr: zod.string().nullable(),
+      en: zod.string().nullable(),
+    }),
+    description: zod.object({
+      fr: zod.string().nullable(),
+      en: zod.string().nullable(),
+    }),
+    icon: zod.string().nullable(),
+    position: zod.int(),
+    is_visible: zod.boolean(),
+    course_count: zod.int().describe("Courses filed directly under this category."),
+    children_count: zod.int(),
+    can_delete: zod.boolean().describe("Deletion is possible only when nothing uses it."),
+  }),
+});
+
+/**
+ * @summary Orders one level: `ids` are exactly the categories under `parent_id` (null: the top level), in display order
+ */
+
+export const AdminCategoriesOrderBody = zod.object({
+  parent_id: zod.string().nullish(),
+  ids: zod.array(zod.string()).min(1),
+});
+
+export const AdminCategoriesOrderResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.string(),
+      parent_id: zod.string().nullable(),
+      slug: zod.string(),
+      name: zod.object({
+        fr: zod.string().nullable(),
+        en: zod.string().nullable(),
+      }),
+      description: zod.object({
+        fr: zod.string().nullable(),
+        en: zod.string().nullable(),
+      }),
+      icon: zod.string().nullable(),
+      position: zod.int(),
+      is_visible: zod.boolean(),
+      course_count: zod.int().describe("Courses filed directly under this category."),
+      children_count: zod.int(),
+      can_delete: zod.boolean().describe("Deletion is possible only when nothing uses it."),
+    }),
+  ),
+});
+
+export const AdminCategoriesUpdateParams = zod.object({
+  category: zod.string().describe("The category ID"),
+});
+
+export const adminCategoriesUpdateBodySlugMax = 80;
+
+export const adminCategoriesUpdateBodyNameFrMin = 2;
+export const adminCategoriesUpdateBodyNameFrMax = 80;
+
+export const adminCategoriesUpdateBodyNameEnMin = 2;
+export const adminCategoriesUpdateBodyNameEnMax = 80;
+
+export const adminCategoriesUpdateBodyDescriptionFrMax = 500;
+
+export const adminCategoriesUpdateBodyDescriptionEnMax = 500;
+
+export const adminCategoriesUpdateBodyIconMax = 40;
+
+export const adminCategoriesUpdateBodyIconRegExp = new RegExp("^[a-z0-9-]+$");
+
+export const AdminCategoriesUpdateBody = zod.object({
+  parent_id: zod
+    .string()
+    .nullish()
+    .describe("A top-level category to sit under (two levels at most); null for the top level."),
+  slug: zod
+    .string()
+    .max(adminCategoriesUpdateBodySlugMax)
+    .nullish()
+    .describe("Generated from the French name when left out; made unique."),
+  name: zod.object({
+    fr: zod.string().min(adminCategoriesUpdateBodyNameFrMin).max(adminCategoriesUpdateBodyNameFrMax),
+    en: zod.string().min(adminCategoriesUpdateBodyNameEnMin).max(adminCategoriesUpdateBodyNameEnMax),
+  }),
+  description: zod
+    .object({
+      fr: zod.string().max(adminCategoriesUpdateBodyDescriptionFrMax).nullish(),
+      en: zod.string().max(adminCategoriesUpdateBodyDescriptionEnMax).nullish(),
+    })
+    .optional(),
+  icon: zod
+    .string()
+    .max(adminCategoriesUpdateBodyIconMax)
+    .regex(adminCategoriesUpdateBodyIconRegExp)
+    .nullish()
+    .describe("A Lucide icon name."),
+  is_visible: zod.boolean(),
+});
+
+export const AdminCategoriesUpdateResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    parent_id: zod.string().nullable(),
+    slug: zod.string(),
+    name: zod.object({
+      fr: zod.string().nullable(),
+      en: zod.string().nullable(),
+    }),
+    description: zod.object({
+      fr: zod.string().nullable(),
+      en: zod.string().nullable(),
+    }),
+    icon: zod.string().nullable(),
+    position: zod.int(),
+    is_visible: zod.boolean(),
+    course_count: zod.int().describe("Courses filed directly under this category."),
+    children_count: zod.int(),
+    can_delete: zod.boolean().describe("Deletion is possible only when nothing uses it."),
+  }),
+});
+
+/**
+ * @summary Only when no course and no sub-category uses it (409 `category.in_use`): hide it otherwise
+ */
+export const AdminCategoriesDestroyParams = zod.object({
+  category: zod.string().describe("The category ID"),
+});
+
+export const AdminCategoriesDestroyResponse = zod.void();

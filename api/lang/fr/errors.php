@@ -94,6 +94,11 @@ return [
         'not_found' => 'Aucune vérification d’identité trouvée.',
         'not_pending' => 'Cette vérification a déjà été traitée.',
     ],
+    'category' => [
+        'in_use' => 'Cette catégorie contient des cours ou des sous-catégories : masquez-la plutôt.',
+        'invalid_parent' => 'Une catégorie ne peut être rangée que sous une catégorie principale (deux niveaux au plus).',
+        'order_mismatch' => 'La liste ne correspond pas aux catégories de ce niveau. Rechargez la page.',
+    ],
     'course' => [
         'availability_transition' => 'Ce cours n’est plus dans un état qui permet cette action.',
         'draft_not_editable' => 'Ce brouillon est en cours de révision et ne peut pas être modifié.',

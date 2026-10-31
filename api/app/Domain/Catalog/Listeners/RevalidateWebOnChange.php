@@ -38,6 +38,12 @@ final class RevalidateWebOnChange
         RevalidateWebPages::dispatch(['courses', 'categories', "course:{$course->slug}"]);
     }
 
+    /** Category names, order and visibility show on the catalogue and course pages. */
+    public function categoryChanged(): void
+    {
+        RevalidateWebPages::dispatch(['categories', 'courses']);
+    }
+
     public function professorSaved(ProfessorProfile $professor): void
     {
         if (! $professor->wasChanged(self::PROFESSOR_FIELDS)) {
