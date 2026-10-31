@@ -95,6 +95,7 @@ return [
         'not_pending' => 'This check has already been handled.',
     ],
     'course' => [
+        'availability_transition' => 'This course is no longer in a state that allows this.',
         'draft_not_editable' => 'This draft is in review and cannot be edited.',
         'no_draft' => 'This course has no draft in progress.',
         'draft_exists' => 'A draft already exists for this course.',
@@ -180,6 +181,7 @@ return [
         'amount_out_of_range' => 'This amount is not accepted by this operator.',
     ],
     'enrollment' => [
+        'course_taken_down' => 'This course was taken down by the Yekkola team. Contact support to find out more.',
         'required' => 'Enroll in this course to access it.',
         'not_free' => 'This course is not free.',
         'revoked' => 'Your access to this course was removed. Please contact support.',

@@ -21,9 +21,18 @@ final class CourseAccess
         return $this->activeEnrollment($user, $courseId) ?? throw LearningException::enrollmentRequired();
     }
 
+    /**
+     * The access a student holds to a course: an active enrollment, unless the course was taken down — then nobody
+     * gets new playback or document tokens (PRD-07 FR-15). Throws so the student is told why.
+     */
     public function activeEnrollment(User $user, string $courseId): ?Enrollment
     {
-        return Enrollment::query()->active()->where('user_id', $user->id)->where('course_id', $courseId)->first();
+        $enrollment = Enrollment::query()->active()->where('user_id', $user->id)->where('course_id', $courseId)->first();
+        if ($enrollment !== null && Course::query()->whereKey($courseId)->whereNotNull('taken_down_at')->exists()) {
+            throw LearningException::courseTakenDown();
+        }
+
+        return $enrollment;
     }
 
     /**

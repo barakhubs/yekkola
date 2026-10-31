@@ -95,6 +95,7 @@ return [
         'not_pending' => 'Cette vérification a déjà été traitée.',
     ],
     'course' => [
+        'availability_transition' => 'Ce cours n’est plus dans un état qui permet cette action.',
         'draft_not_editable' => 'Ce brouillon est en cours de révision et ne peut pas être modifié.',
         'no_draft' => 'Ce cours n’a pas de brouillon en cours.',
         'draft_exists' => 'Un brouillon existe déjà pour ce cours.',
@@ -180,6 +181,7 @@ return [
         'amount_out_of_range' => 'Ce montant n’est pas accepté par cet opérateur.',
     ],
     'enrollment' => [
+        'course_taken_down' => 'Ce cours a été retiré par l’équipe Yekkola. Contacte le support pour en savoir plus.',
         'required' => 'Inscrivez-vous à ce cours pour y accéder.',
         'not_free' => 'Ce cours est payant.',
         'revoked' => 'Votre accès à ce cours a été retiré. Contactez le support.',

@@ -88,4 +88,9 @@ final class AuthoringException extends DomainException
     {
         return new self('course.invalid_order', 422);
     }
+
+    public static function availabilityTransition(): self
+    {
+        return new self('course.availability_transition', 409);
+    }
 }
