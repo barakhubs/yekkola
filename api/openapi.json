@@ -6275,6 +6275,132 @@
                 }
             }
         },
+        "/me/impersonation/stop": {
+            "post": {
+                "operationId": "me.impersonation.stop",
+                "summary": "Back to one's own account. 409 `auth.impersonation_ended` when no impersonation is running",
+                "tags": [
+                    "Impersonation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/UserResource"
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "province"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "redirect_to": {
+                                                    "type": "string",
+                                                    "description": "Back to the accounts list in the back office."
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "redirect_to"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/{user}/impersonate": {
+            "post": {
+                "operationId": "admin.users.impersonate",
+                "summary": "Super admins only, browser sessions only; never another super admin or a banned account. `home` says where to\ngo next: the back office for staff, the web app for everyone else",
+                "tags": [
+                    "Impersonation"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/UserResource"
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "required": [
+                                                                "province"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "home": {
+                                                    "type": "string",
+                                                    "description": "`admin` or `web`"
+                                                },
+                                                "redirect_to": {
+                                                    "type": "string",
+                                                    "description": "Where to open the session: that app's home."
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "home",
+                                                "redirect_to"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/professor/kyc": {
             "get": {
                 "operationId": "professor.kyc.show",
@@ -15754,6 +15880,9 @@
                             },
                             "remove_device": {
                                 "type": "string"
+                            },
+                            "impersonate": {
+                                "type": "boolean"
                             }
                         },
                         "required": [
@@ -15761,7 +15890,8 @@
                             "ban",
                             "reactivate",
                             "sign_out",
-                            "remove_device"
+                            "remove_device",
+                            "impersonate"
                         ]
                     }
                 },
@@ -21109,6 +21239,28 @@
                     "must_change_password": {
                         "type": "boolean"
                     },
+                    "impersonation": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "A super admin is viewing the platform as this account (banner + stop button).",
+                        "properties": {
+                            "by_name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "expires_at": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "by_name",
+                            "expires_at"
+                        ]
+                    },
                     "permissions": {
                         "type": "array",
                         "items": {
@@ -21145,6 +21297,7 @@
                     "is_staff",
                     "has_password",
                     "must_change_password",
+                    "impersonation",
                     "permissions",
                     "deletion_requested_at",
                     "deletion_scheduled_for",

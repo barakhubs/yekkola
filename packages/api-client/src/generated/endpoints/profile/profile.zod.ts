@@ -40,6 +40,13 @@ export const MeShowResponse = zod.object({
           "Staff: whether a back-office password is set, and whether they must choose a new one now.",
         ),
       must_change_password: zod.boolean(),
+      impersonation: zod
+        .object({
+          by_name: zod.string().nullable(),
+          expires_at: zod.string(),
+        })
+        .nullable()
+        .describe("A super admin is viewing the platform as this account (banner + stop button)."),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
@@ -100,6 +107,13 @@ export const MeUpdateResponse = zod.object({
           "Staff: whether a back-office password is set, and whether they must choose a new one now.",
         ),
       must_change_password: zod.boolean(),
+      impersonation: zod
+        .object({
+          by_name: zod.string().nullable(),
+          expires_at: zod.string(),
+        })
+        .nullable()
+        .describe("A super admin is viewing the platform as this account (banner + stop button)."),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
@@ -145,6 +159,13 @@ export const MeDestroyResponse = zod.object({
           "Staff: whether a back-office password is set, and whether they must choose a new one now.",
         ),
       must_change_password: zod.boolean(),
+      impersonation: zod
+        .object({
+          by_name: zod.string().nullable(),
+          expires_at: zod.string(),
+        })
+        .nullable()
+        .describe("A super admin is viewing the platform as this account (banner + stop button)."),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod
@@ -190,6 +211,13 @@ export const MeDeletionCancelResponse = zod.object({
           "Staff: whether a back-office password is set, and whether they must choose a new one now.",
         ),
       must_change_password: zod.boolean(),
+      impersonation: zod
+        .object({
+          by_name: zod.string().nullable(),
+          expires_at: zod.string(),
+        })
+        .nullable()
+        .describe("A super admin is viewing the platform as this account (banner + stop button)."),
       permissions: zod.array(zod.string()),
       deletion_requested_at: zod.string().nullable(),
       deletion_scheduled_for: zod

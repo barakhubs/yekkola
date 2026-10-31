@@ -11,4 +11,5 @@ export type AdminUserDetailResourceCan = {
   reactivate: string;
   sign_out: string;
   remove_device: string;
+  impersonate: boolean;
 };

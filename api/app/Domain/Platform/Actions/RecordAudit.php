@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Platform\Actions;
 
 use App\Domain\Platform\Models\Activity;
+use App\Http\Support\Impersonation;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
@@ -68,7 +69,13 @@ final class RecordAudit
         }
 
         $request = $this->app->make('request');
+        // While a super admin views the platform as someone else, every entry names them too.
+        $impersonation = $request->hasSession() ? $request->session()->get(Impersonation::SESSION_KEY) : null;
 
-        return ['ip' => $request->ip(), 'user_agent' => $request->userAgent()];
+        return array_filter([
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'impersonated_by' => is_array($impersonation) ? ($impersonation['by'] ?? null) : null,
+        ], fn ($v, $k) => $k !== 'impersonated_by' || $v !== null, ARRAY_FILTER_USE_BOTH);
     }
 }

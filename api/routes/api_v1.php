@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
 use App\Http\Controllers\Api\V1\Admin\SettingsController;
 use App\Http\Controllers\Api\V1\Admin\StaffController;
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\V1\Auth\ImpersonationController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\OtpController;
 use App\Http\Controllers\Api\V1\Auth\StaffPasswordController;
@@ -138,6 +139,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('show');
     Route::put('/password', [StaffPasswordController::class, 'change'])->middleware('throttle:staff-sign-in')->name('password');
+    Route::post('/impersonation/stop', [ImpersonationController::class, 'stop'])->name('impersonation.stop');
     Route::patch('/', [ProfileController::class, 'update'])->middleware('throttle:profile-update')->name('update');
     Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
     Route::delete('/deletion', [ProfileController::class, 'cancelDeletion'])->name('deletion.cancel');
@@ -327,6 +329,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::post('/users/{user}/status', [AdminUserController::class, 'status'])->name('users.status');
         Route::post('/users/{user}/sign-out', [AdminUserController::class, 'signOut'])->name('users.sign-out');
         Route::delete('/users/{user}/devices/{device}', [AdminUserController::class, 'removeDevice'])->name('users.devices.destroy');
+        Route::post('/users/{user}/impersonate', [ImpersonationController::class, 'start'])->name('users.impersonate');
     });
 
     // Orders and payments (PRD-09 FR-11)

@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ProvinceResource } from "./provinceResource";
+import type { UserResourceImpersonation } from "./userResourceImpersonation";
 
 export interface UserResource {
   id: string;
@@ -25,6 +26,11 @@ export interface UserResource {
   /** Staff: whether a back-office password is set, and whether they must choose a new one now. */
   has_password: boolean;
   must_change_password: boolean;
+  /**
+   * A super admin is viewing the platform as this account (banner + stop button).
+   * @nullable
+   */
+  impersonation: UserResourceImpersonation;
   permissions: string[];
   /** @nullable */
   deletion_requested_at: string | null;

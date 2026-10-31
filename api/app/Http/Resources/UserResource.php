@@ -6,6 +6,8 @@ namespace App\Http\Resources;
 
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
+use App\Http\Support\Impersonation;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -37,6 +39,8 @@ final class UserResource extends JsonResource
             /** Staff: whether a back-office password is set, and whether they must choose a new one now. */
             'has_password' => $this->hasPassword(),
             'must_change_password' => (bool) $this->must_change_password,
+            /** A super admin is viewing the platform as this account (banner + stop button). */
+            'impersonation' => $this->impersonation($request),
             'permissions' => $this->permissionNames(),
             'deletion_requested_at' => $this->deletion_requested_at?->toIso8601String(),
             /** @var string|null When the account is erased unless the request is cancelled (FR-11). */
@@ -44,6 +48,29 @@ final class UserResource extends JsonResource
                 ?->copy()->addDays((int) config('yekkola.auth.deletion_grace_days'))->toIso8601String(),
             'created_at' => $this->created_at->toIso8601String(),
         ];
+    }
+
+    /**
+     * @return array{by_name: string|null, expires_at: string}|null
+     */
+    private function impersonation(Request $request): ?array
+    {
+        $current = Impersonation::current($request);
+        if ($current === null || $request->user()?->getAuthIdentifier() !== $this->id) {
+            return null;
+        }
+
+        return [
+            'by_name' => $this->nameOf($current['by']),
+            'expires_at' => CarbonImmutable::createFromTimestamp($current['expires_at'])->toIso8601String(),
+        ];
+    }
+
+    private function nameOf(string $userId): ?string
+    {
+        $name = User::query()->whereKey($userId)->value('name');
+
+        return is_string($name) ? $name : null;
     }
 
     private function hasPassword(): bool

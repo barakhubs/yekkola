@@ -13,6 +13,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
+use App\Http\Support\Impersonation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
@@ -68,7 +69,7 @@ final class AdminUserDetailResource extends JsonResource
     }
 
     /**
-     * @return array{suspend: bool, ban: bool, reactivate: bool, sign_out: bool, remove_device: bool}
+     * @return array{suspend: bool, ban: bool, reactivate: bool, sign_out: bool, remove_device: bool, impersonate: bool}
      */
     private function can(User $staff): array
     {
@@ -82,6 +83,7 @@ final class AdminUserDetailResource extends JsonResource
             'reactivate' => $manage && $this->status !== UserStatus::Active,
             'sign_out' => $manage,
             'remove_device' => $manage,
+            'impersonate' => Impersonation::allowed($staff, $this->resource),
         ];
     }
 

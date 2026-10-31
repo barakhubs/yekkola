@@ -19,6 +19,7 @@ export * from "./enrollment/enrollment.zod";
 export * from "./fake-video-upload/fake-video-upload.zod";
 export * from "./featured-course/featured-course.zod";
 export * from "./guest-order/guest-order.zod";
+export * from "./impersonation/impersonation.zod";
 export * from "./kyc/kyc.zod";
 export * from "./kyc-submission/kyc-submission.zod";
 export * from "./learning/learning.zod";
