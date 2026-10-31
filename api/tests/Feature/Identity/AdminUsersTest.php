@@ -25,7 +25,7 @@ it('finds accounts by phone or name, with the number masked', function () {
         ->assertJsonPath('data.0.phone', fn (string $p) => ! str_contains($p, '000111'));
     $this->getJson('/api/v1/admin/users?filter[q]=mbuy')->assertJsonCount(1, 'data');
     $this->getJson('/api/v1/admin/users/'.$this->student->id)->assertOk()
-        ->assertJsonPath('data.can', ['suspend' => true, 'ban' => true, 'reactivate' => false, 'sign_out' => true, 'remove_device' => true]);
+        ->assertJsonPath('data.can', ['suspend' => true, 'ban' => true, 'reactivate' => false, 'sign_out' => true, 'remove_device' => true, 'impersonate' => false]);
 });
 
 it('suspends with a reason, signing the account out everywhere, then reactivates', function () {
