@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { success } from "@yekkola/api-client";
+import { adminStaffPassword } from "@yekkola/api-client/endpoints/staff-password";
 import {
   adminStaffDestroy,
   adminStaffStore,
@@ -85,6 +86,7 @@ export function StaffPage() {
               ) : (
                 <span className="flex gap-2">
                   <StaffForm member={member} onSaved={refresh} />
+                  <SetPassword member={member} />
                   <ConfirmDialog
                     trigger={
                       <Button size="sm" variant="ghost">
@@ -229,6 +231,80 @@ function StaffForm({ member, onSaved }: { member?: StaffMemberResource; onSaved:
             <Button
               type="submit"
               disabled={save.isPending || (!member && !phone.trim())}
+              aria-busy={save.isPending}
+            >
+              {t("save")}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** A staff manager sets someone's password (no email reset yet); they choose their own at next sign-in. */
+function SetPassword({ member }: { member: StaffMemberResource }) {
+  const t = useTranslations("admin.staff");
+  const common = useTranslations("common");
+  const errorText = useErrorText();
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const save = useMutation({
+    mutationFn: () => adminStaffPassword(member.id, { password }),
+    onSuccess: () => setOpen(false),
+  });
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) {
+          setPassword("");
+          save.reset();
+        }
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button size="sm" variant="ghost">
+          {t("setPassword")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent closeLabel={common("close")}>
+        <DialogHeader>
+          <DialogTitle>{t("setPasswordTitle", { name: member.name ?? "—" })}</DialogTitle>
+          <DialogDescription>{t("setPasswordHint")}</DialogDescription>
+        </DialogHeader>
+        <form
+          noValidate
+          className="grid gap-4"
+          onSubmit={(e: FormEvent) => {
+            e.preventDefault();
+            if (!save.isPending) save.mutate();
+          }}
+        >
+          <div className="grid gap-2">
+            <Label htmlFor={`set-pw-${member.id}`}>{t("temporaryPassword")}</Label>
+            <Input
+              id={`set-pw-${member.id}`}
+              type="text"
+              autoComplete="off"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {save.isError ? (
+            <p role="alert" className="text-sm text-destructive">
+              {errorText(save.error)}
+            </p>
+          ) : null}
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+              {common("cancel")}
+            </Button>
+            <Button
+              type="submit"
+              disabled={save.isPending || password.length < 12}
               aria-busy={save.isPending}
             >
               {t("save")}

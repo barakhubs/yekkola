@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
-import { SignInForm } from "@/features/auth/sign-in-form";
+import { SignInChoice } from "@/features/auth/sign-in-choice";
 
 export async function generateMetadata({
   params,
@@ -29,7 +29,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
       <Suspense>
-        <SignInForm />
+        <SignInChoice />
       </Suspense>
     </div>
   );
