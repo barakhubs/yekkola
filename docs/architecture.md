@@ -312,7 +312,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | `activity_log` | spatie/laravel-activitylog (ULID id; subject/causer ids are strings) | All admin actions (`RecordAudit`) + settings changes (before/after, automatic). |
 | `webhook_events` | id, provider, event_id (unique per provider), type, payload (jsonb), received_at, processed_at, error | Video provider inbox, processed by `ProcessVideoWebhook` on the `media` queue (payments use `payment_events`). |
 | `course_daily_stats` | course_id, date, views, enrollments, paid_enrollments, revenue_minor, currency, completions, avg_rating | Rolled up nightly + incrementally; feeds dashboards. |
-| `platform_daily_stats` | date, signups, active_students, orders, gmv_minor (per currency), payouts_minor, … | Admin dashboard. |
+| `platform_daily_stats` | date (PK), signups, enrollments, orders_created, orders_paid, courses_published, gmv_minor, net_revenue_minor, refunds_minor, payouts_minor (jsonb per currency) | Admin dashboard. Recomputed from source tables by `stats:rollup-platform` (hourly: today + yesterday; `--days` backfills); idempotent upsert. Active students are counted live from `enrollments.last_activity_at` (indexed). |
 
 ---
 
@@ -485,6 +485,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
 | POST | /admin/payouts/{id}/exclude | Leave a line out of a draft batch `{note}` |
 | GET / PUT | /admin/settings | Platform settings (`settings.manage`): all six groups; PUT takes any groups, each whole. `UpdateSettings` checks rules across settings on the would-be result (default currency enabled; price limits and payout minimum for every enabled currency; earnings hold ≥ refund window), then saves in one transaction; `AuditSettingsChange` logs before/after |
+| GET | /admin/dashboard | Back-office home (any staff): 30-day KPIs vs the 30 before, active students 7/30 d, daily series, queues (applications and course reviews with overdue vs SLA, KYC, refunds, stuck payments, failed payouts). Money only with `commerce.view`/`finance.view`; each queue only with its permission |
 | GET | /admin/audit-log | Audit log (`audit.view`): newest first; filters event (or family, e.g. `refund`), causer, subject, dates; entries carry causer, subject, details (before/after, reason) and IP |
 | GET / POST / PUT / DELETE | /admin/staff[/{user}], /admin/staff/permissions | Staff (`staff.manage`): list; invite by phone `{phone, role, permissions}` (account created if needed); change role + extra permissions; end access (staff roles and extras removed, signed out everywhere). Never one's own access; anything touching a super admin needs `staff.roles`; audited (`staff.updated`, `staff.removed`) |
 | CRUD | /admin/staff | Staff accounts + roles |

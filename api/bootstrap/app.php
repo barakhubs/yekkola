@@ -8,6 +8,7 @@ use App\Domain\Finance\Console\CheckLedger;
 use App\Domain\Finance\Console\ReleaseDueEarnings;
 use App\Domain\Finance\Console\SyncPayouts;
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
+use App\Domain\Platform\Console\RollupPlatformStatsCommand;
 use App\Domain\Professors\Console\ExpireStaleApplications;
 use App\Domain\Shared\Exceptions\DomainException;
 use App\Http\ApiErrorResponse;
@@ -38,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
         BuildDuePayoutBatches::class,
         SyncPayouts::class,
         CheckLedger::class,
+        RollupPlatformStatsCommand::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.

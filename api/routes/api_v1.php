@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Admin\AuditLogController;
 use App\Http\Controllers\Api\V1\Admin\BundleController as AdminBundleController;
 use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\V1\Admin\CourseVersionController;
+use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\LedgerAdjustmentController;
@@ -283,6 +284,9 @@ Route::middleware(['signed-in', 'staff'])->prefix('admin')->name('admin.')->grou
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
+
+    // Back-office home (PRD-09 FR-01): any staff member; blocks follow their permissions.
+    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard.show');
 
     // Audit log (PRD-09 FR-16)
     Route::get('/audit-log', [AuditLogController::class, 'index'])->middleware('can:'.Permission::AuditView->value)->name('audit-log.index');
