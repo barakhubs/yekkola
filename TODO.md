@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `fix/cloud-health-check` (`/up` health check so Cloud keeps the Next.js apps running)
+- **Current branch:** `fix/cloud-ipv6-listen` (Next.js servers listen on IPv6 too, for Cloud's startup probes)
 - **Next up:** reports (students report reviews, courses, professors; staff queue) — PRD-06 FR-14, PRD-09 FR-10
 
 ## Legend
@@ -329,7 +329,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] CI: `web.yml` (lint, typecheck, tests, build, audit) + `contract.yml` (client drift check) — #16
 - [x] `apps/web` and `apps/admin` shells: locale routing (fr default at `/`), Nunito, providers, static home pages — #16
 - [ ] Local Node is 22.11; Vite 8 / Rolldown need ≥ 22.12 (tests pin Vite 7) — upgrade Node, then drop the pin
-- [~] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys — standalone builds + lockfile links so both deploy from their folders (#47); settings in `docs/runbooks/deploy-laravel-cloud.md`; `/up` health check in both apps (Cloud stopped the admin after start without it)
+- [~] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys — standalone builds + lockfile links so both deploy from their folders (#47); settings in `docs/runbooks/deploy-laravel-cloud.md`; `/up` health check (#48); servers listen on IPv4 + IPv6 for Cloud's probes
 - [ ] Shared Next.js cache handler (Valkey) before running several web replicas
 
 ### 2.2 Back office (apps/admin) — PRD-09 (before the student web app)

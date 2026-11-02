@@ -15,9 +15,11 @@ support). Each is scoped to its own folder.
   (`../../pnpm-lock.yaml`). On Windows checkouts without symlink support they appear as small text files containing
   that path — leave them as they are.
 - **Start:** Cloud runs the `start` script, which is `node start.mjs`: it starts the standalone server on `PORT`
-  (set by Cloud) and listens on every interface.
-- **Health check:** Cloud checks `/up` (like Laravel's) and stops a deployment whose server doesn't answer it.
-  Both apps serve `GET /up` → 200 `ok` (`src/app/up/route.ts`), outside the locale middleware.
+  (set by Cloud) and listens on every interface, **IPv4 and IPv6** (`HOSTNAME=::`). Cloud's startup probes come
+  over IPv6: with `0.0.0.0` the server starts, the probe never reaches it, and Cloud aborts the deployment
+  ("App cluster shutdown drain… exitCode 143").
+- **Health check:** both apps also serve `GET /up` → 200 `ok` (`src/app/up/route.ts`), outside the locale
+  middleware, for a custom HTTP health check if one is set.
 
 ## Settings per application
 
