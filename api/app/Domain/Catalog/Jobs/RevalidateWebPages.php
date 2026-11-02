@@ -27,7 +27,7 @@ final class RevalidateWebPages implements ShouldQueue
     public array $backoff = [5, 30, 120, 600];
 
     /**
-     * @param  list<string>  $tags  Cache tags the web app uses: `courses`, `course:{slug}`, `professor:{slug}`, `categories`.
+     * @param  list<string>  $tags  Cache tags the web app uses: `courses`, `course:{slug}`, `professor:{slug}`, `categories`, `branding`.
      */
     public function __construct(public readonly array $tags)
     {

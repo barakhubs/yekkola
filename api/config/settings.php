@@ -9,6 +9,7 @@ return [
      * put them (manually) here.
      */
     'settings' => [
+        App\Domain\Platform\Settings\BrandingSettings::class,
         App\Domain\Platform\Settings\CatalogSettings::class,
         App\Domain\Platform\Settings\CommerceSettings::class,
         App\Domain\Platform\Settings\LearningSettings::class,

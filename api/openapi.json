@@ -588,6 +588,232 @@
                 }
             }
         },
+        "/branding": {
+            "get": {
+                "operationId": "branding.show",
+                "tags": [
+                    "Branding"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "logo_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "footer_logo_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "favicon_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "share_image_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "logo_url",
+                                                "footer_logo_url",
+                                                "favicon_url",
+                                                "share_image_url"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/settings/branding/{asset}": {
+            "post": {
+                "operationId": "admin.settings.branding.update",
+                "summary": "Logo and footer logo: PNG, WebP or JPEG, at least 32 px high, up to 1 MB. Favicon: square PNG, 48\u20131024 px,\nup to 512 KB. Share image: at least 1200\u00d7630, up to 5 MB",
+                "tags": [
+                    "Branding"
+                ],
+                "parameters": [
+                    {
+                        "name": "asset",
+                        "in": "path",
+                        "required": true,
+                        "description": "The asset ID",
+                        "schema": {
+                            "$ref": "#/components/schemas/BrandAsset"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BrandAssetRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "logo_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "footer_logo_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "favicon_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "share_image_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "logo_url",
+                                                "footer_logo_url",
+                                                "favicon_url",
+                                                "share_image_url"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "admin.settings.branding.destroy",
+                "tags": [
+                    "Branding"
+                ],
+                "parameters": [
+                    {
+                        "name": "asset",
+                        "in": "path",
+                        "required": true,
+                        "description": "The asset ID",
+                        "schema": {
+                            "$ref": "#/components/schemas/BrandAsset"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "logo_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "footer_logo_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "favicon_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "share_image_url": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "logo_url",
+                                                "footer_logo_url",
+                                                "favicon_url",
+                                                "share_image_url"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
         "/bundles/{slug}": {
             "get": {
                 "operationId": "bundles.show",
@@ -17035,6 +17261,32 @@
                     "created_at"
                 ],
                 "title": "AuditEntryResource"
+            },
+            "BrandAsset": {
+                "type": "string",
+                "description": "Brand images staff can replace (PRD-09 FR-15). No SVG: an uploaded SVG can carry scripts.\n| |\n|---|\n| `logo` <br/> Site header, sign-in pages, back office. |\n| `footer_logo` <br/> Site footer (often a light version for a dark band). |\n| `favicon` <br/> Browser tab and home-screen icon: a square PNG. |\n| `share_image` <br/> Default picture when a page is shared (WhatsApp, Facebook\u2026). |",
+                "enum": [
+                    "logo",
+                    "footer_logo",
+                    "favicon",
+                    "share_image"
+                ],
+                "title": "BrandAsset"
+            },
+            "BrandAssetRequest": {
+                "type": "object",
+                "description": "A brand image upload (multipart `file`); each image has its own type, size and dimension rules.",
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream"
+                    }
+                },
+                "required": [
+                    "file"
+                ],
+                "title": "BrandAssetRequest"
             },
             "BuildPayoutBatchRequest": {
                 "type": "object",
