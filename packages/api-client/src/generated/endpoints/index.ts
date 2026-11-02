@@ -42,6 +42,7 @@ export * from "./quiz-attempt/quiz-attempt";
 export * from "./receipt/receipt";
 export * from "./refund/refund";
 export * from "./review/review";
+export * from "./review-moderation/review-moderation";
 export * from "./settings/settings";
 export * from "./staff/staff";
 export * from "./staff-password/staff-password";

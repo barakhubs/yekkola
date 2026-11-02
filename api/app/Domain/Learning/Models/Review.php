@@ -26,6 +26,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property ReviewStatus $status
  * @property string|null $professor_reply
  * @property \Illuminate\Support\Carbon|null $replied_at
+ * @property \Illuminate\Support\Carbon|null $hidden_at
+ * @property string|null $hidden_by
+ * @property string|null $hidden_reason
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */
@@ -43,6 +46,7 @@ final class Review extends Model
     protected function casts(): array
     {
         return [
+            'hidden_at' => 'datetime',
             'rating' => 'integer',
             'status' => ReviewStatus::class,
             'replied_at' => 'datetime',

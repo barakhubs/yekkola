@@ -994,7 +994,8 @@
       "audit": "Journal d’audit",
       "courses": "Cours",
       "categories": "Catégories",
-      "password": "Mot de passe"
+      "password": "Mot de passe",
+      "reviews": "Avis"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1722,6 +1723,26 @@
     "impersonation": {
       "banner": "Vous voyez le back-office comme {name} (session de {by}, jusqu’à {until}). Les actions sensibles sont bloquées.",
       "stop": "Revenir à mon compte"
+    },
+    "reviewModeration": {
+      "title": "Avis",
+      "intro": "Tous les avis des étudiants. Masquez un avis qui enfreint les règles : il quitte la page du cours et les notes tout de suite.",
+      "search": "Rechercher dans le texte",
+      "status": "Statut",
+      "rating": "Note",
+      "all": "Tous",
+      "visible": "Visible",
+      "hidden": "Masqué",
+      "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+      "empty": "Aucun avis.",
+      "hiddenBecause": "Masqué : {reason}",
+      "hide": "Masquer",
+      "restore": "Rétablir",
+      "hideConfirm": "Masquer cet avis ?",
+      "restoreConfirm": "Rétablir cet avis ?",
+      "hideHint": "Il disparaît de la page du cours et ne compte plus dans les notes du cours et du professeur.",
+      "restoreHint": "Il revient sur la page du cours et dans les notes.",
+      "reason": "Raison (gardée dans le journal d’audit)"
     }
   }
 }

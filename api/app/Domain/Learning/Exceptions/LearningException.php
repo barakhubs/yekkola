@@ -60,4 +60,9 @@ final class LearningException extends DomainException
     {
         return new self('enrollment.course_taken_down', 403);
     }
+
+    public static function reviewModerationTransition(): self
+    {
+        return new self('review.moderation_transition', 409);
+    }
 }

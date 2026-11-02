@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Api\V1\Admin\ReviewModerationController;
 use App\Http\Controllers\Api\V1\Admin\SettingsController;
 use App\Http\Controllers\Api\V1\Admin\StaffController;
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
@@ -318,6 +319,13 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::put('/staff/{user}', [StaffController::class, 'update'])->name('staff.update');
         Route::delete('/staff/{user}', [StaffController::class, 'destroy'])->name('staff.destroy');
         Route::put('/staff/{user}/password', [StaffPasswordController::class, 'setFor'])->name('staff.password');
+    });
+
+    // Review moderation (PRD-09 FR-10)
+    Route::middleware('can:'.Permission::ModerationReports->value)->group(function () {
+        Route::get('/reviews', [ReviewModerationController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews/{review}/hide', [ReviewModerationController::class, 'hide'])->name('reviews.hide');
+        Route::post('/reviews/{review}/restore', [ReviewModerationController::class, 'restore'])->name('reviews.restore');
     });
 
     // Accounts (PRD-09 FR-04)

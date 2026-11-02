@@ -136,6 +136,7 @@ return [
         'unavailable' => 'This document is not available right now.',
     ],
     'review' => [
+        'moderation_transition' => 'This review is already in that state.',
         'progress_too_low' => 'Complete at least :min_progress_pct% of the course before reviewing it.',
         'own_course' => 'You cannot review your own course.',
         'exists' => 'You have already reviewed this course. Edit your review instead.',

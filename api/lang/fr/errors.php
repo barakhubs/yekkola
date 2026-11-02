@@ -136,6 +136,7 @@ return [
         'document_not_supported' => 'Ce PDF ne peut pas être protégé. Exportez-le à nouveau en PDF 1.4 (par exemple « PDF/A-1b ») puis rechargez-le.',
     ],
     'review' => [
+        'moderation_transition' => 'Cet avis est déjà dans cet état.',
         'progress_too_low' => 'Suivez au moins :min_progress_pct % du cours avant de le noter.',
         'own_course' => 'Vous ne pouvez pas noter votre propre cours.',
         'exists' => 'Vous avez déjà noté ce cours. Modifiez plutôt votre avis.',
