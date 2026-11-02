@@ -49,6 +49,17 @@ browser code at build time: **redeploy after changing one**.
   (same values as in the API), optional `API_INTERNAL_URL`.
 - On the API: `FRONTEND_WEB_URL` and `FRONTEND_ADMIN_URL` must be these apps' URLs (CORS, "View as" redirects).
 
+## Troubleshooting (seen on the first deploys)
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Build: `corepack: not found` | Old build command | Use the build command above (pnpm via `npm install -g`). |
+| Build: page "took more than 60 seconds" | The API wasn't answering while pages were prerendered | Fixed in code: build-time API calls time out after 10 s and the page fills in at its first revalidation. Deploy the API first anyway. |
+| Deploy aborts after "Ready", exit code 143 | Server not reachable by Cloud's probes | Fixed in code: `start.mjs` listens on IPv4 and IPv6. Check the start command is `node start.mjs`. |
+| Pages that load data return 500, log shows `Failed to parse URL from /api/v1/…` | An API URL variable set but empty (`API_INTERNAL_URL=`) | Remove it or set it to the API's URL; empty values are now ignored. |
+| Browser: `blocked by CORS policy` on `api.…/api/v1/me` | API doesn't list this app's origin | On the API: `FRONTEND_WEB_URL` / `FRONTEND_ADMIN_URL` (with `https://`, no trailing slash), `SANCTUM_STATEFUL_DOMAINS` (host names), `SESSION_DOMAIN=.<parent domain>`, `SESSION_SECURE_COOKIE=true`; redeploy. |
+| API build: `Refusing to boot production with fake/log integration drivers` | `APP_ENV=production` before real SMS, payments, video and Turnstile are configured | Intended. Run the environment as `APP_ENV=staging` until those providers are set. |
+
 ## Checking a build locally
 
 ```sh
