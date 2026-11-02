@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `fix/web-build-api-timeout` (web build no longer hangs when the API isn't reachable)
+- **Current branch:** `fix/empty-api-url` (empty URL env vars fall back to the defaults)
 - **Next up:** reports (students report reviews, courses, professors; staff queue) — PRD-06 FR-14, PRD-09 FR-10
 
 ## Legend
@@ -329,7 +329,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] CI: `web.yml` (lint, typecheck, tests, build, audit) + `contract.yml` (client drift check) — #16
 - [x] `apps/web` and `apps/admin` shells: locale routing (fr default at `/`), Nunito, providers, static home pages — #16
 - [ ] Local Node is 22.11; Vite 8 / Rolldown need ≥ 22.12 (tests pin Vite 7) — upgrade Node, then drop the pin
-- [~] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys — standalone builds + lockfile links so both deploy from their folders (#47); settings in `docs/runbooks/deploy-laravel-cloud.md`; `/up` health check (#48); servers listen on IPv4 + IPv6 for Cloud's probes (#49); web build times out API calls after 10 s instead of hanging
+- [~] Laravel Cloud apps `yekkola-web` and `yekkola-admin` + staging deploys — standalone builds + lockfile links so both deploy from their folders (#47); settings in `docs/runbooks/deploy-laravel-cloud.md`; `/up` health check (#48); servers listen on IPv4 + IPv6 for Cloud's probes (#49); web build times out API calls after 10 s instead of hanging (#50); empty `API_INTERNAL_URL` / site URL treated as unset
 - [ ] Shared Next.js cache handler (Valkey) before running several web replicas
 
 ### 2.2 Back office (apps/admin) — PRD-09 (before the student web app)

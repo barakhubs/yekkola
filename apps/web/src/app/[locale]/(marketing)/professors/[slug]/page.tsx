@@ -50,7 +50,7 @@ export default async function ProfessorPage({ params }: Props) {
     notFound();
   }
   const t = await getTranslations("web");
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
   return (
     <div className="mx-auto grid max-w-6xl gap-10 px-4 py-8 sm:py-12">

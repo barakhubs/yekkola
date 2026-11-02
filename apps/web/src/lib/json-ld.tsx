@@ -5,7 +5,7 @@ import { getPathname } from "@/i18n/navigation";
 
 /** Structured data for search engines (PRD-04 FR-10). */
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
 function absolute(href: string, locale: Locale): string {
   return `${siteUrl}${getPathname({ href, locale })}`;

@@ -10,7 +10,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
  * NEXT_PUBLIC_IMAGE_HOSTS lists extra origins, comma-separated; the API origin is always allowed.
  */
 const imageOrigins = [
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
   ...(process.env.NEXT_PUBLIC_IMAGE_HOSTS ?? "").split(","),
 ]
   .map((origin) => origin.trim())

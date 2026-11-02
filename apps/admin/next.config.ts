@@ -7,7 +7,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** Course covers come from the API's public disk (an object-storage bucket in staging/production), as in apps/web. */
 const imageOrigins = [
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
   ...(process.env.NEXT_PUBLIC_IMAGE_HOSTS ?? "").split(","),
 ]
   .map((origin) => origin.trim())
