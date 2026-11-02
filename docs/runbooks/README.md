@@ -9,6 +9,7 @@ What to do when something breaks in production. Each runbook: **symptoms → imp
 | [Mux outage](mux-outage.md) | Playback, uploads, or webhooks failing |
 | [SMS outage](sms-outage.md) | OTP codes not arriving |
 | [Compromised admin account](compromised-admin.md) | Suspicious admin activity |
+| [Deploying the Next.js apps](deploy-laravel-cloud.md) | Setting up or fixing the web / back-office apps on Laravel Cloud |
 
 General rules:
 - Post status in the team channel first; note start time.

@@ -27,4 +27,4 @@ If Next.js hosting falls short: deploy `apps/web` and `apps/admin` to Vercel; ev
 
 ## Results
 
-_Not run yet._
+Partial (2026-11-02): Cloud lets each app pick a nested root (`apps/admin`) and builds with the whole repo available, but it requires a lockfile in the app's folder and deploys only that folder. Solved with standalone output + lockfile links — see `docs/runbooks/deploy-laravel-cloud.md`. Still to record: deploy trigger behaviour, SSR/ISR on Cloud, cross-subdomain cookies.
