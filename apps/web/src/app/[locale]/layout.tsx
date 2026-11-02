@@ -12,6 +12,7 @@ import type { Locale } from "@yekkola/i18n";
 
 import { routing } from "@/i18n/routing";
 import { Providers } from "@/lib/providers";
+import { getBranding } from "@/lib/public-api";
 
 const nunito = Nunito({
   subsets: ["latin", "latin-ext"],
@@ -30,8 +31,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "common" });
+  const branding = await getBranding();
 
   return {
+    // Staff-uploaded images when set (PRD-09 FR-15); pages with their own picture override the share image.
+    ...(branding.favicon_url ? { icons: { icon: branding.favicon_url, apple: branding.favicon_url } } : {}),
+    ...(branding.share_image_url ? { openGraph: { images: [{ url: branding.share_image_url }] } } : {}),
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
     title: { default: `${t("appName")} — ${t("tagline")}`, template: `%s · ${t("appName")}` },
     description: t("tagline"),

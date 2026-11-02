@@ -4,7 +4,7 @@ import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 /** Tags the public data layer uses (src/lib/public-api.ts). Anything else is refused. */
-const ALLOWED = /^(courses|categories|course:[a-z0-9-]{1,200}|professor:[a-z0-9-]{1,200})$/;
+const ALLOWED = /^(courses|categories|branding|course:[a-z0-9-]{1,200}|professor:[a-z0-9-]{1,200})$/;
 const MAX_SKEW_SECONDS = 300;
 
 /**
