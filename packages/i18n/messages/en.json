@@ -1566,7 +1566,8 @@
         "protection": "Content protection",
         "catalog": "Catalogue and uploads",
         "learning": "Learning",
-        "moderation": "Moderation"
+        "moderation": "Moderation",
+        "branding": "Branding"
       },
       "rails": {
         "orange": "Orange Money",
@@ -1629,6 +1630,30 @@
         "course_review_sla_hours": "Course review target (hours)",
         "application_review_sla_hours": "Application review target (hours)",
         "application_reapply_cooldown_days": "Wait before reapplying (days)"
+      },
+      "tabs": "Settings groups",
+      "branding": {
+        "intro": "Brand images on the website and in the back office. Each image is saved as soon as it is uploaded; without one, the app shows its built-in version.",
+        "default": "Built-in version",
+        "reset": "Back to the built-in version",
+        "uploading": "Uploading…",
+        "saved": "Saved.",
+        "logo": {
+          "label": "Site logo",
+          "hint": "Site header, sign-in pages and back office. PNG, WebP or JPEG, ideally on a transparent background, at least 32 px high, 1 MB max."
+        },
+        "footer_logo": {
+          "label": "Footer logo",
+          "hint": "Shown in the site footer instead of the main logo. PNG, WebP or JPEG, 1 MB max."
+        },
+        "favicon": {
+          "label": "Site icon (favicon)",
+          "hint": "Browser tab and home screen. Square PNG, 512 × 512 px recommended, 512 KB max."
+        },
+        "share_image": {
+          "label": "Share image",
+          "hint": "Shown when a page without its own picture is shared (WhatsApp, Facebook…). At least 1200 × 630 px, 5 MB max."
+        }
       }
     },
     "audit": {

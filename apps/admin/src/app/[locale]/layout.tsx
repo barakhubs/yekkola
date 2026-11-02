@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 import type { Locale } from "@yekkola/i18n";
 
 import { routing } from "@/i18n/routing";
+import { getBranding } from "@/lib/branding.server";
 import { Providers } from "@/lib/providers";
 
 const nunito = Nunito({
@@ -29,9 +30,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "admin" });
+  const { favicon_url } = await getBranding();
 
   // The back office is never indexed.
-  return { title: t("title"), robots: { index: false, follow: false } };
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+    ...(favicon_url ? { icons: { icon: favicon_url } } : {}),
+  };
 }
 
 export default async function LocaleLayout({

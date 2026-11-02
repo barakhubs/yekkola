@@ -1,5 +1,7 @@
 "use client";
 
+import { success } from "@yekkola/api-client";
+import { useBrandingShow } from "@yekkola/api-client/endpoints/branding";
 import type { Locale } from "@yekkola/i18n";
 import { EmptyState } from "@yekkola/ui/blocks/empty-state";
 import { Button } from "@yekkola/ui/components/button";
@@ -64,6 +66,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
   const common = useTranslations("common");
   const errors = useTranslations("errors");
   const session = useSession();
+  const branding = useBrandingShow({ query: { select: (r) => success(r).data, staleTime: 5 * 60_000 } });
   const signOut = useSignOut();
   const router = useRouter();
   const pathname = usePathname();
@@ -127,6 +130,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
     );
   }
 
+  const logoUrl = branding.data?.logo_url ?? null;
   const items = NAV.filter((item) => item.permission === null || session.can(item.permission));
   const isCurrent = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
@@ -137,7 +141,12 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
         <aside className="border-b bg-background lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-64 lg:shrink-0 lg:flex-col lg:border-r lg:border-b-0">
           <div className="flex h-14 items-center justify-between gap-2 px-4 lg:h-16">
             <Link href="/" className="font-extrabold tracking-wide text-primary">
-              {t("brand")}
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- uploaded by staff, any storage host
+                <img src={logoUrl} alt={t("brand")} className="h-8 w-auto max-w-40 object-contain" />
+              ) : (
+                t("brand")
+              )}
             </Link>
             <div className="flex items-center gap-1 lg:hidden">
               <LocaleLink />

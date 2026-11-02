@@ -39,7 +39,7 @@ final class Impersonation
         'admin.payout-batches.store', 'admin.payout-batches.approve', 'admin.payouts.*', 'admin.ledger.adjustments.*',
         'admin.staff.store', 'admin.staff.update', 'admin.staff.destroy', 'admin.staff.password',
         'admin.users.status', 'admin.users.sign-out', 'admin.users.devices.*', 'admin.users.impersonate', 'admin.reports.resolve',
-        'admin.settings.update',
+        'admin.settings.update', 'admin.settings.branding.*',
     ];
 
     public function __construct(private readonly RecordAudit $recordAudit) {}

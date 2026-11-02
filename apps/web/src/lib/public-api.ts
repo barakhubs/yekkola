@@ -3,6 +3,7 @@ import "server-only";
 import "./api.server";
 
 import { ApiError, success } from "@yekkola/api-client";
+import { brandingShow } from "@yekkola/api-client/endpoints/branding";
 import { bundlesShow } from "@yekkola/api-client/endpoints/bundle";
 import { categoriesIndex } from "@yekkola/api-client/endpoints/category";
 import { certificatesVerify } from "@yekkola/api-client/endpoints/certificate";
@@ -19,7 +20,7 @@ import type { CoursesIndexParams } from "@yekkola/api-client/model";
 type CacheOptions = RequestInit & { next: { revalidate: number | false; tags?: string[] } };
 
 /** How long public pages may be stale (seconds). The API also expires them by tag on changes (/api/revalidate). */
-const REVALIDATE = { catalogue: 300, course: 300, rails: 300, categories: 3600 } as const;
+const REVALIDATE = { catalogue: 300, course: 300, rails: 300, categories: 3600, branding: 3600 } as const;
 
 /** At build time an unreachable API can hang instead of failing; give up well before Next's 60 s page limit. */
 const BUILD_TIMEOUT_MS = 10_000;
@@ -65,6 +66,14 @@ export async function getHomeRails() {
   return emptyDuringBuild(
     { featured: [], popular: [], new: [], free: [] },
     async () => success(await featured(cached(REVALIDATE.rails, ["courses"]))).data,
+  );
+}
+
+/** Brand images staff uploaded (null: the built-in default). Refreshed at once when one changes (tag `branding`). */
+export async function getBranding() {
+  return emptyDuringBuild(
+    { logo_url: null, footer_logo_url: null, favicon_url: null, share_image_url: null },
+    async () => success(await brandingShow(cached(REVALIDATE.branding, ["branding"]))).data,
   );
 }
 

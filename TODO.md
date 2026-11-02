@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-reports` (reports: students flag courses, reviews, professors; staff queue)
+- **Current branch:** `feature/prd-09-settings-branding` (tabbed settings page; logo, footer logo, favicon, share image)
 - **Next up:** lesson Q&A (PRD-06 FR-13) with Q&A reports and moderation
 
 ## Legend
@@ -286,6 +286,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
 - [x] Settings endpoints — invariants checked across groups, one transaction, audited — #39
+- [x] Brand image endpoints (upload/remove per asset, public `GET /branding`) — this PR
 - [x] Audit log + staff endpoints — #40
 
 ### 1.12 Notifications — PRD-10
@@ -355,6 +356,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [x] Settings screen — #39
+- [x] Settings in tabs (open tab in the URL) + Branding tab: logo, footer logo, favicon, share image — this PR
+- [ ] Real logo and favicon files from the logo brief (`docs/brand.md`), uploaded once designed
 - [x] Audit log, staff — #40
 - [ ] Playwright: admin approval journeys
 

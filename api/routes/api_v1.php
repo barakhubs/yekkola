@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Account\PhoneController;
 use App\Http\Controllers\Api\V1\Account\ProfileController;
 use App\Http\Controllers\Api\V1\Account\WishlistController;
 use App\Http\Controllers\Api\V1\Admin\AuditLogController;
+use App\Http\Controllers\Api\V1\Admin\BrandingController as AdminBrandingController;
 use App\Http\Controllers\Api\V1\Admin\BundleController as AdminBundleController;
 use App\Http\Controllers\Api\V1\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\V1\Admin\CouponController as AdminCouponController;
@@ -58,6 +59,7 @@ use App\Http\Controllers\Api\V1\Professor\ReviewController as StudioReviewContro
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
 use App\Http\Controllers\Api\V1\Protection\DocumentController;
 use App\Http\Controllers\Api\V1\Protection\PlaybackController;
+use App\Http\Controllers\Api\V1\Public\BrandingController;
 use App\Http\Controllers\Api\V1\Public\BundleController;
 use App\Http\Controllers\Api\V1\Public\CategoryController;
 use App\Http\Controllers\Api\V1\Public\CourseController as PublicCourseController;
@@ -122,6 +124,7 @@ Route::middleware('signed-in')->group(function () {
 
 // Public catalogue (PRD-04)
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/branding', [BrandingController::class, 'show'])->name('branding.show');
 Route::get('/courses', [PublicCourseController::class, 'index'])->middleware('throttle:catalogue')->name('courses.index');
 Route::get('/courses/{slug}', [PublicCourseController::class, 'show'])->name('courses.show');
 Route::get('/courses/{slug}/reviews', [ReviewController::class, 'index'])->middleware('throttle:catalogue')->name('courses.reviews.index');
@@ -307,6 +310,8 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
     Route::middleware('can:'.Permission::SettingsManage->value)->group(function () {
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/settings/branding/{asset}', [AdminBrandingController::class, 'update'])->name('settings.branding.update');
+        Route::delete('/settings/branding/{asset}', [AdminBrandingController::class, 'destroy'])->name('settings.branding.destroy');
     });
 
     // Back-office home (PRD-09 FR-01): any staff member; blocks follow their permissions.

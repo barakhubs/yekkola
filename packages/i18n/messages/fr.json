@@ -1566,7 +1566,8 @@
         "protection": "Protection du contenu",
         "catalog": "Catalogue et envois",
         "learning": "Apprentissage",
-        "moderation": "Modération"
+        "moderation": "Modération",
+        "branding": "Image de marque"
       },
       "rails": {
         "orange": "Orange Money",
@@ -1629,6 +1630,30 @@
         "course_review_sla_hours": "Délai cible de relecture d’un cours (heures)",
         "application_review_sla_hours": "Délai cible d’examen d’une candidature (heures)",
         "application_reapply_cooldown_days": "Attente avant une nouvelle candidature (jours)"
+      },
+      "tabs": "Groupes de paramètres",
+      "branding": {
+        "intro": "Les images de la marque sur le site et dans le back office. Chaque image est enregistrée dès l’envoi ; sans image, l’application affiche sa version intégrée.",
+        "default": "Version intégrée",
+        "reset": "Revenir à la version intégrée",
+        "uploading": "Envoi…",
+        "saved": "Enregistré.",
+        "logo": {
+          "label": "Logo du site",
+          "hint": "En-tête du site, pages de connexion et back office. PNG, WebP ou JPEG, fond transparent de préférence, au moins 32 px de haut, 1 Mo max."
+        },
+        "footer_logo": {
+          "label": "Logo du pied de page",
+          "hint": "Affiché dans le pied de page du site, à la place du logo principal. PNG, WebP ou JPEG, 1 Mo max."
+        },
+        "favicon": {
+          "label": "Icône du site (favicon)",
+          "hint": "Onglet du navigateur et écran d’accueil. PNG carré, 512 × 512 px conseillé, 512 Ko max."
+        },
+        "share_image": {
+          "label": "Image de partage",
+          "hint": "Affichée quand une page sans image propre est partagée (WhatsApp, Facebook…). Au moins 1200 × 630 px, 5 Mo max."
+        }
       }
     },
     "audit": {
