@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3001",
-    "build": "next build",
-    "start": "next start --port 3001",
+    "build": "next build && node ../../scripts/standalone-assets.mjs admin",
+    "start": "node start.mjs",
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit"

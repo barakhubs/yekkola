@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -14,6 +16,10 @@ const imageOrigins = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // A self-contained server (dependencies copied in) under .next/standalone: Laravel Cloud deploys only this app's
+  // folder, and pnpm's node_modules would otherwise point outside it. Tracing starts at the repo root.
+  output: "standalone",
+  outputFileTracingRoot: path.join(process.cwd(), "../.."),
   poweredByHeader: false,
   // Workspace packages ship TypeScript source.
   transpilePackages: ["@yekkola/ui", "@yekkola/i18n", "@yekkola/api-client"],
