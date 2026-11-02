@@ -27,7 +27,10 @@ const BUILD_TIMEOUT_MS = 10_000;
 function cached(revalidate: number, tags: string[] = []): CacheOptions {
   const duringBuild = process.env.NEXT_PHASE === "phase-production-build";
 
-  return { next: { revalidate, tags }, ...(duringBuild && { signal: AbortSignal.timeout(BUILD_TIMEOUT_MS) }) };
+  return {
+    next: { revalidate, tags },
+    ...(duringBuild && { signal: AbortSignal.timeout(BUILD_TIMEOUT_MS) }),
+  };
 }
 
 /**
