@@ -3,8 +3,19 @@ import { formatDate, type Locale } from "@yekkola/i18n";
 import { Star } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { ReportButton } from "@/features/moderation/report-button";
+
 /** Published reviews with the professor's replies (PRD-06 FR-12; ratings shown from 3 reviews, PRD-04 BR-02). */
-export async function ReviewList({ reviews, locale }: { reviews: ReviewResource[]; locale: Locale }) {
+export async function ReviewList({
+  reviews,
+  locale,
+  returnTo,
+}: {
+  reviews: ReviewResource[];
+  locale: Locale;
+  /** The page, to come back to after signing in to report a review. */
+  returnTo: string;
+}) {
   const t = await getTranslations("web.course");
 
   if (reviews.length === 0) {
@@ -46,6 +57,9 @@ export async function ReviewList({ reviews, locale }: { reviews: ReviewResource[
               <p className="whitespace-pre-line">{review.reply.body}</p>
             </div>
           ) : null}
+          <div className="flex justify-end">
+            <ReportButton type="review" id={review.id} returnTo={returnTo} />
+          </div>
         </li>
       ))}
     </ul>

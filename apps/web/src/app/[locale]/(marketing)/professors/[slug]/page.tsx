@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { CourseGrid } from "@/features/catalog/components/course-grid";
 import { ShareButtons } from "@/features/course/components/share-buttons";
+import { ReportButton } from "@/features/moderation/report-button";
 import { ProfessorSummary } from "@/features/professor/components/professor-summary";
 import { getPathname } from "@/i18n/navigation";
 import { JsonLd, professorJsonLd } from "@/lib/json-ld";
@@ -64,6 +65,7 @@ export default async function ProfessorPage({ params }: Props) {
           url={`${siteUrl}${getPathname({ href: `/professors/${slug}`, locale })}`}
           text={professor.display_name}
         />
+        <ReportButton type="professor" id={professor.id} returnTo={`/professors/${slug}`} />
       </header>
 
       {professor.bio ? (

@@ -13,6 +13,7 @@ import { EnrollButton } from "@/features/course/components/enroll-button";
 import { PreviewButton } from "@/features/course/components/preview-button";
 import { ReviewList } from "@/features/course/components/review-list";
 import { ShareButtons } from "@/features/course/components/share-buttons";
+import { ReportButton } from "@/features/moderation/report-button";
 import { ProfessorSummary } from "@/features/professor/components/professor-summary";
 import { getPathname, Link } from "@/i18n/navigation";
 import { breadcrumbJsonLd, courseJsonLd, JsonLd } from "@/lib/json-ld";
@@ -173,6 +174,7 @@ export default async function CoursePage({ params }: Props) {
               ) : null}
             </ul>
             <ShareButtons url={pageUrl} text={course.title ?? ""} />
+            <ReportButton type="course" id={course.id} returnTo={`/courses/${slug}`} />
           </aside>
         </div>
       </header>
@@ -230,7 +232,7 @@ export default async function CoursePage({ params }: Props) {
               {t("course.reviews")}
             </h2>
             <RatingStars rating={course.rating} count={course.rating_count} />
-            <ReviewList reviews={reviews?.data ?? []} locale={locale} />
+            <ReviewList reviews={reviews?.data ?? []} locale={locale} returnTo={`/courses/${slug}`} />
           </section>
         </div>
 
