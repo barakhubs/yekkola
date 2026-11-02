@@ -362,6 +362,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /config | Public settings: currencies, locales, feature flags, min app version |
 | GET | /provinces | The 26 provinces (profile form) |
 | GET | /categories | Visible category tree (request locale) with listed-course counts |
+| GET | /branding | Brand image URLs (`logo_url`, `footer_logo_url`, `favicon_url`, `share_image_url`; null = the app's built-in one). The web app caches it with the tag `branding` |
 | GET | /courses | Catalogue + search (`q`, category slug incl. subcategories, price `free`/`paid`, currency, language, level, audience, sort `relevance`/`popular`/`newest`/`rating`/`price_asc`/`price_desc`). Meilisearch ranks `q`; filters and sorts run in Postgres; database match if search is down |
 | GET | /courses/{slug} | Course detail (live version, curriculum outline with preview flags and per-lesson download size, professor block) |
 | POST | /lessons/{uid}/preview-playback | Preview lessons of listed courses without signing in (no watermark, no stream session) |
@@ -490,6 +491,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
 | POST | /admin/payouts/{id}/exclude | Leave a line out of a draft batch `{note}` |
 | GET / PUT | /admin/settings | Platform settings (`settings.manage`): all six groups; PUT takes any groups, each whole. `UpdateSettings` checks rules across settings on the would-be result (default currency enabled; price limits and payout minimum for every enabled currency; earnings hold ≥ refund window), then saves in one transaction; `AuditSettingsChange` logs before/after |
+| POST / DELETE | /admin/settings/branding/{asset} | Brand images (`settings.manage`; `asset` = `logo`, `footer_logo`, `favicon`, `share_image`): multipart `file` (no SVG; logos PNG/WebP/JPEG ≤ 1 MB; favicon square PNG 48–1024 px ≤ 512 KB; share image ≥ 1200×630 ≤ 5 MB) stored on the public disk under a new name; DELETE goes back to the built-in one. Saved in the `branding` settings group (audited), old file deleted, web pages refreshed (`branding` tag) |
 | GET | /admin/dashboard | Back-office home (any staff): 30-day KPIs vs the 30 before, active students 7/30 d, daily series, queues (applications and course reviews with overdue vs SLA, KYC, open reports, refunds, stuck payments, failed payouts). Money only with `commerce.view`/`finance.view`; each queue only with its permission |
 | GET / POST | /admin/courses, /admin/courses/{id}/(unpublish\|republish\|take-down\|restore) | Courses (`catalog.view` to list, `catalog.manage` to act; reason `note` required, audited). Unpublish: off the catalogue, enrolled keep access; take down: closed to everyone |
 | GET / POST / PATCH / DELETE / PUT | /admin/categories[/{id}], /admin/categories/order | Category tree (`catalog.manage`): all categories with fr/en names, visibility, counts; two levels at most; delete only when unused (409 `category.in_use`); order one level `{parent_id, ids}`; audited; saving refreshes the public pages |
