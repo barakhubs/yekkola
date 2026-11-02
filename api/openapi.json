@@ -4509,6 +4509,12 @@
                                                                 "null"
                                                             ]
                                                         },
+                                                        "reports": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
                                                         "refunds": {
                                                             "type": [
                                                                 "integer",
@@ -4532,6 +4538,7 @@
                                                         "applications",
                                                         "course_reviews",
                                                         "kyc",
+                                                        "reports",
                                                         "refunds",
                                                         "stuck_payments",
                                                         "failed_payouts"
@@ -11655,6 +11662,321 @@
                 }
             }
         },
+        "/reports": {
+            "post": {
+                "operationId": "reports.store",
+                "tags": [
+                    "Report"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ReportResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ReportResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/reports": {
+            "get": {
+                "operationId": "admin.reports.index",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "`open` (default), `actioned`, `dismissed` or `all`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[type]",
+                        "in": "query",
+                        "description": "`course`, `review` or `professor`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[reason]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[target_id]",
+                        "in": "query",
+                        "description": "Every report on one item.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at`; prefix `-` for newest first (default oldest first).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `AdminReportResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/AdminReportResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/reports/{report}/resolve": {
+            "post": {
+                "operationId": "admin.reports.resolve",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "description": "The report ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResolveReportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminReportResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminReportResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/courses/{course}/review": {
             "get": {
                 "operationId": "courses.review.show",
@@ -15983,6 +16305,226 @@
                 ],
                 "title": "AdminRefundResource"
             },
+            "AdminReportResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "details": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "action": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "reporter": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "target": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "exists": {
+                                "type": "boolean"
+                            },
+                            "title": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "excerpt": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "rating": {
+                                "type": [
+                                    "string",
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "course_slug": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "professor_slug": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "state": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "description": "review: visible|hidden; course: published|unpublished|taken_down|deleted|\u2026; professor: its status."
+                            },
+                            "author": {
+                                "type": [
+                                    "object",
+                                    "null"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "status"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "id",
+                            "exists",
+                            "title",
+                            "excerpt",
+                            "rating",
+                            "course_slug",
+                            "professor_slug",
+                            "state",
+                            "author"
+                        ]
+                    },
+                    "open_reports_on_target": {
+                        "type": "integer"
+                    },
+                    "handled_by": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "name": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "resolution_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "handled_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "can": {
+                        "type": "object",
+                        "properties": {
+                            "dismiss": {
+                                "type": "boolean"
+                            },
+                            "hide": {
+                                "type": "boolean"
+                            },
+                            "warn": {
+                                "type": "boolean"
+                            },
+                            "suspend": {
+                                "type": "boolean"
+                            }
+                        },
+                        "required": [
+                            "dismiss",
+                            "hide",
+                            "warn",
+                            "suspend"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "reason",
+                    "details",
+                    "status",
+                    "action",
+                    "reporter",
+                    "target",
+                    "open_reports_on_target",
+                    "handled_by",
+                    "resolution_note",
+                    "handled_at",
+                    "created_at",
+                    "can"
+                ],
+                "title": "AdminReportResource"
+            },
             "AdminReviewResource": {
                 "type": "object",
                 "properties": {
@@ -20129,6 +20671,97 @@
                 ],
                 "title": "ReorderCurriculumRequest"
             },
+            "ReportAction": {
+                "type": "string",
+                "description": "How staff resolve a report (PRD-09 FR-10). `hide` hides a review or takes a course down; `suspend` suspends a review's author account, or the professor behind a course or profile.\n",
+                "enum": [
+                    "dismiss",
+                    "hide",
+                    "warn",
+                    "suspend"
+                ],
+                "title": "ReportAction"
+            },
+            "ReportReason": {
+                "type": "string",
+                "description": "| |\n|---|\n| `spam` <br/>  |\n| `abusive` <br/> Insults, harassment, hate. |\n| `inappropriate` <br/> Sexual, violent or otherwise unsuitable content. |\n| `misleading` <br/> False information, or a course that isn't what it claims. |\n| `copyright` <br/> Someone else's work published without permission. |\n| `fraud` <br/>  |\n| `other` <br/>  |",
+                "enum": [
+                    "spam",
+                    "abusive",
+                    "inappropriate",
+                    "misleading",
+                    "copyright",
+                    "fraud",
+                    "other"
+                ],
+                "title": "ReportReason"
+            },
+            "ReportRequest": {
+                "type": "object",
+                "description": "What is reported and why (PRD-06 FR-14); details are required for \"other\".",
+                "properties": {
+                    "type": {
+                        "$ref": "#/components/schemas/ReportTarget"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/ReportReason"
+                    },
+                    "details": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000
+                    }
+                },
+                "required": [
+                    "type",
+                    "id",
+                    "reason"
+                ],
+                "title": "ReportRequest"
+            },
+            "ReportResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "target_id": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "target_id",
+                    "reason",
+                    "created_at"
+                ],
+                "title": "ReportResource"
+            },
+            "ReportTarget": {
+                "type": "string",
+                "description": "What can be reported (PRD-06 FR-14, PRD-09 FR-10). Lesson Q&A threads and replies join with Q&A (FR-13).\n",
+                "enum": [
+                    "course",
+                    "review",
+                    "professor"
+                ],
+                "title": "ReportTarget"
+            },
             "RequestOtpRequest": {
                 "type": "object",
                 "properties": {
@@ -20162,6 +20795,27 @@
                     "phone"
                 ],
                 "title": "RequestPhoneChangeOtpRequest"
+            },
+            "ResolveReportRequest": {
+                "type": "object",
+                "description": "How staff resolve a report (PRD-09 FR-10): a note is optional to dismiss, required for any other action (FR-18).",
+                "properties": {
+                    "action": {
+                        "$ref": "#/components/schemas/ReportAction"
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "action"
+                ],
+                "title": "ResolveReportRequest"
             },
             "ReviewReplyRequest": {
                 "type": "object",

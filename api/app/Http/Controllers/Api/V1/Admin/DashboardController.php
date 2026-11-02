@@ -32,7 +32,7 @@ final class DashboardController extends Controller
     private const STUCK_AFTER_MINUTES = 10;
 
     /**
-     * @return array{data: array{from: string, to: string, kpis: array{signups: array{value: int, previous: int}, enrollments: array{value: int, previous: int}, orders_paid: array{value: int, previous: int}, paid_conversion_pct: array{value: int|null, previous: int|null}, courses_published: array{value: int, previous: int}, active_students_7d: int, active_students_30d: int}, money: array{gmv: array<string, array{value: int, previous: int}>, net_revenue: array<string, array{value: int, previous: int}>}|null, series: list<array{date: string, signups: int, enrollments: int, orders_paid: int, gmv_minor: array<string, int>}>, queues: array{applications: array{count: int, overdue: int}|null, course_reviews: array{count: int, overdue: int}|null, kyc: int|null, refunds: int|null, stuck_payments: int|null, failed_payouts: int|null}}}
+     * @return array{data: array{from: string, to: string, kpis: array{signups: array{value: int, previous: int}, enrollments: array{value: int, previous: int}, orders_paid: array{value: int, previous: int}, paid_conversion_pct: array{value: int|null, previous: int|null}, courses_published: array{value: int, previous: int}, active_students_7d: int, active_students_30d: int}, money: array{gmv: array<string, array{value: int, previous: int}>, net_revenue: array<string, array{value: int, previous: int}>}|null, series: list<array{date: string, signups: int, enrollments: int, orders_paid: int, gmv_minor: array<string, int>}>, queues: array{applications: array{count: int, overdue: int}|null, course_reviews: array{count: int, overdue: int}|null, kyc: int|null, reports: int|null, refunds: int|null, stuck_payments: int|null, failed_payouts: int|null}}}
      */
     public function show(Request $request, ModerationSettings $moderation): array
     {
@@ -85,7 +85,7 @@ final class DashboardController extends Controller
     }
 
     /**
-     * @return array{applications: array{count: int, overdue: int}|null, course_reviews: array{count: int, overdue: int}|null, kyc: int|null, refunds: int|null, stuck_payments: int|null, failed_payouts: int|null}
+     * @return array{applications: array{count: int, overdue: int}|null, course_reviews: array{count: int, overdue: int}|null, kyc: int|null, reports: int|null, refunds: int|null, stuck_payments: int|null, failed_payouts: int|null}
      */
     private function queues(User $staff, ModerationSettings $moderation): array
     {
@@ -104,6 +104,8 @@ final class DashboardController extends Controller
             ] : null,
             'kyc' => $staff->can(Permission::KycReview->value)
                 ? DB::table('kyc_submissions')->where('status', KycSubmissionStatus::Pending->value)->count() : null,
+            'reports' => $staff->can(Permission::ModerationReports->value)
+                ? DB::table('reports')->where('status', 'open')->count() : null,
             'refunds' => $staff->can(Permission::FinanceRefunds->value)
                 ? DB::table('refunds')->whereIn('status', [RefundStatus::Requested->value, RefundStatus::Failed->value])->count() : null,
             'stuck_payments' => $staff->can(Permission::CommerceView->value)

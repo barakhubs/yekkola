@@ -198,6 +198,12 @@ return [
         'not_free' => 'This course is not free.',
         'revoked' => 'Your access to this course was removed. Please contact support.',
     ],
+    'report' => [
+        'target_not_found' => 'This content no longer exists or is no longer visible.',
+        'own_content' => 'You can’t report your own content.',
+        'already_resolved' => 'This report has already been handled.',
+        'action_not_allowed' => 'This action isn’t possible for this report.',
+    ],
     'phone' => [
         'invalid' => 'Invalid phone number.',
         'taken' => 'This number is already used by another account.',
