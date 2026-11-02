@@ -16,6 +16,8 @@ support). Each is scoped to its own folder.
   that path — leave them as they are.
 - **Start:** Cloud runs the `start` script, which is `node start.mjs`: it starts the standalone server on `PORT`
   (set by Cloud) and listens on every interface.
+- **Health check:** Cloud checks `/up` (like Laravel's) and stops a deployment whose server doesn't answer it.
+  Both apps serve `GET /up` → 200 `ok` (`src/app/up/route.ts`), outside the locale middleware.
 
 ## Settings per application
 
@@ -24,7 +26,7 @@ support). Each is scoped to its own folder.
 | Root directory | `apps/admin` | `apps/web` |
 | Runtime | Node.js 22 or 24 | Node.js 22 or 24 |
 | Build command | see below | see below |
-| Start command | default (`npm run start`) | default (`npm run start`) |
+| Start command | `node start.mjs` | `node start.mjs` |
 
 Build command (replace `admin` with `web` for the web app):
 
