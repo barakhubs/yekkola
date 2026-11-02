@@ -136,7 +136,7 @@ yekkola/
 │   │   │   ├── Protection/                Actions: IssuePlaybackToken, IssueOfflineLicense, StampDocument, EnforceStreamLimit
 │   │   │   ├── Finance/                   Ledger/(Ledger, Posting, AccountType), Actions: PostSale, PostRefund,
 │   │   │   │                              BuildPayoutBatch, ApprovePayoutBatch, ExecutePayout, HandlePayoutResult
-│   │   │   ├── Moderation/                Actions: FileReport, ResolveReport, TakedownCourse
+│   │   │   ├── Moderation/                Report, Actions: FileReport, ResolveReport (takedown: Authoring/ChangeCourseAvailability)
 │   │   │   ├── Notifications/             Notifications/*, Channels/(SmsChannel, FcmChannel)
 │   │   │   └── Platform/                  Settings/*Settings.php, Stats/RollupCourseStats
 │   │   ├── Integrations/
@@ -305,7 +305,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `reports` | id, reporter_id, reportable_type (`course`/`review`/`thread`/`reply`/`professor`), reportable_id, reason, details, status (`open`/`actioned`/`dismissed`), handled_by, resolution_note, handled_at | |
+| `reports` | id, reporter_id, reportable_type (`course`/`review`/`professor`; `thread`/`reply` with Q&A), reportable_id, reason (`spam`/`abusive`/`inappropriate`/`misleading`/`copyright`/`fraud`/`other`), details, status (`open`/`actioned`/`dismissed`), action (`dismiss`/`hide`/`warn`/`suspend`), handled_by, resolution_note, handled_at | Partial unique index: one `open` report per reporter and item. Resolving closes every open report on the item. |
 | `notifications` | Laravel database notifications | In-app feed. |
 | `notification_preferences` | user_id, type, channel (`push`/`sms`/`email`/`in_app`), enabled | Defaults in code; rows only for overrides. |
 | `settings` | spatie/laravel-settings | Groups: commerce, payouts, protection, catalog, learning, moderation. Defaults in `database/settings/`. |
@@ -389,7 +389,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET / POST / PATCH / DELETE | /courses/{id}/review | My review `{rating, body?}` (POST once; then PATCH) |
 | GET / POST | /lessons/{uid}/threads | Lesson Q&A |
 | POST | /threads/{id}/replies | Reply |
-| POST | /reports | Report content |
+| POST | /reports | Report a listed course, a visible review or a public professor `{type, id, reason, details?}` (details required for `other`); not one's own content (422 `report.own_content`); an open report by the same person on the same item is returned unchanged; throttled 5/min, 30/day |
 | GET / POST / DELETE | /me/wishlist[/{courseId}] | Wishlist (`POST {course_id}`, idempotent, listed courses only) |
 | GET | /me/notifications | In-app feed; `POST /me/notifications/read` |
 | GET / PUT | /me/notification-preferences | Preferences |
@@ -470,7 +470,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET / PUT | /admin/featured-courses | Featured rail: full ordered list of listed course ids (`catalog.manage`, audited) |
 | GET / PATCH | /admin/courses[/{id}] | Unpublish, takedown |
 | CRUD | /admin/categories (+ `PUT /admin/categories/order`) | Categories |
-| GET | /admin/reports; POST /admin/reports/{id}/resolve | Moderation |
+| GET / POST | /admin/reports, /admin/reports/{id}/resolve | Reports queue (`moderation.reports`): open first by default (`filter[status]` `open`/`actioned`/`dismissed`/`all`, `type`, `reason`, `target_id`), each with the item as it is now and how many reports are open on it. Resolve `{action, note}` closes every open report on the item: `dismiss` (note optional), `warn` (audited `user.warned` on the author), `hide` (review hidden; course taken down — needs `catalog.manage`), `suspend` (review author's account — `users.manage`; course/profile professor — `professors.manage`). `can` per report; 409 `report.already_resolved`; audited `report.resolved` |
 | PATCH | /admin/reviews/{id}, /admin/threads/{id} | Hide/restore |
 | GET | /admin/orders[/{id}], /admin/payments[/{id}] | Commerce views |
 | POST | /admin/payments/{id}/recheck | Force status re-query |
@@ -490,7 +490,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/payout-batches/{id}/approve | Approve and send (`Idempotency-Key`) |
 | POST | /admin/payouts/{id}/exclude | Leave a line out of a draft batch `{note}` |
 | GET / PUT | /admin/settings | Platform settings (`settings.manage`): all six groups; PUT takes any groups, each whole. `UpdateSettings` checks rules across settings on the would-be result (default currency enabled; price limits and payout minimum for every enabled currency; earnings hold ≥ refund window), then saves in one transaction; `AuditSettingsChange` logs before/after |
-| GET | /admin/dashboard | Back-office home (any staff): 30-day KPIs vs the 30 before, active students 7/30 d, daily series, queues (applications and course reviews with overdue vs SLA, KYC, refunds, stuck payments, failed payouts). Money only with `commerce.view`/`finance.view`; each queue only with its permission |
+| GET | /admin/dashboard | Back-office home (any staff): 30-day KPIs vs the 30 before, active students 7/30 d, daily series, queues (applications and course reviews with overdue vs SLA, KYC, open reports, refunds, stuck payments, failed payouts). Money only with `commerce.view`/`finance.view`; each queue only with its permission |
 | GET / POST | /admin/courses, /admin/courses/{id}/(unpublish\|republish\|take-down\|restore) | Courses (`catalog.view` to list, `catalog.manage` to act; reason `note` required, audited). Unpublish: off the catalogue, enrolled keep access; take down: closed to everyone |
 | GET / POST / PATCH / DELETE / PUT | /admin/categories[/{id}], /admin/categories/order | Category tree (`catalog.manage`): all categories with fr/en names, visibility, counts; two levels at most; delete only when unused (409 `category.in_use`); order one level `{parent_id, ids}`; audited; saving refreshes the public pages |
 | GET / POST | /admin/reviews, /admin/reviews/{id}/(hide\|restore) | Review moderation (`moderation.reports`): hide/restore with a reason; ratings recounted under the professor → course lock; course and professor pages refreshed; audited |
