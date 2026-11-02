@@ -15,6 +15,8 @@ export type AdminDashboardShow200DataQueues = {
   /** @nullable */
   kyc: number | null;
   /** @nullable */
+  reports: number | null;
+  /** @nullable */
   refunds: number | null;
   /** @nullable */
   stuck_payments: number | null;
