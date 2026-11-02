@@ -62,7 +62,7 @@ export default async function CoursePage({ params }: Props) {
   const t = await getTranslations("web");
   const lessons = course.sections.flatMap((s) => s.lessons);
   const preview = lessons.find((l) => l.is_preview && (l.type === "video" || l.type === "audio"));
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
   const pageUrl = `${siteUrl}${getPathname({ href: `/courses/${slug}`, locale })}`;
   const crumbs = [
     { name: t("nav.courses"), href: "/courses" },

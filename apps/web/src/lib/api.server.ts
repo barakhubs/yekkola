@@ -10,7 +10,8 @@ import { getLocale } from "next-intl/server";
  * the root layout; server code that runs without it (route handlers, sitemap.ts, OG images) imports it too.
  */
 configureApiClient({
-  baseUrl: process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+  // `||`, not `??`: a variable copied from .env.example as `API_INTERNAL_URL=` is set but empty.
+  baseUrl: process.env.API_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
   locale: async () => {
     try {
       return await getLocale();

@@ -62,7 +62,7 @@ interface ClientConfig {
 }
 
 const config: ClientConfig = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
   locale: () => "fr",
 };
 
