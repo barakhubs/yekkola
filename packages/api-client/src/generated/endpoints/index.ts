@@ -1,6 +1,7 @@
 export * from "./application/application";
 export * from "./audit-log/audit-log";
 export * from "./authoring-options/authoring-options";
+export * from "./branding/branding";
 export * from "./bundle/bundle";
 export * from "./category/category";
 export * from "./certificate/certificate";
