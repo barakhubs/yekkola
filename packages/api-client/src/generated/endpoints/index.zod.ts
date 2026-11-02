@@ -41,6 +41,7 @@ export * from "./province/province.zod";
 export * from "./quiz-attempt/quiz-attempt.zod";
 export * from "./receipt/receipt.zod";
 export * from "./refund/refund.zod";
+export * from "./report/report.zod";
 export * from "./review/review.zod";
 export * from "./review-moderation/review-moderation.zod";
 export * from "./settings/settings.zod";

@@ -28,7 +28,8 @@ final class Impersonation
 
     /**
      * Route names refused while impersonating (`*` matches anything): paying, refunds, payouts, ledger, staff and
-     * settings changes, and anything that changes the impersonated account itself.
+     * settings changes, account actions (resolving a report can suspend one), and anything that changes the
+     * impersonated account itself.
      */
     public const FORBIDDEN_ROUTES = [
         'orders.store', 'orders.pay', 'orders.refund-requests.store', 'courses.enroll',
@@ -37,7 +38,7 @@ final class Impersonation
         'admin.refunds.approve', 'admin.refunds.reject', 'admin.refunds.retry', 'admin.payments.*',
         'admin.payout-batches.store', 'admin.payout-batches.approve', 'admin.payouts.*', 'admin.ledger.adjustments.*',
         'admin.staff.store', 'admin.staff.update', 'admin.staff.destroy', 'admin.staff.password',
-        'admin.users.status', 'admin.users.sign-out', 'admin.users.devices.*', 'admin.users.impersonate',
+        'admin.users.status', 'admin.users.sign-out', 'admin.users.devices.*', 'admin.users.impersonate', 'admin.reports.resolve',
         'admin.settings.update',
     ];
 

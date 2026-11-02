@@ -91,6 +91,11 @@ final class AppServiceProvider extends ServiceProvider
         // Profile updates (limits probing which emails are taken).
         // Review writes (PRD-06 FR-12) and public certificate lookups (FR-11).
         RateLimiter::for('reviews', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Reports (PRD-06 FR-14): enough to flag several items, not to flood the moderators' queue.
+        RateLimiter::for('reports', fn (Request $request) => [
+            Limit::perMinute(5)->by('m:'.($request->user()?->getAuthIdentifier() ?? $request->ip())),
+            Limit::perDay(30)->by('d:'.($request->user()?->getAuthIdentifier() ?? $request->ip())),
+        ]);
         // Playback tokens and documents (PRD-07): per student; previews per IP.
         RateLimiter::for('playback', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('preview-playback', fn (Request $request) => self::perVisitor($request, 30));

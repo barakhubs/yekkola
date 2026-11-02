@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
+use App\Domain\Moderation\Models\Report;
 use App\Domain\Platform\Models\Activity;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -61,6 +63,10 @@ it('opens the back office as a staff member sees it, account actions refused, en
     switched();
     $this->getJson('/api/v1/admin/dashboard', WEB_APP)->assertOk(); // their back office
     $this->postJson("/api/v1/admin/users/{$target->id}/sign-out", [], WEB_APP)->assertForbidden()
+        ->assertJsonPath('code', 'auth.impersonation_forbidden');
+    // Resolving a report can suspend an account: refused too.
+    $report = Report::query()->create(['reporter_id' => $target->id, 'reportable_type' => 'review', 'reportable_id' => (string) Str::ulid(), 'reason' => 'spam']);
+    $this->postJson("/api/v1/admin/reports/{$report->id}/resolve", ['action' => 'dismiss'], WEB_APP)->assertForbidden()
         ->assertJsonPath('code', 'auth.impersonation_forbidden');
 
     // An audited action they may take (a category) records who really did it.

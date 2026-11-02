@@ -198,6 +198,12 @@ return [
         'not_free' => 'Ce cours est payant.',
         'revoked' => 'Votre accès à ce cours a été retiré. Contactez le support.',
     ],
+    'report' => [
+        'target_not_found' => 'Ce contenu n’existe plus ou n’est plus visible.',
+        'own_content' => 'Vous ne pouvez pas signaler votre propre contenu.',
+        'already_resolved' => 'Ce signalement a déjà été traité.',
+        'action_not_allowed' => 'Cette action n’est pas possible pour ce signalement.',
+    ],
     'phone' => [
         'invalid' => 'Numéro de téléphone invalide.',
         'taken' => 'Ce numéro est déjà utilisé par un autre compte.',

@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `fix/empty-api-url` (empty URL env vars fall back to the defaults)
-- **Next up:** reports (students report reviews, courses, professors; staff queue) — PRD-06 FR-14, PRD-09 FR-10
+- **Current branch:** `feature/prd-09-reports` (reports: students flag courses, reviews, professors; staff queue)
+- **Next up:** lesson Q&A (PRD-06 FR-13) with Q&A reports and moderation
 
 ## Legend
 
@@ -227,7 +227,9 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Admin hide/restore reviews — #46
 - [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
 - [ ] c: Lesson Q&A threads (FR-13)
-- [ ] c: Reports (FR-14)
+- [x] c: Reports on courses, reviews, professors (FR-14) — this PR
+- [ ] Reports on Q&A threads and replies (with FR-13)
+- [ ] Tell a warned author about the warning, and reporters that their report was handled (with 1.12)
 - [ ] Course updated notice with changelog (FR-15)
 
 ### 1.9 Content protection — PRD-07
@@ -278,7 +280,8 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Transfer course ownership (super admin, PRD-09 FR-08)
 - [ ] Tell the professor about a takedown (with 1.12)
 - [x] Review moderation — #46
-- [ ] Reports queue; Q&A threads moderation (with 1.8c)
+- [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — this PR
+- [ ] Q&A threads moderation (with 1.8c)
 - [x] Orders, payments (recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
@@ -346,7 +349,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Courses + featured — #42
 - [x] Categories (tree + ordering) — #43
 - [x] Review moderation screen — #46
-- [ ] Reports and Q&A moderation screens
+- [x] Reports screen + dashboard queue — this PR
+- [ ] Q&A moderation screen
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36

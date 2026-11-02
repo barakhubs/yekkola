@@ -75,6 +75,7 @@ export const AdminDashboardShowResponse = zod.object({
         })
         .nullable(),
       kyc: zod.int().nullable(),
+      reports: zod.int().nullable(),
       refunds: zod.int().nullable(),
       stuck_payments: zod.int().nullable(),
       failed_payouts: zod.int().nullable(),

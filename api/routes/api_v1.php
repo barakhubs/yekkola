@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Api\V1\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Api\V1\Admin\ReviewModerationController;
 use App\Http\Controllers\Api\V1\Admin\SettingsController;
 use App\Http\Controllers\Api\V1\Admin\StaffController;
@@ -42,6 +43,7 @@ use App\Http\Controllers\Api\V1\Learning\CertificateController;
 use App\Http\Controllers\Api\V1\Learning\LearningController;
 use App\Http\Controllers\Api\V1\Learning\QuizAttemptController;
 use App\Http\Controllers\Api\V1\Learning\ReviewController;
+use App\Http\Controllers\Api\V1\Moderation\ReportController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\AuthoringOptionsController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
@@ -114,6 +116,8 @@ Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/review', [ReviewController::class, 'store'])->middleware('throttle:reviews')->name('courses.review.store');
     Route::patch('/courses/{course}/review', [ReviewController::class, 'update'])->middleware('throttle:reviews')->name('courses.review.update');
     Route::delete('/courses/{course}/review', [ReviewController::class, 'destroy'])->middleware('throttle:reviews')->name('courses.review.destroy');
+    // Reports (PRD-06 FR-14)
+    Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:reports')->name('reports.store');
 });
 
 // Public catalogue (PRD-04)
@@ -321,11 +325,13 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::put('/staff/{user}/password', [StaffPasswordController::class, 'setFor'])->name('staff.password');
     });
 
-    // Review moderation (PRD-09 FR-10)
+    // Review moderation and reports (PRD-09 FR-10)
     Route::middleware('can:'.Permission::ModerationReports->value)->group(function () {
         Route::get('/reviews', [ReviewModerationController::class, 'index'])->name('reviews.index');
         Route::post('/reviews/{review}/hide', [ReviewModerationController::class, 'hide'])->name('reviews.hide');
         Route::post('/reviews/{review}/restore', [ReviewModerationController::class, 'restore'])->name('reviews.restore');
+        Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+        Route::post('/reports/{report}/resolve', [AdminReportController::class, 'resolve'])->name('reports.resolve');
     });
 
     // Accounts (PRD-09 FR-04)
