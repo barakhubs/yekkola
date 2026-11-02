@@ -944,6 +944,35 @@
     "impersonation": {
       "banner": "Un membre de l’équipe Yekkola ({by}) voit le site comme {name}, jusqu’à {until}. Paiements et modifications du compte sont bloqués.",
       "stop": "Revenir au back-office"
+    },
+    "report": {
+      "trigger": {
+        "course": "Signaler ce cours",
+        "review": "Signaler cet avis",
+        "professor": "Signaler ce profil"
+      },
+      "title": {
+        "course": "Signaler ce cours",
+        "review": "Signaler cet avis",
+        "professor": "Signaler ce profil"
+      },
+      "intro": "Dis-nous ce qui ne va pas. L’équipe de modération examine chaque signalement ; la personne concernée ne sait pas qui l’a fait.",
+      "reason": "Raison",
+      "reasons": {
+        "spam": "Spam ou publicité",
+        "abusive": "Insultes, harcèlement ou propos haineux",
+        "inappropriate": "Contenu choquant ou inapproprié",
+        "misleading": "Informations fausses ou trompeuses",
+        "copyright": "Contenu copié sans autorisation",
+        "fraud": "Arnaque ou fraude",
+        "other": "Autre raison"
+      },
+      "details": "Détails (facultatif)",
+      "detailsRequired": "Explique le problème",
+      "submit": "Envoyer le signalement",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "thanks": "Merci. Notre équipe va examiner ton signalement."
     }
   },
   "admin": {
@@ -974,7 +1003,8 @@
       "refunds": "Remboursements à traiter",
       "stuckPayments": "Paiements bloqués",
       "failedPayouts": "Versements en échec (30 j)",
-      "overdue": "{count, plural, one {# en retard} other {# en retard}}"
+      "overdue": "{count, plural, one {# en retard} other {# en retard}}",
+      "reports": "Signalements à traiter"
     },
     "brand": "Yekkola · Back office",
     "notStaffTitle": "Accès réservé à l’équipe Yekkola",
@@ -995,7 +1025,8 @@
       "courses": "Cours",
       "categories": "Catégories",
       "password": "Mot de passe",
-      "reviews": "Avis"
+      "reviews": "Avis",
+      "reports": "Signalements"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1743,6 +1774,94 @@
       "hideHint": "Il disparaît de la page du cours et ne compte plus dans les notes du cours et du professeur.",
       "restoreHint": "Il revient sur la page du cours et dans les notes.",
       "reason": "Raison (gardée dans le journal d’audit)"
+    },
+    "reportsQueue": {
+      "title": "Signalements",
+      "intro": "Contenus signalés par les utilisateurs, les plus anciens d’abord. Une décision ferme tous les signalements ouverts sur le même élément.",
+      "status": "Statut",
+      "type": "Élément",
+      "reason": "Raison",
+      "empty": "Aucun signalement.",
+      "options": {
+        "open": "À traiter",
+        "actioned": "Traités (action prise)",
+        "dismissed": "Classés sans suite",
+        "all": "Tous",
+        "course": "Cours",
+        "review": "Avis",
+        "professor": "Professeur",
+        "spam": "Spam ou publicité",
+        "abusive": "Insultes, harcèlement ou propos haineux",
+        "inappropriate": "Contenu choquant ou inapproprié",
+        "misleading": "Informations fausses ou trompeuses",
+        "copyright": "Contenu copié sans autorisation",
+        "fraud": "Arnaque ou fraude",
+        "other": "Autre raison"
+      },
+      "openOnItem": "{count, plural, one {# signalement ouvert} other {# signalements ouverts}} sur cet élément",
+      "reportedBy": "Signalé par {name}",
+      "details": "« {text} »",
+      "author": "Auteur :",
+      "gone": "Cet élément n’existe plus.",
+      "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+      "states": {
+        "visible": "Visible",
+        "hidden": "Masqué",
+        "draft": "Brouillon",
+        "in_review": "En relecture",
+        "published": "Publié",
+        "unpublished": "Dépublié",
+        "archived": "Archivé",
+        "taken_down": "Retiré",
+        "deleted": "Supprimé",
+        "active": "Actif",
+        "suspended": "Suspendu",
+        "banned": "Banni"
+      },
+      "note": "Raison (gardée dans le journal d’audit)",
+      "resolved": {
+        "dismiss": "Classé sans suite par {name} le {date}",
+        "warn": "Auteur averti par {name} le {date}",
+        "hide": "Masqué ou retiré par {name} le {date}",
+        "suspend": "Suspendu par {name} le {date}"
+      },
+      "actions": {
+        "dismiss": {
+          "label": "Classer sans suite",
+          "confirm": "Classer ce signalement sans suite ?",
+          "hint": "{count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}} Rien n’est modifié."
+        },
+        "warn": {
+          "label": "Avertir l’auteur",
+          "confirm": "Avertir l’auteur ?",
+          "hint": "L’avertissement est inscrit à son dossier (journal d’audit). {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "hide_review": {
+          "label": "Masquer l’avis",
+          "confirm": "Masquer cet avis ?",
+          "hint": "Il quitte la page du cours et les notes tout de suite. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "hide_course": {
+          "label": "Retirer le cours",
+          "confirm": "Retirer ce cours ?",
+          "hint": "Il quitte le catalogue et plus personne ne peut le suivre, inscrits compris. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "suspend_review": {
+          "label": "Suspendre le compte",
+          "confirm": "Suspendre le compte de l’auteur ?",
+          "hint": "L’auteur est déconnecté partout et ne peut plus utiliser la plateforme. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "suspend_course": {
+          "label": "Suspendre le professeur",
+          "confirm": "Suspendre le professeur ?",
+          "hint": "Ses cours quittent le catalogue. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "suspend_professor": {
+          "label": "Suspendre le professeur",
+          "confirm": "Suspendre le professeur ?",
+          "hint": "Son profil et ses cours quittent le catalogue. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        }
+      }
     }
   }
 }

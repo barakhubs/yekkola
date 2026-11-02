@@ -7,7 +7,7 @@ import { formatDate, formatMoney, type Locale } from "@yekkola/i18n";
 import { KpiCard } from "@yekkola/ui/blocks/kpi-card";
 import { PageHeader } from "@yekkola/ui/blocks/page-header";
 import { Skeleton } from "@yekkola/ui/components/skeleton";
-import { BookCheck, CreditCard, GraduationCap, IdCard, ReceiptText, Wallet } from "lucide-react";
+import { BookCheck, CreditCard, Flag, GraduationCap, IdCard, ReceiptText, Wallet } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
@@ -165,6 +165,14 @@ function Queues({ queues }: { queues: Dashboard["queues"] }) {
     });
   if (queues.kyc !== null)
     cards.push({ key: "kyc", href: null, icon: <IdCard />, label: t("kyc"), count: queues.kyc });
+  if (queues.reports !== null)
+    cards.push({
+      key: "reports",
+      href: "/moderation/reports",
+      icon: <Flag />,
+      label: t("reports"),
+      count: queues.reports,
+    });
   if (queues.refunds !== null)
     cards.push({
       key: "refunds",

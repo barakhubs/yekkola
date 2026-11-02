@@ -944,6 +944,35 @@
     "impersonation": {
       "banner": "A Yekkola team member ({by}) is viewing the site as {name}, until {until}. Payments and account changes are blocked.",
       "stop": "Back to the back office"
+    },
+    "report": {
+      "trigger": {
+        "course": "Report this course",
+        "review": "Report this review",
+        "professor": "Report this profile"
+      },
+      "title": {
+        "course": "Report this course",
+        "review": "Report this review",
+        "professor": "Report this profile"
+      },
+      "intro": "Tell us what’s wrong. The moderation team looks at every report; the person concerned isn’t told who made it.",
+      "reason": "Reason",
+      "reasons": {
+        "spam": "Spam or advertising",
+        "abusive": "Insults, harassment or hate",
+        "inappropriate": "Shocking or inappropriate content",
+        "misleading": "False or misleading information",
+        "copyright": "Content copied without permission",
+        "fraud": "Scam or fraud",
+        "other": "Something else"
+      },
+      "details": "Details (optional)",
+      "detailsRequired": "Describe the problem",
+      "submit": "Send report",
+      "cancel": "Cancel",
+      "close": "Close",
+      "thanks": "Thank you. Our team will look at your report."
     }
   },
   "admin": {
@@ -974,7 +1003,8 @@
       "refunds": "Refunds to handle",
       "stuckPayments": "Stuck payments",
       "failedPayouts": "Failed payouts (30d)",
-      "overdue": "{count, plural, one {# overdue} other {# overdue}}"
+      "overdue": "{count, plural, one {# overdue} other {# overdue}}",
+      "reports": "Reports to handle"
     },
     "brand": "Yekkola · Back office",
     "notStaffTitle": "For the Yekkola team only",
@@ -995,7 +1025,8 @@
       "courses": "Courses",
       "categories": "Categories",
       "password": "Password",
-      "reviews": "Reviews"
+      "reviews": "Reviews",
+      "reports": "Reports"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1743,6 +1774,94 @@
       "hideHint": "It leaves the course page and no longer counts in the course's and professor's ratings.",
       "restoreHint": "It comes back on the course page and in the ratings.",
       "reason": "Reason (kept in the audit log)"
+    },
+    "reportsQueue": {
+      "title": "Reports",
+      "intro": "Content reported by users, oldest first. One decision closes every open report on the same item.",
+      "status": "Status",
+      "type": "Item",
+      "reason": "Reason",
+      "empty": "No reports.",
+      "options": {
+        "open": "To handle",
+        "actioned": "Handled (action taken)",
+        "dismissed": "Dismissed",
+        "all": "All",
+        "course": "Course",
+        "review": "Review",
+        "professor": "Professor",
+        "spam": "Spam or advertising",
+        "abusive": "Insults, harassment or hate",
+        "inappropriate": "Shocking or inappropriate content",
+        "misleading": "False or misleading information",
+        "copyright": "Content copied without permission",
+        "fraud": "Scam or fraud",
+        "other": "Something else"
+      },
+      "openOnItem": "{count, plural, one {# open report} other {# open reports}} on this item",
+      "reportedBy": "Reported by {name}",
+      "details": "“{text}”",
+      "author": "Author:",
+      "gone": "This item no longer exists.",
+      "stars": "{count, plural, one {# star} other {# stars}}",
+      "states": {
+        "visible": "Visible",
+        "hidden": "Hidden",
+        "draft": "Draft",
+        "in_review": "In review",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "archived": "Archived",
+        "taken_down": "Taken down",
+        "deleted": "Deleted",
+        "active": "Active",
+        "suspended": "Suspended",
+        "banned": "Banned"
+      },
+      "note": "Reason (kept in the audit log)",
+      "resolved": {
+        "dismiss": "Dismissed by {name} on {date}",
+        "warn": "Author warned by {name} on {date}",
+        "hide": "Hidden or taken down by {name} on {date}",
+        "suspend": "Suspended by {name} on {date}"
+      },
+      "actions": {
+        "dismiss": {
+          "label": "Dismiss",
+          "confirm": "Dismiss this report?",
+          "hint": "{count, plural, one {The report is closed.} other {The # open reports on this item are closed.}} Nothing is changed."
+        },
+        "warn": {
+          "label": "Warn the author",
+          "confirm": "Warn the author?",
+          "hint": "The warning goes on their record (audit log). {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "hide_review": {
+          "label": "Hide review",
+          "confirm": "Hide this review?",
+          "hint": "It leaves the course page and the ratings at once. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "hide_course": {
+          "label": "Take course down",
+          "confirm": "Take this course down?",
+          "hint": "It leaves the catalogue and nobody can follow it any more, enrolled students included. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "suspend_review": {
+          "label": "Suspend account",
+          "confirm": "Suspend the author’s account?",
+          "hint": "The author is signed out everywhere and can no longer use the platform. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "suspend_course": {
+          "label": "Suspend professor",
+          "confirm": "Suspend the professor?",
+          "hint": "Their courses leave the catalogue. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "suspend_professor": {
+          "label": "Suspend professor",
+          "confirm": "Suspend the professor?",
+          "hint": "Their profile and courses leave the catalogue. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        }
+      }
     }
   }
 }
