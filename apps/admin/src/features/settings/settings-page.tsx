@@ -16,26 +16,33 @@ import { Input } from "@yekkola/ui/components/input";
 import { Label } from "@yekkola/ui/components/label";
 import { Skeleton } from "@yekkola/ui/components/skeleton";
 import { useTranslations } from "next-intl";
-import { type FormEvent, type ReactNode, useState } from "react";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { type FormEvent, type KeyboardEvent, type ReactNode, useRef, useState } from "react";
 
 import { useErrorText } from "@/features/common/errors";
 import { selectClass } from "@/features/common/styles";
+import { BrandingSection } from "@/features/settings/branding-section";
 
 type Settings = AdminSettingsShow200Data;
 type Group = keyof Settings;
 
 const CURRENCIES = ["USD", "CDF"] as const;
 const RAILS = ["orange", "airtel", "mpesa"] as const;
+const TABS = ["commerce", "payouts", "protection", "catalog", "learning", "moderation", "branding"] as const;
+type Tab = (typeof TABS)[number];
 
 /**
- * Platform settings (project-context "Platform settings"): one section per group, each saved on its own. The API
- * checks every rule — including those across groups, like earnings held at least as long as the refund window —
- * and names the setting at fault. Changes apply going forward only; every save is audited.
+ * Platform settings (project-context "Platform settings"): one tab per group, each saved on its own (the open tab is
+ * in the URL; switching tabs keeps unsaved edits). The API checks every rule — including those across groups, like
+ * earnings held at least as long as the refund window — and names the setting at fault. Changes apply going
+ * forward only; every save is audited.
  */
 export function SettingsPage() {
   const t = useTranslations("admin.settings");
   const errorText = useErrorText();
   const settings = useAdminSettingsShow({ query: { select: (r) => success(r).data } });
+  const [tab, setTab] = useQueryState("tab", parseAsStringLiteral(TABS).withDefault("commerce"));
+  const tabs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
 
   if (settings.isPending) {
     return (
@@ -58,12 +65,54 @@ export function SettingsPage() {
   return (
     <div className="mx-auto grid max-w-4xl gap-6 px-4 py-8 sm:px-6">
       <PageHeader title={t("title")} description={t("intro")} />
-      <CommerceSection settings={s} />
-      <PayoutsSection settings={s} />
-      <NumbersSection group="protection" settings={s} />
-      <CatalogSection settings={s} />
-      <LearningSection settings={s} />
-      <NumbersSection group="moderation" settings={s} />
+      <div
+        role="tablist"
+        aria-label={t("tabs")}
+        className="flex gap-1 overflow-x-auto border-b"
+        onKeyDown={(e: KeyboardEvent) => {
+          // Arrow keys move between tabs (WAI-ARIA tabs pattern).
+          const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+          if (step === 0) return;
+          e.preventDefault();
+          const next = TABS[(TABS.indexOf(tab) + step + TABS.length) % TABS.length] ?? "commerce";
+          void setTab(next);
+          tabs.current[next]?.focus();
+        }}
+      >
+        {TABS.map((id) => (
+          <button
+            key={id}
+            ref={(el) => {
+              tabs.current[id] = el;
+            }}
+            id={`tab-${id}`}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            aria-controls={`panel-${id}`}
+            tabIndex={tab === id ? 0 : -1}
+            onClick={() => void setTab(id)}
+            className={
+              tab === id
+                ? "-mb-px shrink-0 border-b-2 border-primary px-3 py-2 text-sm font-semibold text-primary"
+                : "-mb-px shrink-0 border-b-2 border-transparent px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+            }
+          >
+            {t(`groups.${id}`)}
+          </button>
+        ))}
+      </div>
+      {/* Every panel stays mounted (hidden when not shown) so unsaved edits survive a tab switch. */}
+      {TABS.map((id) => (
+        <div key={id} id={`panel-${id}`} role="tabpanel" aria-labelledby={`tab-${id}`} hidden={tab !== id}>
+          {id === "commerce" ? <CommerceSection settings={s} /> : null}
+          {id === "payouts" ? <PayoutsSection settings={s} /> : null}
+          {id === "protection" || id === "moderation" ? <NumbersSection group={id} settings={s} /> : null}
+          {id === "catalog" ? <CatalogSection settings={s} /> : null}
+          {id === "learning" ? <LearningSection settings={s} /> : null}
+          {id === "branding" ? <BrandingSection /> : null}
+        </div>
+      ))}
     </div>
   );
 }
