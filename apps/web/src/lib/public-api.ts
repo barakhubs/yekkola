@@ -21,13 +21,21 @@ type CacheOptions = RequestInit & { next: { revalidate: number | false; tags?: s
 /** How long public pages may be stale (seconds). The API also expires them by tag on changes (/api/revalidate). */
 const REVALIDATE = { catalogue: 300, course: 300, rails: 300, categories: 3600 } as const;
 
+/** At build time an unreachable API can hang instead of failing; give up well before Next's 60 s page limit. */
+const BUILD_TIMEOUT_MS = 10_000;
+
 function cached(revalidate: number, tags: string[] = []): CacheOptions {
-  return { next: { revalidate, tags } };
+  const duringBuild = process.env.NEXT_PHASE === "phase-production-build";
+
+  return {
+    next: { revalidate, tags },
+    ...(duringBuild && { signal: AbortSignal.timeout(BUILD_TIMEOUT_MS) }),
+  };
 }
 
 /**
- * Pages prerendered at build time (home) may build where the API isn't reachable (CI, image builds): they
- * start empty and fill in at their first revalidation. At runtime, errors surface as usual.
+ * Pages prerendered at build time (home) may build where the API isn't reachable or hangs (CI, image builds,
+ * a first Cloud deploy — requests time out, see `cached`): they start empty and fill in at their first revalidation. At runtime, errors surface as usual.
  */
 async function emptyDuringBuild<T>(fallback: T, load: () => Promise<T>): Promise<T> {
   try {
