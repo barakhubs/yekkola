@@ -2005,6 +2005,15 @@
       "hideHint": "Other participants no longer see it; its author still does, marked as hidden.",
       "restoreHint": "Course participants see it again.",
       "reason": "Reason (kept in the audit log)"
+    },
+    "alerts": {
+      "bell": "Alerts",
+      "bellUnread": "{count, plural, one {Alerts, # unread} other {Alerts, # unread}}",
+      "title": "Alerts",
+      "intro": "Problems your team needs to look at: ledger check, failed payouts, stuck payments.",
+      "markAllRead": "Mark all as read",
+      "empty": "No alerts.",
+      "unread": "Unread"
     }
   }
 }

@@ -2005,6 +2005,15 @@
       "hideHint": "Elle disparaît pour les autres participants ; son auteur la voit encore, marquée comme masquée.",
       "restoreHint": "Elle redevient visible pour les participants du cours.",
       "reason": "Raison (gardée dans le journal d’audit)"
+    },
+    "alerts": {
+      "bell": "Alertes",
+      "bellUnread": "{count, plural, one {Alertes, # non lue} other {Alertes, # non lues}}",
+      "title": "Alertes",
+      "intro": "Les problèmes qui demandent l’attention de votre équipe : contrôle du grand livre, versements en échec, paiements bloqués.",
+      "markAllRead": "Tout marquer comme lu",
+      "empty": "Aucune alerte.",
+      "unread": "Non lue"
     }
   }
 }

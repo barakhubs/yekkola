@@ -11,7 +11,7 @@ import { Link } from "@/i18n/navigation";
 /** Header bell (PRD-10 FR-03): unread count, refreshed every minute while the page is open. */
 export function NotificationBell() {
   const t = useTranslations("web.notifications");
-  const unread = useMeNotificationsUnreadCount({
+  const unread = useMeNotificationsUnreadCount(undefined, {
     query: { select: (r) => success(r).data.unread, refetchInterval: 60_000, refetchOnWindowFocus: true },
   });
   const count = unread.data ?? 0;
