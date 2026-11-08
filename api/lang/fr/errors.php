@@ -141,6 +141,10 @@ return [
         'own_course' => 'Vous ne pouvez pas noter votre propre cours.',
         'exists' => 'Vous avez déjà noté ce cours. Modifiez plutôt votre avis.',
     ],
+    'qa' => [
+        'access_required' => 'Inscrivez-vous à ce cours pour voir et poser des questions.',
+        'moderation_transition' => 'Ce contenu est déjà dans cet état.',
+    ],
     'quiz' => [
         'not_a_quiz' => 'Cette leçon n’est pas un quiz.',
         'max_attempts_reached' => 'Vous avez utilisé vos :max_attempts tentatives pour ce quiz.',

@@ -6,7 +6,9 @@ namespace App\Http\Resources\Admin;
 
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Identity\Models\User;
+use App\Domain\Learning\Models\LessonThread;
 use App\Domain\Learning\Models\Review;
+use App\Domain\Learning\Models\ThreadReply;
 use App\Domain\Moderation\Actions\ResolveReport;
 use App\Domain\Moderation\Models\Report;
 use App\Domain\Professors\Models\ProfessorProfile;
@@ -52,12 +54,13 @@ final class AdminReportResource extends JsonResource
     /**
      * @return array{type: string, id: string, exists: bool, title: string|null, excerpt: string|null, rating: int|null, course_slug: string|null, professor_slug: string|null, state: string|null, author: array{id: string, name: string|null, status: string}|null}
      */
-    private function targetSummary(Course|Review|ProfessorProfile|null $target): array
+    private function targetSummary(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): array
     {
         $author = ResolveReport::author($target);
         $course = match (true) {
             $target instanceof Course => $target,
-            $target instanceof Review => $target->course,
+            $target instanceof Review, $target instanceof LessonThread => $target->course,
+            $target instanceof ThreadReply => $target->thread?->course,
             default => null,
         };
 
@@ -67,9 +70,15 @@ final class AdminReportResource extends JsonResource
             'exists' => $target !== null,
             'title' => match (true) {
                 $target instanceof ProfessorProfile => $target->display_name,
+                $target instanceof LessonThread => $target->title,
+                $target instanceof ThreadReply => $target->thread?->title,
                 default => $course?->liveVersion?->title,
             },
-            'excerpt' => $target instanceof Review && $target->body !== null ? Str::limit($target->body, 280) : null,
+            'excerpt' => match (true) {
+                $target instanceof Review => $target->body !== null ? Str::limit($target->body, 280) : null,
+                $target instanceof LessonThread, $target instanceof ThreadReply => Str::limit($target->body, 280),
+                default => null,
+            },
             'rating' => $target instanceof Review ? $target->rating : null,
             'course_slug' => $course?->slug,
             'professor_slug' => match (true) {
@@ -80,6 +89,7 @@ final class AdminReportResource extends JsonResource
             // review: visible|hidden; course: published|unpublished|taken_down|deleted|…; professor: its status.
             'state' => match (true) {
                 $target instanceof Review => $target->status->value,
+                $target instanceof LessonThread, $target instanceof ThreadReply => $target->isHidden() ? 'hidden' : 'visible',
                 $target instanceof Course => $target->trashed() ? 'deleted' : ($target->taken_down_at !== null ? 'taken_down' : $target->status->value),
                 $target instanceof ProfessorProfile => $target->status->value,
                 default => null,

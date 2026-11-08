@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorController as AdminProfessorController;
+use App\Http\Controllers\Api\V1\Admin\QaModerationController;
 use App\Http\Controllers\Api\V1\Admin\RefundController as AdminRefundController;
 use App\Http\Controllers\Api\V1\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Api\V1\Admin\ReviewModerationController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Api\V1\Learning\CertificateController;
 use App\Http\Controllers\Api\V1\Learning\LearningController;
 use App\Http\Controllers\Api\V1\Learning\QuizAttemptController;
 use App\Http\Controllers\Api\V1\Learning\ReviewController;
+use App\Http\Controllers\Api\V1\Learning\ThreadController;
 use App\Http\Controllers\Api\V1\Moderation\ReportController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\AuthoringOptionsController;
@@ -57,6 +59,7 @@ use App\Http\Controllers\Api\V1\Professor\MediaController;
 use App\Http\Controllers\Api\V1\Professor\PayoutMethodController;
 use App\Http\Controllers\Api\V1\Professor\ReviewController as StudioReviewController;
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
+use App\Http\Controllers\Api\V1\Professor\ThreadController as StudioThreadController;
 use App\Http\Controllers\Api\V1\Protection\DocumentController;
 use App\Http\Controllers\Api\V1\Protection\PlaybackController;
 use App\Http\Controllers\Api\V1\Public\BrandingController;
@@ -118,6 +121,11 @@ Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/review', [ReviewController::class, 'store'])->middleware('throttle:reviews')->name('courses.review.store');
     Route::patch('/courses/{course}/review', [ReviewController::class, 'update'])->middleware('throttle:reviews')->name('courses.review.update');
     Route::delete('/courses/{course}/review', [ReviewController::class, 'destroy'])->middleware('throttle:reviews')->name('courses.review.destroy');
+    // Lesson Q&A (PRD-06 FR-13): enrolled students and the course's professor
+    Route::get('/lessons/{lesson}/threads', [ThreadController::class, 'index'])->name('lessons.threads.index');
+    Route::post('/lessons/{lesson}/threads', [ThreadController::class, 'store'])->middleware('throttle:qa')->name('lessons.threads.store');
+    Route::get('/threads/{thread}', [ThreadController::class, 'show'])->name('threads.show');
+    Route::post('/threads/{thread}/replies', [ThreadController::class, 'reply'])->middleware('throttle:qa')->name('threads.replies.store');
     // Reports (PRD-06 FR-14)
     Route::post('/reports', [ReportController::class, 'store'])->middleware('throttle:reports')->name('reports.store');
 });
@@ -206,6 +214,7 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
     // Reviews of my courses (PRD-06 FR-12)
     Route::get('/reviews', [StudioReviewController::class, 'index'])->name('reviews.index');
     Route::post('/reviews/{review}/reply', [StudioReviewController::class, 'reply'])->middleware('throttle:reviews')->name('reviews.reply');
+    Route::get('/threads', [StudioThreadController::class, 'index'])->name('threads.index');
 
     // Courses (PRD-03)
     Route::get('/authoring-options', AuthoringOptionsController::class)->name('authoring-options');
@@ -335,6 +344,11 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::get('/reviews', [ReviewModerationController::class, 'index'])->name('reviews.index');
         Route::post('/reviews/{review}/hide', [ReviewModerationController::class, 'hide'])->name('reviews.hide');
         Route::post('/reviews/{review}/restore', [ReviewModerationController::class, 'restore'])->name('reviews.restore');
+        Route::get('/threads', [QaModerationController::class, 'index'])->name('threads.index');
+        Route::post('/threads/{thread}/hide', [QaModerationController::class, 'hideThread'])->name('threads.hide');
+        Route::post('/threads/{thread}/restore', [QaModerationController::class, 'restoreThread'])->name('threads.restore');
+        Route::post('/thread-replies/{reply}/hide', [QaModerationController::class, 'hideReply'])->name('thread-replies.hide');
+        Route::post('/thread-replies/{reply}/restore', [QaModerationController::class, 'restoreReply'])->name('thread-replies.restore');
         Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
         Route::post('/reports/{report}/resolve', [AdminReportController::class, 'resolve'])->name('reports.resolve');
     });

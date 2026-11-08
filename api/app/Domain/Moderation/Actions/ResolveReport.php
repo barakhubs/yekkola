@@ -10,9 +10,12 @@ use App\Domain\Identity\Actions\ChangeUserStatus;
 use App\Domain\Identity\Enums\Permission;
 use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
+use App\Domain\Learning\Actions\ModerateQa;
 use App\Domain\Learning\Actions\ModerateReview;
 use App\Domain\Learning\Enums\ReviewStatus;
+use App\Domain\Learning\Models\LessonThread;
 use App\Domain\Learning\Models\Review;
+use App\Domain\Learning\Models\ThreadReply;
 use App\Domain\Moderation\Enums\ReportAction;
 use App\Domain\Moderation\Enums\ReportStatus;
 use App\Domain\Moderation\Exceptions\ModerationException;
@@ -25,9 +28,9 @@ use Illuminate\Database\ConnectionInterface;
 /**
  * Staff resolve a report (PRD-09 FR-10), which closes every open report on the same item at once:
  * - dismiss: nothing breaks the rules;
- * - hide: a review is hidden, a course taken down (same rules as review moderation and course takedown);
+ * - hide: a review, question or reply is hidden, a course taken down (same rules as their own moderation screens);
  * - warn: the author gets a warning on their record (audited; the message to them comes with notifications, 1.12);
- * - suspend: a review's author account is suspended; for a course or profile, the professor is suspended.
+ * - suspend: a post's author account is suspended; for a course or profile, the professor is suspended.
  * Each action needs the permission its own screen needs (users, professors, catalogue), so a moderator can
  * dismiss, warn and hide reviews but not suspend accounts or take courses down. Staff are never warned or
  * suspended through reports.
@@ -41,6 +44,7 @@ final class ResolveReport
         private readonly ConnectionInterface $db,
         private readonly RecordAudit $recordAudit,
         private readonly ModerateReview $moderateReview,
+        private readonly ModerateQa $moderateQa,
         private readonly ChangeCourseAvailability $courseAvailability,
         private readonly ChangeUserStatus $userStatus,
         private readonly ManageProfessorStanding $professorStanding,
@@ -96,7 +100,7 @@ final class ResolveReport
      *
      * @return array{dismiss: bool, hide: bool, warn: bool, suspend: bool}
      */
-    public static function allowedActions(Report $report, Course|Review|ProfessorProfile|null $target, User $staff): array
+    public static function allowedActions(Report $report, Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target, User $staff): array
     {
         $none = ['dismiss' => false, 'hide' => false, 'warn' => false, 'suspend' => false];
         if (! $report->isOpen() || ! $staff->can(Permission::ModerationReports->value)) {
@@ -110,13 +114,14 @@ final class ResolveReport
             'dismiss' => true,
             'hide' => match (true) {
                 $target instanceof Review => $target->status === ReviewStatus::Visible,
+                $target instanceof LessonThread, $target instanceof ThreadReply => ! $target->isHidden(),
                 $target instanceof Course => $staff->can(Permission::CatalogManage->value)
                     && ! $target->trashed() && $target->taken_down_at === null && $target->live_version_id !== null,
                 default => false,
             },
             'warn' => $actsOnOthers && ! ChangeUserStatus::isStaff($author),
             'suspend' => $actsOnOthers && match (true) {
-                $target instanceof Review => $staff->can(Permission::UsersManage->value) && $author->isActive()
+                $target instanceof Review, $target instanceof LessonThread, $target instanceof ThreadReply => $staff->can(Permission::UsersManage->value) && $author->isActive()
                     && ! ChangeUserStatus::isStaff($author),
                 $target instanceof Course, $target instanceof ProfessorProfile => $staff->can(Permission::ProfessorsManage->value)
                     && self::profile($target)?->isActive() === true && ! ChangeUserStatus::isStaff($author),
@@ -126,10 +131,11 @@ final class ResolveReport
     }
 
     /** Who wrote or owns the reported item. */
-    public static function author(Course|Review|ProfessorProfile|null $target): ?User
+    public static function author(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): ?User
     {
         return match (true) {
             $target instanceof Review => $target->user,
+            $target instanceof LessonThread, $target instanceof ThreadReply => $target->author,
             $target instanceof Course => $target->professor?->user,
             $target instanceof ProfessorProfile => $target->user,
             default => null,
@@ -149,19 +155,26 @@ final class ResolveReport
         $this->professorStanding->suspend($profile, $staff, $note);
     }
 
+    /** A post by a student (or anyone): suspending means their account. */
+    private static function isPost(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): bool
+    {
+        return $target instanceof Review || $target instanceof LessonThread || $target instanceof ThreadReply;
+    }
+
     private static function profile(Course|ProfessorProfile $target): ?ProfessorProfile
     {
         return $target instanceof Course ? $target->professor : $target;
     }
 
-    private function apply(ReportAction $action, Course|Review|ProfessorProfile|null $target, string $note, User $staff): void
+    private function apply(ReportAction $action, Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target, string $note, User $staff): void
     {
         match (true) {
             $action === ReportAction::Dismiss => null,
             $action === ReportAction::Warn => $this->recordAudit->handle('user.warned', self::author($target), ['note' => $note], causer: $staff),
             $action === ReportAction::Hide && $target instanceof Review => $this->moderateReview->hide($target, $staff, $note),
+            $action === ReportAction::Hide && ($target instanceof LessonThread || $target instanceof ThreadReply) => $this->moderateQa->hide($target, $staff, $note),
             $action === ReportAction::Hide && $target instanceof Course => $this->courseAvailability->takeDown($target, $staff, $note),
-            $action === ReportAction::Suspend && $target instanceof Review && $target->user !== null => $this->userStatus->handle($target->user, UserStatus::Suspended, $note, $staff),
+            $action === ReportAction::Suspend && self::isPost($target) && self::author($target) !== null => $this->userStatus->handle(self::author($target), UserStatus::Suspended, $note, $staff),
             $action === ReportAction::Suspend && ($target instanceof Course || $target instanceof ProfessorProfile) => $this->suspendProfessor($target, $staff, $note),
             default => throw ModerationException::actionNotAllowed(),
         };
