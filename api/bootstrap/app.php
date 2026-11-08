@@ -11,6 +11,7 @@ use App\Domain\Identity\Console\CreateSuperAdmin;
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
 use App\Domain\Notifications\Console\CheckStuckPayments;
 use App\Domain\Notifications\Console\SendProfessorDigest;
+use App\Domain\Platform\Console\PrepareLoadTest;
 use App\Domain\Platform\Console\RollupPlatformStatsCommand;
 use App\Domain\Professors\Console\ExpireStaleApplications;
 use App\Domain\Shared\Exceptions\DomainException;
@@ -48,10 +49,13 @@ return Application::configure(basePath: dirname(__DIR__))
         RollupPlatformStatsCommand::class,
         SendProfessorDigest::class,
         CheckStuckPayments::class,
+        PrepareLoadTest::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.
         $middleware->statefulApi();
+        // Baseline rate limit on every route (limiter `api`, AppServiceProvider); sensitive routes add their own.
+        $middleware->throttleApi();
         // The fake video driver's upload URL stands in for the provider's, which the browser calls without a
         // CSRF token; it accepts nothing but file bytes for an upload id it issued, and 404s with real drivers.
         $middleware->validateCsrfTokens(except: ['api/v1/_fake/*']);

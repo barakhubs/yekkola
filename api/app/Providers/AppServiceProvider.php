@@ -47,6 +47,7 @@ use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -78,6 +79,34 @@ final class AppServiceProvider extends ServiceProvider
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
 
+        // Baseline for every /api/v1 route (bootstrap/app.php): per account when signed in (cookie or bearer token,
+        // also on public routes), per visitor otherwise. Kept above every route-specific limit below, and roomy
+        // enough for the studio's upload polling; provider webhooks and our web server's own page renders (no
+        // visitor behind them) have their own limits or none.
+        RateLimiter::for('api', function (Request $request): Limit {
+            if ($request->is('api/v1/webhooks/*')) {
+                return Limit::none();
+            }
+            $user = $request->user() ?? Auth::guard('sanctum')->user();
+            if ($user !== null) {
+                return Limit::perMinute(600)->by('user:'.$user->getAuthIdentifier());
+            }
+            $ip = ClientIp::of($request);
+
+            return $ip === null ? Limit::none() : Limit::perMinute(1_500)->by($ip);
+        });
+        // Account deletion and its cancellation.
+        RateLimiter::for('account-deletion', fn (Request $request) => Limit::perHour(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Staff: impersonation starts, staff management, and opening identity/credential files (limits bulk copying).
+        RateLimiter::for('impersonation', fn (Request $request) => Limit::perHour(20)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        RateLimiter::for('staff-admin', fn (Request $request) => Limit::perHour(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        RateLimiter::for('sensitive-files', fn (Request $request) => [
+            Limit::perMinute(30)->by('m:'.($request->user()?->getAuthIdentifier() ?? $request->ip())),
+            Limit::perDay(500)->by('d:'.($request->user()?->getAuthIdentifier() ?? $request->ip())),
+        ]);
+        // CSV statements and data-export downloads: built on each call.
+        RateLimiter::for('exports', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
         // OTP verification (sign-in, phone change): coarse per-IP cap on top of the per-challenge attempt limit.
         RateLimiter::for('otp-verify', fn (Request $request) => Limit::perMinutes(10, 30)->by($request->ip()));
         // Staff password sign-in and changes: per email+IP and per IP, against guessing.
@@ -100,8 +129,8 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('progress', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Quiz starts and submissions: grading a whole quiz per call.
         RateLimiter::for('quiz', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
-        // Catalogue and search: a coarse abuse cap only. Server-side rendering (apps/web) and carrier NAT put
-        // many visitors behind one IP. TODO(2.x): key on the forwarded client IP once trusted proxies are set.
+        // Catalogue and search: a coarse abuse cap only, per visitor (ClientIp: our web server forwards the
+        // visitor's IP). Carrier NAT still puts many visitors behind one IP.
         RateLimiter::for('catalogue', fn (Request $request) => self::perVisitor($request, 1_200));
         // Profile updates (limits probing which emails are taken).
         // Review writes (PRD-06 FR-12) and public certificate lookups (FR-11).
