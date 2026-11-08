@@ -10,18 +10,31 @@ use App\Domain\Catalog\Jobs\MakeListedSearchable;
 use App\Domain\Catalog\Listeners\RevalidateWebOnChange;
 use App\Domain\Catalog\Listeners\SyncCourseIndex;
 use App\Domain\Catalog\Models\Category;
+use App\Domain\Commerce\Events\OrderPaid;
+use App\Domain\Commerce\Events\RefundDecided;
+use App\Domain\Commerce\Models\Order;
+use App\Domain\Commerce\Models\Payment;
+use App\Domain\Finance\Models\Payout;
 use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\PersonalAccessToken;
 use App\Domain\Identity\Models\User;
 use App\Domain\Identity\Support\OtpCodeHasher;
+use App\Domain\Learning\Events\CertificateIssued;
 use App\Domain\Learning\Events\ProgressRecorded;
 use App\Domain\Learning\Listeners\EraseLearningData;
 use App\Domain\Learning\Listeners\IssueCertificateOnProgress;
 use App\Domain\Learning\Listeners\IssueCertificatesOnNameSet;
 use App\Domain\Learning\Listeners\RecomputeProgressOnNewVersion;
 use App\Domain\Learning\Listeners\RefreshRatingsOnUserStatus;
+use App\Domain\Learning\Models\LessonThread;
+use App\Domain\Learning\Models\Review;
+use App\Domain\Learning\Models\ThreadReply;
+use App\Domain\Notifications\Listeners\EraseNotificationData;
+use App\Domain\Notifications\Listeners\SendCatalogueNotifications;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
+use App\Domain\Professors\Events\ApplicationDecided;
 use App\Domain\Professors\Listeners\EraseProfessorData;
+use App\Domain\Professors\Models\KycSubmission;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Protection\Listeners\EraseProtectionData;
 use App\Domain\Protection\Stamping\DocumentStamper;
@@ -115,6 +128,7 @@ final class AppServiceProvider extends ServiceProvider
         Event::listen(UserAnonymizing::class, EraseProfessorData::class);
         Event::listen(UserAnonymizing::class, EraseLearningData::class);
         Event::listen(UserAnonymizing::class, EraseProtectionData::class);
+        Event::listen(UserAnonymizing::class, EraseNotificationData::class);
 
         // Learning: a new live version changes what counts toward progress (PRD-06 BR-02).
         Event::listen(CourseVersionDecided::class, RecomputeProgressOnNewVersion::class);
@@ -122,6 +136,23 @@ final class AppServiceProvider extends ServiceProvider
         Event::listen(ProgressRecorded::class, IssueCertificateOnProgress::class);
         Event::listen('eloquent.saved: '.User::class, IssueCertificatesOnNameSet::class);
         Event::listen('eloquent.saved: '.User::class, RefreshRatingsOnUserStatus::class);
+
+        // Notifications (PRD-10 §3): one handler per catalogue event.
+        $n = SendCatalogueNotifications::class;
+        Event::listen(OrderPaid::class, [$n, 'orderPaid']);
+        Event::listen(RefundDecided::class, [$n, 'refundDecided']);
+        Event::listen(CourseVersionDecided::class, [$n, 'versionDecided']);
+        Event::listen(CertificateIssued::class, [$n, 'certificateIssued']);
+        Event::listen(ApplicationDecided::class, [$n, 'applicationDecided']);
+        Event::listen('eloquent.saved: '.Payment::class, [$n, 'paymentSaved']);
+        Event::listen('eloquent.saved: '.Order::class, [$n, 'orderSaved']);
+        Event::listen('eloquent.saved: '.Payout::class, [$n, 'payoutSaved']);
+        Event::listen('eloquent.saved: '.KycSubmission::class, [$n, 'kycSaved']);
+        Event::listen('eloquent.saved: '.User::class, [$n, 'userSaved']);
+        Event::listen('eloquent.saved: '.Course::class, [$n, 'courseSaved']);
+        Event::listen('eloquent.created: '.LessonThread::class, [$n, 'threadCreated']);
+        Event::listen('eloquent.created: '.ThreadReply::class, [$n, 'replyCreated']);
+        Event::listen('eloquent.created: '.Review::class, [$n, 'reviewCreated']);
 
         // Search index: rows the course index depends on (PRD-04 FR-11).
         Scout::makeSearchableUsing(MakeListedSearchable::class);

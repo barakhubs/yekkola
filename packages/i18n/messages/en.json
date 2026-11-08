@@ -1009,6 +1009,36 @@
         "answered": "Answered",
         "all": "All"
       }
+    },
+    "notifications": {
+      "bell": "Notifications",
+      "bellUnread": "{count, plural, one {Notifications, # unread} other {Notifications, # unread}}",
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
+      "empty": "No notifications yet.",
+      "unread": "Unread",
+      "pages": "Notification pages",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {last}",
+      "preferencesTitle": "What I receive",
+      "preferencesIntro": "Choose how you’re told. Important messages (payments, payouts, account) always come through.",
+      "event": "Event",
+      "channels": {
+        "in_app": "On the site",
+        "email": "Email",
+        "push": "Phone"
+      },
+      "notAvailable": "Not available",
+      "pushSoon": "Phone notifications come with the mobile app.",
+      "types": {
+        "course_updated": "New version of a course I follow",
+        "question_answered": "Answer to my question",
+        "certificate_issued": "Certificate earned",
+        "new_question": "New question on my courses",
+        "new_review": "New review on my courses",
+        "new_sale": "New sale"
+      }
     }
   },
   "admin": {

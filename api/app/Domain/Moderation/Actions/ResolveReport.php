@@ -20,6 +20,7 @@ use App\Domain\Moderation\Enums\ReportAction;
 use App\Domain\Moderation\Enums\ReportStatus;
 use App\Domain\Moderation\Exceptions\ModerationException;
 use App\Domain\Moderation\Models\Report;
+use App\Domain\Notifications\Listeners\SendCatalogueNotifications;
 use App\Domain\Platform\Actions\RecordAudit;
 use App\Domain\Professors\Actions\ManageProfessorStanding;
 use App\Domain\Professors\Models\ProfessorProfile;
@@ -48,6 +49,7 @@ final class ResolveReport
         private readonly ChangeCourseAvailability $courseAvailability,
         private readonly ChangeUserStatus $userStatus,
         private readonly ManageProfessorStanding $professorStanding,
+        private readonly SendCatalogueNotifications $notifications,
     ) {}
 
     /** `$note` may be empty only to dismiss; every other action records it as its reason. */
@@ -155,6 +157,45 @@ final class ResolveReport
         $this->professorStanding->suspend($profile, $staff, $note);
     }
 
+    /** The warning goes on the author's record and to the author (PRD-09 FR-10, PRD-10). */
+    private function warn(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target, string $note, User $staff): void
+    {
+        $author = self::author($target);
+        $this->recordAudit->handle('user.warned', $author, ['note' => $note], causer: $staff);
+        if ($author !== null) {
+            [$title, $link] = self::describe($target);
+            $this->notifications->warned($author, $this->kind($target), $title, $link);
+        }
+    }
+
+    /**
+     * What the author is told the warning is about, and where it is.
+     *
+     * @return array{0: string, 1: string|null}
+     */
+    private static function describe(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): array
+    {
+        return match (true) {
+            $target instanceof Course => [(string) $target->liveVersion?->title, "/studio/courses/{$target->id}"],
+            $target instanceof Review => [(string) $target->course?->liveVersion?->title, $target->course !== null ? "/courses/{$target->course->slug}" : null],
+            $target instanceof LessonThread => [$target->title, "/learn/{$target->course_id}/{$target->lesson_uid}"],
+            $target instanceof ThreadReply => [(string) $target->thread?->title, $target->thread !== null ? "/learn/{$target->thread->course_id}/{$target->thread->lesson_uid}" : null],
+            $target instanceof ProfessorProfile => [$target->display_name, '/studio/profile'],
+            default => ['', null],
+        };
+    }
+
+    private function kind(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): string
+    {
+        return match (true) {
+            $target instanceof Course => 'course',
+            $target instanceof Review => 'review',
+            $target instanceof LessonThread => 'thread',
+            $target instanceof ThreadReply => 'reply',
+            default => 'professor',
+        };
+    }
+
     /** A post by a student (or anyone): suspending means their account. */
     private static function isPost(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): bool
     {
@@ -170,7 +211,7 @@ final class ResolveReport
     {
         match (true) {
             $action === ReportAction::Dismiss => null,
-            $action === ReportAction::Warn => $this->recordAudit->handle('user.warned', self::author($target), ['note' => $note], causer: $staff),
+            $action === ReportAction::Warn => $this->warn($target, $note, $staff),
             $action === ReportAction::Hide && $target instanceof Review => $this->moderateReview->hide($target, $staff, $note),
             $action === ReportAction::Hide && ($target instanceof LessonThread || $target instanceof ThreadReply) => $this->moderateQa->hide($target, $staff, $note),
             $action === ReportAction::Hide && $target instanceof Course => $this->courseAvailability->takeDown($target, $staff, $note),

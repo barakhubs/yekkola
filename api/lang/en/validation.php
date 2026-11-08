@@ -296,4 +296,5 @@ return [
         'payout_minimum_missing' => 'Set the payout minimum in :currency.',
         'hold_shorter_than_refund_window' => 'Earnings must be held at least :days days (the refund window).',
     ],
+    'notification_not_optional' => 'These notifications can’t be turned off.',
 ];

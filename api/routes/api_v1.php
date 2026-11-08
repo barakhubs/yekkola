@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Identity\Enums\Permission;
 use App\Http\Controllers\Api\V1\Account\DataExportController;
 use App\Http\Controllers\Api\V1\Account\DeviceController;
+use App\Http\Controllers\Api\V1\Account\NotificationController;
 use App\Http\Controllers\Api\V1\Account\PhoneController;
 use App\Http\Controllers\Api\V1\Account\ProfileController;
 use App\Http\Controllers\Api\V1\Account\WishlistController;
@@ -153,6 +154,12 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
 // Account (any signed-in user)
 Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
+    // Notifications (PRD-10 FR-03, FR-05)
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::get('/notification-preferences', [NotificationController::class, 'preferences'])->name('notification-preferences.show');
+    Route::put('/notification-preferences', [NotificationController::class, 'updatePreferences'])->name('notification-preferences.update');
     Route::get('/', [ProfileController::class, 'show'])->name('show');
     Route::put('/password', [StaffPasswordController::class, 'change'])->middleware('throttle:staff-sign-in')->name('password');
     Route::post('/impersonation/stop', [ImpersonationController::class, 'stop'])->name('impersonation.stop');

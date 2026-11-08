@@ -296,4 +296,5 @@ return [
         'payout_minimum_missing' => 'Indiquez le minimum de versement en :currency.',
         'hold_shorter_than_refund_window' => 'Les gains doivent rester en attente au moins :days jours (le délai de remboursement).',
     ],
+    'notification_not_optional' => 'Ces notifications ne peuvent pas être désactivées.',
 ];

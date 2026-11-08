@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { useSignOut } from "@/features/auth/components/account-states";
 import { useSession } from "@/features/auth/hooks/use-session";
+import { NotificationBell } from "@/features/notifications/notification-bell";
 import { Link, usePathname } from "@/i18n/navigation";
 
 /** Header actions: "Sign in" for visitors; "Studio" (professors), "My courses", "My account" and "Sign out" once signed in. */
@@ -44,6 +45,7 @@ export function AccountNav() {
           <Link href="/my-courses">{t("nav.myCourses")}</Link>
         </Button>
       )}
+      <NotificationBell />
       <Button asChild size="sm" variant="ghost">
         <Link href="/account" aria-label={t("nav.account")}>
           <UserRound aria-hidden />
