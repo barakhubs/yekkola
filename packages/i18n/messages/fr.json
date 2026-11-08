@@ -1009,6 +1009,36 @@
         "answered": "Répondues",
         "all": "Toutes"
       }
+    },
+    "notifications": {
+      "bell": "Notifications",
+      "bellUnread": "{count, plural, one {Notifications, # non lue} other {Notifications, # non lues}}",
+      "title": "Notifications",
+      "markAllRead": "Tout marquer comme lu",
+      "empty": "Aucune notification pour l’instant.",
+      "unread": "Non lue",
+      "pages": "Pages des notifications",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {last}",
+      "preferencesTitle": "Ce que je reçois",
+      "preferencesIntro": "Choisissez comment être prévenu. Les messages importants (paiements, versements, compte) arrivent toujours.",
+      "event": "Événement",
+      "channels": {
+        "in_app": "Sur le site",
+        "email": "E-mail",
+        "push": "Téléphone"
+      },
+      "notAvailable": "Non disponible",
+      "pushSoon": "Les notifications sur téléphone arrivent avec l’application mobile.",
+      "types": {
+        "course_updated": "Nouvelle version d’un cours que je suis",
+        "question_answered": "Réponse à ma question",
+        "certificate_issued": "Certificat obtenu",
+        "new_question": "Nouvelle question sur mes cours",
+        "new_review": "Nouvel avis sur mes cours",
+        "new_sale": "Nouvelle vente"
+      }
     }
   },
   "admin": {
