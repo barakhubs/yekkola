@@ -774,7 +774,8 @@
         "courses": "Mes cours",
         "profile": "Profil",
         "kyc": "Vérification",
-        "payouts": "Paiements"
+        "payouts": "Paiements",
+        "questions": "Questions"
       },
       "welcome": "Bonjour {name}",
       "progress": "{done} étape(s) sur {total} pour être prêt à enseigner et à être payé.",
@@ -949,12 +950,16 @@
       "trigger": {
         "course": "Signaler ce cours",
         "review": "Signaler cet avis",
-        "professor": "Signaler ce profil"
+        "professor": "Signaler ce profil",
+        "thread": "Signaler",
+        "reply": "Signaler"
       },
       "title": {
         "course": "Signaler ce cours",
         "review": "Signaler cet avis",
-        "professor": "Signaler ce profil"
+        "professor": "Signaler ce profil",
+        "thread": "Signaler cette question",
+        "reply": "Signaler cette réponse"
       },
       "intro": "Dis-nous ce qui ne va pas. L’équipe de modération examine chaque signalement ; la personne concernée ne sait pas qui l’a fait.",
       "reason": "Raison",
@@ -973,6 +978,37 @@
       "cancel": "Annuler",
       "close": "Fermer",
       "thanks": "Merci. Notre équipe va examiner ton signalement."
+    },
+    "qa": {
+      "title": "Questions et réponses",
+      "empty": "Aucune question sur cette leçon pour l’instant. Pose la première !",
+      "ask": "Poser une question",
+      "questionTitle": "Ta question en une phrase",
+      "questionBody": "Détails (ce que tu as essayé, où tu bloques)",
+      "post": "Publier",
+      "cancel": "Annuler",
+      "yourReply": "Ta réponse",
+      "reply": "Répondre",
+      "answered": "Répondu",
+      "hidden": "Masqué par la modération",
+      "professor": "Professeur",
+      "askedBy": "Par {name}",
+      "anonymous": "Utilisateur",
+      "replies": "{count, plural, =0 {Aucune réponse} one {# réponse} other {# réponses}}",
+      "loading": "Chargement…",
+      "pages": "Pages des questions",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {page} sur {last}",
+      "inboxTitle": "Questions des étudiants",
+      "inboxIntro": "Les questions posées sur vos cours. Votre réponse marque la question comme répondue.",
+      "inboxEmpty": "Aucune question ici.",
+      "statusFilter": "Afficher",
+      "statuses": {
+        "open": "Sans réponse",
+        "answered": "Répondues",
+        "all": "Toutes"
+      }
     }
   },
   "admin": {
@@ -1026,7 +1062,8 @@
       "categories": "Catégories",
       "password": "Mot de passe",
       "reviews": "Avis",
-      "reports": "Signalements"
+      "reports": "Signalements",
+      "questions": "Questions"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -1821,7 +1858,9 @@
         "misleading": "Informations fausses ou trompeuses",
         "copyright": "Contenu copié sans autorisation",
         "fraud": "Arnaque ou fraude",
-        "other": "Autre raison"
+        "other": "Autre raison",
+        "thread": "Question",
+        "reply": "Réponse"
       },
       "openOnItem": "{count, plural, one {# signalement ouvert} other {# signalements ouverts}} sur cet élément",
       "reportedBy": "Signalé par {name}",
@@ -1885,8 +1924,57 @@
           "label": "Suspendre le professeur",
           "confirm": "Suspendre le professeur ?",
           "hint": "Son profil et ses cours quittent le catalogue. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "hide_thread": {
+          "label": "Masquer la question",
+          "confirm": "Masquer cette question ?",
+          "hint": "Elle disparaît pour les participants du cours. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "hide_reply": {
+          "label": "Masquer la réponse",
+          "confirm": "Masquer cette réponse ?",
+          "hint": "Elle disparaît pour les participants du cours. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "suspend_thread": {
+          "label": "Suspendre le compte",
+          "confirm": "Suspendre le compte de l’auteur ?",
+          "hint": "L’auteur est déconnecté partout et ne peut plus utiliser la plateforme. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
+        },
+        "suspend_reply": {
+          "label": "Suspendre le compte",
+          "confirm": "Suspendre le compte de l’auteur ?",
+          "hint": "L’auteur est déconnecté partout et ne peut plus utiliser la plateforme. {count, plural, one {Le signalement est fermé.} other {Les # signalements ouverts sur cet élément sont fermés.}}"
         }
       }
+    },
+    "qaModeration": {
+      "title": "Questions et réponses",
+      "intro": "Toutes les questions des leçons et leurs réponses. Un contenu masqué reste visible pour son auteur seulement.",
+      "search": "Rechercher dans le texte",
+      "filter": "Afficher",
+      "all": "Toutes",
+      "withHidden": "Avec un contenu masqué",
+      "withoutHidden": "Sans contenu masqué",
+      "empty": "Aucune question.",
+      "answered": "Répondu",
+      "hidden": "Masqué",
+      "professor": "Professeur",
+      "hiddenBecause": "Masqué : {reason}",
+      "hide": "Masquer",
+      "restore": "Rétablir",
+      "confirm": {
+        "thread": {
+          "hide": "Masquer cette question ?",
+          "restore": "Rétablir cette question ?"
+        },
+        "reply": {
+          "hide": "Masquer cette réponse ?",
+          "restore": "Rétablir cette réponse ?"
+        }
+      },
+      "hideHint": "Elle disparaît pour les autres participants ; son auteur la voit encore, marquée comme masquée.",
+      "restoreHint": "Elle redevient visible pour les participants du cours.",
+      "reason": "Raison (gardée dans le journal d’audit)"
     }
   }
 }

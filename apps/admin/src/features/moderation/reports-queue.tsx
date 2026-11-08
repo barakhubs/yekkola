@@ -24,13 +24,17 @@ import { useTableLabels } from "@/features/common/table";
 import { Link } from "@/i18n/navigation";
 
 const STATUSES = ["open", "actioned", "dismissed", "all"] as const;
-const TYPES = ["course", "review", "professor"] as const;
+const TYPES = ["course", "review", "professor", "thread", "reply"] as const;
 const REASONS = ["spam", "abusive", "inappropriate", "misleading", "copyright", "fraud", "other"] as const;
 const ACTIONS = ["dismiss", "warn", "hide", "suspend"] as const;
 type Action = (typeof ACTIONS)[number];
 type Option = (typeof STATUSES)[number] | (typeof TYPES)[number] | (typeof REASONS)[number];
 // A professor profile can be suspended but not hidden (the API never offers it).
-type Kind = "dismiss" | "warn" | "hide_review" | "hide_course" | `suspend_${(typeof TYPES)[number]}`;
+type Kind =
+  | "dismiss"
+  | "warn"
+  | `hide_${Exclude<(typeof TYPES)[number], "professor">}`
+  | `suspend_${(typeof TYPES)[number]}`;
 type State =
   | "visible"
   | "hidden"
