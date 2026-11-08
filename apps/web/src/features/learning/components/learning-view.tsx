@@ -31,6 +31,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useProgressSync } from "../hooks/use-progress-sync";
 import { CourseComplete } from "./course-complete";
 import { DocumentLesson } from "./document-lesson";
+import { LessonQa } from "./lesson-qa";
 import { MediaLesson } from "./media-lesson";
 import { QuizLesson } from "./quiz-lesson";
 
@@ -211,6 +212,8 @@ function LessonLayout({ view, lessonUid, onPosition, onDocumentDone, onQuizSubmi
             </Button>
           ) : null}
         </nav>
+
+        <LessonQa key={`qa-${lesson.uid}`} lessonUid={lesson.uid} returnTo={`${base}/${lesson.uid}`} />
       </div>
 
       <aside

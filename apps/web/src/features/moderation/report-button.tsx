@@ -26,7 +26,7 @@ const REASONS = ["spam", "abusive", "inappropriate", "misleading", "copyright", 
 type Reason = (typeof REASONS)[number];
 
 interface ReportButtonProps {
-  type: "course" | "review" | "professor";
+  type: "course" | "review" | "professor" | "thread" | "reply";
   id: string;
   /** Where to come back to after signing in. */
   returnTo: string;
