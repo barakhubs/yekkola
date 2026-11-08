@@ -9,6 +9,9 @@ use App\Integrations\BotChallenge\FakeBotChallenge;
 use App\Integrations\BotChallenge\TurnstileBotChallenge;
 use App\Integrations\Payments\FakeGateway;
 use App\Integrations\Payments\PaymentGateway;
+use App\Integrations\Push\FcmPushSender;
+use App\Integrations\Push\LogPushSender;
+use App\Integrations\Push\PushSender;
 use App\Integrations\Sms\DemoNumberGuard;
 use App\Integrations\Sms\LogSmsSender;
 use App\Integrations\Sms\SmsSender;
@@ -44,6 +47,18 @@ final class IntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(PaymentGateway::class, fn (Application $app): PaymentGateway => match ($this->driver('payments')) {
             'fake' => new FakeGateway($app->make('cache')->store(), $this->fakeSecret()),
             default => throw new InvalidArgumentException('Unknown payments driver ['.$this->driver('payments').'].'),
+        });
+
+        $this->app->singleton(PushSender::class, fn (Application $app): PushSender => match ($this->driver('push')) {
+            'log' => new LogPushSender($app->make('log')),
+            'fcm' => new FcmPushSender(
+                $app->make(HttpFactory::class),
+                $app->make('cache.store'),
+                (string) config('yekkola.fcm.project_id'),
+                (string) config('yekkola.fcm.client_email'),
+                (string) config('yekkola.fcm.private_key'),
+            ),
+            default => throw new InvalidArgumentException('Unknown push driver ['.$this->driver('push').'].'),
         });
 
         $this->app->singleton(SmsSender::class, function (Application $app): SmsSender {
@@ -90,6 +105,11 @@ final class IntegrationServiceProvider extends ServiceProvider
 
         if ($this->app->isProduction() && config('scout.driver') !== 'meilisearch') {
             throw new RuntimeException('SCOUT_DRIVER must be meilisearch in production.');
+        }
+
+        if ($this->app->isProduction() && $this->driver('push') === 'fcm'
+            && in_array('', [(string) config('yekkola.fcm.project_id'), (string) config('yekkola.fcm.client_email'), (string) config('yekkola.fcm.private_key')], true)) {
+            throw new RuntimeException('FCM_PROJECT_ID, FCM_CLIENT_EMAIL and FCM_PRIVATE_KEY must be set in production.');
         }
 
         if ($this->app->isProduction() && $this->driver('bot_challenge') === 'turnstile' && (string) config('yekkola.turnstile.secret') === '') {

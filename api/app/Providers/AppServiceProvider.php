@@ -15,6 +15,7 @@ use App\Domain\Commerce\Events\RefundDecided;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Finance\Models\Payout;
+use App\Domain\Finance\Models\PayoutBatch;
 use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\PersonalAccessToken;
 use App\Domain\Identity\Models\User;
@@ -31,6 +32,7 @@ use App\Domain\Learning\Models\Review;
 use App\Domain\Learning\Models\ThreadReply;
 use App\Domain\Notifications\Listeners\EraseNotificationData;
 use App\Domain\Notifications\Listeners\SendCatalogueNotifications;
+use App\Domain\Notifications\StaffAlerts;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Events\ApplicationDecided;
 use App\Domain\Professors\Listeners\EraseProfessorData;
@@ -153,6 +155,7 @@ final class AppServiceProvider extends ServiceProvider
         Event::listen('eloquent.created: '.LessonThread::class, [$n, 'threadCreated']);
         Event::listen('eloquent.created: '.ThreadReply::class, [$n, 'replyCreated']);
         Event::listen('eloquent.created: '.Review::class, [$n, 'reviewCreated']);
+        Event::listen('eloquent.saved: '.PayoutBatch::class, [StaffAlerts::class, 'payoutBatchSaved']);
 
         // Search index: rows the course index depends on (PRD-04 FR-11).
         Scout::makeSearchableUsing(MakeListedSearchable::class);

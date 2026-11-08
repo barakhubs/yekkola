@@ -14,6 +14,7 @@ export const MeNotificationsIndexQueryParams = zod.object({
   page: zod.int().default(meNotificationsIndexQueryPageDefault),
   per_page: zod.int().default(meNotificationsIndexQueryPerPageDefault),
   "filter[unread]": zod.string().optional().describe("`true`: unread only."),
+  "filter[app]": zod.string().optional().describe("`web` (default) or `admin` (staff alerts)."),
 });
 
 export const meNotificationsIndexResponseMetaPerPageMin = 0;
@@ -28,6 +29,7 @@ export const MeNotificationsIndexResponse = zod.object({
       title: zod.string(),
       body: zod.string(),
       link: zod.string().nullable(),
+      app: zod.string().describe("`admin` for staff alerts: the back office opens those links."),
       read_at: zod.string().nullable(),
       created_at: zod.string(),
     }),
@@ -67,6 +69,10 @@ export const MeNotificationsIndexResponse = zod.object({
 /**
  * @summary For the bell; cheap enough to poll
  */
+export const MeNotificationsUnreadCountQueryParams = zod.object({
+  "filter[app]": zod.string().optional().describe("`web` (default) or `admin`."),
+});
+
 export const meNotificationsUnreadCountResponseDataUnreadMin = 0;
 
 export const MeNotificationsUnreadCountResponse = zod.object({
@@ -76,8 +82,12 @@ export const MeNotificationsUnreadCountResponse = zod.object({
 });
 
 /**
- * @summary Marks the given notifications read, or all of them when `ids` is left out
+ * @summary Marks the given notifications read, or all of this app's when `ids` is left out (`filter[app]` as for the list)
  */
+export const MeNotificationsReadQueryParams = zod.object({
+  "filter[app]": zod.string().optional().describe("`web` (default) or `admin`."),
+});
+
 export const meNotificationsReadBodyIdsMax = 100;
 
 export const MeNotificationsReadBody = zod
@@ -136,9 +146,10 @@ export const MeNotificationPreferencesUpdateBody = zod
               "account_status",
               "course_taken_down",
               "warning",
+              "staff_alert",
             ])
             .describe(
-              "The notification catalogue (PRD-10 §3): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n| |\n|---|\n| `payment_succeeded` <br/>  |\n| `payment_failed` <br/>  |\n| `refund_decided` <br/>  |\n| `course_updated` <br/>  |\n| `question_answered` <br/>  |\n| `certificate_issued` <br/>  |\n| `application_decided` <br/>  |\n| `version_decided` <br/>  |\n| `new_question` <br/>  |\n| `new_review` <br/>  |\n| `new_sale` <br/>  |\n| `payout_sent` <br/>  |\n| `payout_failed` <br/>  |\n| `payout_held` <br/> A payout refused before sending (identity check missing, account suspended…): the money waits. |\n| `kyc_decided` <br/>  |\n| `account_status` <br/>  |\n| `course_taken_down` <br/>  |\n| `warning` <br/>  |",
+              "The notification catalogue (PRD-10 §3): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n| |\n|---|\n| `payment_succeeded` <br/>  |\n| `payment_failed` <br/>  |\n| `refund_decided` <br/>  |\n| `course_updated` <br/>  |\n| `question_answered` <br/>  |\n| `certificate_issued` <br/>  |\n| `application_decided` <br/>  |\n| `version_decided` <br/>  |\n| `new_question` <br/>  |\n| `new_review` <br/>  |\n| `new_sale` <br/>  |\n| `payout_sent` <br/>  |\n| `payout_failed` <br/>  |\n| `payout_held` <br/> A payout refused before sending (identity check missing, account suspended…): the money waits. |\n| `kyc_decided` <br/>  |\n| `account_status` <br/>  |\n| `course_taken_down` <br/>  |\n| `warning` <br/>  |\n| `staff_alert` <br/> Staff alerts (PRD-10 FR-09): routed by permission, never turned off. |",
             ),
           channel: zod.enum(["in_app", "push", "email", "sms"]),
           enabled: zod.boolean(),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Finance\Console;
 
+use App\Domain\Notifications\StaffAlerts;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Psr\Log\LoggerInterface;
@@ -11,7 +12,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Daily ledger integrity check (PRD-08 FR-12): every transaction has entries, balances (debits = credits) in a
  * single currency, and every entry is in its account's currency. Balances are derived from entries, so they can't
- * drift on their own. Any finding is logged as critical (alerting picks it up) and fails the command.
+ * drift on their own. Any finding is logged as critical, alerts finance staff (PRD-10 FR-09) and fails the command.
  */
 final class CheckLedger extends Command
 {
@@ -19,7 +20,7 @@ final class CheckLedger extends Command
 
     protected $description = 'Check that every ledger transaction balances';
 
-    public function handle(LoggerInterface $log): int
+    public function handle(LoggerInterface $log, StaffAlerts $alerts): int
     {
         $signed = "SUM(CASE WHEN e.direction = 'debit' THEN e.amount_minor ELSE -e.amount_minor END)";
 
@@ -43,6 +44,7 @@ final class CheckLedger extends Command
         }
 
         $log->critical('Ledger integrity check failed', array_map(fn (array $ids) => array_slice($ids, 0, 50), $findings));
+        $alerts->ledgerIntegrity(array_sum(array_map('count', $findings)));
         foreach ($findings as $kind => $ids) {
             $this->error("{$kind}: ".count($ids));
         }

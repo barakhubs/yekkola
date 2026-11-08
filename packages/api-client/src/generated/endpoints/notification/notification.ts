@@ -24,7 +24,9 @@ import type {
   MeNotificationsIndex200,
   MeNotificationsIndexParams,
   MeNotificationsRead200,
+  MeNotificationsReadParams,
   MeNotificationsUnreadCount200,
+  MeNotificationsUnreadCountParams,
   NotificationPreferencesRequest,
   ValidationExceptionResponse,
 } from "../../model";
@@ -194,39 +196,55 @@ export type meNotificationsUnreadCountResponseSuccess = meNotificationsUnreadCou
 };
 export type meNotificationsUnreadCountResponse = meNotificationsUnreadCountResponseSuccess;
 
-export const getMeNotificationsUnreadCountUrl = () => {
-  return `/me/notifications/unread-count`;
+export const getMeNotificationsUnreadCountUrl = (params?: MeNotificationsUnreadCountParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/me/notifications/unread-count?${stringifiedParams}`
+    : `/me/notifications/unread-count`;
 };
 
 /**
  * @summary For the bell; cheap enough to poll
  */
 export const meNotificationsUnreadCount = async (
+  params?: MeNotificationsUnreadCountParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<meNotificationsUnreadCountResponse> => {
-  return apiFetch<meNotificationsUnreadCountResponse>(getMeNotificationsUnreadCountUrl(), {
+  return apiFetch<meNotificationsUnreadCountResponse>(getMeNotificationsUnreadCountUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getMeNotificationsUnreadCountQueryKey = () => {
-  return [`/me/notifications/unread-count`] as const;
+export const getMeNotificationsUnreadCountQueryKey = (params?: MeNotificationsUnreadCountParams) => {
+  return [`/me/notifications/unread-count`, ...(params ? [params] : [])] as const;
 };
 
 export const getMeNotificationsUnreadCountQueryOptions = <
   TData = Awaited<ReturnType<typeof meNotificationsUnreadCount>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsUnreadCount>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: MeNotificationsUnreadCountParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsUnreadCount>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getMeNotificationsUnreadCountQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getMeNotificationsUnreadCountQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof meNotificationsUnreadCount>>> = ({ signal }) =>
-    meNotificationsUnreadCount({ signal, ...requestOptions });
+    meNotificationsUnreadCount(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof meNotificationsUnreadCount>>,
@@ -244,6 +262,7 @@ export function useMeNotificationsUnreadCount<
   TData = Awaited<ReturnType<typeof meNotificationsUnreadCount>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | MeNotificationsUnreadCountParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsUnreadCount>>, TError, TData>> &
       Pick<
@@ -262,6 +281,7 @@ export function useMeNotificationsUnreadCount<
   TData = Awaited<ReturnType<typeof meNotificationsUnreadCount>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeNotificationsUnreadCountParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsUnreadCount>>, TError, TData>> &
       Pick<
@@ -280,6 +300,7 @@ export function useMeNotificationsUnreadCount<
   TData = Awaited<ReturnType<typeof meNotificationsUnreadCount>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeNotificationsUnreadCountParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsUnreadCount>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -294,13 +315,14 @@ export function useMeNotificationsUnreadCount<
   TData = Awaited<ReturnType<typeof meNotificationsUnreadCount>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeNotificationsUnreadCountParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsUnreadCount>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getMeNotificationsUnreadCountQueryOptions(options);
+  const queryOptions = getMeNotificationsUnreadCountQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -329,15 +351,28 @@ export type meNotificationsReadResponseError = meNotificationsReadResponse422 & 
 export type meNotificationsReadResponse =
   meNotificationsReadResponseSuccess | meNotificationsReadResponseError;
 
-export const getMeNotificationsReadUrl = () => {
-  return `/me/notifications/read`;
+export const getMeNotificationsReadUrl = (params?: MeNotificationsReadParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/me/notifications/read?${stringifiedParams}`
+    : `/me/notifications/read`;
 };
 
 /**
- * @summary Marks the given notifications read, or all of them when `ids` is left out
+ * @summary Marks the given notifications read, or all of this app's when `ids` is left out (`filter[app]` as for the list)
  */
 export const meNotificationsRead = async (
   markNotificationsReadRequest?: MarkNotificationsReadRequest,
+  params?: MeNotificationsReadParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<meNotificationsReadResponse> => {
   const getHeaders = (
@@ -356,7 +391,7 @@ export const meNotificationsRead = async (
     }
     return headers;
   };
-  return apiFetch<meNotificationsReadResponse>(getMeNotificationsReadUrl(), {
+  return apiFetch<meNotificationsReadResponse>(getMeNotificationsReadUrl(params), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
@@ -366,8 +401,14 @@ export const meNotificationsRead = async (
 
 export const getMeNotificationsReadQueryKey = (
   markNotificationsReadRequest?: BodyType<MarkNotificationsReadRequest>,
+  params?: MeNotificationsReadParams,
 ) => {
-  return ["POST", `/me/notifications/read`, markNotificationsReadRequest] as const;
+  return [
+    "POST",
+    `/me/notifications/read`,
+    ...(params ? [params] : []),
+    markNotificationsReadRequest,
+  ] as const;
 };
 
 export const getMeNotificationsReadQueryOptions = <
@@ -375,6 +416,7 @@ export const getMeNotificationsReadQueryOptions = <
   TError = ErrorType<ValidationExceptionResponse>,
 >(
   markNotificationsReadRequest?: BodyType<MarkNotificationsReadRequest>,
+  params?: MeNotificationsReadParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsRead>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -382,10 +424,11 @@ export const getMeNotificationsReadQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getMeNotificationsReadQueryKey(markNotificationsReadRequest);
+  const queryKey =
+    queryOptions?.queryKey ?? getMeNotificationsReadQueryKey(markNotificationsReadRequest, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof meNotificationsRead>>> = ({ signal }) =>
-    meNotificationsRead(markNotificationsReadRequest, { signal, ...requestOptions });
+    meNotificationsRead(markNotificationsReadRequest, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof meNotificationsRead>>,
@@ -402,6 +445,7 @@ export function useMeNotificationsRead<
   TError = ErrorType<ValidationExceptionResponse>,
 >(
   markNotificationsReadRequest: undefined | BodyType<MarkNotificationsReadRequest>,
+  params: undefined | MeNotificationsReadParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsRead>>, TError, TData>> &
       Pick<
@@ -421,6 +465,7 @@ export function useMeNotificationsRead<
   TError = ErrorType<ValidationExceptionResponse>,
 >(
   markNotificationsReadRequest?: BodyType<MarkNotificationsReadRequest>,
+  params?: MeNotificationsReadParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsRead>>, TError, TData>> &
       Pick<
@@ -440,6 +485,7 @@ export function useMeNotificationsRead<
   TError = ErrorType<ValidationExceptionResponse>,
 >(
   markNotificationsReadRequest?: BodyType<MarkNotificationsReadRequest>,
+  params?: MeNotificationsReadParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsRead>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -447,7 +493,7 @@ export function useMeNotificationsRead<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Marks the given notifications read, or all of them when `ids` is left out
+ * @summary Marks the given notifications read, or all of this app's when `ids` is left out (`filter[app]` as for the list)
  */
 
 export function useMeNotificationsRead<
@@ -455,13 +501,14 @@ export function useMeNotificationsRead<
   TError = ErrorType<ValidationExceptionResponse>,
 >(
   markNotificationsReadRequest?: BodyType<MarkNotificationsReadRequest>,
+  params?: MeNotificationsReadParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meNotificationsRead>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getMeNotificationsReadQueryOptions(markNotificationsReadRequest, options);
+  const queryOptions = getMeNotificationsReadQueryOptions(markNotificationsReadRequest, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

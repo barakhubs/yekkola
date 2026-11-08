@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Notifications;
 
 use App\Domain\Identity\Models\User;
+use App\Domain\Notifications\Channels\PushChannel;
 use App\Domain\Notifications\Channels\SmsChannel;
 use App\Domain\Notifications\Enums\NotificationChannel;
 use App\Domain\Notifications\Enums\NotificationType;
@@ -33,6 +34,8 @@ final class PlatformNotification extends Notification implements ShouldQueue
         public readonly string $key,
         public readonly array $params = [],
         public readonly ?string $link = null,
+        /** Which app `link` belongs to: `web`, or `admin` for staff alerts. */
+        public readonly string $app = 'web',
     ) {
         $this->afterCommit();
         $this->onQueue('notifications');
@@ -60,9 +63,9 @@ final class PlatformNotification extends Notification implements ShouldQueue
             }
             $via[] = match ($channel) {
                 NotificationChannel::InApp => 'database',
-                NotificationChannel::Email => $notifiable->email !== null && $notifiable->email !== '' ? 'mail' : null,
+                NotificationChannel::Email => $notifiable->email !== null && $notifiable->email !== '' && ! $this->type->inDigest() ? 'mail' : null,
                 NotificationChannel::Sms => SmsChannel::class,
-                NotificationChannel::Push => null, // FCM channel: next step of 1.12
+                NotificationChannel::Push => PushChannel::class,
             };
         }
 
@@ -70,11 +73,11 @@ final class PlatformNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * @return array{type: string, key: string, params: array<string, string>, link: string|null}
+     * @return array{type: string, key: string, params: array<string, string>, link: string|null, app: string}
      */
     public function toArray(object $notifiable): array
     {
-        return ['type' => $this->type->value, 'key' => $this->key, 'params' => $this->params, 'link' => $this->link];
+        return ['type' => $this->type->value, 'key' => $this->key, 'params' => $this->params, 'link' => $this->link, 'app' => $this->app];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -85,7 +88,7 @@ final class PlatformNotification extends Notification implements ShouldQueue
             ->greeting($this->text('title', escape: true))
             ->line($this->text('body', escape: true));
 
-        return $this->link === null ? $mail : $mail->action(__('notifications.open', [], $this->locale), self::webUrl($this->link));
+        return $this->link === null ? $mail : $mail->action(__('notifications.open', [], $this->locale), self::webUrl($this->link, $this->app));
     }
 
     public function toSms(object $notifiable): string
@@ -102,8 +105,8 @@ final class PlatformNotification extends Notification implements ShouldQueue
         return (string) __("notifications.{$this->key}.{$part}", $params, $this->locale);
     }
 
-    public static function webUrl(string $link): string
+    public static function webUrl(string $link, string $app = 'web'): string
     {
-        return rtrim((string) config('yekkola.web_url'), '/').$link;
+        return rtrim((string) config($app === 'admin' ? 'yekkola.admin_url' : 'yekkola.web_url'), '/').$link;
     }
 }

@@ -48,6 +48,11 @@ final class RegisterDevice
         $device->registered_at ??= now();
         $device->save();
 
+        // The push token belongs to the app install: another account signed in on this phone stops receiving pushes.
+        if ($data->pushToken !== null && $data->pushToken !== '') {
+            Device::query()->where('push_token', $data->pushToken)->whereKeyNot($device->id)->update(['push_token' => null]);
+        }
+
         return $device;
     }
 

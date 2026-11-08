@@ -35,6 +35,7 @@ import { type ReactNode, useEffect } from "react";
 
 import { ImpersonationBanner } from "@/features/auth/impersonation-banner";
 import { ChangePassword } from "@/features/auth/password-sign-in";
+import { StaffAlertsBell } from "@/features/notifications/staff-notifications";
 import { useSession, useSignOut } from "@/features/auth/session";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 
@@ -151,6 +152,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
               )}
             </Link>
             <div className="flex items-center gap-1 lg:hidden">
+              <StaffAlertsBell />
               <LocaleLink />
               <SignOutButton onClick={() => signOut.mutate()} disabled={signOut.isPending} />
             </div>
@@ -179,6 +181,7 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
           <div className="hidden gap-2 border-t p-3 lg:grid">
             <p className="truncate text-sm font-semibold">{session.user.name ?? session.user.phone}</p>
             <div className="flex items-center gap-1">
+              <StaffAlertsBell />
               <LocaleLink />
               <SignOutButton onClick={() => signOut.mutate()} disabled={signOut.isPending} />
             </div>

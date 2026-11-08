@@ -24,12 +24,13 @@ final class NotificationController extends Controller
     #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
     #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
     #[\Dedoc\Scramble\Attributes\QueryParameter('filter[unread]', description: '`true`: unread only.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[app]', description: '`web` (default) or `admin` (staff alerts).', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $filter = $request->query('filter');
         $unreadOnly = is_array($filter) && filter_var($filter['unread'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        $notifications = $this->user($request)->notifications()
+        $notifications = $this->forApp($this->user($request)->notifications(), $request)
             ->when($unreadOnly, fn ($q) => $q->whereNull('read_at'))
             ->paginate($this->perPage($request))
             ->appends($request->query());
@@ -42,22 +43,41 @@ final class NotificationController extends Controller
      *
      * @return array{data: array{unread: int}}
      */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[app]', description: '`web` (default) or `admin`.', type: 'string')]
     public function unreadCount(Request $request): array
     {
-        return ['data' => ['unread' => $this->user($request)->unreadNotifications()->count()]];
+        return ['data' => ['unread' => $this->forApp($this->user($request)->unreadNotifications(), $request)->count()]];
     }
 
     /**
-     * Marks the given notifications read, or all of them when `ids` is left out.
+     * Each app shows its own notifications: staff alerts in the back office, the rest on the web app.
+     *
+     * @template TQuery of \Illuminate\Database\Eloquent\Builder<\Illuminate\Notifications\DatabaseNotification>|\Illuminate\Database\Eloquent\Relations\MorphMany<\Illuminate\Notifications\DatabaseNotification, User>
+     *
+     * @param  TQuery  $query
+     * @return TQuery
+     */
+    private function forApp($query, Request $request)
+    {
+        $filter = $request->query('filter');
+        $app = is_array($filter) && ($filter['app'] ?? null) === 'admin' ? 'admin' : 'web';
+        $query->whereRaw("coalesce(data->>'app', 'web') = ?", [$app]);
+
+        return $query;
+    }
+
+    /**
+     * Marks the given notifications read, or all of this app's when `ids` is left out (`filter[app]` as for the list).
      *
      * @return array{data: array{unread: int}}
      */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[app]', description: '`web` (default) or `admin`.', type: 'string')]
     public function markRead(MarkNotificationsReadRequest $request): array
     {
         $user = $this->user($request);
         /** @var list<string>|null $ids */
         $ids = $request->validated('ids');
-        $user->unreadNotifications()->when($ids !== null, fn ($q) => $q->whereIn('id', $ids))->update(['read_at' => now()]);
+        $this->forApp($user->unreadNotifications(), $request)->when($ids !== null, fn ($q) => $q->whereIn('id', $ids))->update(['read_at' => now()]);
 
         return $this->unreadCount($request);
     }

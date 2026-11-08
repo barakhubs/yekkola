@@ -26,6 +26,8 @@ return [
         'payments' => env('PAYMENT_DRIVER', 'fake'),
         // log | <provider> (deferred until the SMS gateway is chosen)
         'sms' => env('SMS_DRIVER', 'log'),
+        // log | fcm (push notifications, PRD-10 FR-04)
+        'push' => env('PUSH_DRIVER', 'log'),
         // fake | turnstile (web OTP requests)
         'bot_challenge' => env('BOT_CHALLENGE_DRIVER', 'fake'),
     ],
@@ -133,4 +135,14 @@ return [
         'max_featured' => 24,
     ],
 
+    // Firebase Cloud Messaging service account (PRD-10 FR-04); only read when PUSH_DRIVER=fcm.
+    'fcm' => [
+        'project_id' => env('FCM_PROJECT_ID'),
+        'client_email' => env('FCM_CLIENT_EMAIL'),
+        'private_key' => env('FCM_PRIVATE_KEY'),
+    ],
+    // Staff alerts (PRD-10 FR-09): a payment is "stuck" once it waits this long past the order payment timeout.
+    'alerts' => [
+        'stuck_payment_grace_minutes' => (int) env('STUCK_PAYMENT_GRACE_MINUTES', 15),
+    ],
 ];

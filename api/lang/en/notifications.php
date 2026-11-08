@@ -53,4 +53,16 @@ return [
         'reply' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your reply in “:title” breaks the rules.'],
         'professor' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your professor profile breaks the rules. Please fix it.'],
     ],
+    'staff_alert' => [
+        'ledger' => ['title' => 'Ledger: problem found', 'body' => 'The daily check found :count ledger problem(s). Please check the ledger.'],
+        'payout_batch' => ['title' => 'Payout batch: failures', 'body' => ':count payout(s) in the batch failed. Check and retry.'],
+        'stuck_payments' => ['title' => 'Stuck payments', 'body' => ':count payment(s) have been waiting for the operator for more than :minutes minutes.'],
+    ],
+    'digest' => [
+        'subject' => 'Your day on Yekkola',
+        'intro' => 'Here is what happened on your courses in the last 24 hours:',
+        'new_sale' => '{1} :count new sale|[2,*] :count new sales',
+        'new_review' => '{1} :count new review|[2,*] :count new reviews',
+        'new_question' => '{1} :count new question|[2,*] :count new questions',
+    ],
 ];

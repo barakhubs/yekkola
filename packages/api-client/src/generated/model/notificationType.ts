@@ -27,6 +27,7 @@
  * | `account_status` <br/>  |
  * | `course_taken_down` <br/>  |
  * | `warning` <br/>  |
+ * | `staff_alert` <br/> Staff alerts (PRD-10 FR-09): routed by permission, never turned off. |
  */
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 
@@ -49,4 +50,5 @@ export const NotificationType = {
   account_status: "account_status",
   course_taken_down: "course_taken_down",
   warning: "warning",
+  staff_alert: "staff_alert",
 } as const;

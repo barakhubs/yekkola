@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-10-notifications` (catalogue notifications: in-app, email, SMS; feed, preferences, web bell)
-- **Next up:** push notifications (FCM), professor daily digest, staff alerts (rest of 1.12)
+- **Current branch:** `feature/prd-10-push-digest-alerts` (push via FCM, professor digest, staff alerts)
+- **Next up:** backend hardening (1.13) and the remaining back-office items (coupons/bundles, professors + KYC viewer)
 
 ## Legend
 
@@ -299,9 +299,13 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] In-app feed + preferences; web bell and notification centre (FR-03, FR-05) — this PR
 - [ ] Choose the transactional email provider (Postmark/Resend/SES) and verify the sending domain **(needs: decision)** — email uses `MAIL_MAILER=log` until then
 - [ ] Laravel Cloud queue workers must also listen on `notifications`
-- [ ] FCM channel + device tokens (FR-04)
-- [ ] Email channel + professor digest (FR-06)
-- [ ] Admin alert routing (FR-09)
+- [x] Push: `PushSender` (FCM HTTP v1 + log driver), active devices, dead tokens forgotten, optional pushes capped 5/day (FR-04, FR-10) — this PR
+- [ ] Firebase project + service account (FCM_*), `PUSH_DRIVER=fcm` on staging/production **(needs: Firebase account)**
+- [ ] Endpoint for the mobile app to refresh its push token (today set at sign-in) — with the mobile app
+- [ ] Quiet hours 21:00–07:00 for optional pushes (FR-04, Should)
+- [ ] Keep the professor digest's once-a-day guard in the database, not only the cache (a cache flush allows a second send)
+- [x] Email channel + professor daily digest (FR-06) — this PR
+- [x] Staff alerts by permission: ledger check, failed payout batch, stuck payments; back-office bell and alerts page (FR-09) — this PR
 
 ### 1.13 Backend hardening
 

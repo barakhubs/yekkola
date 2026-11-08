@@ -53,4 +53,16 @@ return [
         'reply' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre réponse dans « :title » ne respecte pas les règles.'],
         'professor' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre profil de professeur ne respecte pas les règles. Merci de le corriger.'],
     ],
+    'staff_alert' => [
+        'ledger' => ['title' => 'Grand livre : anomalie détectée', 'body' => 'Le contrôle quotidien a trouvé :count écriture(s) en anomalie. Vérifiez le grand livre.'],
+        'payout_batch' => ['title' => 'Lot de versements : échecs', 'body' => ':count versement(s) du lot ont échoué. Vérifiez et relancez.'],
+        'stuck_payments' => ['title' => 'Paiements bloqués', 'body' => ':count paiement(s) attendent une réponse de l’opérateur depuis plus de :minutes minutes.'],
+    ],
+    'digest' => [
+        'subject' => 'Votre journée sur Yekkola',
+        'intro' => 'Voici ce qui s’est passé sur vos cours ces dernières 24 heures :',
+        'new_sale' => '{1} :count nouvelle vente|[2,*] :count nouvelles ventes',
+        'new_review' => '{1} :count nouvel avis|[2,*] :count nouveaux avis',
+        'new_question' => '{1} :count nouvelle question|[2,*] :count nouvelles questions',
+    ],
 ];

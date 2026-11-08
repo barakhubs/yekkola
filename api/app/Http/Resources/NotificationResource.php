@@ -17,11 +17,11 @@ use Illuminate\Notifications\DatabaseNotification;
 final class NotificationResource extends JsonResource
 {
     /**
-     * @return array{id: string, type: string, title: string, body: string, link: string|null, read_at: string|null, created_at: string}
+     * @return array{id: string, type: string, title: string, body: string, link: string|null, app: string, read_at: string|null, created_at: string}
      */
     public function toArray(Request $request): array
     {
-        /** @var array{type?: string, key?: string, params?: array<string, string>, link?: string|null} $data */
+        /** @var array{type?: string, key?: string, params?: array<string, string>, link?: string|null, app?: string} $data */
         $data = $this->data;
         $key = (string) ($data['key'] ?? '');
         $params = $data['params'] ?? [];
@@ -32,6 +32,8 @@ final class NotificationResource extends JsonResource
             'title' => (string) __("notifications.{$key}.title", $params),
             'body' => (string) __("notifications.{$key}.body", $params),
             'link' => isset($data['link']) ? (string) $data['link'] : null,
+            // `admin` for staff alerts: the back office opens those links.
+            'app' => (string) ($data['app'] ?? 'web'),
             'read_at' => $this->read_at?->toIso8601String(),
             'created_at' => (string) $this->created_at?->toIso8601String(),
         ];
