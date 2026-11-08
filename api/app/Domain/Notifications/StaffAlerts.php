@@ -11,21 +11,23 @@ use App\Domain\Identity\Enums\Permission;
 use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
 use App\Domain\Notifications\Enums\NotificationType;
+use App\Domain\Platform\Settings\CommerceSettings;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Staff alerts (PRD-10 FR-09), routed by permission: finance problems to finance staff, stuck payments to those
- * who follow commerce. In-app (back office) and email; the same alert is sent at most once per `REPEAT_HOURS`.
+ * who follow commerce. In-app (back office) and email; the same alert is sent at most once per `REPEAT_HOURS`,
+ * decided only once the change that raised it is committed.
  */
 final class StaffAlerts
 {
     public const REPEAT_HOURS = 6;
 
-    /** A payment still waiting this long (minutes) is stuck. */
-    public const STUCK_AFTER_MINUTES = 30;
-
-    public function __construct(private readonly Cache $cache) {}
+    public function __construct(
+        private readonly Cache $cache,
+        private readonly CommerceSettings $commerce,
+    ) {}
 
     /** The daily ledger check found problems. */
     public function ledgerIntegrity(int $findings): void
@@ -36,18 +38,25 @@ final class StaffAlerts
     public function payoutBatchSaved(PayoutBatch $batch): void
     {
         if ($batch->wasChanged('status') && $batch->status === PayoutBatchStatus::PartiallyFailed) {
-            $failed = $batch->payouts()->where('status', 'failed')->count();
-            $this->send("payout-batch:{$batch->id}", Permission::FinancePayouts, 'staff_alert.payout_batch', ['count' => (string) $failed], "/finance/payouts/{$batch->id}");
+            DB::afterCommit(function () use ($batch): void {
+                $failed = $batch->payouts()->where('status', 'failed')->count();
+                // Keyed by the failure count: a retry that fails again is a new alert.
+                $this->send("payout-batch:{$batch->id}:{$failed}", Permission::FinancePayouts, 'staff_alert.payout_batch', ['count' => (string) $failed], "/finance/payouts/{$batch->id}");
+            });
         }
     }
 
-    /** Checked on a schedule. */
+    /**
+     * Payments still waiting well past the order payment timeout (a platform setting) plus the grace below.
+     * Checked on a schedule.
+     */
     public function stuckPayments(): void
     {
+        $minutes = $this->commerce->order_payment_timeout_minutes + (int) config('yekkola.alerts.stuck_payment_grace_minutes');
         $stuck = DB::table('payments')->whereIn('status', [PaymentStatus::Initiated->value, PaymentStatus::Pending->value])
-            ->where('created_at', '<', now()->subMinutes(self::STUCK_AFTER_MINUTES))->count();
+            ->where('created_at', '<', now()->subMinutes($minutes))->count();
         if ($stuck > 0) {
-            $this->send('stuck-payments', Permission::CommerceView, 'staff_alert.stuck_payments', ['count' => (string) $stuck], '/orders?only=stuck');
+            $this->send('stuck-payments', Permission::CommerceView, 'staff_alert.stuck_payments', ['count' => (string) $stuck, 'minutes' => (string) $minutes], '/orders?only=stuck');
         }
     }
 

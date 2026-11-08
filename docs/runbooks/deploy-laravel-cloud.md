@@ -56,8 +56,7 @@ browser code at build time: **redeploy after changing one**.
 - The scheduler must run (`php artisan schedule:run` every minute): payment reconciliation, payouts, the ledger
   check, the professor digest and staff alerts depend on it.
 - Push notifications: `PUSH_DRIVER=fcm` with `FCM_PROJECT_ID`, `FCM_CLIENT_EMAIL`, `FCM_PRIVATE_KEY` (from a Firebase
-  service account; keep `
-` in the key). Without them, leave `PUSH_DRIVER=log` (staging only).
+  service account; write its line breaks as `\n`). Without them, leave `PUSH_DRIVER=log` (staging only).
 
 ## Troubleshooting (seen on the first deploys)
 

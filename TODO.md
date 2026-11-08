@@ -303,6 +303,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Firebase project + service account (FCM_*), `PUSH_DRIVER=fcm` on staging/production **(needs: Firebase account)**
 - [ ] Endpoint for the mobile app to refresh its push token (today set at sign-in) — with the mobile app
 - [ ] Quiet hours 21:00–07:00 for optional pushes (FR-04, Should)
+- [ ] Keep the professor digest's once-a-day guard in the database, not only the cache (a cache flush allows a second send)
 - [x] Email channel + professor daily digest (FR-06) — this PR
 - [x] Staff alerts by permission: ledger check, failed payout batch, stuck payments; back-office bell and alerts page (FR-09) — this PR
 

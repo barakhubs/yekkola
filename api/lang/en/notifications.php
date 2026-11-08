@@ -56,7 +56,7 @@ return [
     'staff_alert' => [
         'ledger' => ['title' => 'Ledger: problem found', 'body' => 'The daily check found :count ledger problem(s). Please check the ledger.'],
         'payout_batch' => ['title' => 'Payout batch: failures', 'body' => ':count payout(s) in the batch failed. Check and retry.'],
-        'stuck_payments' => ['title' => 'Stuck payments', 'body' => ':count payment(s) have been waiting for the operator for more than 30 minutes.'],
+        'stuck_payments' => ['title' => 'Stuck payments', 'body' => ':count payment(s) have been waiting for the operator for more than :minutes minutes.'],
     ],
     'digest' => [
         'subject' => 'Your day on Yekkola',

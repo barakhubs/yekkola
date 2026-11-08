@@ -11,7 +11,9 @@ use Illuminate\Http\Client\Response;
 
 /**
  * Firebase Cloud Messaging, HTTP v1 API. Authenticates with a service account: a signed JWT is exchanged for an
- * OAuth token, cached until shortly before it expires. Keys live only in API env vars (FCM_*).
+ * OAuth token, cached until shortly before it expires (and dropped if FCM rejects it). Keys live only in API env
+ * vars (FCM_*). Only errors that name the token mark it dead; anything else (a wrong project, a bad payload) is a
+ * failure of ours and leaves tokens alone.
  */
 final class FcmPushSender implements PushSender
 {
@@ -33,18 +35,21 @@ final class FcmPushSender implements PushSender
             ->post("https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send", ['message' => [
                 'token' => $token,
                 'notification' => ['title' => $title, 'body' => $body],
-                'data' => $data,
+                'data' => (object) $data, // a map, even when empty
                 'android' => ['priority' => 'high'],
             ]]);
 
         if ($response->successful()) {
             return true;
         }
+        if (in_array($response->status(), [401, 403], true) && ! $this->hasErrorCode($response, 'SENDER_ID_MISMATCH')) {
+            $this->cache->forget($this->cacheKey()); // rotated or revoked key: fetch a new token next time
+        }
         if ($this->isDeadToken($response)) {
             return false;
         }
 
-        throw new PushDeliveryFailed("FCM error {$response->status()}");
+        throw new PushDeliveryFailed("FCM error {$response->status()} ".(string) $response->json('error.status', ''));
     }
 
     public function name(): string
@@ -52,18 +57,33 @@ final class FcmPushSender implements PushSender
         return 'fcm';
     }
 
-    /** UNREGISTERED (404) or a malformed token (400 INVALID_ARGUMENT on the token): stop sending to it. */
+    /** The app was removed or the token belongs to another project, or the request was refused because of the token. */
     private function isDeadToken(Response $response): bool
     {
-        $code = (string) $response->json('error.details.0.errorCode', $response->json('error.status', ''));
+        if ($this->hasErrorCode($response, 'UNREGISTERED') || $this->hasErrorCode($response, 'SENDER_ID_MISMATCH')) {
+            return true;
+        }
 
-        return $response->status() === 404 || in_array($code, ['UNREGISTERED', 'INVALID_ARGUMENT'], true);
+        return $this->hasErrorCode($response, 'INVALID_ARGUMENT')
+            && str_contains(strtolower((string) json_encode($response->json('error.details', []))), 'message.token');
+    }
+
+    private function hasErrorCode(Response $response, string $code): bool
+    {
+        $details = $response->json('error.details', []);
+
+        return is_array($details) && collect($details)->contains(fn ($d) => is_array($d) && ($d['errorCode'] ?? null) === $code);
+    }
+
+    private function cacheKey(): string
+    {
+        return 'fcm:access-token:'.sha1($this->projectId.'|'.$this->clientEmail);
     }
 
     private function accessToken(): string
     {
         /** @var string */
-        return $this->cache->remember('fcm:access-token', now()->addMinutes(50), function (): string {
+        return $this->cache->remember($this->cacheKey(), now()->addMinutes(50), function (): string {
             $now = time();
             $assertion = JWT::encode([
                 'iss' => $this->clientEmail,

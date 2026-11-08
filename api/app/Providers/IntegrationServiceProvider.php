@@ -107,6 +107,11 @@ final class IntegrationServiceProvider extends ServiceProvider
             throw new RuntimeException('SCOUT_DRIVER must be meilisearch in production.');
         }
 
+        if ($this->app->isProduction() && $this->driver('push') === 'fcm'
+            && in_array('', [(string) config('yekkola.fcm.project_id'), (string) config('yekkola.fcm.client_email'), (string) config('yekkola.fcm.private_key')], true)) {
+            throw new RuntimeException('FCM_PROJECT_ID, FCM_CLIENT_EMAIL and FCM_PRIVATE_KEY must be set in production.');
+        }
+
         if ($this->app->isProduction() && $this->driver('bot_challenge') === 'turnstile' && (string) config('yekkola.turnstile.secret') === '') {
             throw new RuntimeException('TURNSTILE_SECRET_KEY must be set in production.');
         }

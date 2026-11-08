@@ -56,7 +56,7 @@ return [
     'staff_alert' => [
         'ledger' => ['title' => 'Grand livre : anomalie détectée', 'body' => 'Le contrôle quotidien a trouvé :count écriture(s) en anomalie. Vérifiez le grand livre.'],
         'payout_batch' => ['title' => 'Lot de versements : échecs', 'body' => ':count versement(s) du lot ont échoué. Vérifiez et relancez.'],
-        'stuck_payments' => ['title' => 'Paiements bloqués', 'body' => ':count paiement(s) attendent une réponse de l’opérateur depuis plus de 30 minutes.'],
+        'stuck_payments' => ['title' => 'Paiements bloqués', 'body' => ':count paiement(s) attendent une réponse de l’opérateur depuis plus de :minutes minutes.'],
     ],
     'digest' => [
         'subject' => 'Votre journée sur Yekkola',

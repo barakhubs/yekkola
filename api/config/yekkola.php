@@ -141,4 +141,8 @@ return [
         'client_email' => env('FCM_CLIENT_EMAIL'),
         'private_key' => env('FCM_PRIVATE_KEY'),
     ],
+    // Staff alerts (PRD-10 FR-09): a payment is "stuck" once it waits this long past the order payment timeout.
+    'alerts' => [
+        'stuck_payment_grace_minutes' => (int) env('STUCK_PAYMENT_GRACE_MINUTES', 15),
+    ],
 ];

@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domain\Notifications\Console;
 
-use App\Domain\Identity\Models\User;
+use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Notifications\Enums\NotificationChannel;
 use App\Domain\Notifications\Enums\NotificationType;
 use App\Domain\Notifications\Models\NotificationPreference;
 use App\Domain\Notifications\ProfessorDigest;
+use App\Domain\Professors\Models\ProfessorProfile;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Daily professor digest (PRD-10 FR-06): counts the last 24 hours of sales, reviews and questions from the in-app
- * feed and emails professors who have an email address, leaving out the events they turned email off for. Run
- * twice on the same day, it sends nothing more.
+ * Daily professor digest (PRD-10 FR-06): the last 24 hours of sales (items that granted access), new reviews and
+ * new questions on each professor's courses, counted from the records themselves — so it doesn't depend on the
+ * in-app switches. Sent to active professors with an email, without the events they turned email off for. Run twice
+ * on the same day, it sends nothing more.
  */
 final class SendProfessorDigest extends Command
 {
@@ -26,39 +29,49 @@ final class SendProfessorDigest extends Command
 
     public function handle(Cache $cache): int
     {
-        $types = array_values(array_map(fn (NotificationType $t) => $t->value, array_filter(NotificationType::cases(), fn (NotificationType $t) => $t->inDigest())));
+        $since = now()->subDay();
+        $courses = fn () => DB::table('courses')->select('id', 'professor_profile_id');
+        $counts = [
+            NotificationType::NewSale->value => DB::table('order_items as i')
+                ->join('enrollments as e', 'e.order_item_id', '=', 'i.id')
+                ->where('e.enrolled_at', '>=', $since)
+                ->groupBy('i.professor_profile_id')->selectRaw('i.professor_profile_id as profile, count(*) as total')->pluck('total', 'profile'),
+            NotificationType::NewReview->value => DB::table('reviews as r')->joinSub($courses(), 'c', 'c.id', '=', 'r.course_id')
+                ->where('r.created_at', '>=', $since)
+                ->groupBy('c.professor_profile_id')->selectRaw('c.professor_profile_id as profile, count(*) as total')->pluck('total', 'profile'),
+            NotificationType::NewQuestion->value => DB::table('lesson_threads as t')->joinSub($courses(), 'c', 'c.id', '=', 't.course_id')
+                ->where('t.created_at', '>=', $since)
+                ->groupBy('c.professor_profile_id')->selectRaw('c.professor_profile_id as profile, count(*) as total')->pluck('total', 'profile'),
+        ];
+
+        $profileIds = collect($counts)->flatMap(fn (Collection $byProfile) => $byProfile->keys())->unique()->values();
         $sent = 0;
+        foreach ($profileIds->chunk(200) as $chunk) {
+            $profiles = ProfessorProfile::query()->with('user')->whereIn('id', $chunk)->get();
+            $emailOff = NotificationPreference::query()->whereIn('user_id', $profiles->pluck('user_id'))
+                ->where('channel', NotificationChannel::Email)->where('enabled', false)->get()
+                ->groupBy('user_id')->map(fn ($prefs) => $prefs->map(fn (NotificationPreference $p) => $p->type->value)->all());
 
-        DB::table('notifications')
-            ->where('notifiable_type', (new User)->getMorphClass())
-            ->where('created_at', '>=', now()->subDay())
-            ->whereIn(DB::raw("data->>'type'"), $types)
-            ->groupBy('notifiable_id', DB::raw("data->>'type'"))
-            ->select('notifiable_id', DB::raw("data->>'type' as type"), DB::raw('count(*) as total'))
-            ->orderBy('notifiable_id')
-            ->get()
-            ->groupBy('notifiable_id')
-            ->each(function ($rows, string $userId) use ($cache, &$sent): void {
-                $user = User::query()->find($userId);
-                if ($user === null || $user->email === null || $user->email === '' || $user->isAnonymised()) {
-                    return;
+            foreach ($profiles as $profile) {
+                $user = $profile->user;
+                if ($user === null || $user->status !== UserStatus::Active || $user->isAnonymised() || $user->email === null || $user->email === '') {
+                    continue;
                 }
-
-                $off = NotificationPreference::query()->where('user_id', $userId)->where('channel', NotificationChannel::Email)
-                    ->where('enabled', false)->pluck('type')->map(fn ($t) => $t instanceof NotificationType ? $t->value : (string) $t)->all();
-                $counts = [];
-                foreach ($rows as $row) {
-                    if (! in_array($row->type, $off, true)) {
-                        $counts[(string) $row->type] = (int) $row->total;
+                $mine = [];
+                foreach ($counts as $type => $byProfile) {
+                    $total = (int) ($byProfile[$profile->id] ?? 0);
+                    if ($total > 0 && ! in_array($type, $emailOff[$user->id] ?? [], true)) {
+                        $mine[$type] = $total;
                     }
                 }
-                if ($counts === [] || ! $cache->add("digest:{$userId}:".now()->toDateString(), true, now()->addDays(2))) {
-                    return;
+                if ($mine === [] || ! $cache->add("digest:{$user->id}:".now()->toDateString(), true, now()->addDays(2))) {
+                    continue;
                 }
 
-                $user->notify((new ProfessorDigest($counts))->locale($user->locale));
+                $user->notify((new ProfessorDigest($mine))->locale($user->locale));
                 $sent++;
-            });
+            }
+        }
 
         $this->info("Digests sent: {$sent}");
 
