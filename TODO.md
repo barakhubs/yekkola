@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-06-lesson-qa` (lesson Q&A, Q&A reports and moderation)
-- **Next up:** notifications (1.12): new question / answer, report outcomes, certificate, takedown notices
+- **Current branch:** `feature/prd-10-notifications` (catalogue notifications: in-app, email, SMS; feed, preferences, web bell)
+- **Next up:** push notifications (FCM), professor daily digest, staff alerts (rest of 1.12)
 
 ## Legend
 
@@ -223,16 +223,17 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Offline quiz attempts submitted on sync (FR-08) — with the mobile app
 - [x] b: Certificates: rule, PDF with QR, serial, verification endpoint, revocation on refund/reversal (FR-10, FR-11, PRD-04 FR-09) — #15
 - [x] b: Reviews + professor reply; course and professor ratings kept from published reviews (FR-12, BR-03, BR-04) — #15
-- [ ] Notify students on certificate issued and professors on new reviews (`CertificateIssued`; reviews) — with 1.12
+- [x] Notify students on certificate issued and professors on new reviews — 1.12
 - [x] Admin hide/restore reviews — #46
 - [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
 - [x] c: Lesson Q&A threads: ask, reply, professor answer, inbox (FR-13) — this PR
-- [ ] Notify the professor of a new question and the student of an answer (FR-13) — with 1.12
+- [x] Notify the professor of a new question and the student of an answer (FR-13) — with 1.12
 - [ ] Let authors edit or delete their own question or reply
 - [ ] Q&A cached for offline reading and posting on mobile (PRD-06 §6) — with the mobile app
 - [x] c: Reports on courses, reviews, professors (FR-14) — this PR
 - [x] Reports on Q&A threads and replies — this PR
-- [ ] Tell a warned author about the warning, and reporters that their report was handled (with 1.12)
+- [x] Tell a warned author about the warning (with 1.12)
+- [ ] Tell reporters that their report was handled
 - [ ] Course updated notice with changelog (FR-15)
 
 ### 1.9 Content protection — PRD-07
@@ -281,7 +282,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Courses (list, unpublish/republish), featured, takedown/restore — #42
 - [x] Categories CRUD + ordering — #43
 - [ ] Transfer course ownership (super admin, PRD-09 FR-08)
-- [ ] Tell the professor about a takedown (with 1.12)
+- [x] Tell the professor about a takedown — 1.12
 - [x] Review moderation — #46
 - [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — this PR
 - [x] Q&A threads moderation: hide/restore questions and replies — this PR
@@ -294,8 +295,10 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 
 ### 1.12 Notifications — PRD-10
 
-- [ ] Notification classes per catalogue event, fr/en templates (FR-01, FR-02)
-- [ ] In-app feed + preferences (FR-03, FR-05)
+- [x] Notification per catalogue event, fr/en texts, in-app + email + SMS from the `notifications` queue (FR-01, FR-02) — this PR
+- [x] In-app feed + preferences; web bell and notification centre (FR-03, FR-05) — this PR
+- [ ] Choose the transactional email provider (Postmark/Resend/SES) and verify the sending domain **(needs: decision)** — email uses `MAIL_MAILER=log` until then
+- [ ] Laravel Cloud queue workers must also listen on `notifications`
 - [ ] FCM channel + device tokens (FR-04)
 - [ ] Email channel + professor digest (FR-06)
 - [ ] Admin alert routing (FR-09)
