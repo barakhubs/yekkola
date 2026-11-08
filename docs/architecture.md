@@ -196,6 +196,7 @@ yekkola/
 │   │   └── main.dart
 │   └── packages/mux_player_plugin/        In-house plugin: Android (Kotlin) + iOS (Swift) wrappers
 ├── docs/                                  architecture.md, prd/
+├── loadtest/                              k6 load tests (README.md; test students from `php artisan loadtest:prepare`)
 ├── .github/workflows/                     api.yml, web.yml, contract.yml, mobile.yml
 ├── package.json  pnpm-workspace.yaml  turbo.json
 └── project-context.md
@@ -328,7 +329,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 - Envelope: `{ "data": …, "meta": { pagination… }, "links": {…} }`.
 - Errors: RFC 9457-style `{ "type", "title", "status", "detail", "code", "errors": { field: [msg] } }` with a stable machine `code` (e.g. `otp.expired`, `enrollment.required`, `device.limit_reached`). `title` is translated per `Accept-Language` and shown to people as is (web: `ApiError.title`); clients branch on `code`, never on text.
 - Idempotency: `Idempotency-Key` header required on `POST /orders`, `POST /orders/{id}/payments`, payout approvals; replays return the original response.
-- Rate limits (per user/IP/phone): OTP request 3/10 min per phone, 10/h per IP, 60 s cooldown, global hourly SMS budget; OTP verify 5 attempts per challenge and 15 wrong codes per number per day, plus 30/10 min per IP; profile updates 10/min per user; data export 1/day; payments 10/h per user; default 120/min per user. Limits use atomic increments (hit, then compare).
+- Rate limits (per user/IP/phone): OTP request 3/10 min per phone, 10/h per IP, 60 s cooldown, global hourly SMS budget; OTP verify 5 attempts per challenge and 15 wrong codes per number per day, plus 30/10 min per IP; profile updates 10/min per user; data export 1/day; payments 10/h per user; account deletion 10/h; impersonation starts 20/h and staff management 60/h per staff member; identity and credential files 30/min and 500/day per staff member; CSV and export downloads 10/min. Every route also has a baseline (limiter `api`, `throttleApi()` in `bootstrap/app.php`): 600/min per signed-in account (cookie or bearer token, also on public routes), 1,500/min per visitor otherwise (provider webhooks and our web server's own renders excluded). Requests rejected by `auth:sanctum` (401) are not counted. Per-visitor limits rely on the real client IP (trusted proxies on Laravel Cloud, TODO 1.2). Limits use atomic increments (hit, then compare).
 - Webhooks: signature-verified, deduplicated by event ID, acknowledged fast (`2xx`), processed on the queue.
 
 ### 4.2 Endpoint catalogue
@@ -626,7 +627,7 @@ Built so that growth is an infrastructure change, not a rewrite.
 ## 10. Testing strategy
 
 - **API:** Pest feature tests per endpoint (auth, validation, authorization, happy path, edge cases) — these are the contract. Unit tests for the ledger (balanced transactions), state machines, price/quote calculation, and progress merge rules. Fake drivers for Mux, payments, SMS.
-- **Contract:** CI regenerates OpenAPI + `api-client` and fails on drift.
+- **Contract:** CI regenerates OpenAPI + `api-client` and fails on drift; the API workflow publishes `openapi.json` as the `openapi-spec` build artifact.
 - **Web:** Vitest + Testing Library for features; Playwright end-to-end for critical journeys (sign-in, free enroll, paid checkout with fake gateway, lesson playback page, studio upload, admin approval).
 - **Mobile:** unit tests for sync engine and merge logic; integration tests for download/offline playback on real devices (Android low-end device in the test matrix).
-- **Non-functional:** k6 load tests; Lighthouse CI budgets on public pages; accessibility checks (axe) in Playwright.
+- **Non-functional:** k6 load tests in `loadtest/` (catalogue, playback, progress, checkout; test students from `php artisan loadtest:prepare` on staging); Lighthouse CI budgets on public pages; accessibility checks (axe) in Playwright.

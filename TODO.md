@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-11-02
+> Last updated: 2026-11-08
 
 ## Now
 
-- **Current branch:** `feature/prd-10-push-digest-alerts` (push via FCM, professor digest, staff alerts)
-- **Next up:** backend hardening (1.13) and the remaining back-office items (coupons/bundles, professors + KYC viewer)
+- **Current branch:** `chore/backend-hardening` (rate limits everywhere, OpenAPI artifact, k6 load tests)
+- **Next up:** the remaining back-office items (coupons/bundles, professors + KYC viewer), then course ownership transfer
 
 ## Legend
 
@@ -126,7 +126,7 @@ Cannot be defaulted:
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
 - [ ] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — with offline licenses (1.9)
-- [ ] Verify trusted-proxy / client-IP handling on Laravel Cloud so per-IP limits see real client IPs — first staging deploy
+- [ ] Verify trusted-proxy / client-IP handling on Laravel Cloud so per-IP limits see real client IPs (now also the per-visitor baseline on every public route: if `request->ip()` is the edge, trust only the Cloud edge, never `*`) — first staging deploy
 - [ ] Real SMS provider driver + delivery reports — phase 4
 
 ### 1.4 Professors — PRD-02
@@ -226,12 +226,12 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Notify students on certificate issued and professors on new reviews — 1.12
 - [x] Admin hide/restore reviews — #46
 - [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
-- [x] c: Lesson Q&A threads: ask, reply, professor answer, inbox (FR-13) — this PR
+- [x] c: Lesson Q&A threads: ask, reply, professor answer, inbox (FR-13) — #54
 - [x] Notify the professor of a new question and the student of an answer (FR-13) — with 1.12
 - [ ] Let authors edit or delete their own question or reply
 - [ ] Q&A cached for offline reading and posting on mobile (PRD-06 §6) — with the mobile app
-- [x] c: Reports on courses, reviews, professors (FR-14) — this PR
-- [x] Reports on Q&A threads and replies — this PR
+- [x] c: Reports on courses, reviews, professors (FR-14) — #52
+- [x] Reports on Q&A threads and replies — #54
 - [x] Tell a warned author about the warning (with 1.12)
 - [ ] Tell reporters that their report was handled
 - [ ] Course updated notice with changelog (FR-15)
@@ -284,35 +284,36 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Transfer course ownership (super admin, PRD-09 FR-08)
 - [x] Tell the professor about a takedown — 1.12
 - [x] Review moderation — #46
-- [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — this PR
-- [x] Q&A threads moderation: hide/restore questions and replies — this PR
+- [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — #52
+- [x] Q&A threads moderation: hide/restore questions and replies — #54
 - [x] Orders, payments (recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
 - [x] Settings endpoints — invariants checked across groups, one transaction, audited — #39
-- [x] Brand image endpoints (upload/remove per asset, public `GET /branding`) — this PR
+- [x] Brand image endpoints (upload/remove per asset, public `GET /branding`) — #53
 - [x] Audit log + staff endpoints — #40
 
 ### 1.12 Notifications — PRD-10
 
-- [x] Notification per catalogue event, fr/en texts, in-app + email + SMS from the `notifications` queue (FR-01, FR-02) — this PR
-- [x] In-app feed + preferences; web bell and notification centre (FR-03, FR-05) — this PR
+- [x] Notification per catalogue event, fr/en texts, in-app + email + SMS from the `notifications` queue (FR-01, FR-02) — #56
+- [x] In-app feed + preferences; web bell and notification centre (FR-03, FR-05) — #56
 - [ ] Choose the transactional email provider (Postmark/Resend/SES) and verify the sending domain **(needs: decision)** — email uses `MAIL_MAILER=log` until then
 - [ ] Laravel Cloud queue workers must also listen on `notifications`
-- [x] Push: `PushSender` (FCM HTTP v1 + log driver), active devices, dead tokens forgotten, optional pushes capped 5/day (FR-04, FR-10) — this PR
+- [x] Push: `PushSender` (FCM HTTP v1 + log driver), active devices, dead tokens forgotten, optional pushes capped 5/day (FR-04, FR-10) — #57
 - [ ] Firebase project + service account (FCM_*), `PUSH_DRIVER=fcm` on staging/production **(needs: Firebase account)**
 - [ ] Endpoint for the mobile app to refresh its push token (today set at sign-in) — with the mobile app
 - [ ] Quiet hours 21:00–07:00 for optional pushes (FR-04, Should)
 - [ ] Keep the professor digest's once-a-day guard in the database, not only the cache (a cache flush allows a second send)
-- [x] Email channel + professor daily digest (FR-06) — this PR
-- [x] Staff alerts by permission: ledger check, failed payout batch, stuck payments; back-office bell and alerts page (FR-09) — this PR
+- [x] Email channel + professor daily digest (FR-06) — #57
+- [x] Staff alerts by permission: ledger check, failed payout batch, stuck payments; back-office bell and alerts page (FR-09) — #57
 
 ### 1.13 Backend hardening
 
-- [ ] OpenAPI spec complete and published as CI artifact
-- [ ] Rate limits on all sensitive endpoints
-- [ ] k6 load tests: catalogue, playback token, progress sync, checkout
-- [ ] Backups configured + restore test on staging
+- [x] OpenAPI spec published as a CI artifact (`openapi-spec`, from the PHP 8.4 job) — this PR
+- [x] Rate limits on all sensitive endpoints: baseline on every route (600/min per account, per visitor otherwise), plus account deletion, impersonation, staff management, identity/credential files, CSV/export downloads; a test fails if a route has none — this PR
+- [x] k6 load tests: catalogue, playback token, progress sync, checkout (`loadtest/`, students from `loadtest:prepare`) — this PR
+- [ ] Run the k6 load tests on staging and record p95s against the targets **(needs: staging with the demo catalogue)**
+- [ ] Backups configured + restore test on staging **(needs: Laravel Cloud staging database + backup bucket)**
 
 ---
 
@@ -360,13 +361,13 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Courses + featured — #42
 - [x] Categories (tree + ordering) — #43
 - [x] Review moderation screen — #46
-- [x] Reports screen + dashboard queue — this PR
-- [x] Q&A moderation screen — this PR
+- [x] Reports screen + dashboard queue — #52
+- [x] Q&A moderation screen — #54
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [x] Settings screen — #39
-- [x] Settings in tabs (open tab in the URL) + Branding tab: logo, footer logo, favicon, share image — this PR
+- [x] Settings in tabs (open tab in the URL) + Branding tab: logo, footer logo, favicon, share image — #53
 - [ ] Real logo and favicon files from the logo brief (`docs/brand.md`), uploaded once designed
 - [x] Audit log, staff — #40
 - [ ] Playwright: admin approval journeys
