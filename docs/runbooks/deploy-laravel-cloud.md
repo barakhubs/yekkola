@@ -49,6 +49,16 @@ browser code at build time: **redeploy after changing one**.
   (same values as in the API), optional `API_INTERNAL_URL`.
 - On the API: `FRONTEND_WEB_URL` and `FRONTEND_ADMIN_URL` must be these apps' URLs (CORS, "View as" redirects).
 
+## API workers and scheduler
+
+- Queue workers must listen on `payments,otp,default,notifications,media` (same order as `config/horizon.php`), or
+  notifications and other jobs never run.
+- The scheduler must run (`php artisan schedule:run` every minute): payment reconciliation, payouts, the ledger
+  check, the professor digest and staff alerts depend on it.
+- Push notifications: `PUSH_DRIVER=fcm` with `FCM_PROJECT_ID`, `FCM_CLIENT_EMAIL`, `FCM_PRIVATE_KEY` (from a Firebase
+  service account; keep `
+` in the key). Without them, leave `PUSH_DRIVER=log` (staging only).
+
 ## Troubleshooting (seen on the first deploys)
 
 | Symptom | Cause | Fix |
