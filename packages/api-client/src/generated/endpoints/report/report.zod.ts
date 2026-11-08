@@ -11,9 +11,9 @@ export const reportsStoreBodyDetailsMax = 1000;
 export const ReportsStoreBody = zod
   .object({
     type: zod
-      .enum(["course", "review", "professor"])
+      .enum(["course", "review", "professor", "thread", "reply"])
       .describe(
-        "What can be reported (PRD-06 FR-14, PRD-09 FR-10). Lesson Q&A threads and replies join with Q&A (FR-13).\n",
+        "What can be reported (PRD-06 FR-14, PRD-09 FR-10).\n| |\n|---|\n| `course` <br/>  |\n| `review` <br/>  |\n| `professor` <br/>  |\n| `thread` <br/> A lesson question (PRD-06 FR-13). |\n| `reply` <br/> A reply to a lesson question. |",
       ),
     id: zod.string(),
     reason: zod
@@ -43,7 +43,7 @@ export const AdminReportsIndexQueryParams = zod.object({
   page: zod.int().default(adminReportsIndexQueryPageDefault),
   per_page: zod.int().default(adminReportsIndexQueryPerPageDefault),
   "filter[status]": zod.string().optional().describe("`open` (default), `actioned`, `dismissed` or `all`."),
-  "filter[type]": zod.string().optional().describe("`course`, `review` or `professor`."),
+  "filter[type]": zod.string().optional().describe("`course`, `review`, `professor`, `thread` or `reply`."),
   "filter[reason]": zod.string().optional(),
   "filter[target_id]": zod.string().optional().describe("Every report on one item."),
   sort: zod.string().optional().describe("`created_at`; prefix `-` for newest first (default oldest first)."),

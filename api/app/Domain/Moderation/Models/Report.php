@@ -6,7 +6,9 @@ namespace App\Domain\Moderation\Models;
 
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Identity\Models\User;
+use App\Domain\Learning\Models\LessonThread;
 use App\Domain\Learning\Models\Review;
+use App\Domain\Learning\Models\ThreadReply;
 use App\Domain\Moderation\Enums\ReportAction;
 use App\Domain\Moderation\Enums\ReportReason;
 use App\Domain\Moderation\Enums\ReportStatus;
@@ -44,7 +46,7 @@ final class Report extends Model
 
     private bool $targetLoaded = false;
 
-    private Course|Review|ProfessorProfile|null $loadedTarget = null;
+    private Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $loadedTarget = null;
 
     protected $guarded = [];
 
@@ -86,7 +88,7 @@ final class Report extends Model
     }
 
     /** The reported item (deleted ones included), or null when it no longer exists at all. */
-    public function target(): Course|Review|ProfessorProfile|null
+    public function target(): Course|Review|LessonThread|ThreadReply|ProfessorProfile|null
     {
         if (! $this->targetLoaded) {
             self::loadTargets(new Collection([$this]));
@@ -109,6 +111,8 @@ final class Report extends Model
         $found = [
             ReportTarget::Course->value => Course::withTrashed()->with('professor.user.roles', 'liveVersion')->findMany($ids(ReportTarget::Course))->keyBy('id'),
             ReportTarget::Review->value => Review::query()->with('user.roles', 'course.liveVersion')->findMany($ids(ReportTarget::Review))->keyBy('id'),
+            ReportTarget::Thread->value => LessonThread::query()->with('author.roles', 'course.liveVersion')->findMany($ids(ReportTarget::Thread))->keyBy('id'),
+            ReportTarget::Reply->value => ThreadReply::query()->with('author.roles', 'thread.course.liveVersion')->findMany($ids(ReportTarget::Reply))->keyBy('id'),
             ReportTarget::Professor->value => ProfessorProfile::query()->with('user.roles')->findMany($ids(ReportTarget::Professor))->keyBy('id'),
         ];
         $open = self::query()

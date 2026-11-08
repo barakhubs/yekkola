@@ -14,7 +14,7 @@ export type AdminReportsIndexParams = {
    */
   "filter[status]"?: string;
   /**
-   * `course`, `review` or `professor`.
+   * `course`, `review`, `professor`, `thread` or `reply`.
    */
   "filter[type]"?: string;
   "filter[reason]"?: string;

@@ -141,6 +141,11 @@ return [
         'own_course' => 'You cannot review your own course.',
         'exists' => 'You have already reviewed this course. Edit your review instead.',
     ],
+    'qa' => [
+        'access_required' => 'Enrol in this course to read and ask questions.',
+        'moderation_transition' => 'This content is already in that state.',
+        'thread_hidden' => 'This question was hidden by moderation: it takes no more replies.',
+    ],
     'quiz' => [
         'not_a_quiz' => 'This lesson is not a quiz.',
         'max_attempts_reached' => 'You have used your :max_attempts attempts for this quiz.',

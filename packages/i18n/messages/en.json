@@ -774,7 +774,8 @@
         "courses": "My courses",
         "profile": "Profile",
         "kyc": "Verification",
-        "payouts": "Payouts"
+        "payouts": "Payouts",
+        "questions": "Questions"
       },
       "welcome": "Hello {name}",
       "progress": "{done} of {total} steps to be ready to teach and be paid.",
@@ -949,12 +950,16 @@
       "trigger": {
         "course": "Report this course",
         "review": "Report this review",
-        "professor": "Report this profile"
+        "professor": "Report this profile",
+        "thread": "Report",
+        "reply": "Report"
       },
       "title": {
         "course": "Report this course",
         "review": "Report this review",
-        "professor": "Report this profile"
+        "professor": "Report this profile",
+        "thread": "Report this question",
+        "reply": "Report this reply"
       },
       "intro": "Tell us what’s wrong. The moderation team looks at every report; the person concerned isn’t told who made it.",
       "reason": "Reason",
@@ -973,6 +978,37 @@
       "cancel": "Cancel",
       "close": "Close",
       "thanks": "Thank you. Our team will look at your report."
+    },
+    "qa": {
+      "title": "Questions and answers",
+      "empty": "No questions on this lesson yet. Ask the first one!",
+      "ask": "Ask a question",
+      "questionTitle": "Your question in one sentence",
+      "questionBody": "Details (what you tried, where you’re stuck)",
+      "post": "Post",
+      "cancel": "Cancel",
+      "yourReply": "Your reply",
+      "reply": "Reply",
+      "answered": "Answered",
+      "hidden": "Hidden by moderation",
+      "professor": "Professor",
+      "askedBy": "By {name}",
+      "anonymous": "User",
+      "replies": "{count, plural, =0 {No replies} one {# reply} other {# replies}}",
+      "loading": "Loading…",
+      "pages": "Question pages",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {last}",
+      "inboxTitle": "Student questions",
+      "inboxIntro": "Questions asked on your courses. Your reply marks the question as answered.",
+      "inboxEmpty": "No questions here.",
+      "statusFilter": "Show",
+      "statuses": {
+        "open": "Unanswered",
+        "answered": "Answered",
+        "all": "All"
+      }
     }
   },
   "admin": {
@@ -1026,7 +1062,8 @@
       "categories": "Categories",
       "password": "Password",
       "reviews": "Reviews",
-      "reports": "Reports"
+      "reports": "Reports",
+      "questions": "Questions"
     },
     "auth": {
       "title": "Team sign-in",
@@ -1821,7 +1858,9 @@
         "misleading": "False or misleading information",
         "copyright": "Content copied without permission",
         "fraud": "Scam or fraud",
-        "other": "Something else"
+        "other": "Something else",
+        "thread": "Question",
+        "reply": "Reply"
       },
       "openOnItem": "{count, plural, one {# open report} other {# open reports}} on this item",
       "reportedBy": "Reported by {name}",
@@ -1885,8 +1924,57 @@
           "label": "Suspend professor",
           "confirm": "Suspend the professor?",
           "hint": "Their profile and courses leave the catalogue. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "hide_thread": {
+          "label": "Hide question",
+          "confirm": "Hide this question?",
+          "hint": "Course participants no longer see it. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "hide_reply": {
+          "label": "Hide reply",
+          "confirm": "Hide this reply?",
+          "hint": "Course participants no longer see it. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "suspend_thread": {
+          "label": "Suspend account",
+          "confirm": "Suspend the author’s account?",
+          "hint": "The author is signed out everywhere and can no longer use the platform. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
+        },
+        "suspend_reply": {
+          "label": "Suspend account",
+          "confirm": "Suspend the author’s account?",
+          "hint": "The author is signed out everywhere and can no longer use the platform. {count, plural, one {The report is closed.} other {The # open reports on this item are closed.}}"
         }
       }
+    },
+    "qaModeration": {
+      "title": "Questions and answers",
+      "intro": "Every lesson question and its replies. Hidden content stays visible to its author only.",
+      "search": "Search the text",
+      "filter": "Show",
+      "all": "All",
+      "withHidden": "With hidden content",
+      "withoutHidden": "Without hidden content",
+      "empty": "No questions.",
+      "answered": "Answered",
+      "hidden": "Hidden",
+      "professor": "Professor",
+      "hiddenBecause": "Hidden: {reason}",
+      "hide": "Hide",
+      "restore": "Restore",
+      "confirm": {
+        "thread": {
+          "hide": "Hide this question?",
+          "restore": "Restore this question?"
+        },
+        "reply": {
+          "hide": "Hide this reply?",
+          "restore": "Restore this reply?"
+        }
+      },
+      "hideHint": "Other participants no longer see it; its author still does, marked as hidden.",
+      "restoreHint": "Course participants see it again.",
+      "reason": "Reason (kept in the audit log)"
     }
   }
 }

@@ -25,7 +25,7 @@ final class ReportController extends Controller
     #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
     #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
     #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: '`open` (default), `actioned`, `dismissed` or `all`.', type: 'string')]
-    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[type]', description: '`course`, `review` or `professor`.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[type]', description: '`course`, `review`, `professor`, `thread` or `reply`.', type: 'string')]
     #[\Dedoc\Scramble\Attributes\QueryParameter('filter[reason]', type: 'string')]
     #[\Dedoc\Scramble\Attributes\QueryParameter('filter[target_id]', description: 'Every report on one item.', type: 'string')]
     #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at`; prefix `-` for newest first (default oldest first).', type: 'string')]

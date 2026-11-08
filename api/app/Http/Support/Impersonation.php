@@ -33,6 +33,8 @@ final class Impersonation
      */
     public const FORBIDDEN_ROUTES = [
         'orders.store', 'orders.pay', 'orders.refund-requests.store', 'courses.enroll',
+        // Posting in their name: questions, replies, reports.
+        'lessons.threads.store', 'threads.replies.store', 'reports.store',
         'me.update', 'me.destroy', 'me.deletion.*', 'me.phone.*', 'me.password', 'me.export.store', 'me.devices.destroy',
         'professor.payout-method.*', 'professor.kyc.store', 'professor.terms.accept',
         'admin.refunds.approve', 'admin.refunds.reject', 'admin.refunds.retry', 'admin.payments.*',

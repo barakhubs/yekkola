@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-settings-branding` (tabbed settings page; logo, footer logo, favicon, share image)
-- **Next up:** lesson Q&A (PRD-06 FR-13) with Q&A reports and moderation
+- **Current branch:** `feature/prd-06-lesson-qa` (lesson Q&A, Q&A reports and moderation)
+- **Next up:** notifications (1.12): new question / answer, report outcomes, certificate, takedown notices
 
 ## Legend
 
@@ -226,9 +226,12 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Notify students on certificate issued and professors on new reviews (`CertificateIssued`; reviews) — with 1.12
 - [x] Admin hide/restore reviews — #46
 - [ ] Cache rendered certificate PDFs per serial + locale if rendering shows up in p95
-- [ ] c: Lesson Q&A threads (FR-13)
+- [x] c: Lesson Q&A threads: ask, reply, professor answer, inbox (FR-13) — this PR
+- [ ] Notify the professor of a new question and the student of an answer (FR-13) — with 1.12
+- [ ] Let authors edit or delete their own question or reply
+- [ ] Q&A cached for offline reading and posting on mobile (PRD-06 §6) — with the mobile app
 - [x] c: Reports on courses, reviews, professors (FR-14) — this PR
-- [ ] Reports on Q&A threads and replies (with FR-13)
+- [x] Reports on Q&A threads and replies — this PR
 - [ ] Tell a warned author about the warning, and reporters that their report was handled (with 1.12)
 - [ ] Course updated notice with changelog (FR-15)
 
@@ -281,7 +284,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Tell the professor about a takedown (with 1.12)
 - [x] Review moderation — #46
 - [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — this PR
-- [ ] Q&A threads moderation (with 1.8c)
+- [x] Q&A threads moderation: hide/restore questions and replies — this PR
 - [x] Orders, payments (recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
@@ -351,7 +354,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Categories (tree + ordering) — #43
 - [x] Review moderation screen — #46
 - [x] Reports screen + dashboard queue — this PR
-- [ ] Q&A moderation screen
+- [x] Q&A moderation screen — this PR
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [ ] Coupons, bundles
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
