@@ -41,6 +41,7 @@ final class Notifier
 
     public static function money(int $amountMinor, string $currency, string $locale): string
     {
-        return MoneyFormatter::format(Money::of($amountMinor, Currency::from($currency)), $locale);
+        // Plain spaces: ICU's no-break spaces aren't GSM-7 and would double an SMS's cost.
+        return str_replace(["\u{00A0}", "\u{202F}"], ' ', MoneyFormatter::format(Money::of($amountMinor, Currency::from($currency)), $locale));
     }
 }

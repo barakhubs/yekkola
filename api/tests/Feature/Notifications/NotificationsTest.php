@@ -86,3 +86,56 @@ it('uses SMS and email only where the catalogue says, and always for critical ev
         expect(mb_strlen((string) __('notifications.payout_failed.sms', ['amount' => '1 250 000 CDF'], $locale)))->toBeLessThanOrEqual(160);
     }
 });
+
+it('sends a sale one SMS, to a parent paying from their own number, and the refund decision to whoever asked', function () {
+    Storage::fake('local');
+    Storage::fake('public');
+    $professor = actingAsProfessor('Marie Kabila');
+    $course = publishedCourse($professor, 'Algèbre pour l’Exetat', ['price_minor' => 2_500_000, 'currency' => 'CDF']);
+    $parent = User::factory()->create();
+    signInAs($parent);
+
+    $orderId = $this->postJson('/api/v1/orders', ['course_ids' => [$course->id], 'beneficiary_phone' => '+243991112233', 'payer_msisdn' => '+243827776655'], ['Idempotency-Key' => 'o-1'])
+        ->assertCreated()->json('data.id');
+    $paymentId = $this->postJson("/api/v1/orders/{$orderId}/payments", ['rail' => 'airtel'], ['Idempotency-Key' => 'p-1'])->assertCreated()->json('data.id');
+    sendPaymentWebhook($paymentId);
+
+    $child = User::query()->where('phone_e164', '+243991112233')->sole();
+    expect($parent->notifications()->sole()->data['key'])->toBe('payment_succeeded.receipt')
+        ->and($child->notifications()->sole()->data['key'])->toBe('payment_succeeded.gift')
+        ->and($professor->user->notifications()->where('data->key', 'new_sale')->count())->toBe(1)
+        ->and(smsTo($parent->phone_e164))->toBe([])
+        ->and(smsTo($child->phone_e164))->toBe([]);
+    $payerSms = smsTo('+243827776655');
+    expect($payerSms)->toHaveCount(1)
+        ->and(mb_strlen($payerSms[0]))->toBeLessThanOrEqual(160)
+        ->and($payerSms[0])->toMatch('/^[\x20-\x7E]+$/'); // GSM-7 safe: no no-break spaces in the amount
+
+    // The student asks for the refund; both the student and the parent who paid hear the decision.
+    signInAs($child);
+    $itemId = App\Domain\Commerce\Models\Order::query()->with('items')->findOrFail($orderId)->items->sole()->id;
+    $refundId = $this->postJson("/api/v1/orders/{$orderId}/refund-requests", ['order_item_id' => $itemId, 'reason' => 'Pas mon niveau.'])->assertCreated()->json('data.id');
+    actingAsStaff(Role::Admin, [App\Domain\Identity\Enums\Permission::FinanceRefunds]);
+    $this->postJson("/api/v1/admin/refunds/{$refundId}/reject", ['note' => 'Cours déjà suivi.'])->assertOk();
+
+    expect($child->notifications()->where('data->key', 'refund_decided.rejected')->count())->toBe(1)
+        ->and($parent->notifications()->where('data->key', 'refund_decided.rejected')->count())->toBe(1);
+});
+
+it('never forwards a staff note to the author it warns', function () {
+    Storage::fake('local');
+    Storage::fake('public');
+    $professor = actingAsProfessor('Marie Kabila');
+    $course = publishedCourse($professor, 'Algèbre pour l’Exetat', ['is_free' => true, 'price_minor' => null, 'currency' => null]);
+    $reporter = User::factory()->create();
+    signInAs($reporter);
+    $this->postJson('/api/v1/reports', ['type' => 'course', 'id' => $course->id, 'reason' => 'copyright'])->assertCreated();
+
+    actingAsStaff(Role::Moderator);
+    $report = App\Domain\Moderation\Models\Report::query()->sole();
+    $this->postJson("/api/v1/admin/reports/{$report->id}/resolve", ['action' => 'warn', 'note' => 'Signalé par Jean (+243 81 000 0000)'])->assertOk();
+
+    $warning = $professor->user->notifications()->where('data->type', 'warning')->sole();
+    expect($warning->data['key'])->toBe('warning.course')
+        ->and(json_encode($warning->data))->not->toContain('243');
+});

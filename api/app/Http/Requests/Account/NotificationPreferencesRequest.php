@@ -6,7 +6,6 @@ namespace App\Http\Requests\Account;
 
 use App\Domain\Notifications\Enums\NotificationChannel;
 use App\Domain\Notifications\Enums\NotificationType;
-use App\Http\Controllers\Api\V1\Account\NotificationController;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -39,7 +38,7 @@ final class NotificationPreferencesRequest extends FormRequest
                 if ($type === null || $channel === null) {
                     continue;
                 }
-                if (! $type->canDisable() || ! in_array($channel, NotificationController::settableChannels($type), true)) {
+                if (! in_array($channel, $type->settableChannels(), true)) {
                     $validator->errors()->add("preferences.{$i}.type", __('validation.notification_not_optional'));
                 }
             }

@@ -24,6 +24,8 @@ enum NotificationType: string
     case NewSale = 'new_sale';
     case PayoutSent = 'payout_sent';
     case PayoutFailed = 'payout_failed';
+    /** A payout refused before sending (identity check missing, account suspended…): the money waits. */
+    case PayoutHeld = 'payout_held';
     case KycDecided = 'kyc_decided';
     case AccountStatus = 'account_status';
     case CourseTakenDown = 'course_taken_down';
@@ -36,13 +38,28 @@ enum NotificationType: string
     }
 
     /**
+     * Channels a user can switch for an event they may turn off: its catalogue channels plus push, never SMS.
+     *
+     * @return list<NotificationChannel>
+     */
+    public function settableChannels(): array
+    {
+        if (! $this->canDisable()) {
+            return [];
+        }
+
+        return [...array_values(array_filter($this->channels(), fn (NotificationChannel $c) => $c !== NotificationChannel::Sms)), NotificationChannel::Push];
+    }
+
+    /**
      * @return list<NotificationChannel>
      */
     public function channels(): array
     {
         return match ($this) {
-            self::PaymentSucceeded, self::PayoutSent, self::PayoutFailed, self::ApplicationDecided, self::AccountStatus => [NotificationChannel::InApp, NotificationChannel::Email, NotificationChannel::Sms],
-            self::RefundDecided, self::CertificateIssued, self::VersionDecided, self::KycDecided, self::CourseTakenDown, self::Warning => [NotificationChannel::InApp, NotificationChannel::Email],
+            // A sale's SMS goes to a payer without the app only (Notifier::sms), never to account holders.
+            self::PayoutSent, self::PayoutFailed, self::ApplicationDecided, self::AccountStatus => [NotificationChannel::InApp, NotificationChannel::Email, NotificationChannel::Sms],
+            self::PaymentSucceeded, self::PayoutHeld, self::RefundDecided, self::CertificateIssued, self::VersionDecided, self::KycDecided, self::CourseTakenDown, self::Warning => [NotificationChannel::InApp, NotificationChannel::Email],
             // Professors' sales, reviews and questions: email comes as the daily digest (FR-06), not one each.
             self::PaymentFailed, self::CourseUpdated, self::QuestionAnswered, self::NewQuestion, self::NewReview, self::NewSale => [NotificationChannel::InApp],
         };

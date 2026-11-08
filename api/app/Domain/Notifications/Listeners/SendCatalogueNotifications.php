@@ -19,9 +19,11 @@ use App\Domain\Commerce\Models\Payment;
 use App\Domain\Commerce\Models\Refund;
 use App\Domain\Finance\Enums\PayoutStatus;
 use App\Domain\Finance\Models\Payout;
+use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Events\CertificateIssued;
 use App\Domain\Learning\Models\Certificate;
+use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Learning\Models\LessonThread;
 use App\Domain\Learning\Models\Review;
 use App\Domain\Learning\Models\ThreadReply;
@@ -36,7 +38,8 @@ use App\Domain\Professors\Models\ProfessorProfile;
 
 /**
  * Turns platform events into catalogue notifications (PRD-10 §3). Each handler only names the recipient, the
- * event and a deep link; notifications are queued after the transaction commits.
+ * event and a deep link; notifications are queued after the transaction commits. Staff notes (audit log) are never
+ * forwarded: authors get a fixed text naming the content concerned.
  */
 final class SendCatalogueNotifications
 {
@@ -50,22 +53,26 @@ final class SendCatalogueNotifications
         }
 
         $buyer = $order->buyer;
-        $locale = $buyer->locale ?? 'fr';
+        // The person who set the order up: the buyer, or the student a guest parent paid for.
+        $locale = $buyer->locale ?? $order->beneficiary->locale ?? 'fr';
         $amount = Notifier::money($order->total_minor, $order->currency, $locale);
         $this->notify->user($buyer, NotificationType::PaymentSucceeded, 'payment_succeeded.receipt', ['amount' => $amount, 'number' => $order->number], '/orders');
         if ($order->beneficiary_id !== $order->buyer_id) {
             $this->notify->user($order->beneficiary, NotificationType::PaymentSucceeded, 'payment_succeeded.gift', ['number' => $order->number], '/my-courses');
         }
-        // A parent paying from their own number gets the confirmation by SMS (no app).
+        // The only SMS for a sale (BR-01): a parent paying from their own number, who has no app.
         $payer = $order->payer();
-        if ($payer !== null && $payer->e164 !== $buyer?->phone_e164) {
+        if ($payer !== null && $payer->e164 !== $buyer?->phone_e164 && $payer->e164 !== $order->beneficiary?->phone_e164) {
             $this->notify->sms($payer->e164, NotificationType::PaymentSucceeded, 'payment_succeeded.payer', ['amount' => $amount, 'number' => $order->number], $locale);
         }
 
+        // Sales are the items that granted access (an already-owned course is owed back, not sold).
+        $granted = Enrollment::query()->whereIn('order_item_id', $order->items->modelKeys())->pluck('order_item_id')->all();
         foreach ($order->items as $item) {
             /** @var OrderItem $item */
-            $professor = $item->course?->professor?->user;
-            $this->notify->user($professor, NotificationType::NewSale, 'new_sale', ['course' => (string) $item->course?->liveVersion?->title], '/studio/courses');
+            if (in_array($item->id, $granted, true)) {
+                $this->notify->user($item->course?->professor?->user, NotificationType::NewSale, 'new_sale', ['course' => (string) $item->course?->liveVersion?->title], '/studio/courses');
+            }
         }
     }
 
@@ -79,23 +86,36 @@ final class SendCatalogueNotifications
 
     public function orderSaved(Order $order): void
     {
-        if ($order->wasChanged('status') && $order->status === OrderStatus::Expired) {
+        // One notice per checkout: an order whose payment already failed was reported then.
+        if ($order->wasChanged('status') && $order->status === OrderStatus::Expired
+            && ! $order->payments()->where('status', PaymentStatus::Failed)->exists()) {
             $this->notify->user($order->buyer, NotificationType::PaymentFailed, 'payment_failed.expired', ['number' => $order->number], '/orders');
         }
     }
 
     public function refundDecided(RefundDecided $event): void
     {
-        $refund = Refund::query()->with('order.buyer')->find($event->refundId);
+        $refund = Refund::query()->with('order.buyer', 'order.beneficiary')->find($event->refundId);
         if ($refund === null || ! in_array($refund->status, [RefundStatus::Approved, RefundStatus::Rejected], true)) {
             return;
         }
-        $buyer = $refund->order?->buyer;
-        $variant = $refund->status === RefundStatus::Approved ? 'approved' : 'rejected';
-        $this->notify->user($buyer, NotificationType::RefundDecided, "refund_decided.{$variant}", [
-            'amount' => Notifier::money($refund->amount_minor, $refund->currency, $buyer->locale ?? 'fr'),
-            'number' => (string) $refund->order?->number,
-        ], '/account');
+
+        // Whoever asked (the student, or the buyer), and the buyer too when that's another account.
+        $order = $refund->order;
+        $asker = ($refund->requested_by !== null ? User::query()->find($refund->requested_by) : null) ?? $order?->beneficiary;
+        $recipients = array_filter([$asker, $order?->buyer]);
+        $seen = [];
+        foreach ($recipients as $user) {
+            if (isset($seen[$user->id])) {
+                continue;
+            }
+            $seen[$user->id] = true;
+            $variant = $refund->status === RefundStatus::Approved ? 'approved' : 'rejected';
+            $this->notify->user($user, NotificationType::RefundDecided, "refund_decided.{$variant}", [
+                'amount' => Notifier::money($refund->amount_minor, $refund->currency, $user->locale),
+                'number' => (string) $order?->number,
+            ], '/account');
+        }
     }
 
     public function versionDecided(CourseVersionDecided $event): void
@@ -142,11 +162,17 @@ final class SendCatalogueNotifications
             return;
         }
         $user = $payout->professor?->user;
-        $paid = $payout->status === PayoutStatus::Paid;
-        $this->notify->user($user, $paid ? NotificationType::PayoutSent : NotificationType::PayoutFailed, $paid ? 'payout_sent' : 'payout_failed', [
+        $params = [
             'amount' => Notifier::money($payout->amount_minor, $payout->currency, $user->locale ?? 'fr'),
             'last_digits' => mb_substr($payout->msisdn, -4), // never the full number (BR-03)
-        ], '/studio/payouts');
+        ];
+
+        match (true) {
+            $payout->status === PayoutStatus::Paid => $this->notify->user($user, NotificationType::PayoutSent, 'payout_sent', $params, '/studio/payouts'),
+            // Refused before anything was sent (identity check missing, account suspended…): no SMS, the money waits.
+            $payout->sent_at === null => $this->notify->user($user, NotificationType::PayoutHeld, 'payout_held', $params, '/studio/payouts'),
+            default => $this->notify->user($user, NotificationType::PayoutFailed, 'payout_failed', $params, '/studio/payouts'),
+        };
     }
 
     public function kycSaved(KycSubmission $submission): void
@@ -159,7 +185,8 @@ final class SendCatalogueNotifications
 
     public function userSaved(User $user): void
     {
-        if ($user->wasChanged('status')) {
+        // The catalogue covers suspension and ban only (BR-01: SMS is a cost).
+        if ($user->wasChanged('status') && in_array($user->status, [UserStatus::Suspended, UserStatus::Banned], true)) {
             $this->notify->user($user, NotificationType::AccountStatus, 'account_status.'.$user->status->value);
         }
     }
@@ -168,7 +195,7 @@ final class SendCatalogueNotifications
     {
         if ($course->wasChanged('taken_down_at') && $course->taken_down_at !== null) {
             $course->loadMissing('professor.user', 'liveVersion');
-            $this->notify->user($course->professor?->user, NotificationType::CourseTakenDown, 'course_taken_down', ['course' => (string) $course->liveVersion?->title, 'reason' => (string) $course->takedown_reason], "/studio/courses/{$course->id}");
+            $this->notify->user($course->professor?->user, NotificationType::CourseTakenDown, 'course_taken_down', ['course' => (string) $course->liveVersion?->title], "/studio/courses/{$course->id}");
         }
     }
 
@@ -192,9 +219,13 @@ final class SendCatalogueNotifications
         $this->notify->user($course?->professor?->user, NotificationType::NewReview, 'new_review', ['course' => (string) $course?->liveVersion?->title, 'rating' => (string) $review->rating], '/studio/courses');
     }
 
-    /** A staff warning after a report (PRD-09 FR-10). */
-    public function warned(User $author, string $note): void
+    /**
+     * A staff warning after a report (PRD-09 FR-10): which content, never the staff note (it can name the reporter).
+     *
+     * @param  string  $kind  `course`, `review`, `professor`, `thread` or `reply`.
+     */
+    public function warned(User $author, string $kind, string $title, ?string $link): void
     {
-        $this->notify->user($author, NotificationType::Warning, 'warning', ['note' => $note]);
+        $this->notify->user($author, NotificationType::Warning, "warning.{$kind}", ['title' => $title], $link);
     }
 }

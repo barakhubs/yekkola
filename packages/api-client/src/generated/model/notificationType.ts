@@ -7,6 +7,26 @@
 
 /**
  * The notification catalogue (PRD-10 §3): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.
+ * | |
+ * |---|
+ * | `payment_succeeded` <br/>  |
+ * | `payment_failed` <br/>  |
+ * | `refund_decided` <br/>  |
+ * | `course_updated` <br/>  |
+ * | `question_answered` <br/>  |
+ * | `certificate_issued` <br/>  |
+ * | `application_decided` <br/>  |
+ * | `version_decided` <br/>  |
+ * | `new_question` <br/>  |
+ * | `new_review` <br/>  |
+ * | `new_sale` <br/>  |
+ * | `payout_sent` <br/>  |
+ * | `payout_failed` <br/>  |
+ * | `payout_held` <br/> A payout refused before sending (identity check missing, account suspended…): the money waits. |
+ * | `kyc_decided` <br/>  |
+ * | `account_status` <br/>  |
+ * | `course_taken_down` <br/>  |
+ * | `warning` <br/>  |
  */
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 
@@ -24,6 +44,7 @@ export const NotificationType = {
   new_sale: "new_sale",
   payout_sent: "payout_sent",
   payout_failed: "payout_failed",
+  payout_held: "payout_held",
   kyc_decided: "kyc_decided",
   account_status: "account_status",
   course_taken_down: "course_taken_down",

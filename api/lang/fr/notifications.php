@@ -7,8 +7,8 @@ return [
     'open' => 'Ouvrir',
 
     'payment_succeeded' => [
-        'receipt' => ['title' => 'Paiement reçu', 'body' => 'Votre paiement de :amount (commande :number) est confirmé. Vos cours sont disponibles.', 'sms' => 'Yekkola : paiement de :amount recu (commande :number). Vos cours sont disponibles dans l\'application.'],
-        'gift' => ['title' => 'Un cours vous a été offert', 'body' => 'La commande :number vous donne accès à de nouveaux cours.', 'sms' => 'Yekkola : un cours vous a ete offert (commande :number).'],
+        'receipt' => ['title' => 'Paiement reçu', 'body' => 'Votre paiement de :amount (commande :number) est confirmé. Vos cours sont disponibles.'],
+        'gift' => ['title' => 'Un cours vous a été offert', 'body' => 'La commande :number vous donne accès à de nouveaux cours.'],
         'payer' => ['title' => 'Paiement reçu', 'body' => 'Paiement de :amount reçu pour la commande :number.', 'sms' => 'Yekkola : merci, paiement de :amount recu pour la commande :number.'],
     ],
     'payment_failed' => [
@@ -36,15 +36,21 @@ return [
     'new_sale' => ['title' => 'Nouvelle vente', 'body' => 'Un étudiant a acheté « :course ».'],
     'payout_sent' => ['title' => 'Versement envoyé', 'body' => ':amount envoyés sur votre numéro se terminant par :last_digits.', 'sms' => 'Yekkola : versement de :amount envoye sur votre numero se terminant par :last_digits.'],
     'payout_failed' => ['title' => 'Versement échoué', 'body' => 'Le versement de :amount sur votre numéro se terminant par :last_digits a échoué. Vérifiez votre moyen de paiement.', 'sms' => 'Yekkola : le versement de :amount a echoue. Verifiez votre numero de paiement dans votre espace professeur.'],
+    'payout_held' => ['title' => 'Versement en attente', 'body' => 'Votre versement de :amount n’a pas pu partir : vérifiez votre identité et votre moyen de paiement dans le studio. L’argent reste sur votre solde.'],
     'kyc_decided' => [
         'verified' => ['title' => 'Identité vérifiée', 'body' => 'Votre identité est vérifiée : vos versements peuvent partir.'],
         'rejected' => ['title' => 'Vérification refusée', 'body' => 'Votre vérification d’identité a été refusée. Envoyez de nouveaux documents.'],
     ],
     'account_status' => [
-        'active' => ['title' => 'Compte réactivé', 'body' => 'Votre compte est de nouveau actif.', 'sms' => 'Yekkola : votre compte est de nouveau actif.'],
         'suspended' => ['title' => 'Compte suspendu', 'body' => 'Votre compte est suspendu. Contactez le support pour en savoir plus.', 'sms' => 'Yekkola : votre compte est suspendu. Contactez le support pour en savoir plus.'],
         'banned' => ['title' => 'Compte fermé', 'body' => 'Votre compte a été fermé pour non-respect des règles.', 'sms' => 'Yekkola : votre compte a ete ferme pour non-respect des regles.'],
     ],
-    'course_taken_down' => ['title' => 'Cours retiré', 'body' => '« :course » a été retiré par l’équipe Yekkola : :reason'],
-    'warning' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Un de vos contenus enfreint les règles : :note'],
+    'course_taken_down' => ['title' => 'Cours retiré', 'body' => '« :course » a été retiré par l’équipe Yekkola. Contactez le support pour en savoir plus.'],
+    'warning' => [
+        'course' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre cours « :title » a été signalé et ne respecte pas les règles. Merci de le corriger.'],
+        'review' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre avis sur « :title » ne respecte pas les règles. Merci de le corriger.'],
+        'thread' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre question « :title » ne respecte pas les règles.'],
+        'reply' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre réponse dans « :title » ne respecte pas les règles.'],
+        'professor' => ['title' => 'Avertissement de l’équipe Yekkola', 'body' => 'Votre profil de professeur ne respecte pas les règles. Merci de le corriger.'],
+    ],
 ];

@@ -29,6 +29,7 @@ use App\Domain\Learning\Listeners\RefreshRatingsOnUserStatus;
 use App\Domain\Learning\Models\LessonThread;
 use App\Domain\Learning\Models\Review;
 use App\Domain\Learning\Models\ThreadReply;
+use App\Domain\Notifications\Listeners\EraseNotificationData;
 use App\Domain\Notifications\Listeners\SendCatalogueNotifications;
 use App\Domain\Platform\Listeners\AuditSettingsChange;
 use App\Domain\Professors\Events\ApplicationDecided;
@@ -127,6 +128,7 @@ final class AppServiceProvider extends ServiceProvider
         Event::listen(UserAnonymizing::class, EraseProfessorData::class);
         Event::listen(UserAnonymizing::class, EraseLearningData::class);
         Event::listen(UserAnonymizing::class, EraseProtectionData::class);
+        Event::listen(UserAnonymizing::class, EraseNotificationData::class);
 
         // Learning: a new live version changes what counts toward progress (PRD-06 BR-02).
         Event::listen(CourseVersionDecided::class, RecomputeProgressOnNewVersion::class);

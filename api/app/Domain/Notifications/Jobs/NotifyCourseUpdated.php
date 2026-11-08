@@ -21,6 +21,9 @@ final class NotifyCourseUpdated implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
 
+    /** A retry would notify again everyone already done. */
+    public int $tries = 1;
+
     public function __construct(public readonly string $courseId)
     {
         $this->onQueue('notifications');

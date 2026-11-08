@@ -79,10 +79,11 @@ final class PlatformNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
+        // Params can come from users (course titles…): no Markdown links or formatting in the email.
         $mail = (new MailMessage)
             ->subject($this->text('title'))
-            ->greeting($this->text('title'))
-            ->line($this->text('body'));
+            ->greeting($this->text('title', escape: true))
+            ->line($this->text('body', escape: true));
 
         return $this->link === null ? $mail : $mail->action(__('notifications.open', [], $this->locale), self::webUrl($this->link));
     }
@@ -92,9 +93,13 @@ final class PlatformNotification extends Notification implements ShouldQueue
         return $this->text('sms');
     }
 
-    public function text(string $part): string
+    public function text(string $part, bool $escape = false): string
     {
-        return (string) __("notifications.{$this->key}.{$part}", $this->params, $this->locale);
+        $params = $escape
+            ? array_map(fn (string $v) => (string) preg_replace('/([\\\\`*_{}\[\]()<>#+!|~-])/', '\\\\$1', $v), $this->params)
+            : $this->params;
+
+        return (string) __("notifications.{$this->key}.{$part}", $params, $this->locale);
     }
 
     public static function webUrl(string $link): string

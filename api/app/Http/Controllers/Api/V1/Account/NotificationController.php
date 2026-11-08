@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\Account;
 
 use App\Domain\Identity\Models\User;
-use App\Domain\Notifications\Enums\NotificationChannel;
+use App\Domain\Notifications\Actions\UpdateNotificationPreferences;
 use App\Domain\Notifications\Enums\NotificationType;
 use App\Domain\Notifications\Models\NotificationPreference;
 use App\Http\Controllers\Controller;
@@ -14,7 +14,6 @@ use App\Http\Requests\Account\NotificationPreferencesRequest;
 use App\Http\Resources\NotificationResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * My notifications (PRD-10): the in-app feed, unread count, mark read (FR-03), and my channel preferences for the
@@ -78,20 +77,13 @@ final class NotificationController extends Controller
      *
      * @return array{data: list<array{type: string, channels: array<string, bool>}>}
      */
-    public function updatePreferences(NotificationPreferencesRequest $request): array
+    public function updatePreferences(NotificationPreferencesRequest $request, UpdateNotificationPreferences $update): array
     {
         $user = $this->user($request);
         /** @var list<array{type: string, channel: string, enabled: bool}> $items */
         $items = $request->validated('preferences');
 
-        DB::transaction(function () use ($user, $items): void {
-            foreach ($items as $item) {
-                NotificationPreference::query()->updateOrCreate(
-                    ['user_id' => $user->id, 'type' => $item['type'], 'channel' => $item['channel']],
-                    ['enabled' => (bool) $item['enabled']],
-                );
-            }
-        });
+        $update->handle($user, $items);
 
         return ['data' => $this->preferenceRows($user)];
     }
@@ -110,25 +102,13 @@ final class NotificationController extends Controller
                 continue;
             }
             $channels = [];
-            foreach (self::settableChannels($type) as $channel) {
+            foreach ($type->settableChannels() as $channel) {
                 $channels[$channel->value] = ! in_array($type->value.':'.$channel->value, $off, true);
             }
             $rows[] = ['type' => $type->value, 'channels' => $channels];
         }
 
         return $rows;
-    }
-
-    /**
-     * Channels a user can set for an event: its catalogue channels plus push (FCM comes next), never SMS.
-     *
-     * @return list<NotificationChannel>
-     */
-    public static function settableChannels(NotificationType $type): array
-    {
-        $channels = array_values(array_filter($type->channels(), fn (NotificationChannel $c) => $c !== NotificationChannel::Sms));
-
-        return [...$channels, NotificationChannel::Push];
     }
 
     private function user(Request $request): User

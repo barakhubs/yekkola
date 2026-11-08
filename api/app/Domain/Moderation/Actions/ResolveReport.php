@@ -163,8 +163,37 @@ final class ResolveReport
         $author = self::author($target);
         $this->recordAudit->handle('user.warned', $author, ['note' => $note], causer: $staff);
         if ($author !== null) {
-            $this->notifications->warned($author, $note);
+            [$title, $link] = self::describe($target);
+            $this->notifications->warned($author, $this->kind($target), $title, $link);
         }
+    }
+
+    /**
+     * What the author is told the warning is about, and where it is.
+     *
+     * @return array{0: string, 1: string|null}
+     */
+    private static function describe(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): array
+    {
+        return match (true) {
+            $target instanceof Course => [(string) $target->liveVersion?->title, "/studio/courses/{$target->id}"],
+            $target instanceof Review => [(string) $target->course?->liveVersion?->title, $target->course !== null ? "/courses/{$target->course->slug}" : null],
+            $target instanceof LessonThread => [$target->title, "/learn/{$target->course_id}/{$target->lesson_uid}"],
+            $target instanceof ThreadReply => [(string) $target->thread?->title, $target->thread !== null ? "/learn/{$target->thread->course_id}/{$target->thread->lesson_uid}" : null],
+            $target instanceof ProfessorProfile => [$target->display_name, '/studio/profile'],
+            default => ['', null],
+        };
+    }
+
+    private function kind(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): string
+    {
+        return match (true) {
+            $target instanceof Course => 'course',
+            $target instanceof Review => 'review',
+            $target instanceof LessonThread => 'thread',
+            $target instanceof ThreadReply => 'reply',
+            default => 'professor',
+        };
     }
 
     /** A post by a student (or anyone): suspending means their account. */

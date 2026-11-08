@@ -131,13 +131,14 @@ export const MeNotificationPreferencesUpdateBody = zod
               "new_sale",
               "payout_sent",
               "payout_failed",
+              "payout_held",
               "kyc_decided",
               "account_status",
               "course_taken_down",
               "warning",
             ])
             .describe(
-              "The notification catalogue (PRD-10 §3): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n",
+              "The notification catalogue (PRD-10 §3): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n| |\n|---|\n| `payment_succeeded` <br/>  |\n| `payment_failed` <br/>  |\n| `refund_decided` <br/>  |\n| `course_updated` <br/>  |\n| `question_answered` <br/>  |\n| `certificate_issued` <br/>  |\n| `application_decided` <br/>  |\n| `version_decided` <br/>  |\n| `new_question` <br/>  |\n| `new_review` <br/>  |\n| `new_sale` <br/>  |\n| `payout_sent` <br/>  |\n| `payout_failed` <br/>  |\n| `payout_held` <br/> A payout refused before sending (identity check missing, account suspended…): the money waits. |\n| `kyc_decided` <br/>  |\n| `account_status` <br/>  |\n| `course_taken_down` <br/>  |\n| `warning` <br/>  |",
             ),
           channel: zod.enum(["in_app", "push", "email", "sms"]),
           enabled: zod.boolean(),

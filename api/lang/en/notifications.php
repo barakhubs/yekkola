@@ -7,8 +7,8 @@ return [
     'open' => 'Open',
 
     'payment_succeeded' => [
-        'receipt' => ['title' => 'Payment received', 'body' => 'Your payment of :amount (order :number) is confirmed. Your courses are ready.', 'sms' => 'Yekkola: payment of :amount received (order :number). Your courses are ready in the app.'],
-        'gift' => ['title' => 'A course was given to you', 'body' => 'Order :number gives you access to new courses.', 'sms' => 'Yekkola: a course was given to you (order :number).'],
+        'receipt' => ['title' => 'Payment received', 'body' => 'Your payment of :amount (order :number) is confirmed. Your courses are ready.'],
+        'gift' => ['title' => 'A course was given to you', 'body' => 'Order :number gives you access to new courses.'],
         'payer' => ['title' => 'Payment received', 'body' => 'Payment of :amount received for order :number.', 'sms' => 'Yekkola: thank you, payment of :amount received for order :number.'],
     ],
     'payment_failed' => [
@@ -36,15 +36,21 @@ return [
     'new_sale' => ['title' => 'New sale', 'body' => 'A student bought “:course”.'],
     'payout_sent' => ['title' => 'Payout sent', 'body' => ':amount sent to your number ending in :last_digits.', 'sms' => 'Yekkola: payout of :amount sent to your number ending in :last_digits.'],
     'payout_failed' => ['title' => 'Payout failed', 'body' => 'The payout of :amount to your number ending in :last_digits failed. Check your payout method.', 'sms' => 'Yekkola: the payout of :amount failed. Check your payout number in your professor space.'],
+    'payout_held' => ['title' => 'Payout on hold', 'body' => 'Your payout of :amount couldn’t go out: check your identity and payout method in the studio. The money stays in your balance.'],
     'kyc_decided' => [
         'verified' => ['title' => 'Identity verified', 'body' => 'Your identity is verified: your payouts can go out.'],
         'rejected' => ['title' => 'Verification declined', 'body' => 'Your identity check was declined. Please send new documents.'],
     ],
     'account_status' => [
-        'active' => ['title' => 'Account reactivated', 'body' => 'Your account is active again.', 'sms' => 'Yekkola: your account is active again.'],
         'suspended' => ['title' => 'Account suspended', 'body' => 'Your account is suspended. Contact support to find out more.', 'sms' => 'Yekkola: your account is suspended. Contact support to find out more.'],
         'banned' => ['title' => 'Account closed', 'body' => 'Your account was closed for breaking the rules.', 'sms' => 'Yekkola: your account was closed for breaking the rules.'],
     ],
-    'course_taken_down' => ['title' => 'Course taken down', 'body' => '“:course” was taken down by the Yekkola team: :reason'],
-    'warning' => ['title' => 'Warning from the Yekkola team', 'body' => 'Some of your content breaks the rules: :note'],
+    'course_taken_down' => ['title' => 'Course taken down', 'body' => '“:course” was taken down by the Yekkola team. Contact support to find out more.'],
+    'warning' => [
+        'course' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your course “:title” was reported and breaks the rules. Please fix it.'],
+        'review' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your review of “:title” breaks the rules. Please fix it.'],
+        'thread' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your question “:title” breaks the rules.'],
+        'reply' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your reply in “:title” breaks the rules.'],
+        'professor' => ['title' => 'Warning from the Yekkola team', 'body' => 'Your professor profile breaks the rules. Please fix it.'],
+    ],
 ];

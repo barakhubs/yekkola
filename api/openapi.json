@@ -20978,7 +20978,7 @@
             },
             "NotificationType": {
                 "type": "string",
-                "description": "The notification catalogue (PRD-10 \u00a73): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n",
+                "description": "The notification catalogue (PRD-10 \u00a73): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n| |\n|---|\n| `payment_succeeded` <br/>  |\n| `payment_failed` <br/>  |\n| `refund_decided` <br/>  |\n| `course_updated` <br/>  |\n| `question_answered` <br/>  |\n| `certificate_issued` <br/>  |\n| `application_decided` <br/>  |\n| `version_decided` <br/>  |\n| `new_question` <br/>  |\n| `new_review` <br/>  |\n| `new_sale` <br/>  |\n| `payout_sent` <br/>  |\n| `payout_failed` <br/>  |\n| `payout_held` <br/> A payout refused before sending (identity check missing, account suspended\u2026): the money waits. |\n| `kyc_decided` <br/>  |\n| `account_status` <br/>  |\n| `course_taken_down` <br/>  |\n| `warning` <br/>  |",
                 "enum": [
                     "payment_succeeded",
                     "payment_failed",
@@ -20993,6 +20993,7 @@
                     "new_sale",
                     "payout_sent",
                     "payout_failed",
+                    "payout_held",
                     "kyc_decided",
                     "account_status",
                     "course_taken_down",
