@@ -64,3 +64,6 @@ mobile/ios/Flutter/flutter_export_environment.sh
 # Testing / tooling
 playwright-report/
 test-results/
+
+# k6 load-test fixture (contains access tokens)
+loadtest/fixture.json
