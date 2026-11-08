@@ -20,6 +20,7 @@ use App\Domain\Moderation\Enums\ReportAction;
 use App\Domain\Moderation\Enums\ReportStatus;
 use App\Domain\Moderation\Exceptions\ModerationException;
 use App\Domain\Moderation\Models\Report;
+use App\Domain\Notifications\Listeners\SendCatalogueNotifications;
 use App\Domain\Platform\Actions\RecordAudit;
 use App\Domain\Professors\Actions\ManageProfessorStanding;
 use App\Domain\Professors\Models\ProfessorProfile;
@@ -48,6 +49,7 @@ final class ResolveReport
         private readonly ChangeCourseAvailability $courseAvailability,
         private readonly ChangeUserStatus $userStatus,
         private readonly ManageProfessorStanding $professorStanding,
+        private readonly SendCatalogueNotifications $notifications,
     ) {}
 
     /** `$note` may be empty only to dismiss; every other action records it as its reason. */
@@ -155,6 +157,16 @@ final class ResolveReport
         $this->professorStanding->suspend($profile, $staff, $note);
     }
 
+    /** The warning goes on the author's record and to the author (PRD-09 FR-10, PRD-10). */
+    private function warn(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target, string $note, User $staff): void
+    {
+        $author = self::author($target);
+        $this->recordAudit->handle('user.warned', $author, ['note' => $note], causer: $staff);
+        if ($author !== null) {
+            $this->notifications->warned($author, $note);
+        }
+    }
+
     /** A post by a student (or anyone): suspending means their account. */
     private static function isPost(Course|Review|LessonThread|ThreadReply|ProfessorProfile|null $target): bool
     {
@@ -170,7 +182,7 @@ final class ResolveReport
     {
         match (true) {
             $action === ReportAction::Dismiss => null,
-            $action === ReportAction::Warn => $this->recordAudit->handle('user.warned', self::author($target), ['note' => $note], causer: $staff),
+            $action === ReportAction::Warn => $this->warn($target, $note, $staff),
             $action === ReportAction::Hide && $target instanceof Review => $this->moderateReview->hide($target, $staff, $note),
             $action === ReportAction::Hide && ($target instanceof LessonThread || $target instanceof ThreadReply) => $this->moderateQa->hide($target, $staff, $note),
             $action === ReportAction::Hide && $target instanceof Course => $this->courseAvailability->takeDown($target, $staff, $note),
