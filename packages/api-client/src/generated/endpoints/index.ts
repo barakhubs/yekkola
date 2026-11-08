@@ -28,6 +28,7 @@ export * from "./ledger/ledger";
 export * from "./ledger-adjustment/ledger-adjustment";
 export * from "./logout/logout";
 export * from "./media/media";
+export * from "./notification/notification";
 export * from "./order/order";
 export * from "./otp/otp";
 export * from "./payment-webhook/payment-webhook";

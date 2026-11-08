@@ -28,6 +28,7 @@ export * from "./ledger/ledger.zod";
 export * from "./ledger-adjustment/ledger-adjustment.zod";
 export * from "./logout/logout.zod";
 export * from "./media/media.zod";
+export * from "./notification/notification.zod";
 export * from "./order/order.zod";
 export * from "./otp/otp.zod";
 export * from "./payment-webhook/payment-webhook.zod";
