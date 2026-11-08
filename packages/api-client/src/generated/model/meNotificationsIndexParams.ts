@@ -13,4 +13,8 @@ export type MeNotificationsIndexParams = {
    * `true`: unread only.
    */
   "filter[unread]"?: string;
+  /**
+   * `web` (default) or `admin` (staff alerts).
+   */
+  "filter[app]"?: string;
 };

@@ -12,6 +12,8 @@ export interface NotificationResource {
   body: string;
   /** @nullable */
   link: string | null;
+  /** `admin` for staff alerts: the back office opens those links. */
+  app: string;
   /** @nullable */
   read_at: string | null;
   created_at: string;
