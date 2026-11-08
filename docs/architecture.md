@@ -277,8 +277,8 @@ PostgreSQL. Conventions:
 | `quiz_attempts` | id, user_id, quiz_id (the version it started on), course_id, lesson_uid, question_order (jsonb), answers (jsonb), started_at, deadline_at (time limit + 30 s grace, server-side; clients get `ends_at`), submitted_at, score_pct, passed, timed_out, device_id | An open attempt is resumed (even across versions) rather than duplicated; `max_attempts` counts every attempt on the lesson uid. Answers after the grace don't count; access is re-checked at submission; a submitted attempt always returns its stored result. Offline attempts (FR-08) with the mobile app. |
 | `certificates` | id, serial (unique, public, random `YK-XXXX-XXXX-XXXX`), user_id, course_id, enrollment_id, course_version_id, student_name_snapshot, course_title_snapshot, professor_name_snapshot, issued_at, revoked_at, revoked_reason | Partial unique index: one valid (unrevoked) certificate per `(user_id, course_id)`. Issued by a queued listener on `ProgressRecorded` when the admin rule is met (`LearningSettings`: min completion %, all quizzes passed); waits until the student has a name. Revoked with its enrollment (`RevokeEnrollments`: refund, reversal); a new grant + completion issues a new one. PDF rendered on request from the snapshot in the student's locale, with a QR code to the web verification page (no stored file). Deleted on account deletion; in the data export. |
 | `reviews` | id, user_id, course_id, rating (1–5), body, status (`visible`/`hidden`), professor_reply, replied_at, hidden_at, hidden_by, hidden_reason | Unique `(user_id, course_id)`. Needs an active enrollment, progress ≥ `review_min_progress_pct`, and not the author's own course. Published = visible, author not banned, and author still enrolled (a refund or reversal takes the review out; a new grant brings it back). `courses.rating_*` and `professor_profiles.rating_*` are recomputed from published reviews on every review write (professor row, then course row locked) and, queued after commit, on revocation, re-grant, and ban/unban. Public author name is first name + initial. Deleted on account deletion; in the data export. |
-| `lesson_threads` | id, course_id, lesson_uid, author_id, title, body, status (`open`/`answered`/`closed`/`hidden`), reply_count, last_reply_at | |
-| `thread_replies` | id, lesson_thread_id, author_id, body, is_professor, status | |
+| `lesson_threads` | id, course_id, lesson_uid, author_id, title, body, status (`open`/`answered`), reply_count, last_reply_at, answered_at, hidden_at, hidden_by, hidden_reason | Answered when the course's professor replies. Hidden = moderation (visible to its author only). |
+| `thread_replies` | id, lesson_thread_id, author_id, body, is_professor, hidden_at, hidden_by, hidden_reason | |
 | `wishlist_items` | user_id, course_id, created_at | PK `(user_id, course_id)`. Cleared on account deletion; included in the data export. |
 
 ### 3.6 Protection
@@ -305,7 +305,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Table | Columns (key) | Notes |
 |---|---|---|
-| `reports` | id, reporter_id, reportable_type (`course`/`review`/`professor`; `thread`/`reply` with Q&A), reportable_id, reason (`spam`/`abusive`/`inappropriate`/`misleading`/`copyright`/`fraud`/`other`), details, status (`open`/`actioned`/`dismissed`), action (`dismiss`/`hide`/`warn`/`suspend`), handled_by, resolution_note, handled_at | Partial unique index: one `open` report per reporter and item. Resolving closes every open report on the item. |
+| `reports` | id, reporter_id, reportable_type (`course`/`review`/`professor`/`thread`/`reply`), reportable_id, reason (`spam`/`abusive`/`inappropriate`/`misleading`/`copyright`/`fraud`/`other`), details, status (`open`/`actioned`/`dismissed`), action (`dismiss`/`hide`/`warn`/`suspend`), handled_by, resolution_note, handled_at | Partial unique index: one `open` report per reporter and item. Resolving closes every open report on the item. |
 | `notifications` | Laravel database notifications | In-app feed. |
 | `notification_preferences` | user_id, type, channel (`push`/`sms`/`email`/`in_app`), enabled | Defaults in code; rows only for overrides. |
 | `settings` | spatie/laravel-settings | Groups: commerce, payouts, protection, catalog, learning, moderation. Defaults in `database/settings/`. |
@@ -388,8 +388,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | PUT | /quiz-attempts/{id} | Submit `{answers: {question_id: [option ids]}}` → score, corrections, explanations |
 | GET | /me/certificates | My certificates (with verification link); `GET /me/certificates/{id}/pdf` in my locale |
 | GET / POST / PATCH / DELETE | /courses/{id}/review | My review `{rating, body?}` (POST once; then PATCH) |
-| GET / POST | /lessons/{uid}/threads | Lesson Q&A |
-| POST | /threads/{id}/replies | Reply |
+| GET / POST | /lessons/{uid}/threads | Lesson Q&A (enrolled students and the course's professor; `qa.access_required` otherwise): latest activity first; ask `{title, body}` (throttled 6/min, 100/day). Hidden posts only for their author; banned authors' posts left out |
+| GET / POST | /threads/{id}, /threads/{id}/replies | One question with its replies; reply `{body}` — the professor's reply is marked and answers the question; no replies on a hidden question |
 | POST | /reports | Report a listed course, a visible review or a public professor `{type, id, reason, details?}` (details required for `other`); not one's own content (422 `report.own_content`); an open report by the same person on the same item is returned unchanged; throttled 5/min, 30/day |
 | GET / POST / DELETE | /me/wishlist[/{courseId}] | Wishlist (`POST {course_id}`, idempotent, listed courses only) |
 | GET | /me/notifications | In-app feed; `POST /me/notifications/read` |
@@ -449,7 +449,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /professor/ledger, /professor/ledger.csv | Statement lines (one per entry on the professor's accounts; `type`, `from`, `to`), or as CSV |
 | GET | /professor/payouts | Payout history |
 | GET | /professor/reviews | Reviews of my courses (`filter[course_id\|rating\|replied]`); `POST /professor/reviews/{id}/reply {reply\|null}` |
-| GET | /professor/threads | Q&A inbox |
+| GET | /professor/threads | Q&A inbox: my courses' questions, `filter[status]` `open` (default)/`answered`/`all`, oldest first, with course and lesson titles |
 
 **Admin** (`/admin`, role: admin/moderator; finance endpoints need `finance.*`)
 
@@ -472,7 +472,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET / PATCH | /admin/courses[/{id}] | Unpublish, takedown |
 | CRUD | /admin/categories (+ `PUT /admin/categories/order`) | Categories |
 | GET / POST | /admin/reports, /admin/reports/{id}/resolve | Reports queue (`moderation.reports`): open first by default (`filter[status]` `open`/`actioned`/`dismissed`/`all`, `type`, `reason`, `target_id`), each with the item as it is now and how many reports are open on it. Resolve `{action, note}` closes every open report on the item: `dismiss` (note optional), `warn` (audited `user.warned` on the author), `hide` (review hidden; course taken down — needs `catalog.manage`), `suspend` (review author's account — `users.manage`; course/profile professor — `professors.manage`). `can` per report; 409 `report.already_resolved`; audited `report.resolved` |
-| PATCH | /admin/reviews/{id}, /admin/threads/{id} | Hide/restore |
+| GET / POST | /admin/threads, /admin/threads/{id}/(hide\|restore), /admin/thread-replies/{id}/(hide\|restore) | Q&A moderation (`moderation.reports`): every question with all replies (`filter[hidden]`, `course_id`, `q`); hide/restore with a reason, audited (`thread.hidden`, `thread_reply.hidden`…) |
 | GET | /admin/orders[/{id}], /admin/payments[/{id}] | Commerce views |
 | POST | /admin/payments/{id}/recheck | Force status re-query |
 | GET | /admin/refunds[/{id}]; POST /admin/refunds/{id}/(approve\|reject\|retry) | Refund queue with policy facts and flags (`finance.refunds`, audited; reject and retry need a note) |
