@@ -9,6 +9,8 @@ use App\Domain\Finance\Console\ReleaseDueEarnings;
 use App\Domain\Finance\Console\SyncPayouts;
 use App\Domain\Identity\Console\CreateSuperAdmin;
 use App\Domain\Identity\Console\PurgeDeletedAccounts;
+use App\Domain\Notifications\Console\CheckStuckPayments;
+use App\Domain\Notifications\Console\SendProfessorDigest;
 use App\Domain\Platform\Console\RollupPlatformStatsCommand;
 use App\Domain\Professors\Console\ExpireStaleApplications;
 use App\Domain\Shared\Exceptions\DomainException;
@@ -44,6 +46,8 @@ return Application::configure(basePath: dirname(__DIR__))
         SyncPayouts::class,
         CheckLedger::class,
         RollupPlatformStatsCommand::class,
+        SendProfessorDigest::class,
+        CheckStuckPayments::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Cookie (SPA) auth for the web app and back office; bearer tokens for mobile.

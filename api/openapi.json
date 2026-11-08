@@ -7941,6 +7941,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "filter[app]",
+                        "in": "query",
+                        "description": "`web` (default) or `admin` (staff alerts).",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -8093,6 +8101,16 @@
                 "tags": [
                     "Notification"
                 ],
+                "parameters": [
+                    {
+                        "name": "filter[app]",
+                        "in": "query",
+                        "description": "`web` (default) or `admin`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "",
@@ -8127,9 +8145,19 @@
         "/me/notifications/read": {
             "post": {
                 "operationId": "me.notifications.read",
-                "summary": "Marks the given notifications read, or all of them when `ids` is left out",
+                "summary": "Marks the given notifications read, or all of this app's when `ids` is left out (`filter[app]` as for the list)",
                 "tags": [
                     "Notification"
+                ],
+                "parameters": [
+                    {
+                        "name": "filter[app]",
+                        "in": "query",
+                        "description": "`web` (default) or `admin`.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "requestBody": {
                     "content": {
@@ -20955,6 +20983,10 @@
                             "null"
                         ]
                     },
+                    "app": {
+                        "type": "string",
+                        "description": "`admin` for staff alerts: the back office opens those links."
+                    },
                     "read_at": {
                         "type": [
                             "string",
@@ -20971,6 +21003,7 @@
                     "title",
                     "body",
                     "link",
+                    "app",
                     "read_at",
                     "created_at"
                 ],
@@ -20978,7 +21011,7 @@
             },
             "NotificationType": {
                 "type": "string",
-                "description": "The notification catalogue (PRD-10 \u00a73): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n| |\n|---|\n| `payment_succeeded` <br/>  |\n| `payment_failed` <br/>  |\n| `refund_decided` <br/>  |\n| `course_updated` <br/>  |\n| `question_answered` <br/>  |\n| `certificate_issued` <br/>  |\n| `application_decided` <br/>  |\n| `version_decided` <br/>  |\n| `new_question` <br/>  |\n| `new_review` <br/>  |\n| `new_sale` <br/>  |\n| `payout_sent` <br/>  |\n| `payout_failed` <br/>  |\n| `payout_held` <br/> A payout refused before sending (identity check missing, account suspended\u2026): the money waits. |\n| `kyc_decided` <br/>  |\n| `account_status` <br/>  |\n| `course_taken_down` <br/>  |\n| `warning` <br/>  |",
+                "description": "The notification catalogue (PRD-10 \u00a73): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.\n| |\n|---|\n| `payment_succeeded` <br/>  |\n| `payment_failed` <br/>  |\n| `refund_decided` <br/>  |\n| `course_updated` <br/>  |\n| `question_answered` <br/>  |\n| `certificate_issued` <br/>  |\n| `application_decided` <br/>  |\n| `version_decided` <br/>  |\n| `new_question` <br/>  |\n| `new_review` <br/>  |\n| `new_sale` <br/>  |\n| `payout_sent` <br/>  |\n| `payout_failed` <br/>  |\n| `payout_held` <br/> A payout refused before sending (identity check missing, account suspended\u2026): the money waits. |\n| `kyc_decided` <br/>  |\n| `account_status` <br/>  |\n| `course_taken_down` <br/>  |\n| `warning` <br/>  |\n| `staff_alert` <br/> Staff alerts (PRD-10 FR-09): routed by permission, never turned off. |",
                 "enum": [
                     "payment_succeeded",
                     "payment_failed",
@@ -20997,7 +21030,8 @@
                     "kyc_decided",
                     "account_status",
                     "course_taken_down",
-                    "warning"
+                    "warning",
+                    "staff_alert"
                 ],
                 "title": "NotificationType"
             },

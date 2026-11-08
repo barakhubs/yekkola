@@ -21,5 +21,9 @@ Schedule::command('finance:build-payout-batches')->dailyAt('04:00')->onOneServer
 Schedule::command('finance:sync-payouts')->everyFiveMinutes()->withoutOverlapping(10)->onOneServer();
 Schedule::command('finance:check-ledger')->dailyAt('05:00')->onOneServer();
 
+// Notifications (PRD-10 FR-06, FR-09): the digest goes out in the early evening across the country's time zones.
+Schedule::command('notifications:send-digest')->dailyAt('16:30')->onOneServer();
+Schedule::command('alerts:stuck-payments')->everyFifteenMinutes()->withoutOverlapping(10)->onOneServer();
+
 // Admin dashboard (PRD-09 FR-01)
 Schedule::command('stats:rollup-platform')->hourlyAt(5)->withoutOverlapping(30)->onOneServer();
