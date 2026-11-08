@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $hidden_reason
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
+ * @property int|null $visible_reply_count Set by `withCount` on lists.
  */
 final class LessonThread extends Model
 {

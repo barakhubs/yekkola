@@ -33,6 +33,7 @@ final class ThreadController extends Controller
         $professorUserId = $course->loadMissing('professor')->professor?->user_id;
 
         $threads = LessonThread::query()->with('author')->visibleTo($user)
+            ->withCount(['replies as visible_reply_count' => fn ($q) => $q->visibleTo($user)])
             ->where('course_id', $course->id)->where('lesson_uid', $model->uid)
             ->orderByDesc('updated_at')->orderByDesc('id')
             ->paginate($this->perPage($request))->appends($request->query());

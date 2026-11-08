@@ -23204,7 +23204,16 @@
                         ]
                     },
                     "reply_count": {
-                        "type": "integer"
+                        "description": "Replies this viewer can see (hidden and banned ones left out), not the stored total.",
+                        "anyOf": [
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            {
+                                "type": "integer"
+                            }
+                        ]
                     },
                     "last_reply_at": {
                         "type": [

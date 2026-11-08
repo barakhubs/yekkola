@@ -18,6 +18,8 @@ export const LessonsThreadsIndexQueryParams = zod.object({
   per_page: zod.int().default(lessonsThreadsIndexQueryPerPageDefault),
 });
 
+export const lessonsThreadsIndexResponseDataItemReplyCountOneMin = 0;
+
 export const lessonsThreadsIndexResponseMetaPerPageMin = 0;
 
 export const lessonsThreadsIndexResponseMetaTotalMin = 0;
@@ -36,7 +38,9 @@ export const LessonsThreadsIndexResponse = zod.object({
         is_professor: zod.boolean(),
         is_me: zod.boolean(),
       }),
-      reply_count: zod.int(),
+      reply_count: zod
+        .union([zod.int().min(lessonsThreadsIndexResponseDataItemReplyCountOneMin), zod.int()])
+        .describe("Replies this viewer can see (hidden and banned ones left out), not the stored total."),
       last_reply_at: zod.string().nullable(),
       answered_at: zod.string().nullable(),
       hidden: zod.boolean(),
@@ -114,6 +118,8 @@ export const LessonsThreadsStoreBody = zod
   })
   .describe("A lesson question: a short title and the details (PRD-06 FR-13).");
 
+export const lessonsThreadsStoreResponseDataReplyCountOneMin = 0;
+
 export const LessonsThreadsStoreResponse = zod.object({
   data: zod.object({
     id: zod.string(),
@@ -127,7 +133,9 @@ export const LessonsThreadsStoreResponse = zod.object({
       is_professor: zod.boolean(),
       is_me: zod.boolean(),
     }),
-    reply_count: zod.int(),
+    reply_count: zod
+      .union([zod.int().min(lessonsThreadsStoreResponseDataReplyCountOneMin), zod.int()])
+      .describe("Replies this viewer can see (hidden and banned ones left out), not the stored total."),
     last_reply_at: zod.string().nullable(),
     answered_at: zod.string().nullable(),
     hidden: zod.boolean(),
@@ -161,6 +169,8 @@ export const ThreadsShowParams = zod.object({
   thread: zod.string(),
 });
 
+export const threadsShowResponseDataReplyCountOneMin = 0;
+
 export const ThreadsShowResponse = zod.object({
   data: zod.object({
     id: zod.string(),
@@ -174,7 +184,9 @@ export const ThreadsShowResponse = zod.object({
       is_professor: zod.boolean(),
       is_me: zod.boolean(),
     }),
-    reply_count: zod.int(),
+    reply_count: zod
+      .union([zod.int().min(threadsShowResponseDataReplyCountOneMin), zod.int()])
+      .describe("Replies this viewer can see (hidden and banned ones left out), not the stored total."),
     last_reply_at: zod.string().nullable(),
     answered_at: zod.string().nullable(),
     hidden: zod.boolean(),
@@ -217,6 +229,8 @@ export const ThreadsRepliesStoreBody = zod
   })
   .describe("A reply to a lesson question (PRD-06 FR-13).");
 
+export const threadsRepliesStoreResponseDataReplyCountOneMin = 0;
+
 export const ThreadsRepliesStoreResponse = zod.object({
   data: zod.object({
     id: zod.string(),
@@ -230,7 +244,9 @@ export const ThreadsRepliesStoreResponse = zod.object({
       is_professor: zod.boolean(),
       is_me: zod.boolean(),
     }),
-    reply_count: zod.int(),
+    reply_count: zod
+      .union([zod.int().min(threadsRepliesStoreResponseDataReplyCountOneMin), zod.int()])
+      .describe("Replies this viewer can see (hidden and banned ones left out), not the stored total."),
     last_reply_at: zod.string().nullable(),
     answered_at: zod.string().nullable(),
     hidden: zod.boolean(),
@@ -271,6 +287,8 @@ export const ProfessorThreadsIndexQueryParams = zod.object({
   "filter[course_id]": zod.string().optional(),
 });
 
+export const professorThreadsIndexResponseDataItemReplyCountOneMin = 0;
+
 export const professorThreadsIndexResponseMetaPerPageMin = 0;
 
 export const professorThreadsIndexResponseMetaTotalMin = 0;
@@ -289,7 +307,9 @@ export const ProfessorThreadsIndexResponse = zod.object({
         is_professor: zod.boolean(),
         is_me: zod.boolean(),
       }),
-      reply_count: zod.int(),
+      reply_count: zod
+        .union([zod.int().min(professorThreadsIndexResponseDataItemReplyCountOneMin), zod.int()])
+        .describe("Replies this viewer can see (hidden and banned ones left out), not the stored total."),
       last_reply_at: zod.string().nullable(),
       answered_at: zod.string().nullable(),
       hidden: zod.boolean(),

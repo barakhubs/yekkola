@@ -35,7 +35,7 @@ final class ReplyToThread
         return $this->db->transaction(function () use ($author, $thread, $body, $fromProfessor): ThreadReply {
             $thread = LessonThread::query()->whereKey($thread->id)->lockForUpdate()->firstOrFail();
             if ($thread->isHidden()) {
-                throw LearningException::qaAccessRequired();
+                throw LearningException::qaThreadHidden();
             }
 
             $reply = ThreadReply::query()->create([

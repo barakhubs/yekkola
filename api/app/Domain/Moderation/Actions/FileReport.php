@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Moderation\Actions;
 
 use App\Domain\Authoring\Models\Course;
+use App\Domain\Identity\Enums\UserStatus;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Enums\ReviewStatus;
+use App\Domain\Learning\Exceptions\LearningException;
 use App\Domain\Learning\Models\LessonThread;
 use App\Domain\Learning\Models\Review;
 use App\Domain\Learning\Models\ThreadReply;
@@ -68,8 +70,10 @@ final class FileReport
             ReportTarget::Review => Review::query()->where('status', ReviewStatus::Visible)
                 ->whereHas('course', fn ($q) => $q->listed())->find($id)?->user_id,
             ReportTarget::Professor => ProfessorProfile::query()->public()->find($id)?->user_id,
-            ReportTarget::Thread => $this->participantSees(LessonThread::query()->whereNull('hidden_at')->with('course')->find($id), $reporter),
+            ReportTarget::Thread => $this->participantSees(LessonThread::query()->whereNull('hidden_at')
+                ->whereHas('author', fn ($q) => $q->where('status', '!=', UserStatus::Banned))->with('course')->find($id), $reporter),
             ReportTarget::Reply => $this->participantSees(ThreadReply::query()->whereNull('hidden_at')
+                ->whereHas('author', fn ($q) => $q->where('status', '!=', UserStatus::Banned))
                 ->whereHas('thread', fn ($q) => $q->whereNull('hidden_at'))->with('thread.course')->find($id), $reporter),
         };
     }
@@ -77,8 +81,12 @@ final class FileReport
     private function participantSees(LessonThread|ThreadReply|null $post, User $reporter): ?string
     {
         $course = $post instanceof ThreadReply ? $post->thread?->course : $post?->course;
-        if ($post === null || $course === null || ! $this->qa->isParticipant($reporter, $course)) {
-            return null;
+        try {
+            if ($post === null || $course === null || ! $this->qa->isParticipant($reporter, $course)) {
+                return null;
+            }
+        } catch (LearningException) {
+            return null; // a taken-down course: nothing there to report
         }
 
         return $post->author_id;

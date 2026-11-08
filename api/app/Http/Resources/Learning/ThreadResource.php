@@ -55,7 +55,8 @@ final class ThreadResource extends JsonResource
                 'is_professor' => $this->author_id === $this->professorUserId,
                 'is_me' => $this->author_id === $request->user()?->getAuthIdentifier(),
             ],
-            'reply_count' => $this->reply_count,
+            // Replies this viewer can see (hidden and banned ones left out), not the stored total.
+            'reply_count' => $this->relationLoaded('replies') ? $this->replies->count() : (int) ($this->visible_reply_count ?? $this->reply_count),
             'last_reply_at' => $this->last_reply_at?->toIso8601String(),
             'answered_at' => $this->answered_at?->toIso8601String(),
             'hidden' => $this->isHidden(),

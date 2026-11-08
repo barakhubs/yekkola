@@ -16,6 +16,7 @@ export interface ThreadResource {
   body: string;
   status: string;
   author: ThreadResourceAuthor;
+  /** Replies this viewer can see (hidden and banned ones left out), not the stored total. */
   reply_count: number;
   /** @nullable */
   last_reply_at: string | null;

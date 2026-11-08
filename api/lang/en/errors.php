@@ -144,6 +144,7 @@ return [
     'qa' => [
         'access_required' => 'Enrol in this course to read and ask questions.',
         'moderation_transition' => 'This content is already in that state.',
+        'thread_hidden' => 'This question was hidden by moderation: it takes no more replies.',
     ],
     'quiz' => [
         'not_a_quiz' => 'This lesson is not a quiz.',

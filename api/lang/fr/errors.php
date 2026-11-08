@@ -144,6 +144,7 @@ return [
     'qa' => [
         'access_required' => 'Inscrivez-vous à ce cours pour voir et poser des questions.',
         'moderation_transition' => 'Ce contenu est déjà dans cet état.',
+        'thread_hidden' => 'Cette question a été masquée par la modération : elle ne reçoit plus de réponses.',
     ],
     'quiz' => [
         'not_a_quiz' => 'Cette leçon n’est pas un quiz.',

@@ -71,6 +71,11 @@ final class LearningException extends DomainException
         return new self('qa.access_required', 403);
     }
 
+    public static function qaThreadHidden(): self
+    {
+        return new self('qa.thread_hidden', 409);
+    }
+
     public static function qaModerationTransition(): self
     {
         return new self('qa.moderation_transition', 409);

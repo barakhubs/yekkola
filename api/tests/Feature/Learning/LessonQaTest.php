@@ -80,7 +80,7 @@ it('keeps Q&A to participants, hides moderated and banned posts from others', fu
     $this->getJson("/api/v1/threads/{$id}")->assertNotFound();
     actAs($this->student); // its author still sees it, marked hidden, and can't get replies on it
     $this->getJson("/api/v1/lessons/{$this->lesson->uid}/threads")->assertOk()->assertJsonPath('data.0.hidden', true);
-    $this->postJson("/api/v1/threads/{$id}/replies", ['body' => 'Et alors ?'])->assertForbidden();
+    $this->postJson("/api/v1/threads/{$id}/replies", ['body' => 'Et alors ?'])->assertConflict()->assertJsonPath('code', 'qa.thread_hidden');
 
     actAs($moderator);
     $this->postJson("/api/v1/admin/threads/{$id}/restore", ['note' => 'Erreur'])->assertOk()->assertJsonPath('data.can.hide', true);
@@ -103,4 +103,21 @@ it('lets moderators hide one reply, for staff who handle reports only', function
     actAs($this->professor->user);
     $this->getJson("/api/v1/threads/{$id}")->assertOk()->assertJsonCount(0, 'data.replies');
     $this->getJson('/api/v1/admin/threads')->assertForbidden();
+});
+
+it('re-opens a question whose only professor answer is hidden, and answers it again on restore', function () {
+    $id = ask($this->lesson->uid)->assertCreated()->json('data.id');
+    actAs($this->professor->user);
+    $replyId = $this->postJson("/api/v1/threads/{$id}/replies", ['body' => 'Hors sujet.'])->assertOk()->json('data.replies.0.id');
+    $before = LessonThread::query()->sole()->updated_at;
+
+    $moderator = actingAsStaff(Role::Moderator);
+    $this->postJson("/api/v1/admin/thread-replies/{$replyId}/hide", ['note' => 'Hors sujet'])->assertOk()->assertJsonPath('data.status', 'open');
+    expect(LessonThread::query()->sole()->updated_at->equalTo($before))->toBeTrue();
+
+    actAs($this->student);
+    $this->getJson("/api/v1/lessons/{$this->lesson->uid}/threads")->assertOk()->assertJsonPath('data.0.reply_count', 0);
+
+    actAs($moderator);
+    $this->postJson("/api/v1/admin/thread-replies/{$replyId}/restore", ['note' => 'Erreur'])->assertOk()->assertJsonPath('data.status', 'answered');
 });

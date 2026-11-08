@@ -35,6 +35,7 @@ final class ThreadController extends Controller
         $status = is_array($filter) && is_string($filter['status'] ?? null) ? $filter['status'] : 'open';
 
         $threads = QueryBuilder::for(LessonThread::query()->with('author', 'course.liveVersion')->visibleTo($user)
+            ->withCount(['replies as visible_reply_count' => fn ($q) => $q->visibleTo($user)])
             ->whereNull('hidden_at')
             ->whereIn('course_id', Course::query()->withTrashed()->where('professor_profile_id', $professor->id)->select('id'))
             ->when($status !== 'all', fn ($q) => $q->where('status', $status)))
