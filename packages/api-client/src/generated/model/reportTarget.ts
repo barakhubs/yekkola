@@ -6,7 +6,14 @@
  */
 
 /**
- * What can be reported (PRD-06 FR-14, PRD-09 FR-10). Lesson Q&A threads and replies join with Q&A (FR-13).
+ * What can be reported (PRD-06 FR-14, PRD-09 FR-10).
+ * | |
+ * |---|
+ * | `course` <br/>  |
+ * | `review` <br/>  |
+ * | `professor` <br/>  |
+ * | `thread` <br/> A lesson question (PRD-06 FR-13). |
+ * | `reply` <br/> A reply to a lesson question. |
  */
 export type ReportTarget = (typeof ReportTarget)[keyof typeof ReportTarget];
 
@@ -14,4 +21,6 @@ export const ReportTarget = {
   course: "course",
   review: "review",
   professor: "professor",
+  thread: "thread",
+  reply: "reply",
 } as const;
