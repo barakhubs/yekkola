@@ -4,6 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { MediaAssetResourceError } from "./mediaAssetResourceError";
 
 export interface MediaAssetResource {
   id: string;
@@ -12,5 +13,7 @@ export interface MediaAssetResource {
   /** @nullable */
   duration_seconds: number | null;
   /** @nullable */
-  error: string | null;
+  size_bytes: number | null;
+  /** @nullable */
+  error: MediaAssetResourceError;
 }

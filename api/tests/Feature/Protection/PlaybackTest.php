@@ -33,7 +33,7 @@ function heartbeat(string $uid, string $sessionId): Illuminate\Testing\TestRespo
     return test()->postJson("/api/v1/lessons/{$uid}/playback/heartbeat", ['session_id' => $sessionId]);
 }
 
-it('gives an enrolled student signed DRM tokens and a masked watermark — never a media URL', function () {
+it('gives an enrolled student our playlist URL and a masked watermark — never a media file URL', function () {
     $response = play($this->video->uid)->assertOk()
         ->assertJsonPath('data.kind', 'video')
         ->assertJsonPath('data.is_preview', false)
@@ -41,11 +41,10 @@ it('gives an enrolled student signed DRM tokens and a masked watermark — never
         ->assertJsonPath('data.stream.heartbeat_seconds', 30);
 
     $data = $response->json('data');
-    expect($data['playback_id'])->toBe(MediaAsset::query()->sole()->playback_id)
-        ->and($data['tokens']['playback'])->toStartWith('fake-playback-token:')
-        ->and($data['tokens']['drm'])->toStartWith('fake-drm-token:')
+    expect($data['playlist_url'])->toBe(route('lessons.hls.master', ['lesson' => $this->video->uid, 'session' => $data['stream']['session_id']]))
+        ->and($data['poster_url'])->toStartWith('https://media.fake.test/')
         ->and(json_encode($data))->not->toContain('+243812345678')
-        ->and(json_encode($data))->not->toContain('.m3u8')
+        ->and(json_encode($data))->not->toContain('.ts')
         ->and(json_encode($data))->not->toContain('.mp4');
 
     play($this->document->uid)->assertUnprocessable()->assertJsonPath('code', 'playback.not_playable');
@@ -117,7 +116,7 @@ it('does not count mobile apps toward the web stream limit', function () {
     expect(StreamSession::query()->count())->toBe(0);
 });
 
-it('stops tokens for revoked enrollments, keeps heartbeats to their own lesson, and gives audio no DRM', function () {
+it('stops playback for revoked enrollments, keeps heartbeats to their own lesson, and gives audio no poster', function () {
     $first = play($this->video->uid)->json('data.stream.session_id');
     heartbeat($this->document->uid, $first)->assertNotFound();
 
@@ -125,11 +124,9 @@ it('stops tokens for revoked enrollments, keeps heartbeats to their own lesson, 
     play($this->video->uid)->assertForbidden()->assertJsonPath('code', 'enrollment.required');
 
     App\Domain\Learning\Models\Enrollment::query()->update(['status' => 'active']);
-    MediaAsset::query()->update(['kind' => 'audio']);
+    MediaAsset::query()->update(['kind' => 'audio', 'has_poster' => false]);
     play($this->video->uid)->assertOk()
-        ->assertJsonPath('data.kind', 'audio')
-        ->assertJsonPath('data.tokens.drm', null)
-        ->assertJsonPath('data.tokens.thumbnail', null);
+        ->assertJsonPath('data.kind', 'audio');
 });
 
 it('resumes a stream that went quiet while it still fits the limit', function () {
@@ -153,4 +150,70 @@ it('ends live streams when the account is deleted', function () {
 
     event(new App\Domain\Identity\Events\UserAnonymizing($this->student));
     expect(StreamSession::query()->sole()->ended_at)->not->toBeNull();
+});
+
+function hlsPath(string $url): string
+{
+    $parts = parse_url($url);
+
+    return $parts['path'].(isset($parts['query']) ? '?'.$parts['query'] : '');
+}
+
+it('serves encrypted HLS: renditions, signed segments and the key, only with a live web stream', function () {
+    $playlist = hlsPath(play($this->video->uid)->json('data.playlist_url'));
+
+    $master = $this->get($playlist)->assertOk()->assertHeader('Content-Type', 'application/vnd.apple.mpegurl');
+    preg_match_all('/^http\S+$/m', (string) $master->getContent(), $renditions);
+    expect($renditions[0])->toHaveCount(3);
+
+    $media = (string) $this->get(hlsPath($renditions[0][2]))->assertOk()->getContent();
+    preg_match('/URI="([^"]+)"/', $media, $key);
+    expect($media)->toContain('https://media.fake.test/')
+        ->and($key[1])->toContain('/hls/key?session=');
+
+    $this->get(hlsPath($key[1]))->assertOk()->assertHeader('Cache-Control', 'no-store, private');
+    expect(strlen((string) $this->get(hlsPath($key[1]))->getContent()))->toBe(16)
+        ->and($this->get(hlsPath($key[1]))->getContent())->toBe(MediaAsset::query()->sole()->key());
+
+    // An unknown rendition, or no stream session from a browser: refused.
+    $this->get("/api/v1/lessons/{$this->video->uid}/hls/1080p.m3u8")->assertStatus(409)->assertJsonPath('code', 'playback.stream_required');
+    $this->get(str_replace('480p', '1080p', hlsPath($renditions[0][1])))->assertNotFound();
+    $this->get("/api/v1/lessons/{$this->video->uid}/hls/key")->assertStatus(409)->assertJsonPath('code', 'playback.stream_required');
+
+    // Another screen took over: the old session gets no more playlists or keys.
+    play($this->video->uid);
+    $this->get(hlsPath($key[1]))->assertStatus(409)->assertJsonPath('code', 'playback.stream_required');
+});
+
+it('refuses playlists and keys to other users, revoked enrollments and guests', function () {
+    $playlist = hlsPath(play($this->video->uid)->json('data.playlist_url'));
+    $key = str_replace('master.m3u8', 'key', $playlist);
+
+    // Someone else holding the URL.
+    Sanctum::actingAs(User::factory()->create());
+    $this->get($key)->assertStatus(409);
+
+    // Refund or revocation: the next key request fails, even with the live session.
+    Sanctum::actingAs($this->student);
+    App\Domain\Learning\Models\Enrollment::query()->update(['status' => 'revoked']);
+    $this->get($key)->assertForbidden()->assertJsonPath('code', 'enrollment.required');
+
+    app('auth')->forgetGuards();
+    $this->get("/api/v1/lessons/{$this->video->uid}/hls/key")->assertForbidden();
+});
+
+it('serves preview lessons to guests and mobile apps without a stream session', function () {
+    Lesson::query()->whereKey($this->video->id)->update(['is_preview' => true]);
+    app('auth')->forgetGuards();
+
+    $playlist = $this->postJson("/api/v1/lessons/{$this->video->uid}/preview-playback")->assertOk()->json('data.playlist_url');
+    expect($playlist)->not->toContain('session=');
+    $this->get(hlsPath($playlist))->assertOk();
+    $this->get("/api/v1/lessons/{$this->video->uid}/hls/key")->assertOk();
+
+    // Enrolled on the mobile app (device token): no stream session needed.
+    Lesson::query()->whereKey($this->video->id)->update(['is_preview' => false]);
+    $token = signInMobile('+243812345678')->json('data.token');
+    freshAuth();
+    $this->get("/api/v1/lessons/{$this->video->uid}/hls/key", bearer($token))->assertOk();
 });

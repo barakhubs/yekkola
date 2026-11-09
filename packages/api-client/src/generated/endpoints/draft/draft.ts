@@ -34,6 +34,7 @@ import type {
   QuizRequest,
   ReorderCurriculumRequest,
   SectionRequest,
+  StartMediaUploadRequest,
   StoreLessonRequest,
   UpdateDraftRequest,
   UpdateLessonRequest,
@@ -1657,39 +1658,78 @@ export type professorDraftLessonsMediaResponse201 = {
   status: 201;
 };
 
+export type professorDraftLessonsMediaResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
 export type professorDraftLessonsMediaResponseSuccess = professorDraftLessonsMediaResponse201 & {
   headers: Headers;
 };
-export type professorDraftLessonsMediaResponse = professorDraftLessonsMediaResponseSuccess;
+export type professorDraftLessonsMediaResponseError = professorDraftLessonsMediaResponse422 & {
+  headers: Headers;
+};
+
+export type professorDraftLessonsMediaResponse =
+  professorDraftLessonsMediaResponseSuccess | professorDraftLessonsMediaResponseError;
 
 export const getProfessorDraftLessonsMediaUrl = (course: string, lesson: string) => {
   return `/professor/courses/${course}/draft/lessons/${lesson}/media`;
 };
 
 /**
- * @summary Direct-upload URL for a video/audio lesson. The browser uploads to it; processing status follows
+ * @summary Start uploading a video/audio file for a lesson: the browser PUTs each part straight to storage (reading each
+response's `ETag`), asks for more part URLs as needed, then confirms with `POST /professor/media/{id}/complete`
  */
 export const professorDraftLessonsMedia = async (
   course: string,
   lesson: string,
+  startMediaUploadRequest: StartMediaUploadRequest,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorDraftLessonsMediaResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
   return apiFetch<professorDraftLessonsMediaResponse>(getProfessorDraftLessonsMediaUrl(course, lesson), {
     ...options,
     method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(startMediaUploadRequest),
   });
 };
 
-export const getProfessorDraftLessonsMediaQueryKey = (course: string, lesson: string) => {
-  return ["POST", `/professor/courses/${course}/draft/lessons/${lesson}/media`] as const;
+export const getProfessorDraftLessonsMediaQueryKey = (
+  course: string,
+  lesson: string,
+  startMediaUploadRequest?: BodyType<StartMediaUploadRequest>,
+) => {
+  return [
+    "POST",
+    `/professor/courses/${course}/draft/lessons/${lesson}/media`,
+    startMediaUploadRequest,
+  ] as const;
 };
 
 export const getProfessorDraftLessonsMediaQueryOptions = <
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
+  startMediaUploadRequest: BodyType<StartMediaUploadRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsMedia>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1697,10 +1737,11 @@ export const getProfessorDraftLessonsMediaQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorDraftLessonsMediaQueryKey(course, lesson);
+  const queryKey =
+    queryOptions?.queryKey ?? getProfessorDraftLessonsMediaQueryKey(course, lesson, startMediaUploadRequest);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorDraftLessonsMedia>>> = ({ signal }) =>
-    professorDraftLessonsMedia(course, lesson, { signal, ...requestOptions });
+    professorDraftLessonsMedia(course, lesson, startMediaUploadRequest, { signal, ...requestOptions });
 
   return {
     queryKey,
@@ -1715,14 +1756,15 @@ export const getProfessorDraftLessonsMediaQueryOptions = <
 export type ProfessorDraftLessonsMediaQueryResult = NonNullable<
   Awaited<ReturnType<typeof professorDraftLessonsMedia>>
 >;
-export type ProfessorDraftLessonsMediaQueryError = ErrorType<unknown>;
+export type ProfessorDraftLessonsMediaQueryError = ErrorType<ValidationExceptionResponse>;
 
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
+  startMediaUploadRequest: BodyType<StartMediaUploadRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsMedia>>, TError, TData>> &
       Pick<
@@ -1739,10 +1781,11 @@ export function useProfessorDraftLessonsMedia<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
+  startMediaUploadRequest: BodyType<StartMediaUploadRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsMedia>>, TError, TData>> &
       Pick<
@@ -1759,10 +1802,11 @@ export function useProfessorDraftLessonsMedia<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
+  startMediaUploadRequest: BodyType<StartMediaUploadRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsMedia>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1770,22 +1814,29 @@ export function useProfessorDraftLessonsMedia<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Direct-upload URL for a video/audio lesson. The browser uploads to it; processing status follows
+ * @summary Start uploading a video/audio file for a lesson: the browser PUTs each part straight to storage (reading each
+response's `ETag`), asks for more part URLs as needed, then confirms with `POST /professor/media/{id}/complete`
  */
 
 export function useProfessorDraftLessonsMedia<
   TData = Awaited<ReturnType<typeof professorDraftLessonsMedia>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ValidationExceptionResponse>,
 >(
   course: string,
   lesson: string,
+  startMediaUploadRequest: BodyType<StartMediaUploadRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorDraftLessonsMedia>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorDraftLessonsMediaQueryOptions(course, lesson, options);
+  const queryOptions = getProfessorDraftLessonsMediaQueryOptions(
+    course,
+    lesson,
+    startMediaUploadRequest,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

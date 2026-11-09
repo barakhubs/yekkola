@@ -31,7 +31,8 @@ return [
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => ['Content-Language', 'Idempotent-Replayed'],
+    // ETag: the fake video driver's part uploads (R2 sends its own CORS headers).
+    'exposed_headers' => ['Content-Language', 'Idempotent-Replayed', 'ETag'],
 
     'max_age' => 0,
 

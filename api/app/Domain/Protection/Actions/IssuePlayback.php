@@ -15,10 +15,12 @@ use App\Domain\Protection\Models\StreamSession;
 use App\Domain\Protection\PlaybackGrant;
 use App\Domain\Protection\ViewerMark;
 use App\Integrations\Video\VideoProvider;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Issues short-lived playback (and, for video, DRM) tokens for one lesson (PRD-07 FR-02). Enrolled students
+ * Starts playback of one lesson (PRD-07 FR-02): the encrypted-HLS playlist URL our API serves (each playlist
+ * and key request is checked again by AuthorizeMedia), a poster, and the viewer overlay. Enrolled students
  * get any lesson; anyone — signed in or not — gets preview lessons of listed courses (PRD-04 FR-06). Web
  * streams of signed-in students count toward the concurrent-stream limit (FR-05): over the limit, the
  * oldest live stream is ended and its player stops at its next heartbeat. Mobile apps are limited by
@@ -45,18 +47,19 @@ final class IssuePlayback
         }
 
         $asset = MediaAsset::query()->find($lesson->media_asset_id);
-        if ($asset === null || ! $asset->isReady() || $asset->playback_id === null) {
+        if ($asset === null || ! $asset->isReady() || $asset->key() === null) {
             throw ProtectionException::mediaNotReady();
         }
 
-        $tokens = $this->video->playbackTokens($asset->playback_id, $asset->kind, $this->settings->playback_token_ttl_minutes * 60);
+        $ttl = $this->settings->playback_token_ttl_minutes * 60;
         $session = $user !== null && $isWebStream ? $this->startStream($user, $lessonUid, $asset) : null;
 
         return new PlaybackGrant(
             lessonUid: $lessonUid,
             kind: $asset->kind,
-            playbackId: $asset->playback_id,
-            tokens: $tokens,
+            playlistUrl: route('lessons.hls.master', ['lesson' => $lessonUid, ...($session === null ? [] : ['session' => $session->id])]),
+            posterUrl: $this->video->posterUrl($asset, $ttl),
+            expiresAt: CarbonImmutable::now()->addSeconds($ttl),
             watermark: $user !== null ? ViewerMark::overlay($user) : null,
             streamSessionId: $session?->id,
             isPreview: ! $enrolled,

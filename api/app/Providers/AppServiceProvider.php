@@ -118,6 +118,8 @@ final class AppServiceProvider extends ServiceProvider
         RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(600)->by($request->ip()));
         // File uploads (credentials, avatar, KYC).
         RateLimiter::for('uploads', fn (Request $request) => Limit::perHour(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // Video/audio part URLs and upload confirmations (one call per 100 parts of a file).
+        RateLimiter::for('upload-parts', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         // Payment starts: 10 per hour per user (architecture §4.1); waiting-screen polls.
         RateLimiter::for('payments', fn (Request $request) => Limit::perHour(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('order-status', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
@@ -147,6 +149,15 @@ final class AppServiceProvider extends ServiceProvider
         ]);
         // Playback tokens and documents (PRD-07): per student; previews per IP.
         RateLimiter::for('playback', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+        // HLS playlists + key (3–5 requests per playback start, more on recovery). Signed-in users (cookie or
+        // token) by account; guests by IP, generously: many students share one carrier IP.
+        RateLimiter::for('hls', function (Request $request) {
+            $user = $request->user('sanctum');
+
+            return $user !== null
+                ? Limit::perMinute(120)->by('user:'.$user->getAuthIdentifier())
+                : Limit::perMinute(600)->by('ip:'.$request->ip());
+        });
         RateLimiter::for('preview-playback', fn (Request $request) => self::perVisitor($request, 30));
         RateLimiter::for('certificate-pdf', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('certificates', fn (Request $request) => self::perVisitor($request, 30));

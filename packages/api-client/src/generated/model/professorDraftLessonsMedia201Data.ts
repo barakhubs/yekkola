@@ -5,8 +5,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { MediaAssetResource } from "./mediaAssetResource";
+import type { ProfessorDraftLessonsMedia201DataUpload } from "./professorDraftLessonsMedia201DataUpload";
 
 export type ProfessorDraftLessonsMedia201Data = {
   media: MediaAssetResource;
-  upload_url: string;
+  upload: ProfessorDraftLessonsMedia201DataUpload;
 };

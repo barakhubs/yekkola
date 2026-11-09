@@ -31,6 +31,12 @@ final class ProtectionException extends DomainException
         return new self('playback.stream_replaced', 409);
     }
 
+    /** A web playlist/key request without a live stream session: the player must ask for playback again. */
+    public static function streamRequired(): self
+    {
+        return new self('playback.stream_required', 409);
+    }
+
     public static function notADocument(): self
     {
         return new self('document.not_a_document', 422);

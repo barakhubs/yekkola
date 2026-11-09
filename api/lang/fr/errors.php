@@ -119,7 +119,14 @@ return [
         'own_course' => 'Vous ne pouvez pas examiner votre propre cours.',
         'invalid_order' => 'L’ordre envoyé ne correspond pas au contenu du cours.',
     ],
+    'media' => [
+        'upload_too_large' => 'Ce fichier dépasse la taille maximale de :max_mb Mo.',
+        'upload_not_open' => 'Cet envoi n’est plus en cours. Choisissez à nouveau le fichier.',
+        'upload_incomplete' => 'Le fichier n’est pas arrivé en entier. Choisissez-le à nouveau pour recommencer l’envoi.',
+        'processing_failed' => 'Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.',
+    ],
     'playback' => [
+        'stream_required' => 'La lecture a expiré. Rouvrez la leçon pour continuer.',
         'not_playable' => 'Cette leçon n’a ni vidéo ni audio.',
         'media_not_ready' => 'Cette leçon est encore en cours de traitement. Réessayez dans quelques minutes.',
         'preview_only' => 'Connectez-vous et inscrivez-vous pour suivre cette leçon.',

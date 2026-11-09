@@ -4,46 +4,59 @@ declare(strict_types=1);
 
 namespace App\Integrations\Video;
 
-use App\Domain\Authoring\Enums\MediaKind;
-use App\Integrations\InvalidWebhookPayload;
-use App\Integrations\InvalidWebhookSignature;
-use Illuminate\Http\Request;
+use App\Domain\Authoring\Models\MediaAsset;
 
 /**
- * Hosts lesson video and audio: direct uploads, processing, protected playback, offline access
- * (PRD-03, PRD-07, docs/research/mux.md). Mux in production; domain code depends only on this interface.
+ * Stores, processes and serves lesson video and audio (PRD-03 FR-04/05, PRD-07, arch §1.3). Cloudflare R2 +
+ * FFmpeg in production (`R2VideoProvider`); domain code depends only on this interface.
  *
- * - Video: DRM (plus quality, max 720p). Offline via persistent DRM licenses (offlineLicenseToken).
- * - Audio: signed playback only (no DRM on audio). Drivers request a downloadable audio rendition at upload;
- *   offline audio is fetched with audioDownloadUrl() and encrypted at rest by the app.
- * - Webhooks: verify the signature (with the provider's replay window), then re-fetch the asset.
+ * - Upload: the professor's browser sends the file straight to storage in parts, with pre-signed part URLs
+ *   (media never touches our servers), then the studio confirms the upload.
+ * - Processing (queue worker): HLS renditions (720p cap + lower tiers; audio-only HLS for audio), AES-128
+ *   with one key per asset, burned-in watermark. The key comes back to us and never sits next to the segments.
+ * - Playback: we serve the playlists. A media playlist points at short-lived signed segment URLs and at our
+ *   key endpoint, which only hands the key to users with access.
  */
 interface VideoProvider
 {
     public function name(): string;
 
-    /** URL the professor's browser uploads the file to directly (media never touches our servers). */
-    public function createDirectUpload(DirectUploadRequest $request): DirectUpload;
+    /** Open a multipart upload of `$sizeBytes` for the asset. */
+    public function startUpload(MediaAsset $asset, int $sizeBytes, string $contentType): UploadSession;
 
     /**
-     * @throws VideoAssetNotFound
+     * Pre-signed URLs the browser PUTs each part to (it reads each response's `ETag`).
+     *
+     * @param  list<int>  $partNumbers  1-based
+     * @return array<int, string> part number => URL
      */
-    public function getAsset(string $assetId): VideoAsset;
-
-    public function deleteAsset(string $assetId): void;
-
-    /** Short-lived tokens for streaming one asset. Video includes DRM/thumbnail/storyboard tokens; audio doesn't. */
-    public function playbackTokens(string $playbackId, MediaKind $kind, int $ttlSeconds): PlaybackTokens;
-
-    /** DRM token that issues a persistent (offline) license valid for $licenseSeconds. Video only. */
-    public function offlineLicenseToken(string $playbackId, int $licenseSeconds, int $ttlSeconds): string;
-
-    /** Short-lived signed URL to download an audio lesson's file for offline use. Audio only. */
-    public function audioDownloadUrl(string $playbackId, int $ttlSeconds): string;
+    public function uploadPartUrls(MediaAsset $asset, array $partNumbers, int $ttlSeconds): array;
 
     /**
-     * @throws InvalidWebhookSignature
-     * @throws InvalidWebhookPayload
+     * Assemble the uploaded parts. Returns the stored object's size in bytes.
+     *
+     * @param  list<array{number: int, etag: string}>  $parts
+     *
+     * @throws UploadIncomplete
      */
-    public function parseWebhook(Request $request): VideoWebhookEvent;
+    public function completeUpload(MediaAsset $asset, array $parts): int;
+
+    /** Drop an unfinished upload and its parts. */
+    public function abortUpload(MediaAsset $asset): void;
+
+    /**
+     * Transcode, encrypt and store the HLS output (runs on a queue worker; can take a while).
+     *
+     * @throws MediaProcessingFailed
+     */
+    public function process(MediaAsset $asset, string $watermarkText): ProcessedMedia;
+
+    /** One rendition's playlist: segment URIs signed for `$ttlSeconds`, the key at `$keyUri`. */
+    public function mediaPlaylist(MediaAsset $asset, Rendition $rendition, string $keyUri, int $ttlSeconds): string;
+
+    /** Short-lived URL of the video's poster frame; null for audio. */
+    public function posterUrl(MediaAsset $asset, int $ttlSeconds): ?string;
+
+    /** Delete the source and every processed file. */
+    public function deleteAsset(MediaAsset $asset): void;
 }

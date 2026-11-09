@@ -125,7 +125,14 @@ return [
         'type_mismatch' => 'This content does not match the lesson type.',
         'document_not_supported' => 'This PDF can’t be protected. Export it again as PDF 1.4 (for example “PDF/A-1b”) and upload it again.',
     ],
+    'media' => [
+        'upload_too_large' => 'This file is larger than the :max_mb MB limit.',
+        'upload_not_open' => 'This upload is no longer in progress. Choose the file again.',
+        'upload_incomplete' => 'The whole file didn’t arrive. Choose it again to start the upload over.',
+        'processing_failed' => 'This file couldn’t be processed. Check that it is a playable video or audio file, then upload it again.',
+    ],
     'playback' => [
+        'stream_required' => 'Playback has expired. Open the lesson again to continue.',
         'not_playable' => 'This lesson has no video or audio.',
         'media_not_ready' => 'This lesson is still being processed. Try again in a few minutes.',
         'preview_only' => 'Sign in and enrol to watch this lesson.',

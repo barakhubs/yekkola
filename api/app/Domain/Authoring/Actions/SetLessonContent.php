@@ -5,24 +5,19 @@ declare(strict_types=1);
 namespace App\Domain\Authoring\Actions;
 
 use App\Domain\Authoring\Enums\LessonType;
-use App\Domain\Authoring\Enums\MediaAssetStatus;
 use App\Domain\Authoring\Enums\QuestionType;
 use App\Domain\Authoring\Exceptions\AuthoringException;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\CourseVersion;
 use App\Domain\Authoring\Models\Lesson;
-use App\Domain\Authoring\Models\MediaAsset;
 use App\Domain\Protection\Stamping\DocumentNotStampable;
 use App\Domain\Protection\Stamping\DocumentStamper;
-use App\Integrations\Video\DirectUploadRequest;
-use App\Integrations\Video\VideoProvider;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
 
 /**
  * Attaches content to a draft lesson (PRD-03 FR-04–07):
- * - video/audio: a direct-upload URL on the video provider — the browser uploads straight there, and the
- *   provider's webhook marks the asset ready (media never touches our servers);
+ * (video/audio uploads: MediaUploads)
  * - document: a PDF on the private disk;
  * - quiz: the full question set, replaced atomically.
  */
@@ -30,39 +25,8 @@ final class SetLessonContent
 {
     public function __construct(
         private readonly EditDraft $editDraft,
-        private readonly VideoProvider $videos,
         private readonly DocumentStamper $stamper,
     ) {}
-
-    /**
-     * @return array{asset: MediaAsset, upload_url: string}
-     */
-    public function createMediaUpload(Course $course, string $lessonId, string $corsOrigin): array
-    {
-        return $this->editDraft->withDraft($course, function (CourseVersion $draft) use ($course, $lessonId, $corsOrigin): array {
-            $lesson = $draft->lessons()->findOrFail($lessonId);
-            $kind = $lesson->type->mediaKind() ?? throw AuthoringException::lessonTypeMismatch();
-
-            $asset = MediaAsset::query()->create([
-                'professor_profile_id' => $course->professor_profile_id,
-                'kind' => $kind,
-                'provider' => $this->videos->name(),
-                'status' => MediaAssetStatus::WaitingUpload,
-            ]);
-
-            $upload = $this->videos->createDirectUpload(new DirectUploadRequest(
-                kind: $kind,
-                passthrough: $asset->id,
-                corsOrigin: $corsOrigin,
-                watermarkUrl: is_string(config('yekkola.mux.watermark_url')) ? config('yekkola.mux.watermark_url') : null,
-            ));
-
-            $asset->forceFill(['provider_upload_id' => $upload->uploadId])->save();
-            $lesson->forceFill(['media_asset_id' => $asset->id, 'duration_seconds' => null])->save();
-
-            return ['asset' => $asset, 'upload_url' => $upload->url];
-        });
-    }
 
     public function attachDocument(Course $course, string $lessonId, UploadedFile $file): Lesson
     {

@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type WebhooksVideo200 = {
-  received: boolean;
+export type ProfessorMediaParts200DataPartsItem = {
+  number: number;
+  url: string;
 };

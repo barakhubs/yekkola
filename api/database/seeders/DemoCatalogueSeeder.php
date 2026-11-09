@@ -7,8 +7,9 @@ namespace Database\Seeders;
 use App\Domain\Authoring\Actions\CourseReview;
 use App\Domain\Authoring\Actions\CreateCourse;
 use App\Domain\Authoring\Actions\EditDraft;
+use App\Domain\Authoring\Actions\MediaUploads;
 use App\Domain\Authoring\Actions\SetLessonContent;
-use App\Domain\Authoring\Actions\SyncMediaAsset;
+use App\Domain\Authoring\Jobs\ProcessMediaAsset;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Catalog\Models\Category;
 use App\Domain\Identity\Enums\Role;
@@ -25,9 +26,7 @@ use App\Domain\Professors\Enums\LegalDocument;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Professors\Models\TermsAcceptance;
 use App\Integrations\Video\FakeVideoProvider;
-use App\Integrations\Video\VideoEventType;
 use App\Integrations\Video\VideoProvider;
-use App\Integrations\Video\VideoWebhookEvent;
 use FPDF;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\UploadedFile;
@@ -51,7 +50,7 @@ final class DemoCatalogueSeeder extends Seeder
         SetLessonContent $content,
         CourseReview $review,
         VideoProvider $videos,
-        SyncMediaAsset $sync,
+        MediaUploads $uploads,
         GrantEnrollment $grant,
         RefreshRatings $ratings,
     ): void {
@@ -67,7 +66,7 @@ final class DemoCatalogueSeeder extends Seeder
         $this->call([ProvinceSeeder::class, RolesAndPermissionsSeeder::class, CategorySeeder::class]);
 
         // All or nothing: a failure leaves no half-built demo behind.
-        DB::transaction(fn () => $this->build($create, $edit, $content, $review, $videos, $sync, $grant, $ratings));
+        DB::transaction(fn () => $this->build($create, $edit, $content, $review, $videos, $uploads, $grant, $ratings));
 
         $this->command->info('Demo catalogue seeded: 3 professors, 5 courses.');
     }
@@ -78,7 +77,7 @@ final class DemoCatalogueSeeder extends Seeder
         SetLessonContent $content,
         CourseReview $review,
         VideoProvider $videos,
-        SyncMediaAsset $sync,
+        MediaUploads $uploads,
         GrantEnrollment $grant,
         RefreshRatings $ratings,
     ): void {
@@ -125,12 +124,12 @@ final class DemoCatalogueSeeder extends Seeder
 
             $intro = $edit->addSection($course, $language === 'en' ? 'Getting started' : 'Introduction');
             $video = $edit->addLesson($course, ['section_id' => $intro->id, 'type' => 'video', 'title' => $language === 'en' ? 'Welcome' : 'Bienvenue', 'is_preview' => true]);
-            $this->completeUpload($content, $videos, $sync, $course, $video->id);
+            $this->completeUpload($uploads, $videos, $course, $video->id);
             $sheet = $edit->addLesson($course, ['section_id' => $intro->id, 'type' => 'document', 'title' => $language === 'en' ? 'Course sheet' : 'Fiche de révision', 'is_preview' => true]);
             $content->attachDocument($course, $sheet->id, $this->pdf($title));
 
             $practice = $edit->addLesson($course, ['section_id' => $intro->id, 'type' => 'audio', 'title' => $language === 'en' ? 'Listen and repeat' : 'Leçon audio']);
-            $this->completeUpload($content, $videos, $sync, $course, $practice->id);
+            $this->completeUpload($uploads, $videos, $course, $practice->id);
 
             $quizSection = $edit->addSection($course, $language === 'en' ? 'Practice' : 'Exercices');
             $quiz = $edit->addLesson($course, ['section_id' => $quizSection->id, 'type' => 'quiz', 'title' => $language === 'en' ? 'Quick quiz' : 'Quiz de révision']);
@@ -184,13 +183,13 @@ final class DemoCatalogueSeeder extends Seeder
         ]);
     }
 
-    private function completeUpload(SetLessonContent $content, VideoProvider $videos, SyncMediaAsset $sync, Course $course, string $lessonId): void
+    private function completeUpload(MediaUploads $uploads, VideoProvider $videos, Course $course, string $lessonId): void
     {
-        /** @var FakeVideoProvider $videos */
-        $upload = $content->createMediaUpload($course, $lessonId, (string) config('app.url'));
-        $assetId = (string) $videos->completeUpload((string) $upload['asset']->provider_upload_id);
-        $asset = $videos->getAsset($assetId);
-        $sync->fromEvent(new VideoWebhookEvent('demo-'.$assetId, VideoEventType::AssetReady, $assetId, $upload['asset']->provider_upload_id, $asset->passthrough, []));
+        // The fake driver: parts "arrive" with their fake ETags and processing returns at once.
+        $started = $uploads->start($course, $lessonId, 50_000_000, 'application/octet-stream');
+        $parts = array_map(fn (int $n): array => ['number' => $n, 'etag' => "\"fake-{$n}\""], range(1, $started['session']->partCount));
+        $uploads->complete($started['asset'], $parts);
+        (new ProcessMediaAsset($started['asset']->id))->handle($videos);
     }
 
     private function pdf(string $title): UploadedFile

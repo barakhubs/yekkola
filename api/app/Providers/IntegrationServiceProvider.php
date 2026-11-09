@@ -16,10 +16,12 @@ use App\Integrations\Sms\DemoNumberGuard;
 use App\Integrations\Sms\LogSmsSender;
 use App\Integrations\Sms\SmsSender;
 use App\Integrations\Video\FakeVideoProvider;
-use App\Integrations\Video\MuxVideoProvider;
+use App\Integrations\Video\FfmpegTranscoder;
+use App\Integrations\Video\R2VideoProvider;
 use App\Integrations\Video\VideoProvider;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Filesystem\AwsS3V3Adapter;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
@@ -39,8 +41,13 @@ final class IntegrationServiceProvider extends ServiceProvider
     {
         // Singletons so a request (or test) sees one consistent fake.
         $this->app->singleton(VideoProvider::class, fn (Application $app): VideoProvider => match ($this->driver('video')) {
-            'fake' => new FakeVideoProvider($app->make('cache')->store(), $this->fakeSecret()),
-            'mux' => new MuxVideoProvider($app->make(HttpFactory::class), (array) config('yekkola.mux')),
+            'fake' => new FakeVideoProvider($app->make('cache')->store()),
+            'r2' => new R2VideoProvider(
+                $this->mediaDisk($app),
+                new FfmpegTranscoder((array) config('yekkola.media')),
+                $app->make('cache')->store(),
+                (array) config('yekkola.media'),
+            ),
             default => throw new InvalidArgumentException('Unknown video driver ['.$this->driver('video').'].'),
         });
 
@@ -137,6 +144,13 @@ final class IntegrationServiceProvider extends ServiceProvider
                 '. Configure real providers (config/yekkola.php).'
             );
         }
+    }
+
+    private function mediaDisk(Application $app): AwsS3V3Adapter
+    {
+        $disk = $app->make('filesystem')->disk((string) config('yekkola.media.disk'));
+
+        return $disk instanceof AwsS3V3Adapter ? $disk : throw new InvalidArgumentException('The media disk must be an S3-compatible (R2) disk.');
     }
 
     private function driver(string $service): string

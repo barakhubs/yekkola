@@ -814,7 +814,15 @@ export const ProfessorCoursesDraftStartResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),
@@ -906,7 +914,15 @@ export const ProfessorCoursesSubmitResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),
@@ -998,7 +1014,15 @@ export const ProfessorCoursesWithdrawResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),

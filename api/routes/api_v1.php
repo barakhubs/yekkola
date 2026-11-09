@@ -62,6 +62,7 @@ use App\Http\Controllers\Api\V1\Professor\ReviewController as StudioReviewContro
 use App\Http\Controllers\Api\V1\Professor\StudioProfileController;
 use App\Http\Controllers\Api\V1\Professor\ThreadController as StudioThreadController;
 use App\Http\Controllers\Api\V1\Protection\DocumentController;
+use App\Http\Controllers\Api\V1\Protection\HlsController;
 use App\Http\Controllers\Api\V1\Protection\PlaybackController;
 use App\Http\Controllers\Api\V1\Public\BrandingController;
 use App\Http\Controllers\Api\V1\Public\BundleController;
@@ -71,7 +72,6 @@ use App\Http\Controllers\Api\V1\Public\ProfessorController;
 use App\Http\Controllers\Api\V1\Public\ProvinceController;
 use App\Http\Controllers\Api\V1\Webhooks\FakeVideoUploadController;
 use App\Http\Controllers\Api\V1\Webhooks\PaymentWebhookController;
-use App\Http\Controllers\Api\V1\Webhooks\VideoWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -138,6 +138,12 @@ Route::get('/courses', [PublicCourseController::class, 'index'])->middleware('th
 Route::get('/courses/{slug}', [PublicCourseController::class, 'show'])->name('courses.show');
 Route::get('/courses/{slug}/reviews', [ReviewController::class, 'index'])->middleware('throttle:catalogue')->name('courses.reviews.index');
 Route::post('/lessons/{lesson}/preview-playback', [PlaybackController::class, 'preview'])->middleware('throttle:preview-playback')->name('lessons.preview-playback');
+// Encrypted HLS (PRD-07 FR-02): playlists and the AES key, for enrolled students (with a live web stream) or previews.
+Route::middleware('throttle:hls')->group(function (): void {
+    Route::get('/lessons/{lesson}/hls/master.m3u8', [HlsController::class, 'master'])->name('lessons.hls.master');
+    Route::get('/lessons/{lesson}/hls/key', [HlsController::class, 'key'])->name('lessons.hls.key');
+    Route::get('/lessons/{lesson}/hls/{rendition}.m3u8', [HlsController::class, 'media'])->where('rendition', '[a-z0-9]{1,16}')->name('lessons.hls.media');
+});
 // Stamped documents behind short-lived signed links (PRD-07 FR-12)
 Route::get('/documents/{stamp}/download', [DocumentController::class, 'download'])->middleware(['signed', 'throttle:playback'])->name('documents.download');
 Route::get('/certificates/{serial}', [CertificateController::class, 'verify'])->middleware('throttle:certificates')->name('certificates.verify');
@@ -252,6 +258,8 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
     Route::post('/courses/{course}/draft/lessons/{lesson}/document', [DraftController::class, 'document'])->middleware('throttle:uploads')->name('draft.lessons.document');
     Route::put('/courses/{course}/draft/lessons/{lesson}/quiz', [DraftController::class, 'quiz'])->name('draft.lessons.quiz');
     Route::get('/media/{media}', [MediaController::class, 'show'])->name('media.show');
+    Route::post('/media/{media}/parts', [MediaController::class, 'parts'])->middleware('throttle:upload-parts')->name('media.parts');
+    Route::post('/media/{media}/complete', [MediaController::class, 'complete'])->middleware('throttle:upload-parts')->name('media.complete');
 
     Route::post('/payout-method/otp', [PayoutMethodController::class, 'requestOtp'])->middleware('throttle:otp-verify')->name('payout-method.otp');
     Route::put('/payout-method', [PayoutMethodController::class, 'update'])->middleware('throttle:otp-verify')->name('payout-method.update');
@@ -411,8 +419,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
 });
 
 // Webhooks: no auth; each provider verifies its signature.
-Route::post('/webhooks/video', VideoWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.video');
 Route::post('/webhooks/payments/{gateway}', PaymentWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.payments');
 
-// Fake video driver only (local, staging): stands in for the provider's upload URL.
-Route::put('/_fake/video-uploads/{upload}', FakeVideoUploadController::class)->name('fake.video-upload');
+// Fake video driver only (local, staging): stands in for R2's pre-signed part URLs.
+Route::put('/_fake/video-uploads/{upload}/parts/{part}', FakeVideoUploadController::class)->whereNumber('part')->name('fake.video-upload');

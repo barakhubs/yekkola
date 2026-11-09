@@ -39,9 +39,9 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type fakeVideoUploadResponse204 = {
+export type fakeVideoUploadResponse200 = {
   data: void;
-  status: 204;
+  status: 200;
 };
 
 export type fakeVideoUploadResponse404 = {
@@ -49,7 +49,7 @@ export type fakeVideoUploadResponse404 = {
   status: 404;
 };
 
-export type fakeVideoUploadResponseSuccess = fakeVideoUploadResponse204 & {
+export type fakeVideoUploadResponseSuccess = fakeVideoUploadResponse200 & {
   headers: Headers;
 };
 export type fakeVideoUploadResponseError = fakeVideoUploadResponse404 & {
@@ -58,22 +58,23 @@ export type fakeVideoUploadResponseError = fakeVideoUploadResponse404 & {
 
 export type fakeVideoUploadResponse = fakeVideoUploadResponseSuccess | fakeVideoUploadResponseError;
 
-export const getFakeVideoUploadUrl = (upload: string) => {
-  return `/_fake/video-uploads/${upload}`;
+export const getFakeVideoUploadUrl = (upload: string, part: number) => {
+  return `/_fake/video-uploads/${upload}/parts/${part}`;
 };
 
 export const fakeVideoUpload = async (
   upload: string,
+  part: number,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<fakeVideoUploadResponse> => {
-  return apiFetch<fakeVideoUploadResponse>(getFakeVideoUploadUrl(upload), {
+  return apiFetch<fakeVideoUploadResponse>(getFakeVideoUploadUrl(upload, part), {
     ...options,
     method: "PUT",
   });
 };
 
-export const getFakeVideoUploadQueryKey = (upload: string) => {
-  return ["PUT", `/_fake/video-uploads/${upload}`] as const;
+export const getFakeVideoUploadQueryKey = (upload: string, part: number) => {
+  return ["PUT", `/_fake/video-uploads/${upload}/parts/${part}`] as const;
 };
 
 export const getFakeVideoUploadQueryOptions = <
@@ -81,6 +82,7 @@ export const getFakeVideoUploadQueryOptions = <
   TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
+  part: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof fakeVideoUpload>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -88,15 +90,15 @@ export const getFakeVideoUploadQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFakeVideoUploadQueryKey(upload);
+  const queryKey = queryOptions?.queryKey ?? getFakeVideoUploadQueryKey(upload, part);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof fakeVideoUpload>>> = ({ signal }) =>
-    fakeVideoUpload(upload, { signal, ...requestOptions });
+    fakeVideoUpload(upload, part, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
-    enabled: upload !== null && upload !== undefined,
+    enabled: upload !== null && upload !== undefined && part !== null && part !== undefined,
     ...queryOptions,
   } as UseQueryOptions<Awaited<ReturnType<typeof fakeVideoUpload>>, TError, TData> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -111,6 +113,7 @@ export function useFakeVideoUpload<
   TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
+  part: number,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof fakeVideoUpload>>, TError, TData>> &
       Pick<
@@ -130,6 +133,7 @@ export function useFakeVideoUpload<
   TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
+  part: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof fakeVideoUpload>>, TError, TData>> &
       Pick<
@@ -149,6 +153,7 @@ export function useFakeVideoUpload<
   TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
+  part: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof fakeVideoUpload>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -161,13 +166,14 @@ export function useFakeVideoUpload<
   TError = ErrorType<ModelNotFoundExceptionResponse>,
 >(
   upload: string,
+  part: number,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof fakeVideoUpload>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFakeVideoUploadQueryOptions(upload, options);
+  const queryOptions = getFakeVideoUploadQueryOptions(upload, part, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

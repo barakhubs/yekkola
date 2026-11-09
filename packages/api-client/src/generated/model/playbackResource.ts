@@ -5,14 +5,14 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { PlaybackResourceStream } from "./playbackResourceStream";
-import type { PlaybackResourceTokens } from "./playbackResourceTokens";
 import type { PlaybackResourceWatermark } from "./playbackResourceWatermark";
 
 export interface PlaybackResource {
   lesson_uid: string;
   kind: string;
-  playback_id: string;
-  tokens: PlaybackResourceTokens;
+  playlist_url: string;
+  /** @nullable */
+  poster_url: string | null;
   expires_at: string;
   /** @nullable */
   watermark: PlaybackResourceWatermark;

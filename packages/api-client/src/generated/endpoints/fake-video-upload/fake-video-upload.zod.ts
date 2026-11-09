@@ -8,6 +8,7 @@ import * as zod from "zod";
 
 export const FakeVideoUploadParams = zod.object({
   upload: zod.string(),
+  part: zod.int(),
 });
 
-export const FakeVideoUploadResponse = zod.void();
+export const FakeVideoUploadResponse = zod.unknown();
