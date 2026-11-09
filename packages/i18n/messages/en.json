@@ -1097,7 +1097,9 @@
       "reports": "Reports",
       "questions": "Questions",
       "coupons": "Coupons",
-      "bundles": "Bundles"
+      "bundles": "Bundles",
+      "professors": "Professors",
+      "kyc": "Identity checks"
     },
     "auth": {
       "title": "Team sign-in",
@@ -2155,6 +2157,104 @@
       },
       "moveUp": "Move “{title}” up",
       "moveDown": "Move “{title}” down"
+    },
+    "professors": {
+      "title": "Professors",
+      "intro": "Approved professors: standing, identity check, revenue share and payouts.",
+      "search": "Search",
+      "searchHint": "Name or handle",
+      "allStatuses": "All statuses",
+      "allKyc": "All identity checks",
+      "empty": "No professors.",
+      "back": "All professors",
+      "columns": {
+        "name": "Professor",
+        "phone": "Phone",
+        "status": "Status",
+        "kyc": "Identity",
+        "students": "Students",
+        "created": "Since"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended"
+      },
+      "kyc": {
+        "none": "Not sent",
+        "pending": "To check",
+        "verified": "Verified",
+        "rejected": "Rejected"
+      },
+      "suspend": "Suspend",
+      "reinstate": "Reinstate",
+      "suspendTitle": "Suspend {name}?",
+      "reinstateTitle": "Reinstate {name}?",
+      "suspendHint": "Their courses leave the catalogue and their payouts stop. Enrolled students keep access.",
+      "reinstateHint": "Their published courses return to the catalogue and payouts resume.",
+      "reason": "Reason (kept in the audit log)",
+      "account": "View account",
+      "suspendedBecause": "Suspended: {reason}",
+      "province": "Province",
+      "verifiedAt": "Identity verified on",
+      "revenueShare": "Professor share",
+      "platformDefault": "Platform setting",
+      "payoutMethod": "Payout account",
+      "noPayoutMethod": "None",
+      "payable": "Can be paid",
+      "yes": "Yes",
+      "no": "No",
+      "heldUntil": "on hold until {date}",
+      "kycTitle": "Identity checks",
+      "noKyc": "No documents sent.",
+      "coursesTitle": "Courses",
+      "noCourses": "No courses.",
+      "changeShare": "Change share",
+      "changeShareTitle": "Revenue share for {name}",
+      "changeShareHint": "Applies to future sales only; past sales keep their share.",
+      "sharePct": "Professor share (%)",
+      "shareEmpty": "Leave empty to follow the platform setting.",
+      "badShare": "Enter a percentage between 0 and 100.",
+      "saveShare": "Save"
+    },
+    "kyc": {
+      "title": "Identity checks",
+      "intro": "Identity documents sent by professors. Oldest first.",
+      "statusFilter": "Status",
+      "all": "All",
+      "empty": "No identity checks.",
+      "nothingPending": "Nothing to check right now.",
+      "status": {
+        "none": "Not sent",
+        "pending": "To check",
+        "verified": "Verified",
+        "rejected": "Rejected"
+      },
+      "documents": {
+        "national_id": "National ID card",
+        "voter_card": "Voter card",
+        "passport": "Passport"
+      },
+      "submitted": "sent on {date}",
+      "reviewed": "Reviewed on {date}",
+      "files": "Documents",
+      "fileKinds": {
+        "front": "Front",
+        "back": "Back",
+        "selfie": "Selfie"
+      },
+      "audited": "Every time a document is opened, it is recorded in the audit log.",
+      "rejectionReason": "Reason for rejection:",
+      "verify": "Verify",
+      "reject": "Reject",
+      "verifyTitle": "Verify this identity document?",
+      "verifyHint": "The professor gets the “verified” badge and can receive payouts.",
+      "rejectTitle": "Reject this identity document?",
+      "rejectHint": "The professor sees the reason and can send a new document.",
+      "rejectReason": "Reason (shown to the professor)",
+      "pages": "Pages",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
     }
   }
 }

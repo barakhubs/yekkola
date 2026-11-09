@@ -1097,7 +1097,9 @@
       "reports": "Signalements",
       "questions": "Questions",
       "coupons": "Codes promo",
-      "bundles": "Packs"
+      "bundles": "Packs",
+      "professors": "Professeurs",
+      "kyc": "Vérifications d’identité"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -2155,6 +2157,104 @@
       },
       "moveUp": "Monter « {title} »",
       "moveDown": "Descendre « {title} »"
+    },
+    "professors": {
+      "title": "Professeurs",
+      "intro": "Professeurs approuvés : statut, vérification d’identité, part des revenus et versements.",
+      "search": "Rechercher",
+      "searchHint": "Nom ou identifiant",
+      "allStatuses": "Tous les statuts",
+      "allKyc": "Toutes les vérifications",
+      "empty": "Aucun professeur.",
+      "back": "Tous les professeurs",
+      "columns": {
+        "name": "Professeur",
+        "phone": "Téléphone",
+        "status": "Statut",
+        "kyc": "Identité",
+        "students": "Étudiants",
+        "created": "Depuis le"
+      },
+      "status": {
+        "active": "Actif",
+        "suspended": "Suspendu"
+      },
+      "kyc": {
+        "none": "Non envoyée",
+        "pending": "À vérifier",
+        "verified": "Vérifiée",
+        "rejected": "Refusée"
+      },
+      "suspend": "Suspendre",
+      "reinstate": "Rétablir",
+      "suspendTitle": "Suspendre {name} ?",
+      "reinstateTitle": "Rétablir {name} ?",
+      "suspendHint": "Ses cours quittent le catalogue et ses versements sont suspendus. Les étudiants inscrits gardent leur accès.",
+      "reinstateHint": "Ses cours publiés reviennent au catalogue et ses versements reprennent.",
+      "reason": "Raison (gardée dans le journal d’audit)",
+      "account": "Voir le compte",
+      "suspendedBecause": "Suspendu : {reason}",
+      "province": "Province",
+      "verifiedAt": "Identité vérifiée le",
+      "revenueShare": "Part du professeur",
+      "platformDefault": "Réglage de la plateforme",
+      "payoutMethod": "Compte de versement",
+      "noPayoutMethod": "Aucun",
+      "payable": "Peut être payé",
+      "yes": "Oui",
+      "no": "Non",
+      "heldUntil": "bloqué jusqu’au {date}",
+      "kycTitle": "Vérifications d’identité",
+      "noKyc": "Aucune pièce envoyée.",
+      "coursesTitle": "Cours",
+      "noCourses": "Aucun cours.",
+      "changeShare": "Modifier la part",
+      "changeShareTitle": "Part des revenus de {name}",
+      "changeShareHint": "S’applique aux ventes à venir uniquement ; les ventes passées gardent leur part.",
+      "sharePct": "Part du professeur (%)",
+      "shareEmpty": "Laissez vide pour suivre le réglage de la plateforme.",
+      "badShare": "Entrez un pourcentage entre 0 et 100.",
+      "saveShare": "Enregistrer"
+    },
+    "kyc": {
+      "title": "Vérifications d’identité",
+      "intro": "Pièces d’identité envoyées par les professeurs. Les plus anciennes d’abord.",
+      "statusFilter": "Statut",
+      "all": "Toutes",
+      "empty": "Aucune vérification.",
+      "nothingPending": "Rien à vérifier pour le moment.",
+      "status": {
+        "none": "Non envoyée",
+        "pending": "À vérifier",
+        "verified": "Vérifiée",
+        "rejected": "Refusée"
+      },
+      "documents": {
+        "national_id": "Carte d’identité",
+        "voter_card": "Carte d’électeur",
+        "passport": "Passeport"
+      },
+      "submitted": "envoyée le {date}",
+      "reviewed": "Examinée le {date}",
+      "files": "Pièces",
+      "fileKinds": {
+        "front": "Recto",
+        "back": "Verso",
+        "selfie": "Selfie"
+      },
+      "audited": "Chaque ouverture d’une pièce est enregistrée dans le journal d’audit.",
+      "rejectionReason": "Motif du refus :",
+      "verify": "Valider",
+      "reject": "Refuser",
+      "verifyTitle": "Valider cette pièce d’identité ?",
+      "verifyHint": "Le professeur reçoit le badge « vérifié » et peut recevoir ses versements.",
+      "rejectTitle": "Refuser cette pièce d’identité ?",
+      "rejectHint": "Le professeur voit le motif et peut envoyer une nouvelle pièce.",
+      "rejectReason": "Motif (montré au professeur)",
+      "pages": "Pages",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {page} sur {total}"
     }
   }
 }
