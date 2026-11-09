@@ -6,6 +6,21 @@
  */
 import * as zod from "zod";
 
+export const adminKycSubmissionsIndexQueryPageDefault = 1;
+export const adminKycSubmissionsIndexQueryPerPageDefault = 15;
+
+export const AdminKycSubmissionsIndexQueryParams = zod.object({
+  page: zod.int().default(adminKycSubmissionsIndexQueryPageDefault),
+  per_page: zod.int().default(adminKycSubmissionsIndexQueryPerPageDefault),
+  "filter[status]": zod.string().optional().describe("pending, verified or rejected."),
+  "filter[document_type]": zod.string().optional().describe("national_id, voter_card or passport."),
+  "filter[professor_profile_id]": zod.string().optional(),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` (default, oldest first) or `reviewed_at`; prefix `-` for descending."),
+});
+
 export const adminKycSubmissionsIndexResponseMetaPerPageMin = 0;
 
 export const adminKycSubmissionsIndexResponseMetaTotalMin = 0;

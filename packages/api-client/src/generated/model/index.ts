@@ -92,6 +92,7 @@ export * from "./adminKycSubmissionsIndex200";
 export * from "./adminKycSubmissionsIndex200Links";
 export * from "./adminKycSubmissionsIndex200Meta";
 export * from "./adminKycSubmissionsIndex200MetaLinksItem";
+export * from "./adminKycSubmissionsIndexParams";
 export * from "./adminKycSubmissionsReject200";
 export * from "./adminKycSubmissionsShow200";
 export * from "./adminKycSubmissionsVerify200";

@@ -20,6 +20,7 @@ import type {
 import type {
   AdminKycSubmissionsFile200,
   AdminKycSubmissionsIndex200,
+  AdminKycSubmissionsIndexParams,
   AdminKycSubmissionsReject200,
   AdminKycSubmissionsShow200,
   AdminKycSubmissionsVerify200,
@@ -69,36 +70,52 @@ export type adminKycSubmissionsIndexResponseError = adminKycSubmissionsIndexResp
 export type adminKycSubmissionsIndexResponse =
   adminKycSubmissionsIndexResponseSuccess | adminKycSubmissionsIndexResponseError;
 
-export const getAdminKycSubmissionsIndexUrl = () => {
-  return `/admin/kyc-submissions`;
+export const getAdminKycSubmissionsIndexUrl = (params?: AdminKycSubmissionsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/admin/kyc-submissions?${stringifiedParams}`
+    : `/admin/kyc-submissions`;
 };
 
 export const adminKycSubmissionsIndex = async (
+  params?: AdminKycSubmissionsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminKycSubmissionsIndexResponse> => {
-  return apiFetch<adminKycSubmissionsIndexResponse>(getAdminKycSubmissionsIndexUrl(), {
+  return apiFetch<adminKycSubmissionsIndexResponse>(getAdminKycSubmissionsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminKycSubmissionsIndexQueryKey = () => {
-  return [`/admin/kyc-submissions`] as const;
+export const getAdminKycSubmissionsIndexQueryKey = (params?: AdminKycSubmissionsIndexParams) => {
+  return [`/admin/kyc-submissions`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminKycSubmissionsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminKycSubmissionsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminKycSubmissionsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminKycSubmissionsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>> = ({ signal }) =>
-    adminKycSubmissionsIndex({ signal, ...requestOptions });
+    adminKycSubmissionsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
@@ -116,6 +133,7 @@ export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminKycSubmissionsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>> &
       Pick<
@@ -134,6 +152,7 @@ export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminKycSubmissionsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>> &
       Pick<
@@ -152,6 +171,7 @@ export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminKycSubmissionsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -163,13 +183,14 @@ export function useAdminKycSubmissionsIndex<
   TData = Awaited<ReturnType<typeof adminKycSubmissionsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminKycSubmissionsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminKycSubmissionsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminKycSubmissionsIndexQueryOptions(options);
+  const queryOptions = getAdminKycSubmissionsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
