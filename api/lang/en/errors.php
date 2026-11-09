@@ -211,6 +211,7 @@ return [
         'not_free' => 'This course is not free.',
         'revoked' => 'Your access to this course was removed. Please contact support.',
         'already_active' => 'This account already has access to this course.',
+        'account_banned' => 'This account is banned: it can’t be given access to a course.',
     ],
     'report' => [
         'target_not_found' => 'This content no longer exists or is no longer visible.',

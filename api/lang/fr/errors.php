@@ -211,6 +211,7 @@ return [
         'not_free' => 'Ce cours est payant.',
         'revoked' => 'Votre accès à ce cours a été retiré. Contactez le support.',
         'already_active' => 'Ce compte a déjà accès à ce cours.',
+        'account_banned' => 'Ce compte est banni : il ne peut pas recevoir d’accès à un cours.',
     ],
     'report' => [
         'target_not_found' => 'Ce contenu n’existe plus ou n’est plus visible.',

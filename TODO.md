@@ -302,6 +302,8 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Categories CRUD + ordering — #43
 - [x] Transfer course ownership (super admin, PRD-09 FR-08) — #63
 - [ ] Tell both professors about a course transfer (with notifications)
+- [ ] Confirm: a transfer clears the course-level revenue share (provisional default; the new owner's rate applies) **(needs: owner decision)**
+- [ ] Media shared between a transferred course and another of the old professor's courses stays theirs: block deleting an asset still used by any lesson when media cleanup lands (1.5)
 - [x] Tell the professor about a takedown — 1.12
 - [x] Review moderation — #46
 - [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — #52

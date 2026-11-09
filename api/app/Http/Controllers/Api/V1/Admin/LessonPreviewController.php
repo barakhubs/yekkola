@@ -33,7 +33,7 @@ final class LessonPreviewController extends Controller
      *
      * @return array{data: array{kind: string, playlist_url: string|null, poster_url: string|null, document_url: string|null}}
      */
-    public function show(CourseVersion $version, string $lesson, VideoProvider $videos, ProtectionSettings $settings): array
+    public function show(CourseVersion $version, string $lesson, VideoProvider $videos, ProtectionSettings $settings, RecordAudit $audit): array
     {
         $found = $this->lesson($version, $lesson);
 
@@ -49,6 +49,7 @@ final class LessonPreviewController extends Controller
         }
 
         $asset = $this->readyAsset($found);
+        $audit->handle('lesson.media_previewed', $found, ['course_version_id' => $version->id]);
 
         return ['data' => [
             'kind' => $asset->kind->value,
@@ -120,9 +121,16 @@ final class LessonPreviewController extends Controller
         return $asset;
     }
 
+    /** Ready, and used by a lesson of a submitted or decided version — never media only in someone's draft. */
     private function assertReady(MediaAsset $asset): void
     {
         abort_unless($asset->isReady() && $asset->key() !== null, 409);
+        abort_unless(
+            Lesson::query()->where('media_asset_id', $asset->id)
+                ->whereHas('version', fn ($q) => $q->where('state', '!=', VersionState::Draft))
+                ->exists(),
+            404,
+        );
     }
 
     private function playlist(string $body): Response

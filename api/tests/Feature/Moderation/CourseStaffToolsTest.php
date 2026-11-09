@@ -57,6 +57,22 @@ it('moves a course to another professor, switching off the old owner’s coupons
         ->and(Activity::query()->where('event', 'course.transferred')->sole()->properties['reason'])->toBe('Co-auteur parti');
 });
 
+it('clears a course-level revenue share on transfer and respects the new owner’s free-course limit', function () {
+    $this->course->update(['revenue_share_bps' => 8_500]);
+    actingAsStaff(Role::SuperAdmin);
+    $this->postJson("/api/v1/admin/courses/{$this->course->id}/transfer", ['professor_profile_id' => $this->to->id, 'note' => 'Reprise'])->assertOk();
+    expect($this->course->fresh()->revenue_share_bps)->toBeNull()
+        ->and(Activity::query()->where('event', 'course.transferred')->sole()->properties['course_revenue_share_bps_cleared'])->toBe(8_500);
+
+    $settings = app(App\Domain\Platform\Settings\CatalogSettings::class);
+    $settings->free_course_limit = 0;
+    $settings->save();
+    $this->other->update(['is_free' => true, 'price_minor' => null, 'currency' => null]);
+    $this->postJson("/api/v1/admin/courses/{$this->other->id}/transfer", ['professor_profile_id' => $this->to->id, 'note' => 'Reprise'])
+        ->assertUnprocessable()->assertJsonPath('code', 'course.free_limit_reached');
+    expect($this->other->fresh()->professor_profile_id)->toBe($this->from->id);
+});
+
 it('grants an account access to a course, once, with a reason', function () {
     $student = User::factory()->create();
 
@@ -74,6 +90,10 @@ it('grants an account access to a course, once, with a reason', function () {
 
     expect(Enrollment::query()->where('user_id', $student->id)->sole()->source->value)->toBe('admin')
         ->and(Activity::query()->where('event', 'enrollment.granted')->sole()->properties['reason'])->toBe('Payé hors ligne');
+
+    $banned = User::factory()->create(['status' => 'banned']);
+    $this->postJson("/api/v1/admin/users/{$banned->id}/enrollments", ['course_id' => $this->course->id, 'note' => 'Essai'])
+        ->assertConflict()->assertJsonPath('code', 'enrollment.account_banned');
 
     $this->course->update(['taken_down_at' => now()]);
     $this->postJson('/api/v1/admin/users/'.User::factory()->create()->id.'/enrollments', ['course_id' => $this->course->id, 'note' => 'Essai'])
