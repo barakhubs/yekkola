@@ -32,6 +32,7 @@ function paidOrderItemFor(Enrollment $enrollment): string
         'price_minor' => 1_500,
         'currency' => 'USD',
         'revenue_share_bps' => 7_000,
+        'granted_at' => now(),
     ]);
     $enrollment->forceFill(['order_item_id' => $item->id])->save();
 

@@ -1,3 +1,4 @@
+export * from "./analytics/analytics";
 export * from "./application/application";
 export * from "./audit-log/audit-log";
 export * from "./authoring-options/authoring-options";

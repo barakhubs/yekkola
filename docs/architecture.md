@@ -176,7 +176,7 @@ yekkola/
 │   │   │   ├── (student)/                 /my-courses, /learn/[course]/[lesson], /checkout/[orderId],
 │   │   │   │                              /orders, /my-certificates, /wishlist, /notifications, /account ← client, auth-guarded
 │   │   │   └── (studio)/studio/           /, /apply, /courses, /courses/[id]/(details|curriculum|pricing|review),
-│   │   │                                  /earnings, /promotions (coupons + bundles), /payouts, /questions, /profile, /verification; planned: /analytics, /reviews
+│   │   │                                  /analytics, /earnings, /promotions (coupons + bundles), /payouts, /questions, /profile, /verification; planned: /reviews
 │   │   ├── src/features/<domain>/         components/, hooks/, schemas/, utils/
 │   │   ├── src/lib/                       api (fetch config), auth, i18n, analytics
 │   │   └── messages/ → packages/i18n
@@ -316,7 +316,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | `settings` | spatie/laravel-settings | Groups: commerce, payouts, protection, catalog, learning, moderation. Defaults in `database/settings/`. |
 | `activity_log` | spatie/laravel-activitylog (ULID id; subject/causer ids are strings) | All admin actions (`RecordAudit`) + settings changes (before/after, automatic). |
 | `webhook_events` | id, provider, event_id (unique per provider), type, payload (jsonb), received_at, processed_at, error | Generic provider inbox (payments use `payment_events`). Unused since the Mux driver was removed: R2 uploads are confirmed by the studio, not by webhook. |
-| `course_daily_stats` | course_id, date, views, enrollments, paid_enrollments, revenue_minor, currency, completions, avg_rating | Rolled up nightly + incrementally; feeds dashboards. |
+| `course_daily_stats` | course_id, date (unique together), enrollments, sales (order items by `granted_at`, reversed payments excluded), revenue_minor (jsonb per currency: what students paid for those sales, before refunds), completions, active_students, reviews, quiz_attempts, quiz_passes | `stats:rollup-courses` hourly recomputes today and yesterday (idempotent; a day recomputed to nothing loses its row; `--days=N` backfills); feeds professor analytics. Page views need view tracking first (TODO). |
+| `course_activity_days` | course_id, date, user_id (primary key together; index date, course_id) | Append-only, written by each progress sync (`ON CONFLICT DO NOTHING`): who studied a course on a day. Daily and period active-student counts (distinct) come from here, not from `lesson_progress`, whose timestamps are overwritten. No foreign keys (cheap writes, partition by date later). |
 | `platform_daily_stats` | date (PK), signups, enrollments, orders_created, orders_paid, courses_published, gmv_minor, net_revenue_minor, refunds_minor, payouts_minor (jsonb per currency) | Admin dashboard. Recomputed from source tables by `stats:rollup-platform` (hourly: today + yesterday; `--days` backfills); idempotent upsert. Active students are counted live from `enrollments.last_activity_at` (indexed). |
 
 ---
@@ -452,8 +453,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /professor/courses/{id}/draft/lessons/{lid}/document | PDF (multipart) |
 | PUT | /professor/courses/{id}/draft/lessons/{lid}/quiz | Whole quiz (settings + questions + options) |
 | GET | /professor/media/{id} | Media processing status |
-| GET | /professor/analytics/overview | KPIs + time series |
-| GET | /professor/analytics/courses/{id} | Per-course stats, funnel, quiz performance |
+| GET | /professor/analytics/overview | `?days=7\|30\|90\|365` (default 30): totals, the previous period's totals, a daily series and per-course figures, from `course_daily_stats` (courses owned now; earnings stay on `/professor/earnings`) |
+| GET | /professor/analytics/courses/{id} | One own course: the same figures + funnel of its active enrollments (enrolled → started → half-way → completed) |
 | GET | /professor/earnings | Balances per currency (held/available from the ledger, paid out from payouts), monthly earnings (12 months), next payout run |
 | GET | /professor/ledger, /professor/ledger.csv | Statement lines (one per entry on the professor's accounts; `type`, `from`, `to`), or as CSV |
 | GET | /professor/payouts | Payout history |

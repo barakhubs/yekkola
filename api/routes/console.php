@@ -27,3 +27,4 @@ Schedule::command('alerts:stuck-payments')->everyFifteenMinutes()->withoutOverla
 
 // Admin dashboard (PRD-09 FR-01)
 Schedule::command('stats:rollup-platform')->hourlyAt(5)->withoutOverlapping(30)->onOneServer();
+Schedule::command('stats:rollup-courses')->hourlyAt(10)->withoutOverlapping(30)->onOneServer();

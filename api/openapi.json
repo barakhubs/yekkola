@@ -36,6 +36,664 @@
                 }
             }
         },
+        "/professor/analytics/overview": {
+            "get": {
+                "operationId": "professor.analytics.overview",
+                "summary": "All my courses over the last `days` (7, 30, 90 or 365; default 30), with the same span before for comparison,\na daily series and a per-course breakdown",
+                "tags": [
+                    "Analytics"
+                ],
+                "parameters": [
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "description": "7, 30, 90 or 365.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 30
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "period_days": {
+                                                    "type": "integer"
+                                                },
+                                                "from": {
+                                                    "type": "string"
+                                                },
+                                                "to": {
+                                                    "type": "string"
+                                                },
+                                                "totals": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": "integer"
+                                                        },
+                                                        "sales": {
+                                                            "type": "integer"
+                                                        },
+                                                        "completions": {
+                                                            "type": "integer"
+                                                        },
+                                                        "active_students": {
+                                                            "type": "integer"
+                                                        },
+                                                        "reviews": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_attempts": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_passes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "revenue": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students",
+                                                        "reviews",
+                                                        "quiz_attempts",
+                                                        "quiz_passes",
+                                                        "revenue"
+                                                    ]
+                                                },
+                                                "previous": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": "integer"
+                                                        },
+                                                        "sales": {
+                                                            "type": "integer"
+                                                        },
+                                                        "completions": {
+                                                            "type": "integer"
+                                                        },
+                                                        "active_students": {
+                                                            "type": "integer"
+                                                        },
+                                                        "reviews": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_attempts": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_passes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "revenue": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students",
+                                                        "reviews",
+                                                        "quiz_attempts",
+                                                        "quiz_passes",
+                                                        "revenue"
+                                                    ]
+                                                },
+                                                "changes": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "sales": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "completions": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "active_students": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students"
+                                                    ]
+                                                },
+                                                "quiz_pass_pct": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "daily": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "date": {
+                                                                "type": "string"
+                                                            },
+                                                            "enrollments": {
+                                                                "type": "integer"
+                                                            },
+                                                            "sales": {
+                                                                "type": "integer"
+                                                            },
+                                                            "completions": {
+                                                                "type": "integer"
+                                                            },
+                                                            "active_students": {
+                                                                "type": "integer"
+                                                            },
+                                                            "reviews": {
+                                                                "type": "integer"
+                                                            },
+                                                            "quiz_attempts": {
+                                                                "type": "integer"
+                                                            },
+                                                            "quiz_passes": {
+                                                                "type": "integer"
+                                                            },
+                                                            "revenue": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "amount_minor": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "currency": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "amount_minor",
+                                                                        "currency"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "date",
+                                                            "enrollments",
+                                                            "sales",
+                                                            "completions",
+                                                            "active_students",
+                                                            "reviews",
+                                                            "quiz_attempts",
+                                                            "quiz_passes",
+                                                            "revenue"
+                                                        ]
+                                                    }
+                                                },
+                                                "courses": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "course_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "title": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "status": {
+                                                                "type": "string"
+                                                            },
+                                                            "rating": {
+                                                                "type": [
+                                                                    "number",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "rating_count": {
+                                                                "type": "integer"
+                                                            },
+                                                            "enrollments": {
+                                                                "type": "integer"
+                                                            },
+                                                            "sales": {
+                                                                "type": "integer"
+                                                            },
+                                                            "completions": {
+                                                                "type": "integer"
+                                                            },
+                                                            "active_students": {
+                                                                "type": "integer"
+                                                            },
+                                                            "reviews": {
+                                                                "type": "integer"
+                                                            },
+                                                            "quiz_attempts": {
+                                                                "type": "integer"
+                                                            },
+                                                            "quiz_passes": {
+                                                                "type": "integer"
+                                                            },
+                                                            "revenue": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "amount_minor": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "currency": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "amount_minor",
+                                                                        "currency"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "course_id",
+                                                            "title",
+                                                            "status",
+                                                            "rating",
+                                                            "rating_count",
+                                                            "enrollments",
+                                                            "sales",
+                                                            "completions",
+                                                            "active_students",
+                                                            "reviews",
+                                                            "quiz_attempts",
+                                                            "quiz_passes",
+                                                            "revenue"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "period_days",
+                                                "from",
+                                                "to",
+                                                "totals",
+                                                "previous",
+                                                "changes",
+                                                "quiz_pass_pct",
+                                                "daily",
+                                                "courses"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/professor/analytics/courses/{course}": {
+            "get": {
+                "operationId": "professor.analytics.course",
+                "summary": "One of my courses: the same figures, plus where its students are now (enrolled \u2192 started \u2192 half-way \u2192\ncompleted)",
+                "tags": [
+                    "Analytics"
+                ],
+                "parameters": [
+                    {
+                        "name": "course",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "description": "7, 30, 90 or 365.",
+                        "schema": {
+                            "type": "integer",
+                            "default": 30
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "period_days": {
+                                                    "type": "integer"
+                                                },
+                                                "from": {
+                                                    "type": "string"
+                                                },
+                                                "to": {
+                                                    "type": "string"
+                                                },
+                                                "totals": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": "integer"
+                                                        },
+                                                        "sales": {
+                                                            "type": "integer"
+                                                        },
+                                                        "completions": {
+                                                            "type": "integer"
+                                                        },
+                                                        "active_students": {
+                                                            "type": "integer"
+                                                        },
+                                                        "reviews": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_attempts": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_passes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "revenue": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students",
+                                                        "reviews",
+                                                        "quiz_attempts",
+                                                        "quiz_passes",
+                                                        "revenue"
+                                                    ]
+                                                },
+                                                "previous": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": "integer"
+                                                        },
+                                                        "sales": {
+                                                            "type": "integer"
+                                                        },
+                                                        "completions": {
+                                                            "type": "integer"
+                                                        },
+                                                        "active_students": {
+                                                            "type": "integer"
+                                                        },
+                                                        "reviews": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_attempts": {
+                                                            "type": "integer"
+                                                        },
+                                                        "quiz_passes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "revenue": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "amount_minor": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "currency": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "amount_minor",
+                                                                    "currency"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students",
+                                                        "reviews",
+                                                        "quiz_attempts",
+                                                        "quiz_passes",
+                                                        "revenue"
+                                                    ]
+                                                },
+                                                "changes": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "sales": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "completions": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "active_students": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students"
+                                                    ]
+                                                },
+                                                "quiz_pass_pct": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "daily": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "date": {
+                                                                "type": "string"
+                                                            },
+                                                            "enrollments": {
+                                                                "type": "integer"
+                                                            },
+                                                            "sales": {
+                                                                "type": "integer"
+                                                            },
+                                                            "completions": {
+                                                                "type": "integer"
+                                                            },
+                                                            "active_students": {
+                                                                "type": "integer"
+                                                            },
+                                                            "reviews": {
+                                                                "type": "integer"
+                                                            },
+                                                            "quiz_attempts": {
+                                                                "type": "integer"
+                                                            },
+                                                            "quiz_passes": {
+                                                                "type": "integer"
+                                                            },
+                                                            "revenue": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "amount_minor": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "currency": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "amount_minor",
+                                                                        "currency"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "date",
+                                                            "enrollments",
+                                                            "sales",
+                                                            "completions",
+                                                            "active_students",
+                                                            "reviews",
+                                                            "quiz_attempts",
+                                                            "quiz_passes",
+                                                            "revenue"
+                                                        ]
+                                                    }
+                                                },
+                                                "funnel": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrolled": {
+                                                            "type": "integer"
+                                                        },
+                                                        "started": {
+                                                            "type": "integer"
+                                                        },
+                                                        "halfway": {
+                                                            "type": "integer"
+                                                        },
+                                                        "completed": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrolled",
+                                                        "started",
+                                                        "halfway",
+                                                        "completed"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "period_days",
+                                                "from",
+                                                "to",
+                                                "totals",
+                                                "previous",
+                                                "changes",
+                                                "quiz_pass_pct",
+                                                "daily",
+                                                "funnel"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/professor/application": {
             "get": {
                 "operationId": "professor.application.show",

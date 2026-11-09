@@ -790,7 +790,8 @@
         "payouts": "Paiements",
         "questions": "Questions",
         "earnings": "Revenus",
-        "promotions": "Promotions"
+        "promotions": "Promotions",
+        "analytics": "Statistiques"
       },
       "welcome": "Bonjour {name}",
       "progress": "{done} étape(s) sur {total} pour être prêt à enseigner et à être payé.",
@@ -1241,6 +1242,42 @@
           "Ta part de chaque vente est fixée au moment de la vente et versée sur ton compte mobile money selon le calendrier des versements.",
           "Ton identité est vérifiée avant les premiers versements."
         ]
+      }
+    },
+    "analytics": {
+      "title": "Statistiques",
+      "intro": "Comment vos cours se portent : inscriptions, ventes et progression des étudiants.",
+      "period": "Période",
+      "days": "{count} jours",
+      "kpis": "Chiffres clés",
+      "enrollments": "Inscriptions",
+      "sales": "Ventes",
+      "revenue": "Payé par les étudiants",
+      "revenueHint": "Avant la part de la plateforme et les remboursements. Vos gains sont sur la page Revenus.",
+      "completions": "Cours terminés",
+      "change": "{pct} % par rapport à la période précédente",
+      "noChange": "Comme la période précédente",
+      "new": "Nouveau sur cette période",
+      "enrollmentsPerDay": "Inscriptions par jour",
+      "salesPerDay": "Ventes par jour",
+      "updatedHourly": "Du {from} au {to}, aujourd’hui inclus (mis à jour toutes les heures).",
+      "toEarnings": "Voir mes revenus",
+      "byCourse": "Par cours",
+      "noCourses": "Pas encore de cours.",
+      "course": "Cours",
+      "rating": "Note",
+      "untitled": "Cours sans titre",
+      "activeStudents": "Étudiants actifs",
+      "activeHint": "Étudiants différents qui ont avancé dans le cours pendant la période.",
+      "newReviews": "Nouveaux avis",
+      "quizPassRate": "Réussite aux quiz",
+      "quizAttempts": "{count, plural, one {# tentative} other {# tentatives}}",
+      "funnel": "Où en sont les étudiants inscrits",
+      "steps": {
+        "enrolled": "Inscrits",
+        "started": "Ont commencé",
+        "halfway": "À mi-parcours",
+        "completed": "Ont terminé"
       }
     }
   },

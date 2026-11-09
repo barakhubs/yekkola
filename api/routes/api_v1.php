@@ -49,6 +49,7 @@ use App\Http\Controllers\Api\V1\Learning\QuizAttemptController;
 use App\Http\Controllers\Api\V1\Learning\ReviewController;
 use App\Http\Controllers\Api\V1\Learning\ThreadController;
 use App\Http\Controllers\Api\V1\Moderation\ReportController;
+use App\Http\Controllers\Api\V1\Professor\AnalyticsController as ProfessorAnalyticsController;
 use App\Http\Controllers\Api\V1\Professor\ApplicationController;
 use App\Http\Controllers\Api\V1\Professor\AuthoringOptionsController;
 use App\Http\Controllers\Api\V1\Professor\BundleController as StudioBundleController;
@@ -218,6 +219,8 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
 
     // Earnings (PRD-08 FR-09)
     Route::get('/earnings', [EarningsController::class, 'show'])->name('earnings.show');
+    Route::get('/analytics/overview', [ProfessorAnalyticsController::class, 'overview'])->name('analytics.overview');
+    Route::get('/analytics/courses/{course}', [ProfessorAnalyticsController::class, 'course'])->name('analytics.course');
     Route::get('/ledger', [EarningsController::class, 'statement'])->name('ledger.index');
     Route::get('/ledger.csv', [EarningsController::class, 'statementCsv'])->middleware('throttle:exports')->name('ledger.csv');
     Route::get('/payouts', [EarningsController::class, 'payouts'])->name('payouts.index');

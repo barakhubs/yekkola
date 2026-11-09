@@ -19,6 +19,7 @@ import { useErrorText } from "../hooks";
 const NAV = [
   { href: "/studio", key: "home" },
   { href: "/studio/courses", key: "courses" },
+  { href: "/studio/analytics", key: "analytics" },
   { href: "/studio/questions", key: "questions" },
   { href: "/studio/earnings", key: "earnings" },
   { href: "/studio/promotions", key: "promotions" },
