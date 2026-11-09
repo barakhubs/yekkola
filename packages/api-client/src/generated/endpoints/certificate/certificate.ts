@@ -17,7 +17,12 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { CertificatesVerify200, MeCertificatesIndex200, MeCertificatesPdf200 } from "../../model";
+import type {
+  CertificatesVerify200,
+  MeCertificatesIndex200,
+  MeCertificatesIndexParams,
+  MeCertificatesPdf200,
+} from "../../model";
 
 import { apiFetch } from "../../../fetcher";
 import type { ErrorType } from "../../../fetcher";
@@ -49,39 +54,53 @@ export type meCertificatesIndexResponseSuccess = meCertificatesIndexResponse200 
 };
 export type meCertificatesIndexResponse = meCertificatesIndexResponseSuccess;
 
-export const getMeCertificatesIndexUrl = () => {
-  return `/me/certificates`;
+export const getMeCertificatesIndexUrl = (params?: MeCertificatesIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/me/certificates?${stringifiedParams}` : `/me/certificates`;
 };
 
 /**
  * @summary My certificates, newest first, revoked ones included (marked)
  */
 export const meCertificatesIndex = async (
+  params?: MeCertificatesIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<meCertificatesIndexResponse> => {
-  return apiFetch<meCertificatesIndexResponse>(getMeCertificatesIndexUrl(), {
+  return apiFetch<meCertificatesIndexResponse>(getMeCertificatesIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getMeCertificatesIndexQueryKey = () => {
-  return [`/me/certificates`] as const;
+export const getMeCertificatesIndexQueryKey = (params?: MeCertificatesIndexParams) => {
+  return [`/me/certificates`, ...(params ? [params] : [])] as const;
 };
 
 export const getMeCertificatesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: MeCertificatesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getMeCertificatesIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getMeCertificatesIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof meCertificatesIndex>>> = ({ signal }) =>
-    meCertificatesIndex({ signal, ...requestOptions });
+    meCertificatesIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof meCertificatesIndex>>,
@@ -97,6 +116,7 @@ export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | MeCertificatesIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>> &
       Pick<
@@ -115,6 +135,7 @@ export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeCertificatesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>> &
       Pick<
@@ -133,6 +154,7 @@ export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeCertificatesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -147,13 +169,14 @@ export function useMeCertificatesIndex<
   TData = Awaited<ReturnType<typeof meCertificatesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeCertificatesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meCertificatesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getMeCertificatesIndexQueryOptions(options);
+  const queryOptions = getMeCertificatesIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

@@ -33,7 +33,9 @@
       "myCourses": "Mes cours",
       "orders": "Mes commandes",
       "studio": "Studio",
-      "account": "Mon compte"
+      "account": "Mon compte",
+      "certificates": "Mes certificats",
+      "wishlist": "Ma liste"
     },
     "home": {
       "title": "Apprends avec les meilleurs profs du Congo",
@@ -284,7 +286,16 @@
         "stars": "{count, plural, one {# étoile} other {# étoiles}}",
         "comment": "Commentaire (facultatif)",
         "send": "Publier mon avis",
-        "thanks": "Merci pour ton avis !"
+        "thanks": "Merci pour ton avis !",
+        "yourReview": "Ton avis",
+        "editReview": "Modifier",
+        "deleteReview": "Supprimer",
+        "deleteReviewTitle": "Supprimer ton avis ?",
+        "deleteReviewHint": "Ta note et ton commentaire disparaissent de la page du cours. Tu pourras en écrire un nouveau.",
+        "reviewHidden": "Ton avis n’est pas visible sur la page du cours pour le moment (modération).",
+        "editReviewTitle": "Modifier ton avis",
+        "saveReview": "Enregistrer",
+        "cancelEdit": "Annuler"
       }
     },
     "checkout": {
@@ -1172,6 +1183,63 @@
       "bundlePrice": "Prix du pack ({currency})",
       "badBundlePrice": "Le prix doit être inférieur au total des cours.",
       "status": "État"
+    },
+    "wishlist": {
+      "title": "Ma liste",
+      "intro": "Les cours que tu as gardés pour plus tard.",
+      "empty": "Ta liste est vide.",
+      "browse": "Découvrir les cours",
+      "save": "Garder pour plus tard",
+      "saved": "Dans ma liste",
+      "remove": "Retirer",
+      "removeNamed": "Retirer « {title} » de ma liste"
+    },
+    "certificates": {
+      "title": "Mes certificats",
+      "intro": "Tes certificats de fin de cours, à partager ou à télécharger.",
+      "empty": "Termine un cours pour obtenir ton premier certificat.",
+      "toMyCourses": "Voir mes cours",
+      "issued": "Délivré le {date} · {professor}",
+      "revoked": "Révoqué le {date}",
+      "view": "Voir",
+      "pdf": "PDF",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {page} sur {total}"
+    },
+    "legal": {
+      "draftNotice": "Ce texte est en cours de rédaction avec notre conseil juridique. La version complète sera publiée avant le lancement ; en attendant, voici l’essentiel en termes simples.",
+      "otherDocs": "Autres documents",
+      "terms": {
+        "title": "Conditions d’utilisation",
+        "summary": "Yekkola met en relation des professeurs et des étudiants partout en RDC.",
+        "points": [
+          "Tu te connectes avec ton numéro de téléphone et un code reçu par SMS.",
+          "Un cours acheté ou gratuit reste accessible tant que ton inscription est active ; un remboursement ou un retrait du cours met fin à l’accès.",
+          "Les cours sont protégés : il est interdit de les copier, de les enregistrer ou de les partager.",
+          "Les paiements se font par mobile money ; un remboursement peut être demandé dans le délai indiqué au moment de l’achat."
+        ]
+      },
+      "privacy": {
+        "title": "Politique de confidentialité",
+        "summary": "Nous gardons le minimum d’informations nécessaire pour faire fonctionner Yekkola.",
+        "points": [
+          "Ton numéro de téléphone sert à te connecter ; ton e-mail est facultatif.",
+          "Ton nom et ton numéro masqué apparaissent sur les vidéos que tu regardes, pour décourager le piratage.",
+          "Les pièces d’identité des professeurs sont gardées dans un espace privé et ne sont vues que par l’équipe chargée de les vérifier.",
+          "Tu peux exporter tes données ou supprimer ton compte depuis la page Mon compte."
+        ]
+      },
+      "professorAgreement": {
+        "title": "Accord professeur",
+        "summary": "Les règles entre Yekkola et les professeurs qui publient des cours.",
+        "points": [
+          "Tu restes propriétaire de tes cours ; tu donnes à Yekkola le droit de les diffuser aux étudiants inscrits.",
+          "Chaque cours est relu avant publication.",
+          "Ta part de chaque vente est fixée au moment de la vente et versée sur ton compte mobile money selon le calendrier des versements.",
+          "Ton identité est vérifiée avant les premiers versements."
+        ]
+      }
     }
   },
   "admin": {

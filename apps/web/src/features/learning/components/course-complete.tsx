@@ -1,8 +1,16 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError, success } from "@yekkola/api-client";
-import { coursesReviewStore } from "@yekkola/api-client/endpoints/review";
+import {
+  coursesReviewDestroy,
+  coursesReviewStore,
+  coursesReviewUpdate,
+  getCoursesReviewShowQueryKey,
+  useCoursesReviewShow,
+} from "@yekkola/api-client/endpoints/review";
+import type { ReviewResource } from "@yekkola/api-client/model";
+import { ConfirmDialog } from "@yekkola/ui/blocks/confirm-dialog";
 import { Button } from "@yekkola/ui/components/button";
 import { Label } from "@yekkola/ui/components/label";
 import { Textarea } from "@yekkola/ui/components/textarea";
@@ -44,23 +52,115 @@ export function CourseComplete({ courseId, certificateSerial, hasReviewed }: Cou
       ) : (
         <p className="text-sm text-muted-foreground">{t("certificatePending")}</p>
       )}
-      {hasReviewed ? null : <ReviewForm courseId={courseId} />}
+      {hasReviewed ? <MyReview courseId={courseId} /> : <ReviewForm courseId={courseId} />}
     </section>
   );
 }
 
-function ReviewForm({ courseId }: { courseId: string }) {
+/** My published review (PRD-06 FR-12): shown with edit and delete; editing reuses the form. */
+function MyReview({ courseId }: { courseId: string }) {
   const t = useTranslations("web.learn.complete");
+  const common = useTranslations("common");
   const errors = useTranslations("errors");
-  const [rating, setRating] = useState(0);
-  const [body, setBody] = useState("");
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const review = useCoursesReviewShow(courseId, { query: { select: (r) => success(r).data, retry: false } });
 
-  const post = useMutation({
-    mutationFn: async () =>
-      success(await coursesReviewStore(courseId, { rating, body: body.trim() || null })),
+  const remove = useMutation({
+    mutationFn: async () => {
+      await coursesReviewDestroy(courseId);
+    },
+    onSuccess: () => queryClient.removeQueries({ queryKey: getCoursesReviewShowQueryKey(courseId) }),
   });
 
-  if (post.isSuccess) {
+  if (remove.isSuccess) return <ReviewForm courseId={courseId} />;
+  if (review.isPending) return null;
+  // Not found (deleted elsewhere): offer to write one again.
+  if (review.isError) return <ReviewForm courseId={courseId} />;
+  if (editing) {
+    return <ReviewForm courseId={courseId} existing={review.data} onDone={() => setEditing(false)} />;
+  }
+
+  return (
+    <div className="grid gap-2">
+      <h3 className="font-bold">{t("yourReview")}</h3>
+      <p className="flex gap-0.5" aria-label={t("stars", { count: review.data.rating })}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <Star
+            key={n}
+            aria-hidden
+            className={cn(
+              "size-5",
+              n <= review.data.rating ? "fill-amber-300 stroke-amber-500" : "stroke-muted-foreground",
+            )}
+          />
+        ))}
+      </p>
+      {review.data.body ? <p className="text-sm whitespace-pre-line">{review.data.body}</p> : null}
+      {review.data.status && review.data.status !== "published" ? (
+        <p className="text-xs text-muted-foreground">{t("reviewHidden")}</p>
+      ) : null}
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+          {t("editReview")}
+        </Button>
+        <ConfirmDialog
+          trigger={
+            <Button variant="ghost" size="sm">
+              {t("deleteReview")}
+            </Button>
+          }
+          title={t("deleteReviewTitle")}
+          description={t("deleteReviewHint")}
+          confirmLabel={t("deleteReview")}
+          cancelLabel={common("cancel")}
+          destructive
+          onConfirm={async () => {
+            await remove.mutateAsync();
+          }}
+          error={
+            remove.isError
+              ? remove.error instanceof ApiError
+                ? (remove.error.title ?? errors("generic"))
+                : errors("network")
+              : undefined
+          }
+          onOpenChange={(open) => open && remove.reset()}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ReviewForm({
+  courseId,
+  existing,
+  onDone,
+}: {
+  courseId: string;
+  existing?: ReviewResource;
+  onDone?: () => void;
+}) {
+  const t = useTranslations("web.learn.complete");
+  const errors = useTranslations("errors");
+  const queryClient = useQueryClient();
+  const [rating, setRating] = useState(existing?.rating ?? 0);
+  const [body, setBody] = useState(existing?.body ?? "");
+
+  const post = useMutation({
+    mutationFn: async () => {
+      const data = { rating, body: body.trim() || null };
+      return success(
+        existing ? await coursesReviewUpdate(courseId, data) : await coursesReviewStore(courseId, data),
+      );
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: getCoursesReviewShowQueryKey(courseId) });
+      onDone?.();
+    },
+  });
+
+  if (post.isSuccess && !existing) {
     return (
       <p ref={(el) => el?.focus()} tabIndex={-1} role="status" className="font-semibold focus:outline-none">
         {t("thanks")}
@@ -77,7 +177,7 @@ function ReviewForm({ courseId }: { courseId: string }) {
       }}
     >
       <div className="grid gap-1">
-        <h3 className="font-bold">{t("reviewTitle")}</h3>
+        <h3 className="font-bold">{existing ? t("editReviewTitle") : t("reviewTitle")}</h3>
         <p className="text-sm text-muted-foreground">{t("reviewHint")}</p>
       </div>
       <fieldset className="grid gap-1">
@@ -119,8 +219,13 @@ function ReviewForm({ courseId }: { courseId: string }) {
       ) : null}
       <div>
         <Button type="submit" disabled={rating === 0 || post.isPending} aria-busy={post.isPending}>
-          {t("send")}
+          {existing ? t("saveReview") : t("send")}
         </Button>
+        {existing ? (
+          <Button type="button" variant="ghost" className="ml-2" onClick={onDone}>
+            {t("cancelEdit")}
+          </Button>
+        ) : null}
       </div>
     </form>
   );

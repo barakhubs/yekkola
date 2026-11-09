@@ -49,6 +49,12 @@ export function MyCourses() {
               </Button>
             ) : null}
             <Button asChild variant="outline" size="sm">
+              <Link href="/my-certificates">{nav("certificates")}</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/wishlist">{nav("wishlist")}</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
               <Link href="/orders">{nav("orders")}</Link>
             </Button>
           </>

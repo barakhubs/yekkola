@@ -25,6 +25,8 @@ final class CertificateController extends Controller
     /**
      * My certificates, newest first, revoked ones included (marked).
      */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
     public function index(Request $request): AnonymousResourceCollection
     {
         $certificates = Certificate::query()->where('user_id', $this->user($request)->id)->with('course')

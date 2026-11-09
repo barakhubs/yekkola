@@ -9,6 +9,13 @@ import * as zod from "zod";
 /**
  * @summary My certificates, newest first, revoked ones included (marked)
  */
+export const meCertificatesIndexQueryPageDefault = 1;
+export const meCertificatesIndexQueryPerPageDefault = 15;
+
+export const MeCertificatesIndexQueryParams = zod.object({
+  page: zod.int().default(meCertificatesIndexQueryPageDefault),
+  per_page: zod.int().default(meCertificatesIndexQueryPerPageDefault),
+});
 
 export const meCertificatesIndexResponseMetaPerPageMin = 0;
 

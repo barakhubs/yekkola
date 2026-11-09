@@ -33,7 +33,9 @@
       "myCourses": "My courses",
       "orders": "My orders",
       "studio": "Studio",
-      "account": "My account"
+      "account": "My account",
+      "certificates": "My certificates",
+      "wishlist": "My list"
     },
     "home": {
       "title": "Learn from Congo’s best teachers",
@@ -284,7 +286,16 @@
         "stars": "{count, plural, one {# star} other {# stars}}",
         "comment": "Comment (optional)",
         "send": "Post my review",
-        "thanks": "Thanks for your review!"
+        "thanks": "Thanks for your review!",
+        "yourReview": "Your review",
+        "editReview": "Edit",
+        "deleteReview": "Delete",
+        "deleteReviewTitle": "Delete your review?",
+        "deleteReviewHint": "Your rating and comment disappear from the course page. You can write a new one.",
+        "reviewHidden": "Your review isn’t visible on the course page right now (moderation).",
+        "editReviewTitle": "Edit your review",
+        "saveReview": "Save",
+        "cancelEdit": "Cancel"
       }
     },
     "checkout": {
@@ -1172,6 +1183,63 @@
       "bundlePrice": "Bundle price ({currency})",
       "badBundlePrice": "The price must be below the courses’ total.",
       "status": "State"
+    },
+    "wishlist": {
+      "title": "My list",
+      "intro": "Courses you saved for later.",
+      "empty": "Your list is empty.",
+      "browse": "Browse courses",
+      "save": "Save for later",
+      "saved": "In my list",
+      "remove": "Remove",
+      "removeNamed": "Remove “{title}” from my list"
+    },
+    "certificates": {
+      "title": "My certificates",
+      "intro": "Your course certificates, to share or download.",
+      "empty": "Finish a course to get your first certificate.",
+      "toMyCourses": "See my courses",
+      "issued": "Issued on {date} · {professor}",
+      "revoked": "Revoked on {date}",
+      "view": "View",
+      "pdf": "PDF",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    },
+    "legal": {
+      "draftNotice": "This text is being written with our legal counsel. The full version will be published before launch; until then, here is the gist in plain words.",
+      "otherDocs": "Other documents",
+      "terms": {
+        "title": "Terms of use",
+        "summary": "Yekkola connects professors and students anywhere in the DRC.",
+        "points": [
+          "You sign in with your phone number and a code sent by SMS.",
+          "A course you bought or enrolled in for free stays available while your enrollment is active; a refund or the course being taken down ends access.",
+          "Courses are protected: copying, recording or sharing them is not allowed.",
+          "Payments are made with mobile money; you can ask for a refund within the period shown when you buy."
+        ]
+      },
+      "privacy": {
+        "title": "Privacy policy",
+        "summary": "We keep only the information Yekkola needs to work.",
+        "points": [
+          "Your phone number is how you sign in; your email is optional.",
+          "Your name and masked number appear on the videos you watch, to discourage piracy.",
+          "Professors’ identity documents are kept in a private store and seen only by the team that checks them.",
+          "You can export your data or delete your account from the My account page."
+        ]
+      },
+      "professorAgreement": {
+        "title": "Professor agreement",
+        "summary": "The rules between Yekkola and the professors who publish courses.",
+        "points": [
+          "You keep ownership of your courses; you give Yekkola the right to deliver them to enrolled students.",
+          "Every course is reviewed before it is published.",
+          "Your share of each sale is fixed at the time of sale and paid to your mobile-money account on the payout schedule.",
+          "Your identity is checked before your first payouts."
+        ]
+      }
     }
   },
   "admin": {
