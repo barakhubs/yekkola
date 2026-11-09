@@ -28,8 +28,11 @@ final class ManageBranding
 
     public function replace(BrandAsset $asset, UploadedFile $file): BrandingSettings
     {
-        $disk = Storage::disk((string) config('yekkola.public_disk'));
-        $path = $disk->putFileAs('branding', $file, $asset->value.'-'.Str::lower((string) Str::ulid()).'.'.$file->extension(), 'public');
+        $diskName = (string) config('yekkola.public_disk');
+        $disk = Storage::disk($diskName);
+        // Local disks need public file permissions; R2 serves the public bucket from its own domain and has no ACLs.
+        $options = config("filesystems.disks.{$diskName}.driver") === 'local' ? ['visibility' => 'public'] : [];
+        $path = $disk->putFileAs('branding', $file, $asset->value.'-'.Str::lower((string) Str::ulid()).'.'.$file->extension(), $options);
         if ($path === false) {
             throw new RuntimeException('Could not store the brand image.');
         }
