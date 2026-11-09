@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Recomputes one day of `course_daily_stats` for every course with activity that day (professor analytics),
- * from the source tables: running it again gives the same rows. Revenue is what students paid for the sales
- * that granted access (order item snapshots), per currency; professor earnings stay on the ledger-backed
- * earnings page.
+ * from the source tables: running it again gives the same rows. Sales are order items that granted access that
+ * day (`granted_at`, kept even if the enrollment is later revoked or re-granted); revenue is what students paid
+ * for them (order item snapshots), per currency, before refunds — professor earnings stay on the ledger-backed
+ * earnings page. Active students come from the append-only `course_activity_days`. Enrollments and completions
+ * follow the enrollment row (a re-grant moves them to its own day); reviews hidden later drop out on the next
+ * recompute of their day (today and yesterday hourly; older days with `--days`).
  */
 final class RollupCourseStats
 {
@@ -43,12 +46,11 @@ final class RollupCourseStats
             $add((string) $course, 'completions', (int) $n);
         }
 
-        // Sales: items of orders paid that day that granted access (an item already owned was not sold).
+        // Sales: items that granted access that day (an item already owned was not sold; a reversed payment never sold).
         $sales = DB::table('order_items as i')
             ->join('orders as o', 'o.id', '=', 'i.order_id')
-            ->join('enrollments as e', 'e.order_item_id', '=', 'i.id')
-            ->whereIn('o.status', [OrderStatus::Paid->value, OrderStatus::Refunded->value, OrderStatus::PartiallyRefunded->value])
-            ->where('o.paid_at', '>=', $from)->where('o.paid_at', '<', $to)
+            ->where('i.granted_at', '>=', $from)->where('i.granted_at', '<', $to)
+            ->where('o.status', '!=', OrderStatus::Reversed->value)
             ->groupBy('i.course_id', 'i.currency')
             ->selectRaw('i.course_id, i.currency, count(*) as n, sum(i.price_minor) as total')
             ->get();
@@ -57,9 +59,8 @@ final class RollupCourseStats
             $add((string) $course, 'revenue_minor', $lines->mapWithKeys(fn ($l) => [$l->currency => (int) $l->total])->all());
         }
 
-        $active = DB::table('lesson_progress')
-            ->where('updated_at', '>=', $from)->where('updated_at', '<', $to)
-            ->groupBy('course_id')->selectRaw('course_id, count(distinct user_id) as n')->pluck('n', 'course_id');
+        $active = DB::table('course_activity_days')->where('date', $from->toDateString())
+            ->groupBy('course_id')->selectRaw('course_id, count(*) as n')->pluck('n', 'course_id');
         foreach ($active as $course => $n) {
             $add((string) $course, 'active_students', (int) $n);
         }

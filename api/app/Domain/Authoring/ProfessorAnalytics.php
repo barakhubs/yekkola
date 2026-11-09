@@ -23,7 +23,7 @@ final class ProfessorAnalytics
 
     /**
      * @param  list<string>  $courseIds
-     * @return array{period_days: int, from: string, to: string, totals: array{enrollments: int, sales: int, completions: int, active_students: int, reviews: int, quiz_attempts: int, quiz_passes: int, revenue: list<array{amount_minor: int, currency: string}>}, previous: array{enrollments: int, sales: int, completions: int, active_students: int, reviews: int, quiz_attempts: int, quiz_passes: int, revenue: list<array{amount_minor: int, currency: string}>}, daily: list<array{date: string, enrollments: int, sales: int, completions: int, active_students: int, reviews: int, quiz_attempts: int, quiz_passes: int, revenue: list<array{amount_minor: int, currency: string}>}>}
+     * @return array{period_days: int, from: string, to: string, totals: array{enrollments: int, sales: int, completions: int, active_students: int, reviews: int, quiz_attempts: int, quiz_passes: int, revenue: list<array{amount_minor: int, currency: string}>}, previous: array{enrollments: int, sales: int, completions: int, active_students: int, reviews: int, quiz_attempts: int, quiz_passes: int, revenue: list<array{amount_minor: int, currency: string}>}, changes: array{enrollments: int|null, sales: int|null, completions: int|null, active_students: int|null}, quiz_pass_pct: int|null, daily: list<array{date: string, enrollments: int, sales: int, completions: int, active_students: int, reviews: int, quiz_attempts: int, quiz_passes: int, revenue: list<array{amount_minor: int, currency: string}>}>}
      */
     public function summary(array $courseIds, int $days): array
     {
@@ -46,12 +46,24 @@ final class ProfessorAnalytics
             $daily[] = ['date' => $date, ...$this->totals($byDate->get($date, collect()))];
         }
 
+        $totals = $this->totals($current);
+        $before = $this->totals($previous);
+        $totals['active_students'] = $this->distinctActive($courseIds, $from, $to)[''] ?? 0;
+        $before['active_students'] = $this->distinctActive($courseIds, $previousFrom, $from->subDay())[''] ?? 0;
+
         return [
             'period_days' => $days,
             'from' => $from->toDateString(),
             'to' => $to->toDateString(),
-            'totals' => $this->totals($current),
-            'previous' => $this->totals($previous),
+            'totals' => $totals,
+            'previous' => $before,
+            'changes' => [
+                'enrollments' => self::changePct($totals['enrollments'], $before['enrollments']),
+                'sales' => self::changePct($totals['sales'], $before['sales']),
+                'completions' => self::changePct($totals['completions'], $before['completions']),
+                'active_students' => self::changePct($totals['active_students'], $before['active_students']),
+            ],
+            'quiz_pass_pct' => $totals['quiz_attempts'] === 0 ? null : (int) round($totals['quiz_passes'] * 100 / $totals['quiz_attempts']),
             'daily' => $daily,
         ];
     }
@@ -64,20 +76,24 @@ final class ProfessorAnalytics
      */
     public function byCourse(Collection $courses, int $days): array
     {
-        $from = CarbonImmutable::today()->subDays($days - 1)->toDateString();
+        $today = CarbonImmutable::today();
+        $from = $today->subDays($days - 1);
         $rows = $courses->isEmpty() ? collect() : DB::table('course_daily_stats')
             ->whereIn('course_id', $courses->pluck('id'))
-            ->where('date', '>=', $from)
+            ->where('date', '>=', $from->toDateString())
             ->get()->groupBy('course_id');
+        $active = $this->distinctActive($courses->pluck('id')->all(), $from, $today, perCourse: true);
 
         return $courses
             ->map(fn (Course $c): array => [
                 'course_id' => $c->id,
                 'title' => $c->liveVersion->title ?? $c->draftVersion?->title,
                 'status' => $c->status->value,
-                'rating' => $c->rating_count > 0 ? round($c->rating_avg, 1) : null,
+                // Same threshold as the public course page (PRD-04 BR-02).
+                'rating' => $c->publicRating(),
                 'rating_count' => $c->rating_count,
                 ...$this->totals($rows->get($c->id, collect())),
+                'active_students' => $active[$c->id] ?? 0,
             ])
             ->sortByDesc('enrollments')
             ->values()
@@ -106,6 +122,34 @@ final class ProfessorAnalytics
             'halfway' => (int) ($row->halfway ?? 0),
             'completed' => (int) ($row->completed ?? 0),
         ];
+    }
+
+    /**
+     * Distinct students who studied these courses between two days (inclusive): all courses together (key '') or
+     * per course.
+     *
+     * @param  list<string>  $courseIds
+     * @return array<string, int>
+     */
+    private function distinctActive(array $courseIds, CarbonImmutable $from, CarbonImmutable $to, bool $perCourse = false): array
+    {
+        if ($courseIds === []) {
+            return [];
+        }
+        $query = DB::table('course_activity_days')
+            ->whereIn('course_id', $courseIds)
+            ->where('date', '>=', $from->toDateString())
+            ->where('date', '<=', $to->toDateString());
+
+        return $perCourse
+            ? $query->groupBy('course_id')->selectRaw('course_id, count(distinct user_id) as n')->pluck('n', 'course_id')->map(fn ($n) => (int) $n)->all()
+            : ['' => (int) $query->distinct()->count('user_id')];
+    }
+
+    /** Percent change from the previous period; null when there was nothing before. */
+    private static function changePct(int $now, int $before): ?int
+    {
+        return $before === 0 ? null : (int) round(($now - $before) * 100 / $before);
     }
 
     /**

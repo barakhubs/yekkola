@@ -4,6 +4,7 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { ProfessorAnalyticsOverview200DataChanges } from "./professorAnalyticsOverview200DataChanges";
 import type { ProfessorAnalyticsOverview200DataCoursesItem } from "./professorAnalyticsOverview200DataCoursesItem";
 import type { ProfessorAnalyticsOverview200DataDailyItem } from "./professorAnalyticsOverview200DataDailyItem";
 import type { ProfessorAnalyticsOverview200DataPrevious } from "./professorAnalyticsOverview200DataPrevious";
@@ -15,6 +16,9 @@ export type ProfessorAnalyticsOverview200Data = {
   to: string;
   totals: ProfessorAnalyticsOverview200DataTotals;
   previous: ProfessorAnalyticsOverview200DataPrevious;
+  changes: ProfessorAnalyticsOverview200DataChanges;
+  /** @nullable */
+  quiz_pass_pct: number | null;
   daily: ProfessorAnalyticsOverview200DataDailyItem[];
   courses: ProfessorAnalyticsOverview200DataCoursesItem[];
 };

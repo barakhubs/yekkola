@@ -51,6 +51,13 @@ export const ProfessorAnalyticsOverviewResponse = zod.object({
         }),
       ),
     }),
+    changes: zod.object({
+      enrollments: zod.int().nullable(),
+      sales: zod.int().nullable(),
+      completions: zod.int().nullable(),
+      active_students: zod.int().nullable(),
+    }),
+    quiz_pass_pct: zod.int().nullable(),
     daily: zod.array(
       zod.object({
         date: zod.string(),
@@ -143,6 +150,13 @@ export const ProfessorAnalyticsCourseResponse = zod.object({
         }),
       ),
     }),
+    changes: zod.object({
+      enrollments: zod.int().nullable(),
+      sales: zod.int().nullable(),
+      completions: zod.int().nullable(),
+      active_students: zod.int().nullable(),
+    }),
+    quiz_pass_pct: zod.int().nullable(),
     daily: zod.array(
       zod.object({
         date: zod.string(),

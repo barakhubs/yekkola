@@ -122,6 +122,12 @@ final class SyncProgress
             $now,
             $now,
         ]);
+
+        // "Studied this course today", kept for analytics (progress rows overwrite their timestamps).
+        $this->db->statement(
+            'INSERT INTO course_activity_days (course_id, date, user_id) VALUES (?, ?, ?) ON CONFLICT DO NOTHING',
+            [$courseId, $now->toDateString(), $user->id],
+        );
     }
 
     /**

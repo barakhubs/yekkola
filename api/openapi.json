@@ -182,6 +182,47 @@
                                                         "revenue"
                                                     ]
                                                 },
+                                                "changes": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "sales": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "completions": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "active_students": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students"
+                                                    ]
+                                                },
+                                                "quiz_pass_pct": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
                                                 "daily": {
                                                     "type": "array",
                                                     "items": {
@@ -333,6 +374,8 @@
                                                 "to",
                                                 "totals",
                                                 "previous",
+                                                "changes",
+                                                "quiz_pass_pct",
                                                 "daily",
                                                 "courses"
                                             ]
@@ -502,6 +545,47 @@
                                                         "revenue"
                                                     ]
                                                 },
+                                                "changes": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "enrollments": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "sales": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "completions": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "active_students": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "enrollments",
+                                                        "sales",
+                                                        "completions",
+                                                        "active_students"
+                                                    ]
+                                                },
+                                                "quiz_pass_pct": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ]
+                                                },
                                                 "daily": {
                                                     "type": "array",
                                                     "items": {
@@ -593,6 +677,8 @@
                                                 "to",
                                                 "totals",
                                                 "previous",
+                                                "changes",
+                                                "quiz_pass_pct",
                                                 "daily",
                                                 "funnel"
                                             ]

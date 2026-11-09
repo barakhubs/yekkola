@@ -294,6 +294,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Dashboard stats + `platform_daily_stats` rollup — #41
 - [x] `course_daily_stats` rollup, hourly (professor analytics) — #64
 - [ ] Course page views in analytics: needs view tracking first (PostHog or a counted event)
+- [ ] Analytics: confirm that a transferred course shows its whole sales history to the new owner, and whether revenue should net out refunds (today: before refunds, labelled)
 - [x] Professor applications, professors, KYC endpoints — #7; staff-typed applications with `can` — #23
 - [x] Users endpoints (list, detail, suspend/ban, sign out everywhere, remove device) — #38
 - [x] Grant an enrollment from the back office (PRD-09 FR-04) — #63

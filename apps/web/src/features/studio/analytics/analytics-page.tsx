@@ -46,9 +46,9 @@ export function AnalyticsPage() {
     { query: { select: (r) => success(r).data, placeholderData: (previous) => previous } },
   );
 
-  const change = (now: number, before: number) => {
-    if (before === 0) return now === 0 ? t("noChange") : t("new");
-    const pct = Math.round(((now - before) / before) * 100);
+  // The API computes the change; null = nothing in the period before.
+  const change = (pct: number | null, now: number) => {
+    if (pct === null) return now === 0 ? t("noChange") : t("new");
     return t("change", { pct: pct > 0 ? `+${pct}` : String(pct) });
   };
 
@@ -84,12 +84,12 @@ export function AnalyticsPage() {
             <KpiCard
               title={t("enrollments")}
               value={overview.data.totals.enrollments}
-              hint={change(overview.data.totals.enrollments, overview.data.previous.enrollments)}
+              hint={change(overview.data.changes.enrollments, overview.data.totals.enrollments)}
             />
             <KpiCard
               title={t("sales")}
               value={overview.data.totals.sales}
-              hint={change(overview.data.totals.sales, overview.data.previous.sales)}
+              hint={change(overview.data.changes.sales, overview.data.totals.sales)}
             />
             <KpiCard
               title={t("revenue")}
@@ -99,7 +99,7 @@ export function AnalyticsPage() {
             <KpiCard
               title={t("completions")}
               value={overview.data.totals.completions}
-              hint={change(overview.data.totals.completions, overview.data.previous.completions)}
+              hint={change(overview.data.changes.completions, overview.data.totals.completions)}
             />
           </section>
 
@@ -109,7 +109,10 @@ export function AnalyticsPage() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {t("updatedHourly")}{" "}
+            {t("updatedHourly", {
+              from: formatDate(overview.data.from, locale),
+              to: formatDate(overview.data.to, locale),
+            })}{" "}
             <Link href="/studio/earnings" className="font-semibold text-primary hover:underline">
               {t("toEarnings")}
             </Link>
@@ -225,11 +228,7 @@ function CourseDetail({ courseId, title, days }: { courseId: string; title: stri
             <KpiCard title={t("newReviews")} value={detail.data.totals.reviews} />
             <KpiCard
               title={t("quizPassRate")}
-              value={
-                detail.data.totals.quiz_attempts === 0
-                  ? "—"
-                  : `${Math.round((detail.data.totals.quiz_passes / detail.data.totals.quiz_attempts) * 100)} %`
-              }
+              value={detail.data.quiz_pass_pct === null ? "—" : `${detail.data.quiz_pass_pct} %`}
               hint={t("quizAttempts", { count: detail.data.totals.quiz_attempts })}
             />
           </div>

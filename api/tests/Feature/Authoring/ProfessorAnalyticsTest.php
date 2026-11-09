@@ -39,9 +39,37 @@ it('rolls up a day per course: sales that granted access, what students paid, co
 
     // A day recomputed to nothing loses its row.
     Enrollment::query()->update(['enrolled_at' => now()->subDays(5), 'completed_at' => null]);
-    DB::table('orders')->update(['paid_at' => now()->subDays(5)]);
+    DB::table('order_items')->update(['granted_at' => now()->subDays(5)]);
     $this->artisan('stats:rollup-courses', ['--days' => 1])->assertSuccessful();
     expect(DB::table('course_daily_stats')->where('date', now()->toDateString())->count())->toBe(0);
+});
+
+it('keeps a past sale and past activity when the student comes back or is re-granted later', function () {
+    $this->travelTo(now()->subDay()->setTime(22, 0));
+    $student = User::factory()->create();
+    $enrollment = enrol($this->course->id, ['user_id' => $student->id]);
+    paidOrderItemFor($enrollment);
+    $lesson = App\Domain\Authoring\Models\Lesson::query()->where('course_version_id', $this->course->live_version_id)->where('type', 'video')->sole();
+    Sanctum::actingAs($student);
+    $this->putJson('/api/v1/me/progress', ['items' => [['lesson_uid' => $lesson->uid, 'position_seconds' => 60]]])->assertOk();
+
+    // Next morning: studied again, then refunded and given access another way.
+    $this->travelTo(now()->addHours(10));
+    $this->putJson('/api/v1/me/progress', ['items' => [['lesson_uid' => $lesson->uid, 'position_seconds' => 120]]])->assertOk();
+    $enrollment->update(['status' => 'revoked']);
+    app(App\Domain\Learning\Actions\GrantEnrollment::class)->handle($student->id, $this->course->id, App\Domain\Learning\Enums\EnrollmentSource::Admin);
+
+    $this->artisan('stats:rollup-courses', ['--days' => 2])->assertSuccessful();
+    $yesterday = DB::table('course_daily_stats')->where('course_id', $this->course->id)->where('date', now()->subDay()->toDateString())->sole();
+    expect($yesterday->sales)->toBe(1)
+        ->and($yesterday->active_students)->toBe(1)
+        ->and(DB::table('course_daily_stats')->where('date', now()->toDateString())->value('active_students'))->toBe(1);
+
+    // Two active days, one student.
+    Sanctum::actingAs($this->professor->user);
+    $this->getJson('/api/v1/professor/analytics/overview?days=7')->assertOk()
+        ->assertJsonPath('data.totals.active_students', 1)
+        ->assertJsonPath('data.changes.sales', null);
 });
 
 it('shows a professor their own courses only, over a chosen period with the one before', function () {
