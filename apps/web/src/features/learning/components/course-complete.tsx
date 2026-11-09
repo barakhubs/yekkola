@@ -75,8 +75,16 @@ function MyReview({ courseId }: { courseId: string }) {
 
   if (remove.isSuccess) return <ReviewForm courseId={courseId} />;
   if (review.isPending) return null;
-  // Not found (deleted elsewhere): offer to write one again.
-  if (review.isError) return <ReviewForm courseId={courseId} />;
+  // Not found (deleted elsewhere): offer to write one again. Any other error is shown as such.
+  if (review.isError) {
+    if (review.error instanceof ApiError && review.error.status === 404)
+      return <ReviewForm courseId={courseId} />;
+    return (
+      <p role="alert" className="text-sm text-destructive">
+        {review.error instanceof ApiError ? (review.error.title ?? errors("generic")) : errors("network")}
+      </p>
+    );
+  }
   if (editing) {
     return <ReviewForm courseId={courseId} existing={review.data} onDone={() => setEditing(false)} />;
   }

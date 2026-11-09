@@ -468,6 +468,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Earnings, statement (filters, CSV), payout history — #62
 - [x] Coupons and bundles (own courses, professor-funded) — #62
 - [ ] Reviews inbox (Q&A inbox done)
+- [ ] Wishlist heart reads the first 100 saved courses: add a per-course `is_wishlisted` (course page) if lists grow past that
 - [ ] Playwright: create course → submit (a local script covered it for #22: details, cover, chunked video, PDF, quiz, keyboard reorder, price, submit)
 
 ---

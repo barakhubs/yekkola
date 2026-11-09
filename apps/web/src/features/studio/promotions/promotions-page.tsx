@@ -145,7 +145,9 @@ function CouponsSection({ courses }: { courses: OwnCourse[] }) {
                   {c.discount_type === "percent"
                     ? t("percentOff", { value: c.value })
                     : t("amountOff", {
-                        amount: formatMoney({ amount_minor: c.value, currency: c.currency ?? "USD" }, locale),
+                        amount: c.currency
+                          ? formatMoney({ amount_minor: c.value, currency: c.currency }, locale)
+                          : c.value,
                       })}{" "}
                   · {name(c.course_id)}
                 </span>
@@ -201,8 +203,11 @@ function CouponDialog({
   const [perUser, setPerUser] = useState("");
   const [active, setActive] = useState(true);
 
-  // A fixed amount is in the course's currency; "all my courses" uses the first course's.
-  const currency = (courses.find((c) => c.id === courseId) ?? courses[0])?.price.currency ?? "USD";
+  // A fixed amount is in the course's currency; for "all my courses" the professor picks one of their currencies.
+  const currencies = [...new Set(courses.map((c) => c.price.currency))];
+  const [allCurrency, setAllCurrency] = useState("");
+  const currency =
+    courses.find((c) => c.id === courseId)?.price.currency ?? (allCurrency || currencies[0] || "");
   const amount =
     type === "percent"
       ? /^\d+$/.test(value.trim()) && Number(value) >= 1 && Number(value) <= 100
@@ -329,6 +334,20 @@ function CouponDialog({
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                 />
+                {type === "fixed" && !courseId && currencies.length > 1 ? (
+                  <select
+                    aria-label={t("currency")}
+                    className={selectClass}
+                    value={currency}
+                    onChange={(e) => setAllCurrency(e.target.value)}
+                  >
+                    {currencies.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
                 {value && (amount === null || amount <= 0) ? (
                   <p className="text-sm text-destructive">{t("badValue")}</p>
                 ) : null}
@@ -492,27 +511,59 @@ function BundleDialog({
   const [price, setPrice] = useState("");
   const [status, setStatus] = useState<BundleStatus>("draft");
 
-  const picked = courses.filter((c) => selected.includes(c.id));
+  // The bundle's own courses stay listed even if one went off sale since, so editing never drops them silently.
+  const sellable = new Set(courses.map((c) => c.id));
+  const options: (OwnCourse & { sellable: boolean })[] = [
+    ...courses.map((c) => ({ ...c, sellable: true })),
+    ...(bundle?.courses ?? [])
+      .filter((c) => !sellable.has(c.id))
+      .map((c) => ({
+        id: c.id,
+        title: c.title ?? c.slug,
+        price: c.price ?? { amount_minor: 0, currency: bundle?.price.currency ?? "" },
+        sellable: false,
+      })),
+  ];
+  const picked = options.filter((c) => selected.includes(c.id));
   const currency = picked[0]?.price.currency ?? bundle?.price.currency ?? null;
   const sameCurrency = picked.every((c) => c.price.currency === currency);
   const listTotal = picked.reduce((sum, c) => sum + c.price.amount_minor, 0);
   const priceMinor = currency ? parseMoneyInput(price, currency) : null;
   const priceOk = priceMinor !== null && priceMinor > 0 && priceMinor < listTotal;
-  const valid =
-    title.trim().length >= 3 && picked.length >= 2 && picked.length <= 20 && sameCurrency && priceOk;
+  const contentValid =
+    picked.length >= 2 && picked.length <= 20 && picked.every((c) => c.sellable) && sameCurrency && priceOk;
+
+  const initialIds = bundle?.courses.map((c) => c.id) ?? [];
+  const coursesChanged =
+    selected.length !== initialIds.length || selected.some((id, i) => id !== initialIds[i]);
+  const priceChanged = bundle ? price !== moneyInputValue(bundle.price, locale) : true;
+  const contentChanged = !bundle || coursesChanged || priceChanged;
+  const titleChanged = bundle ? title.trim() !== bundle.title : true;
+  const descriptionChanged = bundle ? (description.trim() || null) !== (bundle.description ?? null) : true;
+  // Taking a bundle off sale must always work: a status-only change is sent alone (the API then skips its checks).
+  const valid = title.trim().length >= 3 && (!contentChanged || contentValid);
 
   const save = useMutation({
     mutationFn: async () => {
-      const body = {
-        title: title.trim(),
-        description: description.trim() || null,
-        price_minor: priceMinor ?? 0,
-        currency: currency ?? "",
-        status,
-        course_ids: picked.map((c) => c.id),
-      };
-      if (bundle) await professorBundlesUpdate(bundle.id, body);
-      else await professorBundlesStore(body);
+      if (!bundle) {
+        await professorBundlesStore({
+          title: title.trim(),
+          description: description.trim() || null,
+          price_minor: priceMinor ?? 0,
+          currency: currency ?? "",
+          status,
+          course_ids: picked.map((c) => c.id),
+        });
+        return;
+      }
+      await professorBundlesUpdate(bundle.id, {
+        ...(titleChanged ? { title: title.trim() } : {}),
+        ...(descriptionChanged ? { description: description.trim() || null } : {}),
+        ...(contentChanged
+          ? { price_minor: priceMinor ?? 0, currency: currency ?? "", course_ids: picked.map((c) => c.id) }
+          : {}),
+        ...(status !== bundle.status ? { status } : {}),
+      });
     },
     onSuccess: async () => {
       setOpen(false);
@@ -567,7 +618,7 @@ function BundleDialog({
           </Field>
           <fieldset className="grid gap-2">
             <legend className="mb-1 text-sm font-semibold">{t("bundleCourses")}</legend>
-            {courses.map((c) => (
+            {options.map((c) => (
               <label
                 key={c.id}
                 className="flex items-center justify-between gap-2 rounded-md border px-3 py-1.5 text-sm"
@@ -576,7 +627,10 @@ function BundleDialog({
                   <input
                     type="checkbox"
                     checked={selected.includes(c.id)}
-                    disabled={!selected.includes(c.id) && currency !== null && c.price.currency !== currency}
+                    disabled={
+                      !selected.includes(c.id) &&
+                      (!c.sellable || (currency !== null && c.price.currency !== currency))
+                    }
                     onChange={(e) =>
                       setSelected((list) =>
                         e.target.checked ? [...list, c.id] : list.filter((id) => id !== c.id),
@@ -586,7 +640,9 @@ function BundleDialog({
                   />
                   {c.title}
                 </span>
-                <span className="text-muted-foreground">{formatMoney(c.price, locale)}</span>
+                <span className={c.sellable ? "text-muted-foreground" : "text-destructive"}>
+                  {c.sellable ? formatMoney(c.price, locale) : t("notOnSale")}
+                </span>
               </label>
             ))}
             {currency && picked.length > 0 ? (
@@ -594,7 +650,7 @@ function BundleDialog({
                 {t("listTotal", { total: formatMoney({ amount_minor: listTotal, currency }, locale) })}
               </p>
             ) : null}
-            {bundle && bundle.courses.some((c) => !courses.some((o) => o.id === c.id)) ? (
+            {picked.some((c) => !c.sellable) ? (
               <p className="text-sm text-destructive">{t("courseNoLongerSellable")}</p>
             ) : null}
           </fieldset>

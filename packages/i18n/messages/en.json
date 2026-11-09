@@ -1182,7 +1182,9 @@
       "courseNoLongerSellable": "A course in this bundle is no longer on sale: remove it or republish it.",
       "bundlePrice": "Bundle price ({currency})",
       "badBundlePrice": "The price must be below the courses’ total.",
-      "status": "State"
+      "status": "State",
+      "notOnSale": "No longer on sale",
+      "currency": "Currency"
     },
     "wishlist": {
       "title": "My list",
@@ -1215,9 +1217,9 @@
         "summary": "Yekkola connects professors and students anywhere in the DRC.",
         "points": [
           "You sign in with your phone number and a code sent by SMS.",
-          "A course you bought or enrolled in for free stays available while your enrollment is active; a refund or the course being taken down ends access.",
+          "A course you bought or enrolled in for free stays available while your enrollment is active. A refund or the course being taken down ends online access; downloads in the app are removed at its next sync.",
           "Courses are protected: copying, recording or sharing them is not allowed.",
-          "Payments are made with mobile money; you can ask for a refund within the period shown when you buy."
+          "Payments are made with mobile money. You can ask for a refund shortly after buying, if you have followed only a small part of the course."
         ]
       },
       "privacy": {

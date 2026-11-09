@@ -94,7 +94,7 @@ export function KycSubmissionCard({
           files[kind] ? (
             <li key={kind}>
               <Button asChild size="sm" variant="outline">
-                <a href={files[kind]} target="_blank" rel="noopener noreferrer">
+                <a href={files[kind]} target="_blank" rel="noopener">
                   {t(`fileKinds.${kind}`)}
                   <ExternalLink aria-hidden className="size-3.5" />
                 </a>

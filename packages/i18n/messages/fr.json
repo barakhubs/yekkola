@@ -1182,7 +1182,9 @@
       "courseNoLongerSellable": "Un cours de ce pack n’est plus en vente : retirez-le ou republiez-le.",
       "bundlePrice": "Prix du pack ({currency})",
       "badBundlePrice": "Le prix doit être inférieur au total des cours.",
-      "status": "État"
+      "status": "État",
+      "notOnSale": "Plus en vente",
+      "currency": "Devise"
     },
     "wishlist": {
       "title": "Ma liste",
@@ -1215,9 +1217,9 @@
         "summary": "Yekkola met en relation des professeurs et des étudiants partout en RDC.",
         "points": [
           "Tu te connectes avec ton numéro de téléphone et un code reçu par SMS.",
-          "Un cours acheté ou gratuit reste accessible tant que ton inscription est active ; un remboursement ou un retrait du cours met fin à l’accès.",
+          "Un cours acheté ou gratuit reste accessible tant que ton inscription est active. Un remboursement ou le retrait du cours met fin à l’accès en ligne ; les téléchargements de l’application sont supprimés à la synchronisation suivante.",
           "Les cours sont protégés : il est interdit de les copier, de les enregistrer ou de les partager.",
-          "Les paiements se font par mobile money ; un remboursement peut être demandé dans le délai indiqué au moment de l’achat."
+          "Les paiements se font par mobile money. Un remboursement peut être demandé peu après l’achat, si tu n’as suivi qu’une petite partie du cours."
         ]
       },
       "privacy": {
