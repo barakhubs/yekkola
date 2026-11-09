@@ -12,4 +12,5 @@ export type AdminUserDetailResourceCan = {
   sign_out: string;
   remove_device: string;
   impersonate: boolean;
+  grant_enrollment: string;
 };

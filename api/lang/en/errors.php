@@ -118,6 +118,7 @@ return [
         'cannot_delete_published' => 'A published course cannot be deleted; archive it instead.',
         'own_course' => 'You cannot review your own course.',
         'invalid_order' => 'The order sent does not match the course content.',
+        'invalid_transfer_target' => 'Choose another, active professor to take over this course.',
     ],
     'lesson' => [
         'not_found' => 'Lesson not found.',
@@ -209,6 +210,7 @@ return [
         'required' => 'Enroll in this course to access it.',
         'not_free' => 'This course is not free.',
         'revoked' => 'Your access to this course was removed. Please contact support.',
+        'already_active' => 'This account already has access to this course.',
     ],
     'report' => [
         'target_not_found' => 'This content no longer exists or is no longer visible.',

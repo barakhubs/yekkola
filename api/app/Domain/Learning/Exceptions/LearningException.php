@@ -80,4 +80,9 @@ final class LearningException extends DomainException
     {
         return new self('qa.moderation_transition', 409);
     }
+
+    public static function alreadyEnrolled(): self
+    {
+        return new self('enrollment.already_active', 409);
+    }
 }

@@ -118,6 +118,7 @@ return [
         'cannot_delete_published' => 'Un cours déjà publié ne peut pas être supprimé ; archivez-le.',
         'own_course' => 'Vous ne pouvez pas examiner votre propre cours.',
         'invalid_order' => 'L’ordre envoyé ne correspond pas au contenu du cours.',
+        'invalid_transfer_target' => 'Choisissez un autre professeur, actif, pour reprendre ce cours.',
     ],
     'media' => [
         'upload_too_large' => 'Ce fichier dépasse la taille maximale de :max_mb Mo.',
@@ -209,6 +210,7 @@ return [
         'required' => 'Inscrivez-vous à ce cours pour y accéder.',
         'not_free' => 'Ce cours est payant.',
         'revoked' => 'Votre accès à ce cours a été retiré. Contactez le support.',
+        'already_active' => 'Ce compte a déjà accès à ce cours.',
     ],
     'report' => [
         'target_not_found' => 'Ce contenu n’existe plus ou n’est plus visible.',

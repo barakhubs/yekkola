@@ -4416,6 +4416,65 @@
                 }
             }
         },
+        "/admin/courses/{course}/transfer": {
+            "post": {
+                "operationId": "admin.courses.transfer",
+                "summary": "Moves the course to another active professor (super admin only). Future sales earn the new professor; the old\nprofessor's coupons on it are switched off and it leaves their bundles. A reason (`note`) is required",
+                "tags": [
+                    "Course"
+                ],
+                "parameters": [
+                    {
+                        "name": "course",
+                        "in": "path",
+                        "required": true,
+                        "description": "The course ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransferCourseRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminCourseResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminCourseResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/admin/course-versions": {
             "get": {
                 "operationId": "admin.course-versions.index",
@@ -8370,6 +8429,308 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/course-versions/{version}/lessons/{lesson}/preview": {
+            "get": {
+                "operationId": "admin.lesson-previews.show",
+                "summary": "What the review screen needs to preview one lesson: the staff playlist (video/audio) or the document link",
+                "tags": [
+                    "LessonPreview"
+                ],
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "description": "The version ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "kind": {
+                                                            "type": "string"
+                                                        },
+                                                        "playlist_url": {
+                                                            "type": "string"
+                                                        },
+                                                        "poster_url": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "document_url": {
+                                                            "type": "null"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "kind",
+                                                        "playlist_url",
+                                                        "poster_url",
+                                                        "document_url"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "data"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "kind": {
+                                                            "type": "string",
+                                                            "const": "document"
+                                                        },
+                                                        "playlist_url": {
+                                                            "type": "null"
+                                                        },
+                                                        "poster_url": {
+                                                            "type": "null"
+                                                        },
+                                                        "document_url": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "kind",
+                                                        "playlist_url",
+                                                        "poster_url",
+                                                        "document_url"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "data"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/course-versions/{version}/lessons/{lesson}/document": {
+            "get": {
+                "operationId": "admin.lesson-previews.document",
+                "summary": "The professor's original PDF, inline. Each opening is audited",
+                "tags": [
+                    "LessonPreview"
+                ],
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "description": "The version ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/media/{asset}/hls/master.m3u8": {
+            "get": {
+                "operationId": "admin.media-previews.master",
+                "tags": [
+                    "LessonPreview"
+                ],
+                "parameters": [
+                    {
+                        "name": "asset",
+                        "in": "path",
+                        "required": true,
+                        "description": "The asset ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/vnd.apple.mpegurl": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/media/{asset}/hls/key": {
+            "get": {
+                "operationId": "admin.media-previews.key",
+                "tags": [
+                    "LessonPreview"
+                ],
+                "parameters": [
+                    {
+                        "name": "asset",
+                        "in": "path",
+                        "required": true,
+                        "description": "The asset ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    }
+                }
+            }
+        },
+        "/admin/media/{asset}/hls/{rendition}.m3u8": {
+            "get": {
+                "operationId": "admin.media-previews.media",
+                "tags": [
+                    "LessonPreview"
+                ],
+                "parameters": [
+                    {
+                        "name": "asset",
+                        "in": "path",
+                        "required": true,
+                        "description": "The asset ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "rendition",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/vnd.apple.mpegurl": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     }
                 }
             }
@@ -16733,6 +17094,65 @@
                 }
             }
         },
+        "/admin/users/{user}/enrollments": {
+            "post": {
+                "operationId": "admin.users.enrollments.store",
+                "summary": "Gives the account access to a course (source `admin`): no order, payment or ledger entry. A reason (`note`) is\nrequired. `enrollment.already_active` (409) when it already has access",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "description": "The user ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GrantEnrollmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AdminUserDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUserDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/me/wishlist": {
             "get": {
                 "operationId": "me.wishlist.index",
@@ -17200,13 +17620,18 @@
                             },
                             "restore": {
                                 "type": "boolean"
+                            },
+                            "transfer": {
+                                "type": "boolean",
+                                "description": "Super admin only (PRD-09 FR-08)."
                             }
                         },
                         "required": [
                             "unpublish",
                             "republish",
                             "take_down",
-                            "restore"
+                            "restore",
+                            "transfer"
                         ]
                     }
                 },
@@ -19300,6 +19725,9 @@
                             },
                             "impersonate": {
                                 "type": "boolean"
+                            },
+                            "grant_enrollment": {
+                                "type": "string"
                             }
                         },
                         "required": [
@@ -19308,7 +19736,8 @@
                             "reactivate",
                             "sign_out",
                             "remove_device",
-                            "impersonate"
+                            "impersonate",
+                            "grant_enrollment"
                         ]
                     }
                 },
@@ -21056,6 +21485,25 @@
                     "course_ids"
                 ],
                 "title": "FeaturedCoursesRequest"
+            },
+            "GrantEnrollmentRequest": {
+                "type": "object",
+                "description": "Give an account access to a course, with the reason kept in the audit log (PRD-09 FR-04).",
+                "properties": {
+                    "course_id": {
+                        "type": "string"
+                    },
+                    "note": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "course_id",
+                    "note"
+                ],
+                "title": "GrantEnrollmentRequest"
             },
             "GuestOrderRequest": {
                 "type": "object",
@@ -24762,6 +25210,25 @@
                     "created_at"
                 ],
                 "title": "ThreadResource"
+            },
+            "TransferCourseRequest": {
+                "type": "object",
+                "description": "Move a course to another professor, with the reason kept in the audit log (PRD-09 FR-08).",
+                "properties": {
+                    "professor_profile_id": {
+                        "type": "string"
+                    },
+                    "note": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 2000
+                    }
+                },
+                "required": [
+                    "professor_profile_id",
+                    "note"
+                ],
+                "title": "TransferCourseRequest"
             },
             "UpdateBundleRequest": {
                 "type": "object",

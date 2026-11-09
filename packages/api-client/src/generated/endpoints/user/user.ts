@@ -19,12 +19,14 @@ import type {
 
 import type {
   AdminUsersDevicesDestroy200,
+  AdminUsersEnrollmentsStore200,
   AdminUsersIndex200,
   AdminUsersIndexParams,
   AdminUsersShow200,
   AdminUsersSignOut200,
   AdminUsersStatus200,
   AuthorizationExceptionResponse,
+  GrantEnrollmentRequest,
   ModelNotFoundExceptionResponse,
   UserStatusRequest,
   ValidationExceptionResponse,
@@ -837,6 +839,208 @@ export function useAdminUsersDevicesDestroy<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAdminUsersDevicesDestroyQueryOptions(user, device, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminUsersEnrollmentsStoreResponse200 = {
+  data: AdminUsersEnrollmentsStore200;
+  status: 200;
+};
+
+export type adminUsersEnrollmentsStoreResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminUsersEnrollmentsStoreResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminUsersEnrollmentsStoreResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminUsersEnrollmentsStoreResponseSuccess = adminUsersEnrollmentsStoreResponse200 & {
+  headers: Headers;
+};
+export type adminUsersEnrollmentsStoreResponseError = (
+  | adminUsersEnrollmentsStoreResponse403
+  | adminUsersEnrollmentsStoreResponse404
+  | adminUsersEnrollmentsStoreResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminUsersEnrollmentsStoreResponse =
+  adminUsersEnrollmentsStoreResponseSuccess | adminUsersEnrollmentsStoreResponseError;
+
+export const getAdminUsersEnrollmentsStoreUrl = (user: string) => {
+  return `/admin/users/${user}/enrollments`;
+};
+
+/**
+ * @summary Gives the account access to a course (source `admin`): no order, payment or ledger entry. A reason (`note`) is
+required. `enrollment.already_active` (409) when it already has access
+ */
+export const adminUsersEnrollmentsStore = async (
+  user: string,
+  grantEnrollmentRequest: GrantEnrollmentRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminUsersEnrollmentsStoreResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminUsersEnrollmentsStoreResponse>(getAdminUsersEnrollmentsStoreUrl(user), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(grantEnrollmentRequest),
+  });
+};
+
+export const getAdminUsersEnrollmentsStoreQueryKey = (
+  user: string,
+  grantEnrollmentRequest?: BodyType<GrantEnrollmentRequest>,
+) => {
+  return ["POST", `/admin/users/${user}/enrollments`, grantEnrollmentRequest] as const;
+};
+
+export const getAdminUsersEnrollmentsStoreQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  user: string,
+  grantEnrollmentRequest: BodyType<GrantEnrollmentRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getAdminUsersEnrollmentsStoreQueryKey(user, grantEnrollmentRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>> = ({ signal }) =>
+    adminUsersEnrollmentsStore(user, grantEnrollmentRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: user !== null && user !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminUsersEnrollmentsStoreQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>
+>;
+export type AdminUsersEnrollmentsStoreQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminUsersEnrollmentsStore<
+  TData = Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  user: string,
+  grantEnrollmentRequest: BodyType<GrantEnrollmentRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+          TError,
+          Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminUsersEnrollmentsStore<
+  TData = Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  user: string,
+  grantEnrollmentRequest: BodyType<GrantEnrollmentRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+          TError,
+          Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminUsersEnrollmentsStore<
+  TData = Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  user: string,
+  grantEnrollmentRequest: BodyType<GrantEnrollmentRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Gives the account access to a course (source `admin`): no order, payment or ledger entry. A reason (`note`) is
+required. `enrollment.already_active` (409) when it already has access
+ */
+
+export function useAdminUsersEnrollmentsStore<
+  TData = Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  user: string,
+  grantEnrollmentRequest: BodyType<GrantEnrollmentRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminUsersEnrollmentsStore>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminUsersEnrollmentsStoreQueryOptions(user, grantEnrollmentRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
