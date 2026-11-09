@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/web-finish-screens` (back-office professors + identity checks, studio earnings + promotions, student wishlist/certificates/review editing/legal placeholders)
-- **Next up:** admin lesson preview + grant enrollment + course transfer, professor analytics; then Phase 3 (mobile)
+- **Current branch:** `feature/prd-09-preview-grant-transfer` (reviewer lesson preview, grant enrollment, course transfer)
+- **Next up:** professor analytics (`course_daily_stats` + studio dashboard); then Phase 3 (mobile)
 
 ## Legend
 
@@ -295,12 +295,13 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] `course_daily_stats` rollup (professor analytics, with 2.5)
 - [x] Professor applications, professors, KYC endpoints — #7; staff-typed applications with `can` — #23
 - [x] Users endpoints (list, detail, suspend/ban, sign out everywhere, remove device) — #38
-- [ ] Grant an enrollment from the back office (PRD-09 FR-04)
+- [x] Grant an enrollment from the back office (PRD-09 FR-04) — #63
 - [ ] Notify the account when it is suspended or banned (with 1.12)
 - [x] Content review queue + lesson-level changes since live — #8; typed detail with `can` — #23
 - [x] Courses (list, unpublish/republish), featured, takedown/restore — #42
 - [x] Categories CRUD + ordering — #43
-- [ ] Transfer course ownership (super admin, PRD-09 FR-08)
+- [x] Transfer course ownership (super admin, PRD-09 FR-08) — #63
+- [ ] Tell both professors about a course transfer (with notifications)
 - [x] Tell the professor about a takedown — 1.12
 - [x] Review moderation — #46
 - [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — #52
@@ -375,7 +376,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #23
 - [x] Professors (list, detail, suspend/reinstate, revenue share) + identity-check queue and viewer (audited file links, verify/reject) — #62
 - [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #23
-- [ ] Lesson preview with the player in the review screen (needs an admin playback/document endpoint)
+- [x] Lesson preview in the review screen: staff HLS player + original document (PRD-09 FR-07) — #63
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
 - [x] Courses + featured — #42
 - [x] Categories (tree + ordering) — #43
