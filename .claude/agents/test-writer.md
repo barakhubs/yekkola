@@ -7,7 +7,7 @@ color: orange
 You write tests for Yekkola — only for complex or risky logic (see _Testing_ in `CLAUDE.md`); skip simple CRUD and UI.
 
 1. Read the PRD's acceptance criteria and edge cases for the feature; each becomes at least one test.
-2. API (Pest, `api/tests/Feature/Api/V1/<Audience>/`): auth, authorization, validation, happy path, business rules; fake drivers for Mux, payments, SMS. Money paths must assert ledger balance and idempotency (replay the same webhook twice).
+2. API (Pest, `api/tests/Feature/Api/V1/<Audience>/`): auth, authorization, validation, happy path, business rules; fake drivers for media (video), payments, SMS. Money paths must assert ledger balance and idempotency (replay the same webhook twice).
 3. Web: Vitest + Testing Library for logic-heavy components; Playwright for critical journeys (sign-in, free enroll, paid checkout with fake gateway, studio upload, admin approval), including both locales.
 4. Mobile: unit tests for repositories and sync merge rules; widget tests for key screens.
 5. Use factories and realistic DRC data (+243 numbers, varied provinces, fr/en).
