@@ -1093,7 +1093,9 @@
       "password": "Password",
       "reviews": "Reviews",
       "reports": "Reports",
-      "questions": "Questions"
+      "questions": "Questions",
+      "coupons": "Coupons",
+      "bundles": "Bundles"
     },
     "auth": {
       "title": "Team sign-in",
@@ -2014,6 +2016,143 @@
       "markAllRead": "Mark all as read",
       "empty": "No alerts.",
       "unread": "Unread"
+    },
+    "coupons": {
+      "title": "Coupons",
+      "intro": "Discount codes from the platform and from professors. Codes created here are platform-funded: the professor earns their share of the list price. Only paid uses are counted.",
+      "new": "New coupon",
+      "search": "Search a code",
+      "allScopes": "All scopes",
+      "allStates": "Active and inactive",
+      "activeOnly": "Active",
+      "inactiveOnly": "Inactive",
+      "empty": "No coupons.",
+      "columns": {
+        "code": "Code",
+        "appliesTo": "Applies to",
+        "validity": "Validity",
+        "uses": "Uses",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "scopes": {
+        "platform": "Whole catalogue",
+        "professor": "One professor",
+        "course": "One course"
+      },
+      "funders": {
+        "platform": "Platform",
+        "professor": "Professor",
+        "shared": "Shared"
+      },
+      "fundedBy": "Funded by: {funder}",
+      "state": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "scheduled": "Scheduled",
+        "expired": "Expired",
+        "used_up": "Used up"
+      },
+      "percentOff": "−{value}%",
+      "always": "No date limit",
+      "from": "From {date}",
+      "until": "Until {date}",
+      "between": "{start} to {end}",
+      "usesOf": "{uses} / {max}",
+      "perUser": "{limit} per student",
+      "edit": "Edit",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "deactivateTitle": "Deactivate “{code}”?",
+      "deactivateHint": "The code can no longer be used. Orders already placed don’t change.",
+      "form": {
+        "createTitle": "New coupon",
+        "createHint": "Platform-funded. Once created, only its state, end date and limits can change.",
+        "editTitle": "Edit “{code}”",
+        "editHint": "The discount and scope no longer change. Changes apply to future orders.",
+        "code": "Code",
+        "codeHint": "6 to 40 characters: letters, digits, - and _. Saved in capitals.",
+        "scope": "Scope",
+        "professor": "Professor",
+        "professorSearch": "Search a professor",
+        "course": "Course",
+        "courseSearch": "Search a published course",
+        "noResults": "No results.",
+        "change": "Change",
+        "discountType": "Discount type",
+        "types": {
+          "percent": "Percentage",
+          "fixed": "Fixed amount"
+        },
+        "percent": "Percentage (1 to 100)",
+        "amount": "Amount ({currency})",
+        "currency": "Currency",
+        "startsAt": "Starts (optional)",
+        "endsAt": "Ends (optional)",
+        "maxRedemptions": "Total uses (optional)",
+        "perUserLimit": "Uses per student (optional)",
+        "noLimit": "Leave empty for no limit.",
+        "active": "Active",
+        "save": "Save",
+        "create": "Create coupon",
+        "badValue": "Invalid amount or percentage.",
+        "badDates": "The end must come after the start."
+      },
+      "amountOff": "−{amount}"
+    },
+    "bundles": {
+      "title": "Bundles",
+      "intro": "Fixed-price course bundles, from the platform or from professors. The price must be below the courses’ total; revenue is split between professors pro rata to list prices.",
+      "new": "New bundle",
+      "search": "Search a title",
+      "allStatuses": "All statuses",
+      "empty": "No bundles.",
+      "platform": "Platform",
+      "columns": {
+        "title": "Bundle",
+        "courses": "Courses",
+        "price": "Price",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Draft",
+        "active": "On sale",
+        "archived": "Archived"
+      },
+      "courseCount": "{count, plural, one {# course} other {# courses}}",
+      "saving": "instead of {total} (−{pct}%)",
+      "edit": "Edit",
+      "putOnSale": "Put on sale",
+      "takeOffSale": "Take off sale",
+      "takeOffTitle": "Take “{title}” off sale?",
+      "takeOffHint": "The bundle is no longer offered. Students who bought it keep their courses.",
+      "form": {
+        "createTitle": "New platform bundle",
+        "createHint": "At least two published paid courses, in the same currency. Changes apply to future orders.",
+        "editTitle": "Edit “{title}”",
+        "editHint": "Changes apply to future orders.",
+        "ownedBy": "{name}’s bundle: only their courses can be in it.",
+        "titleLabel": "Title",
+        "description": "Description (optional)",
+        "courses": "Courses in the bundle",
+        "courseSearch": "Add a published paid course",
+        "noResults": "No results.",
+        "remove": "Remove “{title}”",
+        "otherCurrency": "Other currency",
+        "noCourses": "No courses chosen.",
+        "listTotal": "Courses bought separately: {total}",
+        "price": "Bundle price ({currency})",
+        "pickCoursesFirst": "Choose the courses first.",
+        "status": "Status",
+        "save": "Save",
+        "create": "Create bundle",
+        "badPrice": "The price must be positive and below the courses’ total.",
+        "added": "Already in the bundle",
+        "notSellable": "No longer sold (free): remove it"
+      },
+      "moveUp": "Move “{title}” up",
+      "moveDown": "Move “{title}” down"
     }
   }
 }

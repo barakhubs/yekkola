@@ -1093,7 +1093,9 @@
       "password": "Mot de passe",
       "reviews": "Avis",
       "reports": "Signalements",
-      "questions": "Questions"
+      "questions": "Questions",
+      "coupons": "Codes promo",
+      "bundles": "Packs"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -2014,6 +2016,143 @@
       "markAllRead": "Tout marquer comme lu",
       "empty": "Aucune alerte.",
       "unread": "Non lue"
+    },
+    "coupons": {
+      "title": "Codes promo",
+      "intro": "Codes de réduction de la plateforme et des professeurs. Les codes créés ici sont financés par la plateforme : le professeur touche sa part du prix catalogue. Seules les utilisations payées sont comptées.",
+      "new": "Nouveau code",
+      "search": "Rechercher un code",
+      "allScopes": "Toutes les portées",
+      "allStates": "Actifs et inactifs",
+      "activeOnly": "Actifs",
+      "inactiveOnly": "Inactifs",
+      "empty": "Aucun code promo.",
+      "columns": {
+        "code": "Code",
+        "appliesTo": "S’applique à",
+        "validity": "Validité",
+        "uses": "Utilisations",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "scopes": {
+        "platform": "Tout le catalogue",
+        "professor": "Un professeur",
+        "course": "Un cours"
+      },
+      "funders": {
+        "platform": "Plateforme",
+        "professor": "Professeur",
+        "shared": "Partagé"
+      },
+      "fundedBy": "Financé par : {funder}",
+      "state": {
+        "active": "Actif",
+        "inactive": "Inactif",
+        "scheduled": "Programmé",
+        "expired": "Expiré",
+        "used_up": "Épuisé"
+      },
+      "percentOff": "−{value} %",
+      "always": "Sans limite de date",
+      "from": "Dès le {date}",
+      "until": "Jusqu’au {date}",
+      "between": "Du {start} au {end}",
+      "usesOf": "{uses} / {max}",
+      "perUser": "{limit} par étudiant",
+      "edit": "Modifier",
+      "activate": "Activer",
+      "deactivate": "Désactiver",
+      "deactivateTitle": "Désactiver « {code} » ?",
+      "deactivateHint": "Le code ne pourra plus être utilisé. Les commandes déjà passées ne changent pas.",
+      "form": {
+        "createTitle": "Nouveau code promo",
+        "createHint": "Financé par la plateforme. Une fois créé, seuls l’état, la date de fin et les limites peuvent changer.",
+        "editTitle": "Modifier « {code} »",
+        "editHint": "La réduction et la portée ne changent plus. Les changements valent pour les prochaines commandes.",
+        "code": "Code",
+        "codeHint": "6 à 40 caractères : lettres, chiffres, - et _. Enregistré en majuscules.",
+        "scope": "Portée",
+        "professor": "Professeur",
+        "professorSearch": "Rechercher un professeur",
+        "course": "Cours",
+        "courseSearch": "Rechercher un cours publié",
+        "noResults": "Aucun résultat.",
+        "change": "Changer",
+        "discountType": "Type de réduction",
+        "types": {
+          "percent": "Pourcentage",
+          "fixed": "Montant fixe"
+        },
+        "percent": "Pourcentage (1 à 100)",
+        "amount": "Montant ({currency})",
+        "currency": "Devise",
+        "startsAt": "Début (facultatif)",
+        "endsAt": "Fin (facultatif)",
+        "maxRedemptions": "Utilisations au total (facultatif)",
+        "perUserLimit": "Utilisations par étudiant (facultatif)",
+        "noLimit": "Laisser vide : sans limite.",
+        "active": "Actif",
+        "save": "Enregistrer",
+        "create": "Créer le code",
+        "badValue": "Montant ou pourcentage invalide.",
+        "badDates": "La fin doit venir après le début."
+      },
+      "amountOff": "−{amount}"
+    },
+    "bundles": {
+      "title": "Packs",
+      "intro": "Packs de cours à prix fixe, de la plateforme ou des professeurs. Le prix doit être inférieur au total des cours ; la recette est partagée entre professeurs au prorata des prix catalogue.",
+      "new": "Nouveau pack",
+      "search": "Rechercher un titre",
+      "allStatuses": "Tous les statuts",
+      "empty": "Aucun pack.",
+      "platform": "Plateforme",
+      "columns": {
+        "title": "Pack",
+        "courses": "Cours",
+        "price": "Prix",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "active": "En vente",
+        "archived": "Archivé"
+      },
+      "courseCount": "{count, plural, one {# cours} other {# cours}}",
+      "saving": "au lieu de {total} (−{pct} %)",
+      "edit": "Modifier",
+      "putOnSale": "Mettre en vente",
+      "takeOffSale": "Retirer de la vente",
+      "takeOffTitle": "Retirer « {title} » de la vente ?",
+      "takeOffHint": "Le pack n’est plus proposé. Les étudiants qui l’ont acheté gardent leurs cours.",
+      "form": {
+        "createTitle": "Nouveau pack de la plateforme",
+        "createHint": "Au moins deux cours payants publiés, dans la même devise. Les changements valent pour les prochaines commandes.",
+        "editTitle": "Modifier « {title} »",
+        "editHint": "Les changements valent pour les prochaines commandes.",
+        "ownedBy": "Pack de {name} : seuls ses cours peuvent y figurer.",
+        "titleLabel": "Titre",
+        "description": "Description (facultatif)",
+        "courses": "Cours du pack",
+        "courseSearch": "Ajouter un cours payant publié",
+        "noResults": "Aucun résultat.",
+        "remove": "Retirer « {title} »",
+        "otherCurrency": "Autre devise",
+        "noCourses": "Aucun cours choisi.",
+        "listTotal": "Total des cours séparément : {total}",
+        "price": "Prix du pack ({currency})",
+        "pickCoursesFirst": "Choisissez d’abord les cours.",
+        "status": "Statut",
+        "save": "Enregistrer",
+        "create": "Créer le pack",
+        "badPrice": "Le prix doit être positif et inférieur au total des cours.",
+        "added": "Déjà dans le pack",
+        "notSellable": "Plus vendu (gratuit) : à retirer"
+      },
+      "moveUp": "Monter « {title} »",
+      "moveDown": "Descendre « {title} »"
     }
   }
 }
