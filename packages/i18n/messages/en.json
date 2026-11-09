@@ -791,7 +791,8 @@
         "questions": "Questions",
         "earnings": "Earnings",
         "promotions": "Promotions",
-        "analytics": "Analytics"
+        "analytics": "Analytics",
+        "reviews": "Reviews"
       },
       "welcome": "Hello {name}",
       "progress": "{done} of {total} steps to be ready to teach and be paid.",
@@ -1279,6 +1280,36 @@
         "halfway": "Half-way",
         "completed": "Completed"
       }
+    },
+    "studioReviews": {
+      "title": "Reviews",
+      "intro": "What students say about your courses. Your reply is public, under the review.",
+      "repliedFilter": "Reply",
+      "replied": {
+        "false": "Not replied",
+        "true": "Replied",
+        "all": "All"
+      },
+      "ratingFilter": "Rating",
+      "allRatings": "All ratings",
+      "stars": "{count, plural, one {# star} other {# stars}}",
+      "courseFilter": "Course",
+      "allCourses": "All my courses",
+      "empty": "No reviews for these filters.",
+      "allReplied": "You have replied to every review.",
+      "student": "Student",
+      "hidden": "Hidden by moderation",
+      "yourReply": "Your reply",
+      "editReply": "Edit",
+      "removeReply": "Remove",
+      "replyLabel": "Reply publicly",
+      "replyHint": "Stay courteous: your reply is visible to everyone on the course page.",
+      "sendReply": "Post reply",
+      "saveReply": "Save",
+      "cancel": "Cancel",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
     }
   },
   "admin": {

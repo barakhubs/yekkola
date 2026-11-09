@@ -8,4 +8,9 @@
 export type ReviewResourceCourse = {
   id: string;
   slug: string;
+  /**
+   * The studio inbox loads `course.liveVersion`; elsewhere null.
+   * @nullable
+   */
+  title: string | null;
 };

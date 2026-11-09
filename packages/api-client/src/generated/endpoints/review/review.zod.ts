@@ -31,6 +31,10 @@ export const CoursesReviewShowResponse = zod.object({
       .object({
         id: zod.string(),
         slug: zod.string(),
+        title: zod
+          .string()
+          .nullable()
+          .describe("The studio inbox loads `course.liveVersion`; elsewhere null."),
       })
       .optional(),
   }),
@@ -75,6 +79,10 @@ export const CoursesReviewStoreResponse = zod.object({
       .object({
         id: zod.string(),
         slug: zod.string(),
+        title: zod
+          .string()
+          .nullable()
+          .describe("The studio inbox loads `course.liveVersion`; elsewhere null."),
       })
       .optional(),
   }),
@@ -116,6 +124,10 @@ export const CoursesReviewUpdateResponse = zod.object({
       .object({
         id: zod.string(),
         slug: zod.string(),
+        title: zod
+          .string()
+          .nullable()
+          .describe("The studio inbox loads `course.liveVersion`; elsewhere null."),
       })
       .optional(),
   }),
@@ -170,6 +182,10 @@ export const CoursesReviewsIndexResponse = zod.object({
         .object({
           id: zod.string(),
           slug: zod.string(),
+          title: zod
+            .string()
+            .nullable()
+            .describe("The studio inbox loads `course.liveVersion`; elsewhere null."),
         })
         .optional(),
     }),
@@ -209,6 +225,20 @@ export const CoursesReviewsIndexResponse = zod.object({
 /**
  * @summary Newest first. `filter[course_id]`, `filter[rating]`, `filter[replied]=true|false`
  */
+export const professorReviewsIndexQueryPageDefault = 1;
+export const professorReviewsIndexQueryPerPageDefault = 15;
+
+export const ProfessorReviewsIndexQueryParams = zod.object({
+  page: zod.int().default(professorReviewsIndexQueryPageDefault),
+  per_page: zod.int().default(professorReviewsIndexQueryPerPageDefault),
+  "filter[course_id]": zod.string().optional(),
+  "filter[rating]": zod.int().optional().describe("1 to 5."),
+  "filter[replied]": zod.string().optional().describe("true or false."),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` (default `-created_at`) or `rating`; prefix `-` for descending."),
+});
 
 export const professorReviewsIndexResponseMetaPerPageMin = 0;
 
@@ -236,6 +266,10 @@ export const ProfessorReviewsIndexResponse = zod.object({
         .object({
           id: zod.string(),
           slug: zod.string(),
+          title: zod
+            .string()
+            .nullable()
+            .describe("The studio inbox loads `course.liveVersion`; elsewhere null."),
         })
         .optional(),
     }),
@@ -308,6 +342,10 @@ export const ProfessorReviewsReplyResponse = zod.object({
       .object({
         id: zod.string(),
         slug: zod.string(),
+        title: zod
+          .string()
+          .nullable()
+          .describe("The studio inbox loads `course.liveVersion`; elsewhere null."),
       })
       .optional(),
   }),

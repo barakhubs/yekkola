@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/professor-analytics` (course daily stats + studio analytics dashboard)
-- **Next up:** studio reviews inbox + web polish; then Phase 3 (mobile)
+- **Current branch:** `feature/studio-reviews-inbox` (studio reviews inbox)
+- **Next up:** web polish PR; then Phase 3 (mobile)
 
 ## Legend
 
@@ -472,7 +472,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Analytics dashboard: period choice, comparison with the period before, daily bars, per course with student funnel, quiz pass rate — #64
 - [x] Earnings, statement (filters, CSV), payout history — #62
 - [x] Coupons and bundles (own courses, professor-funded) — #62
-- [ ] Reviews inbox (Q&A inbox done)
+- [x] Reviews inbox: filters (reply, rating, course), write / edit / remove my public reply — #65
 - [ ] Wishlist heart reads the first 100 saved courses: add a per-course `is_wishlisted` (course page) if lists grow past that
 - [ ] Playwright: create course → submit (a local script covered it for #22: details, cover, chunked video, PDF, quiz, keyboard reorder, price, submit)
 

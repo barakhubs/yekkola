@@ -24,9 +24,15 @@ final class ReviewController extends Controller
     /**
      * Newest first. `filter[course_id]`, `filter[rating]`, `filter[replied]=true|false`.
      */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[course_id]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[rating]', description: '1 to 5.', type: 'int')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[replied]', description: 'true or false.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at` (default `-created_at`) or `rating`; prefix `-` for descending.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
-        $reviews = QueryBuilder::for($this->own($request)->with('user', 'course'))
+        $reviews = QueryBuilder::for($this->own($request)->with('user', 'course.liveVersion'))
             ->allowedFilters(
                 AllowedFilter::exact('course_id'),
                 AllowedFilter::exact('rating'),
@@ -50,7 +56,7 @@ final class ReviewController extends Controller
      */
     public function reply(ReviewReplyRequest $request, string $review, ReplyToReview $reply): ReviewResource
     {
-        $model = $this->own($request)->with('user', 'course')->findOrFail($review);
+        $model = $this->own($request)->with('user', 'course.liveVersion')->findOrFail($review);
 
         return (new ReviewResource($reply->handle($model, $request->validated('reply'))))->private();
     }

@@ -791,7 +791,8 @@
         "questions": "Questions",
         "earnings": "Revenus",
         "promotions": "Promotions",
-        "analytics": "Statistiques"
+        "analytics": "Statistiques",
+        "reviews": "Avis"
       },
       "welcome": "Bonjour {name}",
       "progress": "{done} étape(s) sur {total} pour être prêt à enseigner et à être payé.",
@@ -1279,6 +1280,36 @@
         "halfway": "À mi-parcours",
         "completed": "Ont terminé"
       }
+    },
+    "studioReviews": {
+      "title": "Avis",
+      "intro": "Ce que les étudiants disent de vos cours. Votre réponse est publique, sous l’avis.",
+      "repliedFilter": "Réponse",
+      "replied": {
+        "false": "Sans réponse",
+        "true": "Avec réponse",
+        "all": "Tous"
+      },
+      "ratingFilter": "Note",
+      "allRatings": "Toutes les notes",
+      "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+      "courseFilter": "Cours",
+      "allCourses": "Tous mes cours",
+      "empty": "Aucun avis pour ces critères.",
+      "allReplied": "Vous avez répondu à tous les avis.",
+      "student": "Étudiant",
+      "hidden": "Masqué par la modération",
+      "yourReply": "Votre réponse",
+      "editReply": "Modifier",
+      "removeReply": "Retirer",
+      "replyLabel": "Répondre publiquement",
+      "replyHint": "Restez courtois : votre réponse est visible par tous sur la page du cours.",
+      "sendReply": "Publier la réponse",
+      "saveReply": "Enregistrer",
+      "cancel": "Annuler",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {page} sur {total}"
     }
   },
   "admin": {
