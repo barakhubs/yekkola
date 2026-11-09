@@ -23,10 +23,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class KycSubmissionController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: 'pending, verified or rejected.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[document_type]', description: 'national_id, voter_card or passport.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[professor_profile_id]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at` (default, oldest first) or `reviewed_at`; prefix `-` for descending.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $submissions = QueryBuilder::for(KycSubmission::query()->with('profile', 'media'))
-            ->allowedFilters(AllowedFilter::exact('status'), AllowedFilter::exact('document_type'))
+            ->allowedFilters(AllowedFilter::exact('status'), AllowedFilter::exact('document_type'), AllowedFilter::exact('professor_profile_id'))
             ->allowedSorts('created_at', 'reviewed_at')
             ->defaultSort('created_at')
             ->paginate($this->perPage($request))

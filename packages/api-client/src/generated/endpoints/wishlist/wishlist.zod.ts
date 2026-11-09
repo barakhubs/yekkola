@@ -6,6 +6,14 @@
  */
 import * as zod from "zod";
 
+export const meWishlistIndexQueryPageDefault = 1;
+export const meWishlistIndexQueryPerPageDefault = 15;
+
+export const MeWishlistIndexQueryParams = zod.object({
+  page: zod.int().default(meWishlistIndexQueryPageDefault),
+  per_page: zod.int().default(meWishlistIndexQueryPerPageDefault),
+});
+
 export const meWishlistIndexResponseMetaPerPageMin = 0;
 
 export const meWishlistIndexResponseMetaTotalMin = 0;

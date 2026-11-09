@@ -859,6 +859,55 @@
                 "tags": [
                     "Bundle"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "draft, active or archived.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[currency]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[title]",
+                        "in": "query",
+                        "description": "Part of the title.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` (default `-created_at`), `title` or `price_minor`; prefix `-` for descending.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `BundleResource`",
@@ -1732,6 +1781,24 @@
                 "tags": [
                     "Certificate"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `CertificateResource`",
@@ -2220,6 +2287,48 @@
                 "tags": [
                     "Coupon"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[is_active]",
+                        "in": "query",
+                        "description": "1 or 0.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[code]",
+                        "in": "query",
+                        "description": "Part of the code.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` (default `-created_at`) or `code`; prefix `-` for descending.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `CouponResource`",
@@ -2372,7 +2481,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CouponRequest"
+                                "$ref": "#/components/schemas/ProfessorCouponRequest"
                             }
                         }
                     }
@@ -6261,8 +6370,27 @@
         "/professor/payouts": {
             "get": {
                 "operationId": "professor.payouts.index",
+                "summary": "Payouts sent to this professor, newest first",
                 "tags": [
                     "Earnings"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -7057,6 +7185,55 @@
                 "operationId": "admin.kyc-submissions.index",
                 "tags": [
                     "KycSubmission"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "pending, verified or rejected.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[document_type]",
+                        "in": "query",
+                        "description": "national_id, voter_card or passport.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[professor_profile_id]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` (default, oldest first) or `reviewed_at`; prefix `-` for descending.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -16562,6 +16739,24 @@
                 "tags": [
                     "Wishlist"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `CourseCardResource`",
@@ -19774,7 +19969,7 @@
             },
             "CouponRequest": {
                 "type": "object",
-                "description": "Coupon create \u2014 staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
+                "description": "Coupon create by staff (PRD-09 FR-13); professors use ProfessorCouponRequest. Updates use UpdateCouponRequest\n(operational fields only).",
                 "properties": {
                     "is_active": {
                         "type": "boolean"
@@ -22443,6 +22638,88 @@
                 ],
                 "title": "ProfessorApplicationResource"
             },
+            "ProfessorCouponRequest": {
+                "type": "object",
+                "description": "A professor's own coupon (PRD-05 FR-12): one of their courses (`course_id`) or all of them (no `course_id`).\nScope, owner and funder are set by the server (always professor-funded). Updates use UpdateCouponRequest.",
+                "properties": {
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "ends_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "max_redemptions": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 1000000
+                    },
+                    "per_user_limit": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]+$",
+                        "minLength": 6,
+                        "maxLength": 40
+                    },
+                    "scope": {
+                        "type": "string"
+                    },
+                    "professor_profile_id": {
+                        "type": "string"
+                    },
+                    "course_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "discount_type": {
+                        "$ref": "#/components/schemas/DiscountType"
+                    },
+                    "value": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "currency": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "minLength": 3,
+                        "maxLength": 3
+                    },
+                    "funded_by": {
+                        "type": "string"
+                    },
+                    "starts_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "code",
+                    "discount_type",
+                    "value"
+                ],
+                "title": "ProfessorCouponRequest"
+            },
             "ProfessorProfileResource": {
                 "type": "object",
                 "properties": {
@@ -23713,10 +23990,7 @@
                         "type": "object",
                         "properties": {
                             "amount_minor": {
-                                "type": [
-                                    "integer",
-                                    "string"
-                                ]
+                                "type": "integer"
                             },
                             "currency": {
                                 "type": "string"

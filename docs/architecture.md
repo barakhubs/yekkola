@@ -169,21 +169,21 @@ yekkola/
 │   ├── web/                               Next.js — public + student + professor studio
 │   │   ├── src/app/[locale]/
 │   │   │   ├── (marketing)/               /, /courses, /courses/[slug], /categories/[slug], /professors/[slug],
-│   │   │   │                              /certificates/[serial], /teach, legal pages      ← server components, SSR/ISR
+│   │   │   │                              /certificates/[serial], /teach, /legal/(terms|privacy|professor-agreement) ← server components, SSR/ISR
 │   │   │   │                              /courses/[slug]/gift, /gift/[orderId]#token  ← guest checkout (noindex)
 │   │   │   │                              /bundles/[slug]                                ← bundle offer
 │   │   │   ├── (auth)/                    /login, /verify
 │   │   │   ├── (student)/                 /my-courses, /learn/[course]/[lesson], /checkout/[orderId],
-│   │   │   │                              /orders, /certificates, /wishlist, /account     ← client, auth-guarded
+│   │   │   │                              /orders, /my-certificates, /wishlist, /notifications, /account ← client, auth-guarded
 │   │   │   └── (studio)/studio/           /, /apply, /courses, /courses/[id]/(details|curriculum|pricing|review),
-│   │   │                                  /analytics, /earnings, /payouts, /reviews, /questions, /coupons, /profile
+│   │   │                                  /earnings, /promotions (coupons + bundles), /payouts, /questions, /profile, /verification; planned: /analytics, /reviews
 │   │   ├── src/features/<domain>/         components/, hooks/, schemas/, utils/
 │   │   ├── src/lib/                       api (fetch config), auth, i18n, analytics
 │   │   └── messages/ → packages/i18n
 │   └── admin/                             Next.js — back office
 │       ├── src/app/[locale]/
 │       │   ├── (auth)/login
-│       │   └── (console)/                 /dashboard, /users, /professors, /applications,
+│       │   └── (console)/                 /dashboard, /users, /professors[/id], /kyc, /applications,
 │       │                                  /moderation/(courses|reports|reviews), /catalog/(courses|categories|featured),
 │       │                                  /orders, /coupons, /bundles,
 │       │                                  /finance/(ledger|payouts|refunds), /settings, /audit-log, /staff

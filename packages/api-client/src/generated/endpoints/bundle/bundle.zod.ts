@@ -74,6 +74,21 @@ export const BundlesShowResponse = zod.object({
   }),
 });
 
+export const professorBundlesIndexQueryPageDefault = 1;
+export const professorBundlesIndexQueryPerPageDefault = 15;
+
+export const ProfessorBundlesIndexQueryParams = zod.object({
+  page: zod.int().default(professorBundlesIndexQueryPageDefault),
+  per_page: zod.int().default(professorBundlesIndexQueryPerPageDefault),
+  "filter[status]": zod.string().optional().describe("draft, active or archived."),
+  "filter[currency]": zod.string().optional(),
+  "filter[title]": zod.string().optional().describe("Part of the title."),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` (default `-created_at`), `title` or `price_minor`; prefix `-` for descending."),
+});
+
 export const professorBundlesIndexResponseMetaPerPageMin = 0;
 
 export const professorBundlesIndexResponseMetaTotalMin = 0;

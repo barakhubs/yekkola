@@ -208,12 +208,7 @@ export function ApplicationDetail({ id }: { id: string }) {
             [
               t("fields.sample"),
               a.sample_url ? (
-                <a
-                  href={a.sample_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary underline"
-                >
+                <a href={a.sample_url} target="_blank" rel="noopener" className="text-primary underline">
                   {a.sample_url}
                 </a>
               ) : (
@@ -240,7 +235,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                   <a
                     href={apiUrl(`/api/v1/admin/professor-applications/${a.id}/credentials/${file.id}`)}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener"
                     className="inline-flex items-center gap-2 text-sm text-primary underline"
                   >
                     <FileText aria-hidden className="size-4" />

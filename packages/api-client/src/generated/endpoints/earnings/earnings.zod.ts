@@ -84,7 +84,7 @@ export const ProfessorLedgerIndexResponse = zod.object({
         .describe("sale, sale_reversal, release, refund, refund_reversal, payout, payout_failed, adjustment"),
       account: zod.string().describe("professor_held or professor_available"),
       amount: zod.object({
-        amount_minor: zod.union([zod.int(), zod.string()]),
+        amount_minor: zod.int(),
         currency: zod.string(),
       }),
       memo: zod.string().nullable().describe("Order number, payout reference, or the adjustment's label."),
@@ -164,6 +164,17 @@ export const ProfessorLedgerCsvQueryParams = zod.object({
 });
 
 export const ProfessorLedgerCsvResponse = zod.unknown();
+
+/**
+ * @summary Payouts sent to this professor, newest first
+ */
+export const professorPayoutsIndexQueryPageDefault = 1;
+export const professorPayoutsIndexQueryPerPageDefault = 15;
+
+export const ProfessorPayoutsIndexQueryParams = zod.object({
+  page: zod.int().default(professorPayoutsIndexQueryPageDefault),
+  per_page: zod.int().default(professorPayoutsIndexQueryPerPageDefault),
+});
 
 export const professorPayoutsIndexResponseMetaPerPageMin = 0;
 

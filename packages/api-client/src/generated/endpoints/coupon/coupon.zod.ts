@@ -6,6 +6,20 @@
  */
 import * as zod from "zod";
 
+export const professorCouponsIndexQueryPageDefault = 1;
+export const professorCouponsIndexQueryPerPageDefault = 15;
+
+export const ProfessorCouponsIndexQueryParams = zod.object({
+  page: zod.int().default(professorCouponsIndexQueryPageDefault),
+  per_page: zod.int().default(professorCouponsIndexQueryPerPageDefault),
+  "filter[is_active]": zod.string().optional().describe("1 or 0."),
+  "filter[code]": zod.string().optional().describe("Part of the code."),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` (default `-created_at`) or `code`; prefix `-` for descending."),
+});
+
 export const professorCouponsIndexResponseMetaPerPageMin = 0;
 
 export const professorCouponsIndexResponseMetaTotalMin = 0;
@@ -101,10 +115,8 @@ export const ProfessorCouponsStoreBody = zod
       .min(professorCouponsStoreBodyCodeMin)
       .max(professorCouponsStoreBodyCodeMax)
       .regex(professorCouponsStoreBodyCodeRegExp),
-    scope: zod
-      .enum(["platform", "professor", "course"])
-      .describe("What a coupon applies to (PRD-05 FR-11).\n"),
-    professor_profile_id: zod.string().nullish(),
+    scope: zod.string().optional(),
+    professor_profile_id: zod.string().optional(),
     course_id: zod.string().nullish(),
     discount_type: zod.enum(["percent", "fixed"]),
     value: zod.int().min(1).max(professorCouponsStoreBodyValueMax),
@@ -113,15 +125,11 @@ export const ProfessorCouponsStoreBody = zod
       .min(professorCouponsStoreBodyCurrencyMin)
       .max(professorCouponsStoreBodyCurrencyMax)
       .nullish(),
-    funded_by: zod
-      .enum(["platform"])
-      .describe(
-        "Staff never commit a professor's earnings: their coupons are platform-funded (professors fund their own).",
-      ),
+    funded_by: zod.string().optional(),
     starts_at: zod.iso.datetime({ offset: true }).nullish(),
   })
   .describe(
-    "Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
+    "A professor's own coupon (PRD-05 FR-12): one of their courses (`course_id`) or all of them (no `course_id`).\nScope, owner and funder are set by the server (always professor-funded). Updates use UpdateCouponRequest.",
   );
 
 export const ProfessorCouponsStoreResponse = zod.object({
@@ -345,7 +353,7 @@ export const AdminCouponsStoreBody = zod
     starts_at: zod.iso.datetime({ offset: true }).nullish(),
   })
   .describe(
-    "Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
+    "Coupon create by staff (PRD-09 FR-13); professors use ProfessorCouponRequest. Updates use UpdateCouponRequest\n(operational fields only).",
   );
 
 export const AdminCouponsStoreResponse = zod.object({

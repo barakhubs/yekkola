@@ -33,7 +33,9 @@
       "myCourses": "Mes cours",
       "orders": "Mes commandes",
       "studio": "Studio",
-      "account": "Mon compte"
+      "account": "Mon compte",
+      "certificates": "Mes certificats",
+      "wishlist": "Ma liste"
     },
     "home": {
       "title": "Apprends avec les meilleurs profs du Congo",
@@ -284,7 +286,16 @@
         "stars": "{count, plural, one {# étoile} other {# étoiles}}",
         "comment": "Commentaire (facultatif)",
         "send": "Publier mon avis",
-        "thanks": "Merci pour ton avis !"
+        "thanks": "Merci pour ton avis !",
+        "yourReview": "Ton avis",
+        "editReview": "Modifier",
+        "deleteReview": "Supprimer",
+        "deleteReviewTitle": "Supprimer ton avis ?",
+        "deleteReviewHint": "Ta note et ton commentaire disparaissent de la page du cours. Tu pourras en écrire un nouveau.",
+        "reviewHidden": "Ton avis n’est pas visible sur la page du cours pour le moment (modération).",
+        "editReviewTitle": "Modifier ton avis",
+        "saveReview": "Enregistrer",
+        "cancelEdit": "Annuler"
       }
     },
     "checkout": {
@@ -777,7 +788,9 @@
         "profile": "Profil",
         "kyc": "Vérification",
         "payouts": "Paiements",
-        "questions": "Questions"
+        "questions": "Questions",
+        "earnings": "Revenus",
+        "promotions": "Promotions"
       },
       "welcome": "Bonjour {name}",
       "progress": "{done} étape(s) sur {total} pour être prêt à enseigner et à être payé.",
@@ -1041,6 +1054,194 @@
         "new_review": "Nouvel avis sur mes cours",
         "new_sale": "Nouvelle vente"
       }
+    },
+    "earnings": {
+      "title": "Revenus",
+      "intro": "Ce que vos cours vous ont rapporté, ce qui est disponible et vos versements.",
+      "balances": "Soldes",
+      "noEarnings": "Pas encore de revenus.",
+      "available": "Disponible",
+      "availableHint": "Sera versé au prochain versement.",
+      "held": "En attente",
+      "heldHint": "Bloqué pendant le délai de remboursement.",
+      "inPayout": "En cours de versement",
+      "paidOut": "Déjà versé",
+      "nextPayout": "Prochain versement prévu le {date}.",
+      "monthly": "Revenus par mois",
+      "month": "Mois",
+      "earned": "Gagné",
+      "statement": "Relevé",
+      "downloadCsv": "Télécharger (CSV)",
+      "type": "Type",
+      "allTypes": "Tous les types",
+      "from": "Du",
+      "to": "Au",
+      "noLines": "Aucune opération pour ces critères.",
+      "date": "Date",
+      "detail": "Détail",
+      "balance": "Solde",
+      "amount": "Montant",
+      "types": {
+        "sale": "Vente",
+        "release": "Disponible après le délai de remboursement",
+        "sale_reversal": "Vente annulée",
+        "refund": "Remboursement",
+        "refund_reversal": "Remboursement annulé",
+        "payout": "Versement",
+        "payout_failed": "Versement échoué (rendu)",
+        "adjustment": "Ajustement",
+        "unapplied_receipt": "Encaissement non affecté",
+        "unapplied_receipt_reversal": "Encaissement non affecté annulé",
+        "refund_paid": "Remboursement payé",
+        "refund_settled": "Remboursement réglé",
+        "refund_overpaid": "Trop-perçu remboursé",
+        "refund_debt": "Remboursement à récupérer",
+        "refund_paid_reversal": "Remboursement payé annulé"
+      },
+      "accounts": {
+        "professor_held": "En attente",
+        "professor_available": "Disponible"
+      },
+      "payouts": "Versements",
+      "noPayouts": "Aucun versement pour le moment.",
+      "payoutStatus": {
+        "pending": "Prévu",
+        "excluded": "Reporté",
+        "processing": "En cours",
+        "paid": "Payé",
+        "failed": "Échoué"
+      },
+      "payoutFailed": "L’argent est revenu sur votre solde disponible. Vérifiez votre compte de versement.",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {page} sur {total}"
+    },
+    "promotions": {
+      "title": "Promotions",
+      "intro": "Codes promo et packs pour vos cours payants publiés.",
+      "noPaidCourses": "Publiez au moins un cours payant pour créer un code promo ou un pack.",
+      "couponsTitle": "Codes promo",
+      "couponsHint": "La réduction est prise sur votre part. Les changements valent pour les prochaines commandes.",
+      "newCoupon": "Nouveau code promo",
+      "noCoupons": "Aucun code promo.",
+      "percentOff": "-{value} %",
+      "amountOff": "-{amount}",
+      "aCourse": "Un cours",
+      "allCourses": "Tous mes cours",
+      "uses": "{uses} / {max} utilisations",
+      "endsOn": "jusqu’au {date}",
+      "edit": "Modifier",
+      "couponState": {
+        "active": "Actif",
+        "inactive": "Désactivé",
+        "scheduled": "Programmé",
+        "expired": "Expiré",
+        "used_up": "Épuisé"
+      },
+      "editCoupon": "Modifier {code}",
+      "editCouponHint": "La réduction d’un code ne change plus une fois créé : seuls la fin, les limites et l’état changent.",
+      "newCouponHint": "Choisissez le code, le cours concerné et la réduction.",
+      "code": "Code",
+      "codeHint": "6 à 40 caractères : lettres, chiffres, - ou _.",
+      "appliesTo": "S’applique à",
+      "discountType": "Réduction",
+      "types": {
+        "percent": "Pourcentage",
+        "fixed": "Montant fixe"
+      },
+      "percent": "Pourcentage (1 à 100)",
+      "amount": "Montant ({currency})",
+      "badValue": "Entrez une réduction valide.",
+      "startsAt": "Début (facultatif)",
+      "endsAt": "Fin (facultatif)",
+      "badDates": "La fin doit venir après le début.",
+      "maxUses": "Utilisations au total",
+      "perStudent": "Utilisations par étudiant",
+      "noLimit": "Laissez vide pour ne pas limiter.",
+      "badLimit": "Entrez un nombre entier positif, ou laissez vide.",
+      "active": "Actif",
+      "save": "Enregistrer",
+      "create": "Créer",
+      "bundlesTitle": "Packs",
+      "bundlesHint": "Plusieurs de vos cours vendus ensemble, moins cher que séparément.",
+      "bundlesNeedTwo": "Il faut au moins deux cours payants publiés dans la même devise pour créer un pack.",
+      "newBundle": "Nouveau pack",
+      "noBundles": "Aucun pack.",
+      "courseCount": "{count, plural, one {# cours} other {# cours}}",
+      "bundleState": {
+        "draft": "Brouillon",
+        "active": "En vente",
+        "archived": "Retiré de la vente"
+      },
+      "editBundle": "Modifier « {title} »",
+      "bundleHint": "De 2 à 20 cours dans la même devise, à un prix inférieur à leur total.",
+      "bundleName": "Nom du pack",
+      "description": "Description (facultative)",
+      "bundleCourses": "Cours du pack",
+      "listTotal": "Total séparément : {total}",
+      "courseNoLongerSellable": "Un cours de ce pack n’est plus en vente : retirez-le ou republiez-le.",
+      "bundlePrice": "Prix du pack ({currency})",
+      "badBundlePrice": "Le prix doit être inférieur au total des cours.",
+      "status": "État",
+      "notOnSale": "Plus en vente",
+      "currency": "Devise"
+    },
+    "wishlist": {
+      "title": "Ma liste",
+      "intro": "Les cours que tu as gardés pour plus tard.",
+      "empty": "Ta liste est vide.",
+      "browse": "Découvrir les cours",
+      "save": "Garder pour plus tard",
+      "saved": "Dans ma liste",
+      "remove": "Retirer",
+      "removeNamed": "Retirer « {title} » de ma liste"
+    },
+    "certificates": {
+      "title": "Mes certificats",
+      "intro": "Tes certificats de fin de cours, à partager ou à télécharger.",
+      "empty": "Termine un cours pour obtenir ton premier certificat.",
+      "toMyCourses": "Voir mes cours",
+      "issued": "Délivré le {date} · {professor}",
+      "revoked": "Révoqué le {date}",
+      "view": "Voir",
+      "pdf": "PDF",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {page} sur {total}"
+    },
+    "legal": {
+      "draftNotice": "Ce texte est en cours de rédaction avec notre conseil juridique. La version complète sera publiée avant le lancement ; en attendant, voici l’essentiel en termes simples.",
+      "otherDocs": "Autres documents",
+      "terms": {
+        "title": "Conditions d’utilisation",
+        "summary": "Yekkola met en relation des professeurs et des étudiants partout en RDC.",
+        "points": [
+          "Tu te connectes avec ton numéro de téléphone et un code reçu par SMS.",
+          "Un cours acheté ou gratuit reste accessible tant que ton inscription est active. Un remboursement ou le retrait du cours met fin à l’accès en ligne ; les téléchargements de l’application sont supprimés à la synchronisation suivante.",
+          "Les cours sont protégés : il est interdit de les copier, de les enregistrer ou de les partager.",
+          "Les paiements se font par mobile money. Un remboursement peut être demandé peu après l’achat, si tu n’as suivi qu’une petite partie du cours."
+        ]
+      },
+      "privacy": {
+        "title": "Politique de confidentialité",
+        "summary": "Nous gardons le minimum d’informations nécessaire pour faire fonctionner Yekkola.",
+        "points": [
+          "Ton numéro de téléphone sert à te connecter ; ton e-mail est facultatif.",
+          "Ton nom et ton numéro masqué apparaissent sur les vidéos que tu regardes, pour décourager le piratage.",
+          "Les pièces d’identité des professeurs sont gardées dans un espace privé et ne sont vues que par l’équipe chargée de les vérifier.",
+          "Tu peux exporter tes données ou supprimer ton compte depuis la page Mon compte."
+        ]
+      },
+      "professorAgreement": {
+        "title": "Accord professeur",
+        "summary": "Les règles entre Yekkola et les professeurs qui publient des cours.",
+        "points": [
+          "Tu restes propriétaire de tes cours ; tu donnes à Yekkola le droit de les diffuser aux étudiants inscrits.",
+          "Chaque cours est relu avant publication.",
+          "Ta part de chaque vente est fixée au moment de la vente et versée sur ton compte mobile money selon le calendrier des versements.",
+          "Ton identité est vérifiée avant les premiers versements."
+        ]
+      }
     }
   },
   "admin": {
@@ -1097,7 +1298,9 @@
       "reports": "Signalements",
       "questions": "Questions",
       "coupons": "Codes promo",
-      "bundles": "Packs"
+      "bundles": "Packs",
+      "professors": "Professeurs",
+      "kyc": "Vérifications d’identité"
     },
     "auth": {
       "title": "Connexion de l’équipe",
@@ -2155,6 +2358,104 @@
       },
       "moveUp": "Monter « {title} »",
       "moveDown": "Descendre « {title} »"
+    },
+    "professors": {
+      "title": "Professeurs",
+      "intro": "Professeurs approuvés : statut, vérification d’identité, part des revenus et versements.",
+      "search": "Rechercher",
+      "searchHint": "Nom ou identifiant",
+      "allStatuses": "Tous les statuts",
+      "allKyc": "Toutes les vérifications",
+      "empty": "Aucun professeur.",
+      "back": "Tous les professeurs",
+      "columns": {
+        "name": "Professeur",
+        "phone": "Téléphone",
+        "status": "Statut",
+        "kyc": "Identité",
+        "students": "Étudiants",
+        "created": "Depuis le"
+      },
+      "status": {
+        "active": "Actif",
+        "suspended": "Suspendu"
+      },
+      "kyc": {
+        "none": "Non envoyée",
+        "pending": "À vérifier",
+        "verified": "Vérifiée",
+        "rejected": "Refusée"
+      },
+      "suspend": "Suspendre",
+      "reinstate": "Rétablir",
+      "suspendTitle": "Suspendre {name} ?",
+      "reinstateTitle": "Rétablir {name} ?",
+      "suspendHint": "Ses cours quittent le catalogue et ses versements sont suspendus. Les étudiants inscrits gardent leur accès.",
+      "reinstateHint": "Ses cours publiés reviennent au catalogue et ses versements reprennent.",
+      "reason": "Raison (gardée dans le journal d’audit)",
+      "account": "Voir le compte",
+      "suspendedBecause": "Suspendu : {reason}",
+      "province": "Province",
+      "verifiedAt": "Identité vérifiée le",
+      "revenueShare": "Part du professeur",
+      "platformDefault": "Réglage de la plateforme",
+      "payoutMethod": "Compte de versement",
+      "noPayoutMethod": "Aucun",
+      "payable": "Peut être payé",
+      "yes": "Oui",
+      "no": "Non",
+      "heldUntil": "bloqué jusqu’au {date}",
+      "kycTitle": "Vérifications d’identité",
+      "noKyc": "Aucune pièce envoyée.",
+      "coursesTitle": "Cours",
+      "noCourses": "Aucun cours.",
+      "changeShare": "Modifier la part",
+      "changeShareTitle": "Part des revenus de {name}",
+      "changeShareHint": "S’applique aux ventes à venir uniquement ; les ventes passées gardent leur part.",
+      "sharePct": "Part du professeur (%)",
+      "shareEmpty": "Laissez vide pour suivre le réglage de la plateforme.",
+      "badShare": "Entrez un pourcentage entre 0 et 100.",
+      "saveShare": "Enregistrer"
+    },
+    "kyc": {
+      "title": "Vérifications d’identité",
+      "intro": "Pièces d’identité envoyées par les professeurs. Les plus anciennes d’abord.",
+      "statusFilter": "Statut",
+      "all": "Toutes",
+      "empty": "Aucune vérification.",
+      "nothingPending": "Rien à vérifier pour le moment.",
+      "status": {
+        "none": "Non envoyée",
+        "pending": "À vérifier",
+        "verified": "Vérifiée",
+        "rejected": "Refusée"
+      },
+      "documents": {
+        "national_id": "Carte d’identité",
+        "voter_card": "Carte d’électeur",
+        "passport": "Passeport"
+      },
+      "submitted": "envoyée le {date}",
+      "reviewed": "Examinée le {date}",
+      "files": "Pièces",
+      "fileKinds": {
+        "front": "Recto",
+        "back": "Verso",
+        "selfie": "Selfie"
+      },
+      "audited": "Chaque ouverture d’une pièce est enregistrée dans le journal d’audit.",
+      "rejectionReason": "Motif du refus :",
+      "verify": "Valider",
+      "reject": "Refuser",
+      "verifyTitle": "Valider cette pièce d’identité ?",
+      "verifyHint": "Le professeur reçoit le badge « vérifié » et peut recevoir ses versements.",
+      "rejectTitle": "Refuser cette pièce d’identité ?",
+      "rejectHint": "Le professeur voit le motif et peut envoyer une nouvelle pièce.",
+      "rejectReason": "Motif (montré au professeur)",
+      "pages": "Pages",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {page} sur {total}"
     }
   }
 }

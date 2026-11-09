@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-07-r2-media` (R2 video driver, encrypted HLS playlists + key, hls.js player, multipart studio uploader; Mux removed)
-- **Next up:** resume back-office professors + KYC viewer; R2 buckets + FFmpeg spike on staging when the accounts exist (0.3, 0.4)
+- **Current branch:** `feature/web-finish-screens` (back-office professors + identity checks, studio earnings + promotions, student wishlist/certificates/review editing/legal placeholders)
+- **Next up:** admin lesson preview + grant enrollment + course transfer, professor analytics; then Phase 3 (mobile)
 
 ## Legend
 
@@ -373,7 +373,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Dashboard (KPIs, daily bars, attention queues) — #41; richer charts with `ChartCard` (Recharts) later
 - [x] Users (list, detail, actions) — #38
 - [x] Professor applications queue + decision (start review, approve, request info, reject; credential files) — #23
-- [ ] Professors + KYC viewer
+- [x] Professors (list, detail, suspend/reinstate, revenue share) + identity-check queue and viewer (audited file links, verify/reject) — #62
 - [x] Content review screen: details, curriculum with quiz answers, changes since live, approve / reject with notes — #23
 - [ ] Lesson preview with the player in the review screen (needs an admin playback/document endpoint)
 - [ ] Side-by-side diff of details (title, description, outcomes) vs the live version, not just lesson lists
@@ -407,14 +407,14 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Professor page — #18
 - [x] Certificate verification page (noindex) — #18
 - [x] "Teach on Yekkola" page (`/teach`, in the sitemap and footer) — #25
-- [ ] Legal pages
+- [~] Legal pages: placeholders with a plain-language summary, `noindex`, footer links — #62; replace with counsel's texts before launch
 - [ ] Lighthouse CI budgets on public pages
 
 ### 2.4 Web app — students — PRD-01, 05, 06, 07
 
 - [x] Sign-in (phone + OTP, Turnstile, first-time name + optional province, safe `?next=`) — #19
 - [x] Account page: profile, phone change, devices, data export, deletion — #28
-- [ ] Notification preferences page (needs the preferences API from 1.12)
+- [x] Notification preferences page — #56
 - [x] Free enroll (course page button; paid courses show "payment coming soon" until checkout) — #19
 - [x] Checkout on the fake gateway: quote, coupon, rail picker, payer number, waiting screen with countdown, results, retry with another operator or number — #21
 - [x] Orders list + receipt PDF links — #21
@@ -434,14 +434,14 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Learning view: Mux Player + watermark overlay, curriculum, progress (saved every 15 s, on pause/end/leave), web stream limit — #20
 - [x] Document viewer (stamped copy, inline + open), quizzes (timer, results, explanations, retake) — #20
 - [x] Course completion: certificate link + review form (PRD-06 FR-16) — #20
-- [ ] Lesson Q&A (with API 1.8c), certificates list page, edit/delete my review
+- [x] Certificates list page, edit/delete my review (completion screen) — #62; lesson Q&A done earlier
 - [ ] Learning view: refresh playback tokens before they expire on long sessions; keyboard shortcuts for next/previous
 - [ ] Playwright journey: sign in → enrol free → watch preview → finish document + quiz → certificate
 - [ ] Check on staging that the `keepalive` progress PUT on tab close arrives (Chrome, Safari, Firefox; it needs a CORS preflight); if not, save to localStorage on `pagehide` and send on the next visit
 - [ ] Learning view: re-issue playback tokens on a player error after a very long pause
 - [x] Player swap: Mux Player → hls.js on a native video/audio element (loaded on demand; Safari native), credentials only to the API, playlist reload on expired segments, keeping `WatermarkOverlay` and the stream heartbeat; `@mux/*` dropped (PRD-06, PRD-07) — #61
 - [ ] Player: own controls (speed menu, quality choice, keyboard shortcuts) if native controls fall short on low-end phones — check in the R2 spike
-- [ ] Wishlist, in-app notifications
+- [x] Wishlist page + save button on the course page; in-app notifications (#56) — #62
 - [ ] Playwright: sign-in, free enroll, paid checkout (fake), learning
 
 ### 2.5 Web app — professor studio — PRD-02, 03, 08
@@ -465,8 +465,10 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Expose authoring validation constants (outcomes 3–8, cover size, audiences 4, min lessons) in `/professor/authoring-options` so copy doesn't restate them
 - [ ] Favicon / app icons (404 on /favicon.ico) — with the logo set (0.2)
 - [ ] Analytics dashboard
-- [ ] Earnings, statement, payouts
-- [ ] Reviews + Q&A inbox, coupons
+- [x] Earnings, statement (filters, CSV), payout history — #62
+- [x] Coupons and bundles (own courses, professor-funded) — #62
+- [ ] Reviews inbox (Q&A inbox done)
+- [ ] Wishlist heart reads the first 100 saved courses: add a per-course `is_wishlisted` (course page) if lists grow past that
 - [ ] Playwright: create course → submit (a local script covered it for #22: details, cover, chunked video, PDF, quiz, keyboard reorder, price, submit)
 
 ---

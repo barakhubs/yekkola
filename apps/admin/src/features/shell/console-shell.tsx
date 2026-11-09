@@ -30,6 +30,8 @@ import {
   Users,
   Wallet,
   WifiOff,
+  IdCard,
+  UserRoundCheck,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -51,6 +53,8 @@ const NAV = [
   { href: "/moderation/questions", key: "questions", icon: MessagesSquare, permission: "moderation.reports" },
   { href: "/courses", key: "courses", icon: LibraryBig, permission: "catalog.view" },
   { href: "/categories", key: "categories", icon: FolderTree, permission: "catalog.manage" },
+  { href: "/professors", key: "professors", icon: UserRoundCheck, permission: "professors.manage" },
+  { href: "/kyc", key: "kyc", icon: IdCard, permission: "kyc.view" },
   { href: "/users", key: "users", icon: Users, permission: "users.view" },
   { href: "/orders", key: "orders", icon: ShoppingCart, permission: "commerce.view" },
   { href: "/coupons", key: "coupons", icon: TicketPercent, permission: "promotions.manage" },

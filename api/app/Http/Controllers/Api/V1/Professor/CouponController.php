@@ -10,7 +10,7 @@ use App\Domain\Commerce\Models\Coupon;
 use App\Domain\Identity\Models\User;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Commerce\CouponRequest;
+use App\Http\Requests\Commerce\ProfessorCouponRequest;
 use App\Http\Requests\Commerce\UpdateCouponRequest;
 use App\Http\Resources\Commerce\CouponResource;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,6 +23,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 /** A professor's own coupons (PRD-05 FR-12): their courses only, professor-funded. */
 final class CouponController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[is_active]', description: '1 or 0.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[code]', description: 'Part of the code.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at` (default `-created_at`) or `code`; prefix `-` for descending.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $coupons = QueryBuilder::for($this->own($request)->withCount('redemptions'))
@@ -35,7 +40,7 @@ final class CouponController extends Controller
         return CouponResource::collection($coupons);
     }
 
-    public function store(CouponRequest $request, SaveCoupon $save): JsonResponse
+    public function store(ProfessorCouponRequest $request, SaveCoupon $save): JsonResponse
     {
         $coupon = $save->handle($request->validated(), $this->user($request), professor: $this->professor($request));
 

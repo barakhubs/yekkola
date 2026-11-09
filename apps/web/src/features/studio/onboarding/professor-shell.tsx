@@ -20,6 +20,8 @@ const NAV = [
   { href: "/studio", key: "home" },
   { href: "/studio/courses", key: "courses" },
   { href: "/studio/questions", key: "questions" },
+  { href: "/studio/earnings", key: "earnings" },
+  { href: "/studio/promotions", key: "promotions" },
   { href: "/studio/profile", key: "profile" },
   { href: "/studio/verification", key: "kyc" },
   { href: "/studio/payouts", key: "payouts" },

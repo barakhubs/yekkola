@@ -20,9 +20,18 @@ export async function SiteFooter() {
           />
         ) : null}
         <p className="font-semibold text-foreground">{t("common.tagline")}</p>
-        <p>
+        <p className="flex flex-wrap gap-x-4 gap-y-1">
           <Link href="/teach" className="font-semibold text-primary hover:underline">
             {t("web.nav.teach")}
+          </Link>
+          <Link href="/legal/terms" className="hover:underline">
+            {t("web.legal.terms.title")}
+          </Link>
+          <Link href="/legal/privacy" className="hover:underline">
+            {t("web.legal.privacy.title")}
+          </Link>
+          <Link href="/legal/professor-agreement" className="hover:underline">
+            {t("web.legal.professorAgreement.title")}
           </Link>
         </p>
         <p>{t("web.footer.rights", { year: new Date().getFullYear() })}</p>

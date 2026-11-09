@@ -21,6 +21,8 @@ use Illuminate\Http\Response;
  */
 final class WishlistController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
     public function index(Request $request): AnonymousResourceCollection
     {
         $courses = WishlistItem::coursesFor($this->user($request)->id)

@@ -13,6 +13,7 @@ import { EnrollButton } from "@/features/course/components/enroll-button";
 import { PreviewButton } from "@/features/course/components/preview-button";
 import { ReviewList } from "@/features/course/components/review-list";
 import { ShareButtons } from "@/features/course/components/share-buttons";
+import { WishlistButton } from "@/features/account/wishlist";
 import { ReportButton } from "@/features/moderation/report-button";
 import { ProfessorSummary } from "@/features/professor/components/professor-summary";
 import { getPathname, Link } from "@/i18n/navigation";
@@ -173,6 +174,7 @@ export default async function CoursePage({ params }: Props) {
                 </li>
               ) : null}
             </ul>
+            <WishlistButton courseId={course.id} slug={slug} />
             <ShareButtons url={pageUrl} text={course.title ?? ""} />
             <ReportButton type="course" id={course.id} returnTo={`/courses/${slug}`} />
           </aside>

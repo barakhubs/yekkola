@@ -27,6 +27,7 @@ import type {
   BundlesShow200,
   ModelNotFoundExceptionResponse,
   ProfessorBundlesIndex200,
+  ProfessorBundlesIndexParams,
   ProfessorBundlesStore201,
   ProfessorBundlesUpdate200,
   UpdateBundleRequest,
@@ -185,36 +186,50 @@ export type professorBundlesIndexResponseSuccess = professorBundlesIndexResponse
 };
 export type professorBundlesIndexResponse = professorBundlesIndexResponseSuccess;
 
-export const getProfessorBundlesIndexUrl = () => {
-  return `/professor/bundles`;
+export const getProfessorBundlesIndexUrl = (params?: ProfessorBundlesIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/professor/bundles?${stringifiedParams}` : `/professor/bundles`;
 };
 
 export const professorBundlesIndex = async (
+  params?: ProfessorBundlesIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorBundlesIndexResponse> => {
-  return apiFetch<professorBundlesIndexResponse>(getProfessorBundlesIndexUrl(), {
+  return apiFetch<professorBundlesIndexResponse>(getProfessorBundlesIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getProfessorBundlesIndexQueryKey = () => {
-  return [`/professor/bundles`] as const;
+export const getProfessorBundlesIndexQueryKey = (params?: ProfessorBundlesIndexParams) => {
+  return [`/professor/bundles`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfessorBundlesIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: ProfessorBundlesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorBundlesIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getProfessorBundlesIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorBundlesIndex>>> = ({ signal }) =>
-    professorBundlesIndex({ signal, ...requestOptions });
+    professorBundlesIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof professorBundlesIndex>>,
@@ -230,6 +245,7 @@ export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | ProfessorBundlesIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>> &
       Pick<
@@ -248,6 +264,7 @@ export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorBundlesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>> &
       Pick<
@@ -266,6 +283,7 @@ export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorBundlesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -277,13 +295,14 @@ export function useProfessorBundlesIndex<
   TData = Awaited<ReturnType<typeof professorBundlesIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorBundlesIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorBundlesIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorBundlesIndexQueryOptions(options);
+  const queryOptions = getProfessorBundlesIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

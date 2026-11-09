@@ -13,8 +13,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the
- * server). Updates use UpdateCouponRequest (operational fields only).
+ * Coupon create by staff (PRD-09 FR-13); professors use ProfessorCouponRequest. Updates use UpdateCouponRequest
+ * (operational fields only).
  */
 final class CouponRequest extends FormRequest
 {
@@ -28,8 +28,6 @@ final class CouponRequest extends FormRequest
      */
     public function rules(): array
     {
-        $byProfessor = $this->routeIs('professor.*');
-
         return [
             ...UpdateCouponRequest::OPERATIONAL,
             'code' => ['required', 'string', 'min:6', 'max:40', 'regex:/^[A-Za-z0-9_-]+$/', function (string $attribute, mixed $value, Closure $fail): void {
@@ -37,14 +35,14 @@ final class CouponRequest extends FormRequest
                     $fail(__('validation.unique', ['attribute' => $attribute]));
                 }
             }],
-            'scope' => $byProfessor ? ['prohibited'] : ['required', Rule::enum(CouponScope::class)],
-            'professor_profile_id' => $byProfessor ? ['prohibited'] : ['required_if:scope,professor', 'nullable', 'ulid', Rule::exists('professor_profiles', 'id')],
-            'course_id' => [$byProfessor ? 'sometimes' : 'required_if:scope,course', 'nullable', 'ulid'],
+            'scope' => ['required', Rule::enum(CouponScope::class)],
+            'professor_profile_id' => ['required_if:scope,professor', 'nullable', 'ulid', Rule::exists('professor_profiles', 'id')],
+            'course_id' => ['required_if:scope,course', 'nullable', 'ulid'],
             'discount_type' => ['required', Rule::enum(DiscountType::class)],
             'value' => ['required', 'integer', 'min:1', Rule::when($this->input('discount_type') === 'percent', ['max:100'])],
             'currency' => ['required_if:discount_type,fixed', 'nullable', 'string', 'size:3'],
             // Staff never commit a professor's earnings: their coupons are platform-funded (professors fund their own).
-            'funded_by' => $byProfessor ? ['prohibited'] : ['required', Rule::in([DiscountFunder::Platform->value])],
+            'funded_by' => ['required', Rule::in([DiscountFunder::Platform->value])],
             'starts_at' => ['sometimes', 'nullable', 'date'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ];

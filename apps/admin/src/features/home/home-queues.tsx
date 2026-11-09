@@ -164,7 +164,7 @@ function Queues({ queues }: { queues: Dashboard["queues"] }) {
       overdue: queues.course_reviews.overdue,
     });
   if (queues.kyc !== null)
-    cards.push({ key: "kyc", href: null, icon: <IdCard />, label: t("kyc"), count: queues.kyc });
+    cards.push({ key: "kyc", href: "/kyc", icon: <IdCard />, label: t("kyc"), count: queues.kyc });
   if (queues.reports !== null)
     cards.push({
       key: "reports",

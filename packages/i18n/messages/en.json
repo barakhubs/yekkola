@@ -33,7 +33,9 @@
       "myCourses": "My courses",
       "orders": "My orders",
       "studio": "Studio",
-      "account": "My account"
+      "account": "My account",
+      "certificates": "My certificates",
+      "wishlist": "My list"
     },
     "home": {
       "title": "Learn from Congo’s best teachers",
@@ -284,7 +286,16 @@
         "stars": "{count, plural, one {# star} other {# stars}}",
         "comment": "Comment (optional)",
         "send": "Post my review",
-        "thanks": "Thanks for your review!"
+        "thanks": "Thanks for your review!",
+        "yourReview": "Your review",
+        "editReview": "Edit",
+        "deleteReview": "Delete",
+        "deleteReviewTitle": "Delete your review?",
+        "deleteReviewHint": "Your rating and comment disappear from the course page. You can write a new one.",
+        "reviewHidden": "Your review isn’t visible on the course page right now (moderation).",
+        "editReviewTitle": "Edit your review",
+        "saveReview": "Save",
+        "cancelEdit": "Cancel"
       }
     },
     "checkout": {
@@ -777,7 +788,9 @@
         "profile": "Profile",
         "kyc": "Verification",
         "payouts": "Payouts",
-        "questions": "Questions"
+        "questions": "Questions",
+        "earnings": "Earnings",
+        "promotions": "Promotions"
       },
       "welcome": "Hello {name}",
       "progress": "{done} of {total} steps to be ready to teach and be paid.",
@@ -1041,6 +1054,194 @@
         "new_review": "New review on my courses",
         "new_sale": "New sale"
       }
+    },
+    "earnings": {
+      "title": "Earnings",
+      "intro": "What your courses earned, what is available and your payouts.",
+      "balances": "Balances",
+      "noEarnings": "No earnings yet.",
+      "available": "Available",
+      "availableHint": "Paid out in the next payout run.",
+      "held": "On hold",
+      "heldHint": "Held during the refund window.",
+      "inPayout": "Being paid out",
+      "paidOut": "Paid out",
+      "nextPayout": "Next payout run on {date}.",
+      "monthly": "Earnings per month",
+      "month": "Month",
+      "earned": "Earned",
+      "statement": "Statement",
+      "downloadCsv": "Download (CSV)",
+      "type": "Type",
+      "allTypes": "All types",
+      "from": "From",
+      "to": "To",
+      "noLines": "No entries for these filters.",
+      "date": "Date",
+      "detail": "Detail",
+      "balance": "Balance",
+      "amount": "Amount",
+      "types": {
+        "sale": "Sale",
+        "release": "Available after the refund window",
+        "sale_reversal": "Sale reversed",
+        "refund": "Refund",
+        "refund_reversal": "Refund reversed",
+        "payout": "Payout",
+        "payout_failed": "Payout failed (returned)",
+        "adjustment": "Adjustment",
+        "unapplied_receipt": "Unapplied receipt",
+        "unapplied_receipt_reversal": "Unapplied receipt reversed",
+        "refund_paid": "Refund paid",
+        "refund_settled": "Refund settled",
+        "refund_overpaid": "Overpaid refund",
+        "refund_debt": "Refund to recover",
+        "refund_paid_reversal": "Refund paid reversed"
+      },
+      "accounts": {
+        "professor_held": "On hold",
+        "professor_available": "Available"
+      },
+      "payouts": "Payouts",
+      "noPayouts": "No payouts yet.",
+      "payoutStatus": {
+        "pending": "Scheduled",
+        "excluded": "Postponed",
+        "processing": "In progress",
+        "paid": "Paid",
+        "failed": "Failed"
+      },
+      "payoutFailed": "The money went back to your available balance. Check your payout account.",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    },
+    "promotions": {
+      "title": "Promotions",
+      "intro": "Discount codes and bundles for your published paid courses.",
+      "noPaidCourses": "Publish at least one paid course to create a discount code or a bundle.",
+      "couponsTitle": "Discount codes",
+      "couponsHint": "The discount comes out of your share. Changes apply to future orders.",
+      "newCoupon": "New discount code",
+      "noCoupons": "No discount codes.",
+      "percentOff": "-{value}%",
+      "amountOff": "-{amount}",
+      "aCourse": "A course",
+      "allCourses": "All my courses",
+      "uses": "{uses} / {max} uses",
+      "endsOn": "until {date}",
+      "edit": "Edit",
+      "couponState": {
+        "active": "Active",
+        "inactive": "Off",
+        "scheduled": "Scheduled",
+        "expired": "Expired",
+        "used_up": "Used up"
+      },
+      "editCoupon": "Edit {code}",
+      "editCouponHint": "A code’s discount can’t change once created: only its end, limits and state.",
+      "newCouponHint": "Choose the code, the course it applies to and the discount.",
+      "code": "Code",
+      "codeHint": "6 to 40 characters: letters, digits, - or _.",
+      "appliesTo": "Applies to",
+      "discountType": "Discount",
+      "types": {
+        "percent": "Percentage",
+        "fixed": "Fixed amount"
+      },
+      "percent": "Percentage (1 to 100)",
+      "amount": "Amount ({currency})",
+      "badValue": "Enter a valid discount.",
+      "startsAt": "Start (optional)",
+      "endsAt": "End (optional)",
+      "badDates": "The end must come after the start.",
+      "maxUses": "Total uses",
+      "perStudent": "Uses per student",
+      "noLimit": "Leave empty for no limit.",
+      "badLimit": "Enter a positive whole number, or leave empty.",
+      "active": "Active",
+      "save": "Save",
+      "create": "Create",
+      "bundlesTitle": "Bundles",
+      "bundlesHint": "Several of your courses sold together, for less than separately.",
+      "bundlesNeedTwo": "You need at least two published paid courses in the same currency to create a bundle.",
+      "newBundle": "New bundle",
+      "noBundles": "No bundles.",
+      "courseCount": "{count, plural, one {# course} other {# courses}}",
+      "bundleState": {
+        "draft": "Draft",
+        "active": "On sale",
+        "archived": "Off sale"
+      },
+      "editBundle": "Edit “{title}”",
+      "bundleHint": "2 to 20 courses in the same currency, priced below their total.",
+      "bundleName": "Bundle name",
+      "description": "Description (optional)",
+      "bundleCourses": "Courses in the bundle",
+      "listTotal": "Total separately: {total}",
+      "courseNoLongerSellable": "A course in this bundle is no longer on sale: remove it or republish it.",
+      "bundlePrice": "Bundle price ({currency})",
+      "badBundlePrice": "The price must be below the courses’ total.",
+      "status": "State",
+      "notOnSale": "No longer on sale",
+      "currency": "Currency"
+    },
+    "wishlist": {
+      "title": "My list",
+      "intro": "Courses you saved for later.",
+      "empty": "Your list is empty.",
+      "browse": "Browse courses",
+      "save": "Save for later",
+      "saved": "In my list",
+      "remove": "Remove",
+      "removeNamed": "Remove “{title}” from my list"
+    },
+    "certificates": {
+      "title": "My certificates",
+      "intro": "Your course certificates, to share or download.",
+      "empty": "Finish a course to get your first certificate.",
+      "toMyCourses": "See my courses",
+      "issued": "Issued on {date} · {professor}",
+      "revoked": "Revoked on {date}",
+      "view": "View",
+      "pdf": "PDF",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    },
+    "legal": {
+      "draftNotice": "This text is being written with our legal counsel. The full version will be published before launch; until then, here is the gist in plain words.",
+      "otherDocs": "Other documents",
+      "terms": {
+        "title": "Terms of use",
+        "summary": "Yekkola connects professors and students anywhere in the DRC.",
+        "points": [
+          "You sign in with your phone number and a code sent by SMS.",
+          "A course you bought or enrolled in for free stays available while your enrollment is active. A refund or the course being taken down ends online access; downloads in the app are removed at its next sync.",
+          "Courses are protected: copying, recording or sharing them is not allowed.",
+          "Payments are made with mobile money. You can ask for a refund shortly after buying, if you have followed only a small part of the course."
+        ]
+      },
+      "privacy": {
+        "title": "Privacy policy",
+        "summary": "We keep only the information Yekkola needs to work.",
+        "points": [
+          "Your phone number is how you sign in; your email is optional.",
+          "Your name and masked number appear on the videos you watch, to discourage piracy.",
+          "Professors’ identity documents are kept in a private store and seen only by the team that checks them.",
+          "You can export your data or delete your account from the My account page."
+        ]
+      },
+      "professorAgreement": {
+        "title": "Professor agreement",
+        "summary": "The rules between Yekkola and the professors who publish courses.",
+        "points": [
+          "You keep ownership of your courses; you give Yekkola the right to deliver them to enrolled students.",
+          "Every course is reviewed before it is published.",
+          "Your share of each sale is fixed at the time of sale and paid to your mobile-money account on the payout schedule.",
+          "Your identity is checked before your first payouts."
+        ]
+      }
     }
   },
   "admin": {
@@ -1097,7 +1298,9 @@
       "reports": "Reports",
       "questions": "Questions",
       "coupons": "Coupons",
-      "bundles": "Bundles"
+      "bundles": "Bundles",
+      "professors": "Professors",
+      "kyc": "Identity checks"
     },
     "auth": {
       "title": "Team sign-in",
@@ -2155,6 +2358,104 @@
       },
       "moveUp": "Move “{title}” up",
       "moveDown": "Move “{title}” down"
+    },
+    "professors": {
+      "title": "Professors",
+      "intro": "Approved professors: standing, identity check, revenue share and payouts.",
+      "search": "Search",
+      "searchHint": "Name or handle",
+      "allStatuses": "All statuses",
+      "allKyc": "All identity checks",
+      "empty": "No professors.",
+      "back": "All professors",
+      "columns": {
+        "name": "Professor",
+        "phone": "Phone",
+        "status": "Status",
+        "kyc": "Identity",
+        "students": "Students",
+        "created": "Since"
+      },
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended"
+      },
+      "kyc": {
+        "none": "Not sent",
+        "pending": "To check",
+        "verified": "Verified",
+        "rejected": "Rejected"
+      },
+      "suspend": "Suspend",
+      "reinstate": "Reinstate",
+      "suspendTitle": "Suspend {name}?",
+      "reinstateTitle": "Reinstate {name}?",
+      "suspendHint": "Their courses leave the catalogue and their payouts stop. Enrolled students keep access.",
+      "reinstateHint": "Their published courses return to the catalogue and payouts resume.",
+      "reason": "Reason (kept in the audit log)",
+      "account": "View account",
+      "suspendedBecause": "Suspended: {reason}",
+      "province": "Province",
+      "verifiedAt": "Identity verified on",
+      "revenueShare": "Professor share",
+      "platformDefault": "Platform setting",
+      "payoutMethod": "Payout account",
+      "noPayoutMethod": "None",
+      "payable": "Can be paid",
+      "yes": "Yes",
+      "no": "No",
+      "heldUntil": "on hold until {date}",
+      "kycTitle": "Identity checks",
+      "noKyc": "No documents sent.",
+      "coursesTitle": "Courses",
+      "noCourses": "No courses.",
+      "changeShare": "Change share",
+      "changeShareTitle": "Revenue share for {name}",
+      "changeShareHint": "Applies to future sales only; past sales keep their share.",
+      "sharePct": "Professor share (%)",
+      "shareEmpty": "Leave empty to follow the platform setting.",
+      "badShare": "Enter a percentage between 0 and 100.",
+      "saveShare": "Save"
+    },
+    "kyc": {
+      "title": "Identity checks",
+      "intro": "Identity documents sent by professors. Oldest first.",
+      "statusFilter": "Status",
+      "all": "All",
+      "empty": "No identity checks.",
+      "nothingPending": "Nothing to check right now.",
+      "status": {
+        "none": "Not sent",
+        "pending": "To check",
+        "verified": "Verified",
+        "rejected": "Rejected"
+      },
+      "documents": {
+        "national_id": "National ID card",
+        "voter_card": "Voter card",
+        "passport": "Passport"
+      },
+      "submitted": "sent on {date}",
+      "reviewed": "Reviewed on {date}",
+      "files": "Documents",
+      "fileKinds": {
+        "front": "Front",
+        "back": "Back",
+        "selfie": "Selfie"
+      },
+      "audited": "Every time a document is opened, it is recorded in the audit log.",
+      "rejectionReason": "Reason for rejection:",
+      "verify": "Verify",
+      "reject": "Reject",
+      "verifyTitle": "Verify this identity document?",
+      "verifyHint": "The professor gets the “verified” badge and can receive payouts.",
+      "rejectTitle": "Reject this identity document?",
+      "rejectHint": "The professor sees the reason and can send a new document.",
+      "rejectReason": "Reason (shown to the professor)",
+      "pages": "Pages",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
     }
   }
 }

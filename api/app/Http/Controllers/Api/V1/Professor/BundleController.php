@@ -22,6 +22,12 @@ use Spatie\QueryBuilder\QueryBuilder;
 /** A professor's bundles of their own courses (PRD-05 FR-13). */
 final class BundleController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: 'draft, active or archived.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[currency]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[title]', description: 'Part of the title.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`created_at` (default `-created_at`), `title` or `price_minor`; prefix `-` for descending.', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $bundles = QueryBuilder::for(Bundle::query()->where('professor_profile_id', $this->professor($request)->id)->with(['courses' => fn ($q) => $q->with(BrowseCourses::cardRelations())]))

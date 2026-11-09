@@ -17,7 +17,12 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { MeWishlistIndex200, ValidationExceptionResponse, WishlistRequest } from "../../model";
+import type {
+  MeWishlistIndex200,
+  MeWishlistIndexParams,
+  ValidationExceptionResponse,
+  WishlistRequest,
+} from "../../model";
 
 import { apiFetch } from "../../../fetcher";
 import type { ErrorType, BodyType } from "../../../fetcher";
@@ -49,36 +54,50 @@ export type meWishlistIndexResponseSuccess = meWishlistIndexResponse200 & {
 };
 export type meWishlistIndexResponse = meWishlistIndexResponseSuccess;
 
-export const getMeWishlistIndexUrl = () => {
-  return `/me/wishlist`;
+export const getMeWishlistIndexUrl = (params?: MeWishlistIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/me/wishlist?${stringifiedParams}` : `/me/wishlist`;
 };
 
 export const meWishlistIndex = async (
+  params?: MeWishlistIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<meWishlistIndexResponse> => {
-  return apiFetch<meWishlistIndexResponse>(getMeWishlistIndexUrl(), {
+  return apiFetch<meWishlistIndexResponse>(getMeWishlistIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getMeWishlistIndexQueryKey = () => {
-  return [`/me/wishlist`] as const;
+export const getMeWishlistIndexQueryKey = (params?: MeWishlistIndexParams) => {
+  return [`/me/wishlist`, ...(params ? [params] : [])] as const;
 };
 
 export const getMeWishlistIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof meWishlistIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: MeWishlistIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getMeWishlistIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getMeWishlistIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof meWishlistIndex>>> = ({ signal }) =>
-    meWishlistIndex({ signal, ...requestOptions });
+    meWishlistIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof meWishlistIndex>>,
@@ -94,6 +113,7 @@ export function useMeWishlistIndex<
   TData = Awaited<ReturnType<typeof meWishlistIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | MeWishlistIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>> &
       Pick<
@@ -112,6 +132,7 @@ export function useMeWishlistIndex<
   TData = Awaited<ReturnType<typeof meWishlistIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeWishlistIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>> &
       Pick<
@@ -130,6 +151,7 @@ export function useMeWishlistIndex<
   TData = Awaited<ReturnType<typeof meWishlistIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeWishlistIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -141,13 +163,14 @@ export function useMeWishlistIndex<
   TData = Awaited<ReturnType<typeof meWishlistIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: MeWishlistIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meWishlistIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getMeWishlistIndexQueryOptions(options);
+  const queryOptions = getMeWishlistIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
