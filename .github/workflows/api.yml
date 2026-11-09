@@ -106,3 +106,11 @@ jobs:
         run: |
           php artisan scramble:export
           git diff --exit-code openapi.json
+
+      - name: Publish the OpenAPI spec
+        if: matrix.php == '8.4'
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-spec
+          path: api/openapi.json
+          retention-days: 30

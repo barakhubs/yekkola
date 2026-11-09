@@ -164,8 +164,8 @@ Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
     Route::put('/password', [StaffPasswordController::class, 'change'])->middleware('throttle:staff-sign-in')->name('password');
     Route::post('/impersonation/stop', [ImpersonationController::class, 'stop'])->name('impersonation.stop');
     Route::patch('/', [ProfileController::class, 'update'])->middleware('throttle:profile-update')->name('update');
-    Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
-    Route::delete('/deletion', [ProfileController::class, 'cancelDeletion'])->name('deletion.cancel');
+    Route::delete('/', [ProfileController::class, 'destroy'])->middleware('throttle:account-deletion')->name('destroy');
+    Route::delete('/deletion', [ProfileController::class, 'cancelDeletion'])->middleware('throttle:account-deletion')->name('deletion.cancel');
 
     Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
     Route::delete('/devices/{device}', [DeviceController::class, 'destroy'])->name('devices.destroy');
@@ -175,7 +175,7 @@ Route::middleware('signed-in')->prefix('me')->name('me.')->group(function () {
 
     Route::post('/export', [DataExportController::class, 'store'])->name('export.store');
     Route::get('/export', [DataExportController::class, 'show'])->name('export.show');
-    Route::get('/export/download', [DataExportController::class, 'download'])->name('export.download');
+    Route::get('/export/download', [DataExportController::class, 'download'])->middleware('throttle:exports')->name('export.download');
 
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
@@ -212,7 +212,7 @@ Route::middleware(['signed-in', 'professor'])->prefix('professor')->name('profes
     // Earnings (PRD-08 FR-09)
     Route::get('/earnings', [EarningsController::class, 'show'])->name('earnings.show');
     Route::get('/ledger', [EarningsController::class, 'statement'])->name('ledger.index');
-    Route::get('/ledger.csv', [EarningsController::class, 'statementCsv'])->name('ledger.csv');
+    Route::get('/ledger.csv', [EarningsController::class, 'statementCsv'])->middleware('throttle:exports')->name('ledger.csv');
     Route::get('/payouts', [EarningsController::class, 'payouts'])->name('payouts.index');
 
     Route::get('/kyc', [KycController::class, 'show'])->name('kyc.show');
@@ -266,7 +266,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::post('/professor-applications/{application}/approve', [AdminApplicationController::class, 'approve'])->name('professor-applications.approve');
         Route::post('/professor-applications/{application}/reject', [AdminApplicationController::class, 'reject'])->name('professor-applications.reject');
         Route::post('/professor-applications/{application}/request-info', [AdminApplicationController::class, 'requestInfo'])->name('professor-applications.request-info');
-        Route::get('/professor-applications/{application}/credentials/{file}', [AdminApplicationController::class, 'credentialFile'])->name('professor-applications.credential');
+        Route::get('/professor-applications/{application}/credentials/{file}', [AdminApplicationController::class, 'credentialFile'])->middleware('throttle:sensitive-files')->name('professor-applications.credential');
 
         // Course review queue (PRD-09 FR-07)
         Route::get('/course-versions', [CourseVersionController::class, 'index'])->name('course-versions.index');
@@ -278,7 +278,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
     Route::middleware('can:'.Permission::KycView->value)->group(function () {
         Route::get('/kyc-submissions', [KycSubmissionController::class, 'index'])->name('kyc-submissions.index');
         Route::get('/kyc-submissions/{submission}', [KycSubmissionController::class, 'show'])->name('kyc-submissions.show');
-        Route::get('/kyc-submissions/{submission}/files/{kind}', [KycSubmissionController::class, 'file'])->name('kyc-submissions.file');
+        Route::get('/kyc-submissions/{submission}/files/{kind}', [KycSubmissionController::class, 'file'])->middleware('throttle:sensitive-files')->name('kyc-submissions.file');
     });
 
     Route::middleware(['can:'.Permission::KycView->value, 'can:'.Permission::KycReview->value])->group(function () {
@@ -340,10 +340,10 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
     Route::middleware('can:'.Permission::StaffManage->value)->group(function () {
         Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/staff/permissions', [StaffController::class, 'permissions'])->name('staff.permissions');
-        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-        Route::put('/staff/{user}', [StaffController::class, 'update'])->name('staff.update');
-        Route::delete('/staff/{user}', [StaffController::class, 'destroy'])->name('staff.destroy');
-        Route::put('/staff/{user}/password', [StaffPasswordController::class, 'setFor'])->name('staff.password');
+        Route::post('/staff', [StaffController::class, 'store'])->middleware('throttle:staff-admin')->name('staff.store');
+        Route::put('/staff/{user}', [StaffController::class, 'update'])->middleware('throttle:staff-admin')->name('staff.update');
+        Route::delete('/staff/{user}', [StaffController::class, 'destroy'])->middleware('throttle:staff-admin')->name('staff.destroy');
+        Route::put('/staff/{user}/password', [StaffPasswordController::class, 'setFor'])->middleware('throttle:staff-admin')->name('staff.password');
     });
 
     // Review moderation and reports (PRD-09 FR-10)
@@ -369,7 +369,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::post('/users/{user}/status', [AdminUserController::class, 'status'])->name('users.status');
         Route::post('/users/{user}/sign-out', [AdminUserController::class, 'signOut'])->name('users.sign-out');
         Route::delete('/users/{user}/devices/{device}', [AdminUserController::class, 'removeDevice'])->name('users.devices.destroy');
-        Route::post('/users/{user}/impersonate', [ImpersonationController::class, 'start'])->name('users.impersonate');
+        Route::post('/users/{user}/impersonate', [ImpersonationController::class, 'start'])->middleware('throttle:impersonation')->name('users.impersonate');
     });
 
     // Orders and payments (PRD-09 FR-11)
