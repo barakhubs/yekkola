@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\Authoring;
 
 use App\Domain\Authoring\Models\Lesson;
+use App\Domain\Catalog\DownloadEstimate;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,6 +35,8 @@ final class StudioLessonResource extends JsonResource
             'is_preview' => $this->is_preview,
             'duration_seconds' => $this->duration_seconds,
             'is_content_ready' => $this->isContentReady(),
+            // What students will download (lowest offline tier), as on the course page (PRD-03 FR-20).
+            'download_bytes' => (int) app(DownloadEstimate::class)->bytes($this->resource),
             'media' => $this->mediaAsset ? new MediaAssetResource($this->mediaAsset) : null,
             'document' => $document ? ['name' => $document->file_name, 'size_bytes' => (int) $document->size] : null,
             'quiz' => $quiz ? [

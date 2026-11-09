@@ -43,29 +43,70 @@ import { StaffAlertsBell } from "@/features/notifications/staff-notifications";
 import { useSession, useSignOut } from "@/features/auth/session";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 
-/** Sidebar sections; each shows only with the permission its API routes require (PRD-09 FR-02). */
-const NAV = [
-  { href: "/", key: "home", icon: LayoutDashboard, permission: null },
-  { href: "/applications", key: "applications", icon: GraduationCap, permission: "moderation.review" },
-  { href: "/moderation/courses", key: "courseReviews", icon: BookCheck, permission: "moderation.review" },
-  { href: "/moderation/reports", key: "reports", icon: Flag, permission: "moderation.reports" },
-  { href: "/moderation/reviews", key: "reviews", icon: Star, permission: "moderation.reports" },
-  { href: "/moderation/questions", key: "questions", icon: MessagesSquare, permission: "moderation.reports" },
-  { href: "/courses", key: "courses", icon: LibraryBig, permission: "catalog.view" },
-  { href: "/categories", key: "categories", icon: FolderTree, permission: "catalog.manage" },
-  { href: "/professors", key: "professors", icon: UserRoundCheck, permission: "professors.manage" },
-  { href: "/kyc", key: "kyc", icon: IdCard, permission: "kyc.view" },
-  { href: "/users", key: "users", icon: Users, permission: "users.view" },
-  { href: "/orders", key: "orders", icon: ShoppingCart, permission: "commerce.view" },
-  { href: "/coupons", key: "coupons", icon: TicketPercent, permission: "promotions.manage" },
-  { href: "/bundles", key: "bundles", icon: Package, permission: "promotions.manage" },
-  { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
-  { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
-  { href: "/finance/ledger", key: "ledger", icon: BookOpenText, permission: "finance.view" },
-  { href: "/settings", key: "settings", icon: Settings, permission: "settings.manage" },
-  { href: "/staff", key: "staff", icon: ShieldCheck, permission: "staff.manage" },
-  { href: "/audit-log", key: "audit", icon: History, permission: "audit.view" },
-  { href: "/password", key: "password", icon: KeyRound, permission: null },
+/**
+ * Sidebar, grouped by area; each link shows only with the permission its API routes require (PRD-09 FR-02), and a
+ * group shows only when one of its links does.
+ */
+const NAV_GROUPS = [
+  {
+    key: "overview",
+    items: [{ href: "/", key: "home", icon: LayoutDashboard, permission: null }],
+  },
+  {
+    key: "moderation",
+    items: [
+      { href: "/applications", key: "applications", icon: GraduationCap, permission: "moderation.review" },
+      { href: "/moderation/courses", key: "courseReviews", icon: BookCheck, permission: "moderation.review" },
+      { href: "/kyc", key: "kyc", icon: IdCard, permission: "kyc.view" },
+      { href: "/moderation/reports", key: "reports", icon: Flag, permission: "moderation.reports" },
+      { href: "/moderation/reviews", key: "reviews", icon: Star, permission: "moderation.reports" },
+      {
+        href: "/moderation/questions",
+        key: "questions",
+        icon: MessagesSquare,
+        permission: "moderation.reports",
+      },
+    ],
+  },
+  {
+    key: "catalogue",
+    items: [
+      { href: "/courses", key: "courses", icon: LibraryBig, permission: "catalog.view" },
+      { href: "/categories", key: "categories", icon: FolderTree, permission: "catalog.manage" },
+    ],
+  },
+  {
+    key: "people",
+    items: [
+      { href: "/users", key: "users", icon: Users, permission: "users.view" },
+      { href: "/professors", key: "professors", icon: UserRoundCheck, permission: "professors.manage" },
+    ],
+  },
+  {
+    key: "sales",
+    items: [
+      { href: "/orders", key: "orders", icon: ShoppingCart, permission: "commerce.view" },
+      { href: "/coupons", key: "coupons", icon: TicketPercent, permission: "promotions.manage" },
+      { href: "/bundles", key: "bundles", icon: Package, permission: "promotions.manage" },
+    ],
+  },
+  {
+    key: "finance",
+    items: [
+      { href: "/finance/refunds", key: "refunds", icon: ReceiptText, permission: "finance.refunds" },
+      { href: "/finance/payouts", key: "payouts", icon: Wallet, permission: "finance.payouts" },
+      { href: "/finance/ledger", key: "ledger", icon: BookOpenText, permission: "finance.view" },
+    ],
+  },
+  {
+    key: "administration",
+    items: [
+      { href: "/settings", key: "settings", icon: Settings, permission: "settings.manage" },
+      { href: "/staff", key: "staff", icon: ShieldCheck, permission: "staff.manage" },
+      { href: "/audit-log", key: "audit", icon: History, permission: "audit.view" },
+      { href: "/password", key: "password", icon: KeyRound, permission: null },
+    ],
+  },
 ] as const;
 
 /**
@@ -142,7 +183,10 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
   }
 
   const logoUrl = branding.data?.logo_url ?? null;
-  const items = NAV.filter((item) => item.permission === null || session.can(item.permission));
+  const groups = NAV_GROUPS.map((group) => ({
+    key: group.key,
+    items: group.items.filter((item) => item.permission === null || session.can(item.permission)),
+  })).filter((group) => group.items.length > 0);
   const isCurrent = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
@@ -166,22 +210,35 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
             </div>
           </div>
           <nav aria-label={t("nav.label")} className="overflow-x-auto px-2 pb-2 lg:flex-1 lg:px-3">
-            <ul className="flex gap-1 lg:grid">
-              {items.map(({ href, key, icon: Icon }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={isCurrent(href) ? "page" : undefined}
-                    className={cn(
-                      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap",
-                      isCurrent(href)
-                        ? "bg-accent text-primary"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    )}
+            {/* Phones: one scrolling row (groups flattened). Large screens: titled groups. */}
+            <ul className="flex gap-1 lg:grid lg:gap-4">
+              {groups.map((group) => (
+                <li key={group.key} className="contents lg:block">
+                  <p
+                    id={`nav-${group.key}`}
+                    className="hidden px-3 pb-1 text-xs font-bold tracking-wide text-muted-foreground uppercase lg:block"
                   >
-                    <Icon aria-hidden className="size-4" />
-                    {t(`nav.${key}`)}
-                  </Link>
+                    {t(`nav.groups.${group.key}`)}
+                  </p>
+                  <ul aria-labelledby={`nav-${group.key}`} className="contents lg:grid lg:gap-0.5">
+                    {group.items.map(({ href, key, icon: Icon }) => (
+                      <li key={href}>
+                        <Link
+                          href={href}
+                          aria-current={isCurrent(href) ? "page" : undefined}
+                          className={cn(
+                            "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap",
+                            isCurrent(href)
+                              ? "bg-accent text-primary"
+                              : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                          )}
+                        >
+                          <Icon aria-hidden className="size-4" />
+                          {t(`nav.${key}`)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>

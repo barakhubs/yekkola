@@ -7,6 +7,31 @@
 import * as zod from "zod";
 
 /**
+ * @summary Bundles on sale, newest first: just enough for the sitemap and links (slug, title, last change)
+ */
+export const bundlesIndexQueryPageDefault = 1;
+export const bundlesIndexQueryPerPageDefault = 100;
+
+export const BundlesIndexQueryParams = zod.object({
+  page: zod.int().default(bundlesIndexQueryPageDefault),
+  per_page: zod.int().default(bundlesIndexQueryPerPageDefault),
+});
+
+export const BundlesIndexResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      slug: zod.string(),
+      title: zod.string(),
+      updated_at: zod.string(),
+    }),
+  ),
+  meta: zod.object({
+    current_page: zod.int(),
+    last_page: zod.int(),
+  }),
+});
+
+/**
  * @summary A bundle on sale: active, with every course published (PRD-05 FR-13); otherwise not found
  */
 export const BundlesShowParams = zod.object({

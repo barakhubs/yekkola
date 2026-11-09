@@ -49,10 +49,66 @@ browser code at build time: **redeploy after changing one**.
   (same values as in the API), optional `API_INTERNAL_URL`.
 - On the API: `FRONTEND_WEB_URL` and `FRONTEND_ADMIN_URL` must be these apps' URLs (CORS, "View as" redirects).
 
+## Files and media on Cloudflare R2
+
+Laravel Cloud's disk is not shared between instances and is wiped on deploy, so **nothing may be stored on the
+API's local disk**: with `PUBLIC_DISK=public`, uploaded logos, avatars and covers get `https://api.…/storage/…`
+URLs that answer 404. Use R2 for every environment except your own machine.
+
+1. **Buckets** (Cloudflare dashboard → R2 → Create bucket), one pair per environment, e.g.
+   `yekkola-staging-private` and `yekkola-staging-public` (and `yekkola-production-…`). Location: automatic.
+2. **Public URL for the public bucket** (bucket → Settings → Public access): connect a custom domain such as
+   `media.yekkola.com` (recommended; the r2.dev address is rate-limited and for testing only). This is
+   `R2_PUBLIC_URL`, e.g. `https://media.yekkola.com`. The private bucket stays private (no public access).
+3. **API token** (R2 → Manage R2 API tokens → Create API token): permission *Object Read & Write*, limited to the
+   environment's two buckets. Copy the *Access Key ID*, the *Secret Access Key* (shown once) and the S3 endpoint
+   `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`.
+4. **CORS on the private bucket** (bucket → Settings → CORS policy), with your web and admin origins:
+
+   ```json
+   [
+     {
+       "AllowedOrigins": ["https://www.yekkola.com", "https://admin.yekkola.com"],
+       "AllowedMethods": ["GET", "HEAD", "PUT"],
+       "AllowedHeaders": ["*"],
+       "ExposeHeaders": ["ETag"],
+       "MaxAgeSeconds": 3600
+     }
+   ]
+   ```
+
+   `PUT` + `ETag`: the studio uploads video in parts straight to R2. `GET`/`HEAD`: the player loads the video
+   segments. No CORS rule is needed on the public bucket (images load with plain `<img>` tags).
+5. **API environment variables** (Laravel Cloud → `yekkola-api` → the environment → Settings → Environment
+   variables), then **redeploy**:
+
+   ```dotenv
+   R2_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+   R2_ACCESS_KEY_ID=<access key id>
+   R2_SECRET_ACCESS_KEY=<secret access key>
+   R2_PRIVATE_BUCKET=yekkola-staging-private
+   R2_PUBLIC_BUCKET=yekkola-staging-public
+   R2_PUBLIC_URL=https://media.yekkola.com
+   PUBLIC_DISK=r2-public
+   PRIVATE_DISK=r2-private
+   MEDIA_DISK=r2-private
+   ```
+
+   Lesson video moves to R2 only with `VIDEO_DRIVER=r2`, and that needs FFmpeg on the queue workers
+   (`FFMPEG_BINARY`, `FFPROBE_BINARY`; R2 media spike, TODO 0.4). Until then keep `VIDEO_DRIVER=fake`.
+6. **Web and admin apps**: add the public host to `NEXT_PUBLIC_IMAGE_HOSTS` (e.g. `media.yekkola.com`, comma
+   separated with any others) and **redeploy both** (the value is compiled in).
+7. **Re-upload** what was stored on the old local disk: brand images (back office → Settings → Branding), then
+   professor avatars and course covers. Files on the API's old disk are gone and are not moved automatically.
+8. **Check**: a brand image URL now starts with `R2_PUBLIC_URL` and opens in the browser; uploading an identity
+   document in the studio and opening it in the back office works (private bucket, streamed by the API).
+
 ## API workers and scheduler
 
-- Queue workers must listen on `payments,otp,default,notifications,media` (same order as `config/horizon.php`), or
-  notifications and other jobs never run.
+- Queue workers must listen on `payments,otp,default,notifications` (same order as `config/horizon.php`), or
+  notifications and other jobs never run. Transcoding runs on its own connection: with Horizon this is the
+  `supervisor-media` supervisor; without Horizon run a second worker,
+  `php artisan queue:work redis-media --queue=media --timeout=12600` (`MEDIA_TRANSCODE_TIMEOUT` + 30 min).
 - The scheduler must run (`php artisan schedule:run` every minute): payment reconciliation, payouts, the ledger
   check, the professor digest and staff alerts depend on it.
 - Push notifications: `PUSH_DRIVER=fcm` with `FCM_PROJECT_ID`, `FCM_CLIENT_EMAIL`, `FCM_PRIVATE_KEY` (from a Firebase
@@ -62,6 +118,7 @@ browser code at build time: **redeploy after changing one**.
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
+| Logos, avatars or covers return 404 at `https://api.…/storage/…` | Files on the API's local disk (`PUBLIC_DISK=public`): not served, not shared, wiped on deploy | Move to R2 (section "Files and media on Cloudflare R2"), redeploy, re-upload the images. |
 | Build: `corepack: not found` | Old build command | Use the build command above (pnpm via `npm install -g`). |
 | Build: page "took more than 60 seconds" | The API wasn't answering while pages were prerendered | Fixed in code: build-time API calls time out after 10 s and the page fills in at its first revalidation. Deploy the API first anyway. |
 | Deploy aborts after "Ready", exit code 143 | Server not reachable by Cloud's probes | Fixed in code: `start.mjs` listens on IPv4 and IPv6. Check the start command is `node start.mjs`. |

@@ -21,6 +21,8 @@ export interface StudioLessonResource {
   /** @nullable */
   duration_seconds: number | null;
   is_content_ready: boolean;
+  /** What students will download (lowest offline tier), as on the course page (PRD-03 FR-20). */
+  download_bytes: number;
   media: MediaAssetResource | null;
   /** @nullable */
   document: StudioLessonResourceDocument;

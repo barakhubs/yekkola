@@ -4,7 +4,7 @@ import { defaultLocale, locales } from "@yekkola/i18n";
 import type { MetadataRoute } from "next";
 
 import { getPathname } from "@/i18n/navigation";
-import { getCategories, getCourses } from "@/lib/public-api";
+import { getBundles, getCategories, getCourses } from "@/lib/public-api";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
@@ -50,6 +50,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
     for (const slug of professors) {
       entries.push(entry(`/professors/${slug}`));
+    }
+    for (let page = 1; page <= MAX_COURSE_PAGES; page++) {
+      const result = await getBundles(page);
+      for (const bundle of result.data) {
+        entries.push(entry(`/bundles/${bundle.slug}`, bundle.updated_at));
+      }
+      if (page >= result.meta.last_page) break;
     }
   } catch (error) {
     // At build time the API may be unreachable: start with the static pages, the next revalidation adds the rest.

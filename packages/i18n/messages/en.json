@@ -204,7 +204,11 @@
       "signOut": "Sign out",
       "botCheck": "Bot check",
       "suspendedTitle": "Your account is suspended",
-      "suspendedBody": "You can’t take courses for now. Contact Yekkola support to find out more."
+      "suspendedBody": "You can’t take courses for now. Contact Yekkola support to find out more.",
+      "tryAgainIn": "Try again in {seconds} s",
+      "noCodeTitle": "Still no code?",
+      "noCodeHint": "Check the number and that your phone can receive SMS (signal, full storage), then try again a bit later.",
+      "noCodeSupport": "Need help: {contact}"
     },
     "myCourses": {
       "title": "My courses",
@@ -635,7 +639,8 @@
       "editLessonNamed": "Edit lesson “{title}”",
       "viewLessonNamed": "View lesson “{title}”",
       "foldToMove": "Fold the lesson to move it",
-      "applyCta": "Apply to teach"
+      "applyCta": "Apply to teach",
+      "downloadSize": "{size} to download"
     },
     "teach": {
       "metaTitle": "Teach on Yekkola",
@@ -1310,6 +1315,12 @@
       "previous": "Previous",
       "next": "Next",
       "pageOf": "Page {page} of {total}"
+    },
+    "errorPage": {
+      "title": "This page couldn’t be shown",
+      "body": "The service may be very busy right now. Wait a few seconds, then try again.",
+      "retry": "Try again",
+      "retryIn": "Try again in {seconds} s"
     }
   },
   "admin": {
@@ -1368,7 +1379,16 @@
       "coupons": "Coupons",
       "bundles": "Bundles",
       "professors": "Professors",
-      "kyc": "Identity checks"
+      "kyc": "Identity checks",
+      "groups": {
+        "overview": "Overview",
+        "moderation": "Moderation",
+        "catalogue": "Catalogue",
+        "people": "People",
+        "sales": "Sales",
+        "finance": "Finance",
+        "administration": "Administration"
+      }
     },
     "auth": {
       "title": "Team sign-in",

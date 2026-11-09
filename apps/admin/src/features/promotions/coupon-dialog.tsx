@@ -1,12 +1,14 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { success } from "@yekkola/api-client";
 import {
   adminCouponsStore,
   adminCouponsUpdate,
   getAdminCouponsIndexQueryKey,
+  useAdminCouponsOptions,
 } from "@yekkola/api-client/endpoints/coupon";
-import { Currency, type CouponResource, type CouponScope } from "@yekkola/api-client/model";
+import type { CouponResource, CouponScope } from "@yekkola/api-client/model";
 import { parseMoneyInput } from "@yekkola/i18n";
 import { Button } from "@yekkola/ui/components/button";
 import {
@@ -55,7 +57,12 @@ export function CouponDialog({ coupon, trigger }: { coupon?: CouponResource; tri
   const [course, setCourse] = useState<Target | null>(null);
   const [type, setType] = useState<"percent" | "fixed">("percent");
   const [value, setValue] = useState("");
-  const [currency, setCurrency] = useState<Currency>(Currency.USD);
+  // Enabled currencies from the platform settings, default first (TODO 2.2).
+  const options = useAdminCouponsOptions({
+    query: { select: (r) => success(r).data, staleTime: 5 * 60_000 },
+  });
+  const currencies = options.data?.currencies ?? [];
+  const [currency, setCurrency] = useState("");
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
   const [max, setMax] = useState("");
@@ -69,7 +76,7 @@ export function CouponDialog({ coupon, trigger }: { coupon?: CouponResource; tri
     setCourse(null);
     setType("percent");
     setValue("");
-    setCurrency(Currency.USD);
+    setCurrency(options.data?.default_currency ?? "");
     setStartsAt("");
     setEndsAt(toLocalInput(coupon?.ends_at));
     setMax(coupon?.max_redemptions ? String(coupon.max_redemptions) : "");
@@ -82,7 +89,9 @@ export function CouponDialog({ coupon, trigger }: { coupon?: CouponResource; tri
       ? /^\d+$/.test(value.trim()) && Number(value) >= 1 && Number(value) <= 100
         ? Number(value)
         : null
-      : parseMoneyInput(value, currency);
+      : currency
+        ? parseMoneyInput(value, currency)
+        : null;
   const maxCount = optionalCount(max);
   const perUserCount = optionalCount(perUser);
   // The start can't change once created: compare an edited end date with the stored start.
@@ -257,9 +266,9 @@ export function CouponDialog({ coupon, trigger }: { coupon?: CouponResource; tri
                       id="coupon-currency"
                       className={selectClass}
                       value={currency}
-                      onChange={(e) => setCurrency(e.target.value as Currency)}
+                      onChange={(e) => setCurrency(e.target.value)}
                     >
-                      {Object.values(Currency).map((c) => (
+                      {currencies.map((c) => (
                         <option key={c} value={c}>
                           {c}
                         </option>

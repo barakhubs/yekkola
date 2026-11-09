@@ -1472,6 +1472,88 @@
                 }
             }
         },
+        "/bundles": {
+            "get": {
+                "operationId": "bundles.index",
+                "summary": "Bundles on sale, newest first: just enough for the sitemap and links (slug, title, last change)",
+                "tags": [
+                    "Bundle"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "slug": {
+                                                        "type": "string"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "slug",
+                                                    "title",
+                                                    "updated_at"
+                                                ]
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "last_page"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bundles/{slug}": {
             "get": {
                 "operationId": "bundles.show",
@@ -3484,6 +3566,53 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/admin/coupons/options": {
+            "get": {
+                "operationId": "admin.coupons.options",
+                "summary": "What the coupon form offers: the enabled currencies (platform setting), default first",
+                "tags": [
+                    "Coupon"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "currencies": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "default_currency": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "currencies",
+                                                "default_currency"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
                     }
                 }
             }
@@ -25481,6 +25610,10 @@
                     "is_content_ready": {
                         "type": "boolean"
                     },
+                    "download_bytes": {
+                        "type": "integer",
+                        "description": "What students will download (lowest offline tier), as on the course page (PRD-03 FR-20)."
+                    },
                     "media": {
                         "anyOf": [
                             {
@@ -25610,6 +25743,7 @@
                     "is_preview",
                     "duration_seconds",
                     "is_content_ready",
+                    "download_bytes",
                     "media",
                     "document",
                     "quiz"

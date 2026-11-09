@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/studio-reviews-inbox` (studio reviews inbox)
-- **Next up:** web polish PR; then Phase 3 (mobile)
+- **Current branch:** `chore/web-polish` (more reviews, error page, sign-in countdown, sitemap bundles, studio download sizes, coupon currencies)
+- **Next up:** Phase 3 (mobile)
 
 ## Legend
 
@@ -42,7 +42,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 
 - [ ] Laravel Cloud organisation + `staging` and `production` environments
 - [-] Mux account (DRM enabled, signing keys, webhook secret) — superseded by R2, 2026-11-09
-- [ ] Cloudflare account: R2 buckets per environment (private + public), CORS for browser uploads from the web origins, access keys per environment
+- [ ] Cloudflare account: R2 buckets per environment (private + public), CORS for browser uploads from the web origins, access keys per environment — steps in `docs/runbooks/deploy-laravel-cloud.md` ("Files and media on Cloudflare R2"); then re-upload brand images, avatars and covers stored on the API's local disk
 - [ ] Meilisearch Cloud project
 - [ ] Sentry projects (api, web, admin, mobile)
 - [ ] PostHog (or equivalent) project
@@ -389,7 +389,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Q&A moderation screen — #54
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
 - [x] Coupons (create platform-funded, limits, deactivate) and bundles (create, edit, on/off sale) — this PR
-- [ ] Coupon form offers every currency (USD default): expose enabled currencies + default to `promotions.manage` staff and use them
+- [x] Coupon form offers the enabled currencies, default first (`GET /admin/coupons/options`) — #66
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [x] Settings screen — #39
 - [x] Settings in tabs (open tab in the URL) + Branding tab: logo, footer logo, favicon, share image — #53
@@ -405,10 +405,10 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Search page (`/courses?q=`) — #18
 - [x] Course page (JSON-LD, preview playback with Mux Player loaded on demand, share, reviews) — #18
 - [x] Course page: buy/enrol button works (free enrol, paid → checkout) — #19, #21
-- [ ] Course page: "more reviews" pagination (first 10 shown)
+- [x] Course page: "more reviews" (first 10 server-rendered, the rest on demand) — #66
 - [ ] Home: "by category" rails (PRD-04 FR-01; category chips for now)
 - [x] Sign-in page: accept `?next=` only for same-origin paths starting with a single `/` (`safeNext`, unit-tested) — #19
-- [ ] Show a "try again" state when the API rate-limits a public page (429) instead of the error page
+- [x] Error page with a short wait and "try again" (rate limits and API hiccups) — #66
 - [x] Professor page — #18
 - [x] Certificate verification page (noindex) — #18
 - [x] "Teach on Yekkola" page (`/teach`, in the sitemap and footer) — #25
@@ -429,11 +429,12 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Guest receipt download (the API needs the order token header; a plain link can't send it)
 - [ ] Gift a course the buyer already owns (the quote is for the buyer, so checkout currently stops at "already owned")
 - [x] Bundles: bundle page, "also in these bundles" on course pages, checkout with `?bundle=` (PRD-05 FR-13) — #31
-- [ ] Bundle pages in the sitemap
+- [x] Bundle pages in the sitemap (public `GET /bundles`) — #66
 - [ ] Operator-specific hints on the waiting screen (USSD code, "check *144#") once the real aggregator is chosen
 - [ ] Playwright journey: paid checkout on the fake gateway (success, insufficient funds `…0001` then retry)
 - [x] My courses (progress, last activity, in progress / completed filter, paging); suspended accounts see an explanation (FR-15) — #19
-- [ ] Sign-in: live countdown from `retry_after` on 429, support contact after 3 resends (PRD-01 §6–7); test resend with single-use bot tokens (Playwright)
+- [x] Sign-in: countdown from `retry_after` on 429, help after 3 codes (support contact from `NEXT_PUBLIC_SUPPORT_CONTACT`) (PRD-01 §6–7) — #66
+- [ ] Choose the support contact (WhatsApp number or email) and set `NEXT_PUBLIC_SUPPORT_CONTACT` **(needs: owner)**
 - [ ] Light "am I enrolled" check for the course page (it uses the full learning view today)
 - [ ] Header session check: avoid a GET /me on every public page view for visitors (e.g. a non-HttpOnly "signed-in" hint cookie)
 - [x] Learning view: Mux Player + watermark overlay, curriculum, progress (saved every 15 s, on pause/end/leave), web stream limit — #20
@@ -466,7 +467,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Studio uploader: multipart upload to pre-signed R2 URLs (3 parts at a time, retries with backoff, waits while offline, fresh URL on expiry), then the upload-complete call (PRD-03 FR-04) — #61
 - [ ] Studio uploader: resume after a page reload (keep the media id + sent parts; R2 keeps the multipart upload open)
 - [ ] True/false quiz options in the course's language (today the professor's UI language), ideally generated by the API
-- [ ] Show estimated download sizes per lesson in the studio (PRD-03 FR-20)
+- [x] Show estimated download sizes per lesson in the studio (PRD-03 FR-20) — #66
 - [ ] Expose authoring validation constants (outcomes 3–8, cover size, audiences 4, min lessons) in `/professor/authoring-options` so copy doesn't restate them
 - [ ] Favicon / app icons (404 on /favicon.ico) — with the logo set (0.2)
 - [x] Analytics dashboard: period choice, comparison with the period before, daily bars, per course with student funnel, quiz pass rate — #64
