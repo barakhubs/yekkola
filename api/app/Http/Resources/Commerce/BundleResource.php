@@ -30,6 +30,11 @@ final class BundleResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->status->value,
+            // The professor who made it; null for a platform bundle (loaded in the back office).
+            'professor' => $this->whenLoaded('professor', fn () => $this->professor === null ? null : [
+                'id' => $this->professor->id,
+                'display_name' => $this->professor->display_name,
+            ]),
             'price' => $this->price()->toArray(),
             'list_total' => ['amount_minor' => (int) $courses->sum(fn (Course $c) => (int) $c->price_minor), 'currency' => $this->currency],
             'courses' => CourseCardResource::collection($courses),

@@ -6,6 +6,7 @@
  */
 import type { BundleResourceListTotal } from "./bundleResourceListTotal";
 import type { BundleResourcePrice } from "./bundleResourcePrice";
+import type { BundleResourceProfessor } from "./bundleResourceProfessor";
 import type { CourseCardResource } from "./courseCardResource";
 
 export interface BundleResource {
@@ -15,6 +16,11 @@ export interface BundleResource {
   /** @nullable */
   description: string | null;
   status: string;
+  /**
+   * The professor who made it; null for a platform bundle (loaded in the back office).
+   * @nullable
+   */
+  professor?: BundleResourceProfessor;
   price: BundleResourcePrice;
   list_total: BundleResourceListTotal;
   courses: CourseCardResource[];

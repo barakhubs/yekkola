@@ -20,12 +20,23 @@ final class CouponResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $uses = (int) ($this->redemptions_count ?? $this->redemptions()->count());
+
         return [
             'id' => $this->id,
             'code' => $this->code,
             'scope' => $this->scope->value,
             'professor_profile_id' => $this->professor_profile_id,
             'course_id' => $this->course_id,
+            // Names for the back office (loaded there): who and what the coupon applies to.
+            'professor' => $this->whenLoaded('professor', fn () => $this->professor === null ? null : [
+                'id' => $this->professor->id,
+                'display_name' => $this->professor->display_name,
+            ]),
+            'course' => $this->whenLoaded('course', fn () => $this->course === null ? null : [
+                'id' => $this->course->id,
+                'title' => $this->course->liveVersion->title ?? $this->course->draftVersion->title ?? null,
+            ]),
             'discount_type' => $this->discount_type->value,
             'value' => $this->value,
             'currency' => $this->currency,
@@ -35,7 +46,8 @@ final class CouponResource extends JsonResource
             'starts_at' => $this->starts_at?->toIso8601String(),
             'ends_at' => $this->ends_at?->toIso8601String(),
             'is_active' => $this->is_active,
-            'uses' => (int) ($this->redemptions_count ?? $this->redemptions()->count()),
+            'uses' => $uses,
+            'state' => $this->state($uses),
             'created_at' => $this->created_at->toIso8601String(),
         ];
     }

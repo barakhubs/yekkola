@@ -21,6 +21,13 @@ use Spatie\QueryBuilder\QueryBuilder;
  */
 final class ProfessorController extends Controller
 {
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[search]', description: 'Part of the display name or slug.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[status]', description: 'active or suspended.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[kyc_status]', description: 'none, pending, verified or rejected.', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('filter[province_id]', type: 'string')]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('sort', description: '`display_name`, `created_at` or `student_count`; prefix `-` for descending (default `-created_at`).', type: 'string')]
     public function index(Request $request): AnonymousResourceCollection
     {
         $professors = QueryBuilder::for(ProfessorProfile::query()->with('user', 'province', 'media'))

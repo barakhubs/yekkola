@@ -19,6 +19,7 @@ import type {
 
 import type {
   AdminCouponsIndex200,
+  AdminCouponsIndexParams,
   AdminCouponsShow200,
   AdminCouponsStore201,
   AdminCouponsUpdate200,
@@ -28,6 +29,7 @@ import type {
   ProfessorCouponsIndex200,
   ProfessorCouponsStore201,
   ProfessorCouponsUpdate200,
+  UpdateCouponRequest,
   ValidationExceptionResponse,
 } from "../../model";
 
@@ -354,7 +356,7 @@ export const getProfessorCouponsUpdateUrl = (coupon: string) => {
 
 export const professorCouponsUpdate = async (
   coupon: string,
-  couponRequest: CouponRequest,
+  updateCouponRequest?: UpdateCouponRequest,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorCouponsUpdateResponse> => {
   const getHeaders = (
@@ -377,15 +379,15 @@ export const professorCouponsUpdate = async (
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
-    body: JSON.stringify(couponRequest),
+    body: JSON.stringify(updateCouponRequest),
   });
 };
 
 export const getProfessorCouponsUpdateQueryKey = (
   coupon: string,
-  couponRequest?: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
 ) => {
-  return ["PATCH", `/professor/coupons/${coupon}`, couponRequest] as const;
+  return ["PATCH", `/professor/coupons/${coupon}`, updateCouponRequest] as const;
 };
 
 export const getProfessorCouponsUpdateQueryOptions = <
@@ -393,7 +395,7 @@ export const getProfessorCouponsUpdateQueryOptions = <
   TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -401,10 +403,10 @@ export const getProfessorCouponsUpdateQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorCouponsUpdateQueryKey(coupon, couponRequest);
+  const queryKey = queryOptions?.queryKey ?? getProfessorCouponsUpdateQueryKey(coupon, updateCouponRequest);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorCouponsUpdate>>> = ({ signal }) =>
-    professorCouponsUpdate(coupon, couponRequest, { signal, ...requestOptions });
+    professorCouponsUpdate(coupon, updateCouponRequest, { signal, ...requestOptions });
 
   return {
     queryKey,
@@ -428,7 +430,7 @@ export function useProfessorCouponsUpdate<
   TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest: undefined | BodyType<UpdateCouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -448,7 +450,7 @@ export function useProfessorCouponsUpdate<
   TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -468,7 +470,7 @@ export function useProfessorCouponsUpdate<
   TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -481,14 +483,14 @@ export function useProfessorCouponsUpdate<
   TError = ErrorType<ModelNotFoundExceptionResponse | ValidationExceptionResponse>,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorCouponsUpdateQueryOptions(coupon, couponRequest, options);
+  const queryOptions = getProfessorCouponsUpdateQueryOptions(coupon, updateCouponRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -516,36 +518,50 @@ export type adminCouponsIndexResponseError = adminCouponsIndexResponse403 & {
 
 export type adminCouponsIndexResponse = adminCouponsIndexResponseSuccess | adminCouponsIndexResponseError;
 
-export const getAdminCouponsIndexUrl = () => {
-  return `/admin/coupons`;
+export const getAdminCouponsIndexUrl = (params?: AdminCouponsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/admin/coupons?${stringifiedParams}` : `/admin/coupons`;
 };
 
 export const adminCouponsIndex = async (
+  params?: AdminCouponsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminCouponsIndexResponse> => {
-  return apiFetch<adminCouponsIndexResponse>(getAdminCouponsIndexUrl(), {
+  return apiFetch<adminCouponsIndexResponse>(getAdminCouponsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminCouponsIndexQueryKey = () => {
-  return [`/admin/coupons`] as const;
+export const getAdminCouponsIndexQueryKey = (params?: AdminCouponsIndexParams) => {
+  return [`/admin/coupons`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminCouponsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminCouponsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminCouponsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminCouponsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCouponsIndex>>> = ({ signal }) =>
-    adminCouponsIndex({ signal, ...requestOptions });
+    adminCouponsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminCouponsIndex>>,
@@ -561,6 +577,7 @@ export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminCouponsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>> &
       Pick<
@@ -579,6 +596,7 @@ export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminCouponsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>> &
       Pick<
@@ -597,6 +615,7 @@ export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminCouponsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -608,13 +627,14 @@ export function useAdminCouponsIndex<
   TData = Awaited<ReturnType<typeof adminCouponsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminCouponsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminCouponsIndexQueryOptions(options);
+  const queryOptions = getAdminCouponsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -963,7 +983,7 @@ export const getAdminCouponsUpdateUrl = (coupon: string) => {
 
 export const adminCouponsUpdate = async (
   coupon: string,
-  couponRequest: CouponRequest,
+  updateCouponRequest?: UpdateCouponRequest,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminCouponsUpdateResponse> => {
   const getHeaders = (
@@ -986,12 +1006,15 @@ export const adminCouponsUpdate = async (
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
-    body: JSON.stringify(couponRequest),
+    body: JSON.stringify(updateCouponRequest),
   });
 };
 
-export const getAdminCouponsUpdateQueryKey = (coupon: string, couponRequest?: BodyType<CouponRequest>) => {
-  return ["PATCH", `/admin/coupons/${coupon}`, couponRequest] as const;
+export const getAdminCouponsUpdateQueryKey = (
+  coupon: string,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
+) => {
+  return ["PATCH", `/admin/coupons/${coupon}`, updateCouponRequest] as const;
 };
 
 export const getAdminCouponsUpdateQueryOptions = <
@@ -1001,7 +1024,7 @@ export const getAdminCouponsUpdateQueryOptions = <
   >,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1009,10 +1032,10 @@ export const getAdminCouponsUpdateQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminCouponsUpdateQueryKey(coupon, couponRequest);
+  const queryKey = queryOptions?.queryKey ?? getAdminCouponsUpdateQueryKey(coupon, updateCouponRequest);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCouponsUpdate>>> = ({ signal }) =>
-    adminCouponsUpdate(coupon, couponRequest, { signal, ...requestOptions });
+    adminCouponsUpdate(coupon, updateCouponRequest, { signal, ...requestOptions });
 
   return {
     queryKey,
@@ -1036,7 +1059,7 @@ export function useAdminCouponsUpdate<
   >,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest: undefined | BodyType<UpdateCouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -1058,7 +1081,7 @@ export function useAdminCouponsUpdate<
   >,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>> &
       Pick<
@@ -1080,7 +1103,7 @@ export function useAdminCouponsUpdate<
   >,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -1095,14 +1118,14 @@ export function useAdminCouponsUpdate<
   >,
 >(
   coupon: string,
-  couponRequest: BodyType<CouponRequest>,
+  updateCouponRequest?: BodyType<UpdateCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsUpdate>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminCouponsUpdateQueryOptions(coupon, couponRequest, options);
+  const queryOptions = getAdminCouponsUpdateQueryOptions(coupon, updateCouponRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

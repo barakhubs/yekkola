@@ -4,12 +4,12 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminBundlesIndex200DataItem } from "./adminBundlesIndex200DataItem";
 import type { AdminBundlesIndex200Links } from "./adminBundlesIndex200Links";
 import type { AdminBundlesIndex200Meta } from "./adminBundlesIndex200Meta";
-import type { BundleResource } from "./bundleResource";
 
 export type AdminBundlesIndex200 = {
-  data: BundleResource[];
+  data: AdminBundlesIndex200DataItem[];
   links: AdminBundlesIndex200Links;
   meta: AdminBundlesIndex200Meta;
 };

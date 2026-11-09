@@ -19,6 +19,7 @@ import type {
 
 import type {
   AdminProfessorsIndex200,
+  AdminProfessorsIndexParams,
   AdminProfessorsReinstate200,
   AdminProfessorsShow200,
   AdminProfessorsSuspend200,
@@ -205,36 +206,50 @@ export type adminProfessorsIndexResponseError = adminProfessorsIndexResponse403 
 export type adminProfessorsIndexResponse =
   adminProfessorsIndexResponseSuccess | adminProfessorsIndexResponseError;
 
-export const getAdminProfessorsIndexUrl = () => {
-  return `/admin/professors`;
+export const getAdminProfessorsIndexUrl = (params?: AdminProfessorsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/admin/professors?${stringifiedParams}` : `/admin/professors`;
 };
 
 export const adminProfessorsIndex = async (
+  params?: AdminProfessorsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<adminProfessorsIndexResponse> => {
-  return apiFetch<adminProfessorsIndexResponse>(getAdminProfessorsIndexUrl(), {
+  return apiFetch<adminProfessorsIndexResponse>(getAdminProfessorsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getAdminProfessorsIndexQueryKey = () => {
-  return [`/admin/professors`] as const;
+export const getAdminProfessorsIndexQueryKey = (params?: AdminProfessorsIndexParams) => {
+  return [`/admin/professors`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminProfessorsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: AdminProfessorsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAdminProfessorsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getAdminProfessorsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof adminProfessorsIndex>>> = ({ signal }) =>
-    adminProfessorsIndex({ signal, ...requestOptions });
+    adminProfessorsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof adminProfessorsIndex>>,
@@ -250,6 +265,7 @@ export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params: undefined | AdminProfessorsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>> &
       Pick<
@@ -268,6 +284,7 @@ export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminProfessorsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>> &
       Pick<
@@ -286,6 +303,7 @@ export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminProfessorsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -297,13 +315,14 @@ export function useAdminProfessorsIndex<
   TData = Awaited<ReturnType<typeof adminProfessorsIndex>>,
   TError = ErrorType<AuthorizationExceptionResponse>,
 >(
+  params?: AdminProfessorsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminProfessorsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getAdminProfessorsIndexQueryOptions(options);
+  const queryOptions = getAdminProfessorsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

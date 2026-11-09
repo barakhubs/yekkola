@@ -11,6 +11,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Commerce\CouponRequest;
+use App\Http\Requests\Commerce\UpdateCouponRequest;
 use App\Http\Resources\Commerce\CouponResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -36,16 +37,16 @@ final class CouponController extends Controller
 
     public function store(CouponRequest $request, SaveCoupon $save): JsonResponse
     {
-        $coupon = $save->handle($request->coupon(), $this->user($request), professor: $this->professor($request));
+        $coupon = $save->handle($request->validated(), $this->user($request), professor: $this->professor($request));
 
         return (new CouponResource($coupon->loadCount('redemptions')))->response()->setStatusCode(201);
     }
 
-    public function update(CouponRequest $request, string $coupon, SaveCoupon $save): CouponResource
+    public function update(UpdateCouponRequest $request, string $coupon, SaveCoupon $save): CouponResource
     {
         $model = $this->own($request)->findOrFail($coupon);
 
-        return new CouponResource($save->handle($request->coupon(), $this->user($request), $model)->loadCount('redemptions'));
+        return new CouponResource($save->handle($request->validated(), $this->user($request), $model)->loadCount('redemptions'));
     }
 
     /**

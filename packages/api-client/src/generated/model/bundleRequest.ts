@@ -7,7 +7,7 @@
 import type { BundleStatus } from "./bundleStatus";
 
 /**
- * Bundle create/update (PRD-05 FR-13, PRD-09 FR-13).
+ * Bundle create (PRD-05 FR-13, PRD-09 FR-13). Updates use UpdateBundleRequest (any field).
  */
 export interface BundleRequest {
   /**
