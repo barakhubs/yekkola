@@ -12,7 +12,8 @@ const imageOrigins = [
 ]
   .map((origin) => origin.trim())
   .filter(Boolean)
-  .map((origin) => new URL(origin));
+  // A bare host ("media.yekkola.com") means https.
+  .map((origin) => new URL(/^https?:\/\//.test(origin) ? origin : `https://${origin}`));
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,

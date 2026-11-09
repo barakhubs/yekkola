@@ -96,8 +96,8 @@ URLs that answer 404. Use R2 for every environment except your own machine.
 
    Lesson video moves to R2 only with `VIDEO_DRIVER=r2`, and that needs FFmpeg on the queue workers
    (`FFMPEG_BINARY`, `FFPROBE_BINARY`; R2 media spike, TODO 0.4). Until then keep `VIDEO_DRIVER=fake`.
-6. **Web and admin apps**: add the public host to `NEXT_PUBLIC_IMAGE_HOSTS` (e.g. `media.yekkola.com`, comma
-   separated with any others) and **redeploy both** (the value is compiled in).
+6. **Web and admin apps**: add the public origin to `NEXT_PUBLIC_IMAGE_HOSTS` (e.g. `https://media.yekkola.com`,
+   comma separated with any others) and **redeploy both** (the value is compiled in).
 7. **Re-upload** what was stored on the old local disk: brand images (back office → Settings → Branding), then
    professor avatars and course covers. Files on the API's old disk are gone and are not moved automatically.
 8. **Check**: a brand image URL now starts with `R2_PUBLIC_URL` and opens in the browser; uploading an identity
