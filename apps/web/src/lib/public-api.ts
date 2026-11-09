@@ -4,7 +4,7 @@ import "./api.server";
 
 import { ApiError, success } from "@yekkola/api-client";
 import { brandingShow } from "@yekkola/api-client/endpoints/branding";
-import { bundlesShow } from "@yekkola/api-client/endpoints/bundle";
+import { bundlesIndex, bundlesShow } from "@yekkola/api-client/endpoints/bundle";
 import { categoriesIndex } from "@yekkola/api-client/endpoints/category";
 import { certificatesVerify } from "@yekkola/api-client/endpoints/certificate";
 import { coursesIndex, coursesShow, featured } from "@yekkola/api-client/endpoints/course";
@@ -100,6 +100,11 @@ export async function getCourse(slug: string) {
   return (
     (await orNull(coursesShow(slug, cached(REVALIDATE.course, ["courses", `course:${slug}`]))))?.data ?? null
   );
+}
+
+/** Bundles on sale (sitemap), one page of up to 100. */
+export async function getBundles(page = 1) {
+  return success(await bundlesIndex({ page, per_page: 100 }, cached(REVALIDATE.catalogue, ["courses"])));
 }
 
 export async function getBundle(slug: string) {

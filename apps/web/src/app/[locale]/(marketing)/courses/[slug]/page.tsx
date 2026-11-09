@@ -234,7 +234,13 @@ export default async function CoursePage({ params }: Props) {
               {t("course.reviews")}
             </h2>
             <RatingStars rating={course.rating} count={course.rating_count} />
-            <ReviewList reviews={reviews?.data ?? []} locale={locale} returnTo={`/courses/${slug}`} />
+            <ReviewList
+              slug={slug}
+              reviews={reviews?.data ?? []}
+              lastPage={reviews?.meta.last_page ?? 1}
+              locale={locale}
+              returnTo={`/courses/${slug}`}
+            />
           </section>
         </div>
 

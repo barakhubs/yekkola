@@ -14,7 +14,7 @@ import {
   professorDraftSectionsUpdate,
 } from "@yekkola/api-client/endpoints/draft";
 import type { CourseVersionResource, LessonType, StudioLessonResource } from "@yekkola/api-client/model";
-import { formatDuration, type Locale } from "@yekkola/i18n";
+import { formatBytes, formatDuration, type Locale } from "@yekkola/i18n";
 import { ConfirmDialog } from "@yekkola/ui/blocks/confirm-dialog";
 import { EmptyState } from "@yekkola/ui/blocks/empty-state";
 import { Badge } from "@yekkola/ui/components/badge";
@@ -529,6 +529,9 @@ function LessonCard({
           <span className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
             <span>{catalog(`lessonTypes.${lesson.type as LessonType}`)}</span>
             {lesson.duration_seconds ? <span>{formatDuration(lesson.duration_seconds, locale)}</span> : null}
+            {lesson.download_bytes > 0 ? (
+              <span>{t("downloadSize", { size: formatBytes(lesson.download_bytes, locale) })}</span>
+            ) : null}
           </span>
         </span>
         <span className="hidden flex-wrap gap-1 sm:flex">

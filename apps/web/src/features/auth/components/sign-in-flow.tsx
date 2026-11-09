@@ -95,11 +95,26 @@ export function SignInFlow() {
     }
   }, [session.user, session.needsProfile, step.name, next, router]);
 
+  // Too many requests: the API says how long to wait; the form counts down instead of failing again.
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const waiting = useSecondsLeft(cooldownUntil);
+  // Codes sent to the same number this visit: after a few, point to help (PRD-01 §6–7).
+  const [sends, setSends] = useState(0);
+
   const requestCode = useMutation({
     mutationFn: async (to: string) =>
       success(await authOtpRequest({ phone: to, bot_token: botToken ?? undefined })).data,
-    onSuccess: (challenge, to) =>
-      setStep({ name: "code", phone: to, resendAt: Date.now() + challenge.resend_after_seconds * 1000 }),
+    onSuccess: (challenge, to) => {
+      setSends((n) => (step.name === "code" && step.phone === to ? n + 1 : 1));
+      setStep({ name: "code", phone: to, resendAt: Date.now() + challenge.resend_after_seconds * 1000 });
+    },
+    onError: (error) => {
+      const wait = error instanceof ApiError ? error.retryAfterSeconds : undefined;
+      if (wait === undefined) return;
+      const until = Date.now() + wait * 1000;
+      setCooldownUntil(until);
+      if (step.name === "code") setStep({ ...step, resendAt: until });
+    },
     // The token is spent either way: get a new one for the next attempt.
     onSettled: () => turnstile.current?.reset(),
   });
@@ -205,6 +220,7 @@ export function SignInFlow() {
             {errorMessage(requestCode.error)}
           </p>
         ) : null}
+        {sends >= 3 ? <NoCodeHelp /> : null}
       </form>
     );
   }
@@ -254,12 +270,38 @@ export function SignInFlow() {
       <Button
         type="submit"
         size="lg"
-        disabled={!botToken || requestCode.isPending}
+        disabled={!botToken || requestCode.isPending || waiting > 0}
         aria-busy={requestCode.isPending}
       >
-        {t("sendCode")}
+        {waiting > 0 ? t("tryAgainIn", { seconds: waiting }) : t("sendCode")}
       </Button>
     </form>
+  );
+}
+
+/** Seconds left until `until` (ms), ticking every second. */
+function useSecondsLeft(until: number): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (until <= now) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [until, now]);
+
+  return Math.max(0, Math.ceil((until - now) / 1000));
+}
+
+/** After several codes that didn't arrive: what to check, and where to get help. */
+function NoCodeHelp() {
+  const t = useTranslations("web.auth");
+  const contact = process.env.NEXT_PUBLIC_SUPPORT_CONTACT;
+
+  return (
+    <div role="note" className="grid gap-1 rounded-md border bg-muted/40 p-3 text-sm">
+      <p className="font-semibold">{t("noCodeTitle")}</p>
+      <p>{t("noCodeHint")}</p>
+      {contact ? <p>{t("noCodeSupport", { contact })}</p> : null}
+    </div>
   );
 }
 

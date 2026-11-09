@@ -204,7 +204,11 @@
       "signOut": "Se déconnecter",
       "botCheck": "Vérification anti-robot",
       "suspendedTitle": "Ton compte est suspendu",
-      "suspendedBody": "Tu ne peux pas suivre de cours pour le moment. Contacte le support Yekkola pour en savoir plus."
+      "suspendedBody": "Tu ne peux pas suivre de cours pour le moment. Contacte le support Yekkola pour en savoir plus.",
+      "tryAgainIn": "Réessayer dans {seconds} s",
+      "noCodeTitle": "Toujours pas de code ?",
+      "noCodeHint": "Vérifiez le numéro et que votre téléphone reçoit les SMS (réseau, mémoire pleine), puis réessayez un peu plus tard.",
+      "noCodeSupport": "Besoin d’aide : {contact}"
     },
     "myCourses": {
       "title": "Mes cours",
@@ -635,7 +639,8 @@
       "editLessonNamed": "Modifier la leçon « {title} »",
       "viewLessonNamed": "Voir la leçon « {title} »",
       "foldToMove": "Repliez la leçon pour la déplacer",
-      "applyCta": "Postuler pour enseigner"
+      "applyCta": "Postuler pour enseigner",
+      "downloadSize": "{size} à télécharger"
     },
     "teach": {
       "metaTitle": "Enseigner sur Yekkola",
@@ -1310,6 +1315,12 @@
       "previous": "Précédent",
       "next": "Suivant",
       "pageOf": "Page {page} sur {total}"
+    },
+    "errorPage": {
+      "title": "Cette page n’a pas pu s’afficher",
+      "body": "Le service est peut-être très sollicité en ce moment. Patientez quelques secondes puis réessayez.",
+      "retry": "Réessayer",
+      "retryIn": "Réessayer dans {seconds} s"
     }
   },
   "admin": {
@@ -1368,7 +1379,16 @@
       "coupons": "Codes promo",
       "bundles": "Packs",
       "professors": "Professeurs",
-      "kyc": "Vérifications d’identité"
+      "kyc": "Vérifications d’identité",
+      "groups": {
+        "overview": "Vue d’ensemble",
+        "moderation": "Modération",
+        "catalogue": "Catalogue",
+        "people": "Comptes",
+        "sales": "Ventes",
+        "finance": "Finances",
+        "administration": "Administration"
+      }
     },
     "auth": {
       "title": "Connexion de l’équipe",
