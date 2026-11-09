@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-preview-grant-transfer` (reviewer lesson preview, grant enrollment, course transfer)
-- **Next up:** professor analytics (`course_daily_stats` + studio dashboard); then Phase 3 (mobile)
+- **Current branch:** `feature/professor-analytics` (course daily stats + studio analytics dashboard)
+- **Next up:** studio reviews inbox + web polish; then Phase 3 (mobile)
 
 ## Legend
 
@@ -292,7 +292,8 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 ### 1.11 Admin API — PRD-09
 
 - [x] Dashboard stats + `platform_daily_stats` rollup — #41
-- [ ] `course_daily_stats` rollup (professor analytics, with 2.5)
+- [x] `course_daily_stats` rollup, hourly (professor analytics) — #64
+- [ ] Course page views in analytics: needs view tracking first (PostHog or a counted event)
 - [x] Professor applications, professors, KYC endpoints — #7; staff-typed applications with `can` — #23
 - [x] Users endpoints (list, detail, suspend/ban, sign out everywhere, remove device) — #38
 - [x] Grant an enrollment from the back office (PRD-09 FR-04) — #63
@@ -467,7 +468,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Show estimated download sizes per lesson in the studio (PRD-03 FR-20)
 - [ ] Expose authoring validation constants (outcomes 3–8, cover size, audiences 4, min lessons) in `/professor/authoring-options` so copy doesn't restate them
 - [ ] Favicon / app icons (404 on /favicon.ico) — with the logo set (0.2)
-- [ ] Analytics dashboard
+- [x] Analytics dashboard: period choice, comparison with the period before, daily bars, per course with student funnel, quiz pass rate — #64
 - [x] Earnings, statement (filters, CSV), payout history — #62
 - [x] Coupons and bundles (own courses, professor-funded) — #62
 - [ ] Reviews inbox (Q&A inbox done)
