@@ -373,6 +373,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /courses/{slug} | Course detail (live version, curriculum outline with preview flags and per-lesson download size, professor block) |
 | POST | /lessons/{uid}/preview-playback | Preview lessons of listed courses without signing in (no watermark, no stream session) |
 | GET | /courses/{slug}/reviews | Published reviews (`page`, `per_page`, `filter[rating]`, `sort=-created_at\|rating`) |
+| GET | /bundles | Bundles on sale (slug, title, updated_at; paginated, sitemap) |
 | GET | /professors/{slug} | Professor profile + courses; `rating` is null below 3 reviews (as courses) |
 | GET | /certificates/{serial} | Certificate verification: names as issued, `valid`/`revoked` (throttled) |
 | GET | /featured | Home page rails `{featured, popular, new, free}` (course cards) |
@@ -490,6 +491,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /admin/refunds[/{id}]; POST /admin/refunds/{id}/(approve\|reject\|retry) | Refund queue with policy facts and flags (`finance.refunds`, audited; reject and retry need a note) |
 | POST | /admin/payments/{id}/refund | Send back a payment's unapplied money (`finance.refunds`) |
 | GET / POST / GET {id} / PATCH {id} | /admin/coupons | All coupons with paid uses and the professor/course they apply to (filters: code, scope, active); new coupons are platform-funded; PATCH changes only active, end date and limits (`promotions.manage`, audited) |
+| GET | /admin/coupons/options | Coupon form choices: enabled currencies (default first) and default (`promotions.manage`) |
 | GET / POST / PATCH {id} | /admin/bundles | Platform and professor bundles with their owner (filters: title, status, currency); PATCH takes any field, and status alone never re-validates prices (`promotions.manage`, audited) |
 | GET | /admin/users, /admin/users/{id} | Accounts (`users.view`): search by phone or name, filter status/role; detail with devices, recent enrollments and orders, `can` |
 | POST | /admin/users/{id}/status, /admin/users/{id}/sign-out | Suspend / ban / reactivate `{status, note}` (suspend or ban signs out everywhere; a ban recounts the ratings of courses they reviewed), sign out everywhere (`users.manage`; never one's own account; staff accounts need `staff.manage`; audited) |
