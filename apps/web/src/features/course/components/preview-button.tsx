@@ -16,7 +16,7 @@ import { Headphones, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 
-/** The player (and Mux Player's code) loads only when someone opens a preview — public pages stay light. */
+/** The player (and hls.js) loads only when someone opens a preview — public pages stay light. */
 const ProtectedPlayer = dynamic(
   () => import("@/features/player/components/protected-player").then((m) => m.ProtectedPlayer),
   {

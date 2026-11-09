@@ -115,7 +115,8 @@ export function MediaContent({
         ) : status === "errored" ? (
           <p className="flex items-center gap-2 text-sm text-destructive">
             <TriangleAlert aria-hidden className="size-4" />
-            {media?.error ? t("media.erroredWith", { error: media.error }) : t("media.errored")}
+            {/* The API sends a translated sentence for the professor. */}
+            {media?.error ?? t("media.errored")}
           </p>
         ) : status === "waiting_upload" ? (
           <p className="text-sm">{t("media.unfinished")}</p>

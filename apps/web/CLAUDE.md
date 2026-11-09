@@ -10,7 +10,7 @@
 - URL state (filters, sort, page) via nuqs. Forms via React Hook Form + Zod schemas from `api-client`.
 - All copy through next-intl (French default, English). Money/dates/phones formatted with `@yekkola/i18n` helpers.
 - Brand: Nunito font (via `next/font/google`), primary indigo `#2c3892`, amber accent `#fdb73b` via theme tokens only — never white text on amber. Spec: `docs/brand.md`.
-- Video: Mux Player today, being replaced by an HLS player (hls.js, encrypted HLS from R2; TODO 2.4) + the per-viewer watermark overlay component.
+- Video/audio: hls.js on a native `<video>`/`<audio>` (`ProtectedPlayer`): encrypted HLS from our API — credentials go only to the API's playlist/key URLs, never to the signed R2 segment URLs; Safari plays natively. Plus the per-viewer watermark overlay.
 
 ## Commands
 
@@ -20,7 +20,7 @@
 ## Setup notes
 
 - Public pages (`(marketing)`) are Server Components fed by `src/lib/public-api.ts` (ISR: `revalidate` + cache tags `courses`, `course:{slug}`, `professor:{slug}`, `categories`). Course and professor pages render on first visit (`generateStaticParams` returns `[]`). Use `success()` from `@yekkola/api-client` to unwrap generated responses.
-- Filters and search are plain GET forms (work without JavaScript); `AutoSubmit` applies selects on change. Mux Player loads only when a preview opens (`next/dynamic`).
+- Filters and search are plain GET forms (work without JavaScript); `AutoSubmit` applies selects on change. The player (hls.js) loads only when a preview opens (`next/dynamic`).
 - Session: `useSession()` (GET /me; null on 401) drives the header (`AccountNav`) and `RequireSession` guards `(student)` pages (redirect to `/login?next=`). Sign-in posts to the API with the Sanctum cookie; redirect targets go through `safeNext()`.
 - Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`; empty locally/staging (placeholder token for the API's fake driver).
 - Learning view (`/learn/[course]/[lesson]`, `features/learning`): lesson content by type (`MediaLesson` with fresh tokens + stream heartbeat, `DocumentLesson` polling the stamped copy, `QuizLesson`); positions go through `useProgressSync` (15 s batches, flushed on pause/end/hide/leave with `keepalive`). Completion rules are the API's — the view only reports positions and "done".
