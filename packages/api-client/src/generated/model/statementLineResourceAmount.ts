@@ -6,6 +6,6 @@
  */
 
 export type StatementLineResourceAmount = {
-  amount_minor: number | string;
+  amount_minor: number;
   currency: string;
 };

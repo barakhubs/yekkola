@@ -26,7 +26,9 @@ import type {
   AuthorizationExceptionResponse,
   CouponRequest,
   ModelNotFoundExceptionResponse,
+  ProfessorCouponRequest,
   ProfessorCouponsIndex200,
+  ProfessorCouponsIndexParams,
   ProfessorCouponsStore201,
   ProfessorCouponsUpdate200,
   UpdateCouponRequest,
@@ -63,36 +65,50 @@ export type professorCouponsIndexResponseSuccess = professorCouponsIndexResponse
 };
 export type professorCouponsIndexResponse = professorCouponsIndexResponseSuccess;
 
-export const getProfessorCouponsIndexUrl = () => {
-  return `/professor/coupons`;
+export const getProfessorCouponsIndexUrl = (params?: ProfessorCouponsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/professor/coupons?${stringifiedParams}` : `/professor/coupons`;
 };
 
 export const professorCouponsIndex = async (
+  params?: ProfessorCouponsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorCouponsIndexResponse> => {
-  return apiFetch<professorCouponsIndexResponse>(getProfessorCouponsIndexUrl(), {
+  return apiFetch<professorCouponsIndexResponse>(getProfessorCouponsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getProfessorCouponsIndexQueryKey = () => {
-  return [`/professor/coupons`] as const;
+export const getProfessorCouponsIndexQueryKey = (params?: ProfessorCouponsIndexParams) => {
+  return [`/professor/coupons`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfessorCouponsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: ProfessorCouponsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorCouponsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getProfessorCouponsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorCouponsIndex>>> = ({ signal }) =>
-    professorCouponsIndex({ signal, ...requestOptions });
+    professorCouponsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof professorCouponsIndex>>,
@@ -108,6 +124,7 @@ export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | ProfessorCouponsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>> &
       Pick<
@@ -126,6 +143,7 @@ export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorCouponsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>> &
       Pick<
@@ -144,6 +162,7 @@ export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorCouponsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -155,13 +174,14 @@ export function useProfessorCouponsIndex<
   TData = Awaited<ReturnType<typeof professorCouponsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorCouponsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorCouponsIndexQueryOptions(options);
+  const queryOptions = getProfessorCouponsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -195,7 +215,7 @@ export const getProfessorCouponsStoreUrl = () => {
 };
 
 export const professorCouponsStore = async (
-  couponRequest: CouponRequest,
+  professorCouponRequest: ProfessorCouponRequest,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorCouponsStoreResponse> => {
   const getHeaders = (
@@ -218,19 +238,21 @@ export const professorCouponsStore = async (
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
-    body: JSON.stringify(couponRequest),
+    body: JSON.stringify(professorCouponRequest),
   });
 };
 
-export const getProfessorCouponsStoreQueryKey = (couponRequest?: BodyType<CouponRequest>) => {
-  return ["POST", `/professor/coupons`, couponRequest] as const;
+export const getProfessorCouponsStoreQueryKey = (
+  professorCouponRequest?: BodyType<ProfessorCouponRequest>,
+) => {
+  return ["POST", `/professor/coupons`, professorCouponRequest] as const;
 };
 
 export const getProfessorCouponsStoreQueryOptions = <
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
   TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: BodyType<CouponRequest>,
+  professorCouponRequest: BodyType<ProfessorCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -238,10 +260,10 @@ export const getProfessorCouponsStoreQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorCouponsStoreQueryKey(couponRequest);
+  const queryKey = queryOptions?.queryKey ?? getProfessorCouponsStoreQueryKey(professorCouponRequest);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorCouponsStore>>> = ({ signal }) =>
-    professorCouponsStore(couponRequest, { signal, ...requestOptions });
+    professorCouponsStore(professorCouponRequest, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof professorCouponsStore>>,
@@ -257,7 +279,7 @@ export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
   TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: BodyType<CouponRequest>,
+  professorCouponRequest: BodyType<ProfessorCouponRequest>,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>> &
       Pick<
@@ -276,7 +298,7 @@ export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
   TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: BodyType<CouponRequest>,
+  professorCouponRequest: BodyType<ProfessorCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>> &
       Pick<
@@ -295,7 +317,7 @@ export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
   TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: BodyType<CouponRequest>,
+  professorCouponRequest: BodyType<ProfessorCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -307,14 +329,14 @@ export function useProfessorCouponsStore<
   TData = Awaited<ReturnType<typeof professorCouponsStore>>,
   TError = ErrorType<ValidationExceptionResponse>,
 >(
-  couponRequest: BodyType<CouponRequest>,
+  professorCouponRequest: BodyType<ProfessorCouponRequest>,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorCouponsStore>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorCouponsStoreQueryOptions(couponRequest, options);
+  const queryOptions = getProfessorCouponsStoreQueryOptions(professorCouponRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

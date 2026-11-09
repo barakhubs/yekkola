@@ -75,6 +75,9 @@ final class EarningsController extends Controller
         return $text !== '' && in_array($text[0], ['=', '+', '-', '@', "\t", "\r"], true) && ! is_numeric($text) ? "'".$text : $text;
     }
 
+    /** Payouts sent to this professor, newest first. */
+    #[\Dedoc\Scramble\Attributes\QueryParameter('page', type: 'int', default: 1)]
+    #[\Dedoc\Scramble\Attributes\QueryParameter('per_page', type: 'int', default: 15)]
     public function payouts(Request $request): AnonymousResourceCollection
     {
         $payouts = Payout::query()->with('professor')

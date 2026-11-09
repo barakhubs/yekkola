@@ -42,9 +42,10 @@ final class StatementLineResource extends JsonResource
     private function amount(): array
     {
         $minor = (int) $this->resource->amount_minor;
+        $signed = $this->resource->direction === 'credit' ? $minor : 0 - $minor;
 
         return [
-            'amount_minor' => $this->resource->direction === 'credit' ? $minor : -$minor,
+            'amount_minor' => $signed,
             'currency' => (string) $this->resource->currency,
         ];
     }

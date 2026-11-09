@@ -23,6 +23,7 @@ import type {
   ProfessorLedgerIndex200,
   ProfessorLedgerIndexParams,
   ProfessorPayoutsIndex200,
+  ProfessorPayoutsIndexParams,
   ValidationExceptionResponse,
 } from "../../model";
 
@@ -482,36 +483,53 @@ export type professorPayoutsIndexResponseSuccess = professorPayoutsIndexResponse
 };
 export type professorPayoutsIndexResponse = professorPayoutsIndexResponseSuccess;
 
-export const getProfessorPayoutsIndexUrl = () => {
-  return `/professor/payouts`;
+export const getProfessorPayoutsIndexUrl = (params?: ProfessorPayoutsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/professor/payouts?${stringifiedParams}` : `/professor/payouts`;
 };
 
+/**
+ * @summary Payouts sent to this professor, newest first
+ */
 export const professorPayoutsIndex = async (
+  params?: ProfessorPayoutsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorPayoutsIndexResponse> => {
-  return apiFetch<professorPayoutsIndexResponse>(getProfessorPayoutsIndexUrl(), {
+  return apiFetch<professorPayoutsIndexResponse>(getProfessorPayoutsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getProfessorPayoutsIndexQueryKey = () => {
-  return [`/professor/payouts`] as const;
+export const getProfessorPayoutsIndexQueryKey = (params?: ProfessorPayoutsIndexParams) => {
+  return [`/professor/payouts`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfessorPayoutsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorPayoutsIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: ProfessorPayoutsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorPayoutsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getProfessorPayoutsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorPayoutsIndex>>> = ({ signal }) =>
-    professorPayoutsIndex({ signal, ...requestOptions });
+    professorPayoutsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof professorPayoutsIndex>>,
@@ -527,6 +545,7 @@ export function useProfessorPayoutsIndex<
   TData = Awaited<ReturnType<typeof professorPayoutsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | ProfessorPayoutsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutsIndex>>, TError, TData>> &
       Pick<
@@ -545,6 +564,7 @@ export function useProfessorPayoutsIndex<
   TData = Awaited<ReturnType<typeof professorPayoutsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorPayoutsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutsIndex>>, TError, TData>> &
       Pick<
@@ -563,24 +583,29 @@ export function useProfessorPayoutsIndex<
   TData = Awaited<ReturnType<typeof professorPayoutsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorPayoutsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Payouts sent to this professor, newest first
+ */
 
 export function useProfessorPayoutsIndex<
   TData = Awaited<ReturnType<typeof professorPayoutsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorPayoutsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorPayoutsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorPayoutsIndexQueryOptions(options);
+  const queryOptions = getProfessorPayoutsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
