@@ -15120,6 +15120,55 @@
                 "tags": [
                     "Review"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[course_id]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[rating]",
+                        "in": "query",
+                        "description": "1 to 5.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "filter[replied]",
+                        "in": "query",
+                        "description": "true or false.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` (default `-created_at`) or `rating`; prefix `-` for descending.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `ReviewResource`",
@@ -24825,11 +24874,19 @@
                             },
                             "slug": {
                                 "type": "string"
+                            },
+                            "title": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "description": "The studio inbox loads `course.liveVersion`; elsewhere null."
                             }
                         },
                         "required": [
                             "id",
-                            "slug"
+                            "slug",
+                            "title"
                         ]
                     }
                 },

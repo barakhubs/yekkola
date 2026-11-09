@@ -43,6 +43,8 @@ final class ReviewResource extends JsonResource
             'course' => $this->when($this->private && $this->relationLoaded('course'), fn () => [
                 'id' => $this->course_id,
                 'slug' => $this->course?->slug,
+                // The studio inbox loads `course.liveVersion`; elsewhere null.
+                'title' => $this->course?->relationLoaded('liveVersion') ? $this->course->liveVersion?->title : null,
             ]),
         ];
     }

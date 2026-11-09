@@ -176,7 +176,7 @@ yekkola/
 │   │   │   ├── (student)/                 /my-courses, /learn/[course]/[lesson], /checkout/[orderId],
 │   │   │   │                              /orders, /my-certificates, /wishlist, /notifications, /account ← client, auth-guarded
 │   │   │   └── (studio)/studio/           /, /apply, /courses, /courses/[id]/(details|curriculum|pricing|review),
-│   │   │                                  /analytics, /earnings, /promotions (coupons + bundles), /payouts, /questions, /profile, /verification; planned: /reviews
+│   │   │                                  /analytics, /earnings, /promotions (coupons + bundles), /payouts, /questions, /reviews, /profile, /verification
 │   │   ├── src/features/<domain>/         components/, hooks/, schemas/, utils/
 │   │   ├── src/lib/                       api (fetch config), auth, i18n, analytics
 │   │   └── messages/ → packages/i18n

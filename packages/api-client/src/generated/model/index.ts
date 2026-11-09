@@ -685,6 +685,7 @@ export * from "./professorReviewsIndex200";
 export * from "./professorReviewsIndex200Links";
 export * from "./professorReviewsIndex200Meta";
 export * from "./professorReviewsIndex200MetaLinksItem";
+export * from "./professorReviewsIndexParams";
 export * from "./professorReviewsReply200";
 export * from "./professorsShow200";
 export * from "./professorTermsAccept200";

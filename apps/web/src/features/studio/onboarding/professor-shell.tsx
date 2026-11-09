@@ -21,6 +21,7 @@ const NAV = [
   { href: "/studio/courses", key: "courses" },
   { href: "/studio/analytics", key: "analytics" },
   { href: "/studio/questions", key: "questions" },
+  { href: "/studio/reviews", key: "reviews" },
   { href: "/studio/earnings", key: "earnings" },
   { href: "/studio/promotions", key: "promotions" },
   { href: "/studio/profile", key: "profile" },

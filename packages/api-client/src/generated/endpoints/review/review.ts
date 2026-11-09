@@ -25,6 +25,7 @@ import type {
   CoursesReviewsIndexParams,
   ModelNotFoundExceptionResponse,
   ProfessorReviewsIndex200,
+  ProfessorReviewsIndexParams,
   ProfessorReviewsReply200,
   ReviewReplyRequest,
   ReviewRequest,
@@ -808,39 +809,53 @@ export type professorReviewsIndexResponseSuccess = professorReviewsIndexResponse
 };
 export type professorReviewsIndexResponse = professorReviewsIndexResponseSuccess;
 
-export const getProfessorReviewsIndexUrl = () => {
-  return `/professor/reviews`;
+export const getProfessorReviewsIndexUrl = (params?: ProfessorReviewsIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/professor/reviews?${stringifiedParams}` : `/professor/reviews`;
 };
 
 /**
  * @summary Newest first. `filter[course_id]`, `filter[rating]`, `filter[replied]=true|false`
  */
 export const professorReviewsIndex = async (
+  params?: ProfessorReviewsIndexParams,
   options?: Parameters<typeof apiFetch>[1],
 ): Promise<professorReviewsIndexResponse> => {
-  return apiFetch<professorReviewsIndexResponse>(getProfessorReviewsIndexUrl(), {
+  return apiFetch<professorReviewsIndexResponse>(getProfessorReviewsIndexUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getProfessorReviewsIndexQueryKey = () => {
-  return [`/professor/reviews`] as const;
+export const getProfessorReviewsIndexQueryKey = (params?: ProfessorReviewsIndexParams) => {
+  return [`/professor/reviews`, ...(params ? [params] : [])] as const;
 };
 
 export const getProfessorReviewsIndexQueryOptions = <
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
-  request?: SecondParameter<typeof apiFetch>;
-}) => {
+>(
+  params?: ProfessorReviewsIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getProfessorReviewsIndexQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getProfessorReviewsIndexQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof professorReviewsIndex>>> = ({ signal }) =>
-    professorReviewsIndex({ signal, ...requestOptions });
+    professorReviewsIndex(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof professorReviewsIndex>>,
@@ -856,6 +871,7 @@ export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params: undefined | ProfessorReviewsIndexParams,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>> &
       Pick<
@@ -874,6 +890,7 @@ export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>> &
       Pick<
@@ -892,6 +909,7 @@ export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
@@ -906,13 +924,14 @@ export function useProfessorReviewsIndex<
   TData = Awaited<ReturnType<typeof professorReviewsIndex>>,
   TError = ErrorType<unknown>,
 >(
+  params?: ProfessorReviewsIndexParams,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorReviewsIndex>>, TError, TData>>;
     request?: SecondParameter<typeof apiFetch>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getProfessorReviewsIndexQueryOptions(options);
+  const queryOptions = getProfessorReviewsIndexQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
