@@ -16,7 +16,7 @@ Follow these steps in order. Read `api/CLAUDE.md` and the relevant PRD first.
 7. **API Resource** in `app/Http/Resources/` — stable shape, ISO-8601 dates, money as `{amount_minor, currency}`, no hidden fields leaked (e.g. quiz `is_correct`).
 8. **Lists:** use `spatie/laravel-query-builder` with explicit allowed filters/sorts/includes; paginate.
 9. **Errors:** throw domain exceptions that render the standard error envelope with a stable `code`.
-10. **Tests (Pest), only if the endpoint has real logic** (money, access, state changes, tricky rules) — skip for simple CRUD — in `tests/Feature/Api/V1/<Audience>/`: unauthenticated, unauthorized, validation, happy path, and each business rule/edge case from the PRD. Use fake drivers for Mux, payments, SMS.
+10. **Tests (Pest), only if the endpoint has real logic** (money, access, state changes, tricky rules) — skip for simple CRUD — in `tests/Feature/Api/V1/<Audience>/`: unauthenticated, unauthorized, validation, happy path, and each business rule/edge case from the PRD. Use fake drivers for media (video), payments, SMS.
 11. **Contract:** regenerate the OpenAPI spec and `packages/api-client`; commit both with the change.
 12. **Docs:** update `docs/architecture.md` §4.2 (and §3 if schema changed).
 

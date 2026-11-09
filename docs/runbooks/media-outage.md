@@ -1,6 +1,6 @@
 # Runbook — R2 or transcoding outage
 
-Media lives in Cloudflare R2 and is transcoded by FFmpeg on the `media` queue (owner decision, 2026-11-09; replaces the Mux outage runbook). Until the R2 driver is live (TODO 1.5b), production still runs the Mux driver: check status.mux.com for playback and upload failures.
+Media lives in Cloudflare R2 and is transcoded by FFmpeg on the `media` queue (owner decision, 2026-11-09; replaces the Mux outage runbook).
 
 **Symptoms:** playback errors spike (Sentry `playback_error`), segment requests to R2 fail (403/5xx), uploads fail or stay in `waiting_upload`, media assets stuck in `processing`, `media` queue wait time growing.
 
@@ -14,16 +14,16 @@ Media lives in Cloudflare R2 and is transcoded by FFmpeg on the `media` queue (o
 
 1. Cloudflare status page (R2) and the R2 dashboard: error rate, request volume.
 2. Sentry: errors by client; are playlist and key requests (our API) healthy?
-3. Horizon: `media` queue depth and wait time, failed `TranscodeMedia` jobs and their errors (FFmpeg exit code, out of memory, timeout).
+3. Horizon: `media` queue depth and wait time, failed `ProcessMediaAsset` jobs and their errors (FFmpeg exit code, out of memory, timeout).
 4. Count of media assets in `processing` for more than 1 h, and in `waiting_upload` for more than a day.
 
 ## Act
 
 - **R2 down:** post an in-app banner (FR/EN): streaming temporarily unavailable, downloaded lessons still work. No code change needed.
-- **Segment URLs refused (R2 up):** check the R2 access keys and bucket env vars, clock skew on API instances (pre-signed URLs), and recent deploys; roll back if needed.
-- **Browser uploads failing (R2 up):** check the bucket CORS rules against the web origins.
+- **Segment URLs refused (R2 up):** check the R2 access keys and bucket env vars, clock skew on API instances (pre-signed URLs), and recent deploys; roll back if needed. Signed playlists are cached for up to half the segment-URL lifetime (keys `media:{asset}:{rendition}:signed:*`): after rotating R2 access keys, clear them (or the cache) so players get freshly signed URLs.
+- **Browser uploads or segment loads failing (R2 up):** check the bucket CORS rules against the web origins (`PUT` with `ETag` exposed for uploads, `GET`/`HEAD` for segments).
 - **Key endpoint failing:** check the app key (keys are encrypted at rest with it) and recent deploys. Never serve keys some other way.
-- **Transcoding failing or slow:** check worker CPU/memory and FFmpeg availability on the workers; scale the `media` workers; retry failed jobs once the cause is fixed. Assets marked `errored` can be re-uploaded by the professor.
+- **Transcoding failing or slow:** check worker CPU/memory and FFmpeg availability on the workers; scale the `media` workers; retry failed jobs once the cause is fixed (`ProcessMediaAsset` only acts on assets still in `processing`; an `errored` asset needs its status set back to `processing` first). A file FFmpeg can't read is marked `errored` without retries — the professor uploads it again.
 
 ## Recover
 

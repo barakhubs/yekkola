@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1\Professor;
 
 use App\Domain\Authoring\Actions\CourseReview;
 use App\Domain\Authoring\Actions\EditDraft;
+use App\Domain\Authoring\Actions\MediaUploads;
 use App\Domain\Authoring\Actions\SetLessonContent;
 use App\Domain\Authoring\Exceptions\AuthoringException;
 use App\Domain\Authoring\Models\Course;
@@ -17,6 +18,7 @@ use App\Http\Requests\Authoring\DocumentRequest;
 use App\Http\Requests\Authoring\QuizRequest;
 use App\Http\Requests\Authoring\ReorderCurriculumRequest;
 use App\Http\Requests\Authoring\SectionRequest;
+use App\Http\Requests\Authoring\StartMediaUploadRequest;
 use App\Http\Requests\Authoring\StoreLessonRequest;
 use App\Http\Requests\Authoring\UpdateDraftRequest;
 use App\Http\Requests\Authoring\UpdateLessonRequest;
@@ -108,17 +110,25 @@ final class DraftController extends Controller
     }
 
     /**
-     * Direct-upload URL for a video/audio lesson. The browser uploads to it; processing status follows.
+     * Start uploading a video/audio file for a lesson: the browser PUTs each part straight to storage (reading each
+     * response's `ETag`), asks for more part URLs as needed, then confirms with `POST /professor/media/{id}/complete`.
      */
-    public function mediaUpload(Request $request, string $course, string $lesson, SetLessonContent $content): JsonResponse
+    public function mediaUpload(StartMediaUploadRequest $request, string $course, string $lesson, MediaUploads $uploads): JsonResponse
     {
-        // The studio's origin (the web app), from config — never from the request.
-        $origin = (string) (config('cors.allowed_origins')[0] ?? config('app.url'));
-        $result = $content->createMediaUpload($this->course($request, $course), $lesson, $origin);
+        $result = $uploads->start(
+            $this->course($request, $course),
+            $lesson,
+            $request->integer('size_bytes'),
+            $request->string('content_type')->toString(),
+        );
 
         return new JsonResponse(['data' => [
             'media' => new MediaAssetResource($result['asset']),
-            'upload_url' => $result['upload_url'],
+            'upload' => [
+                'part_size_bytes' => $result['session']->partSizeBytes,
+                'part_count' => $result['session']->partCount,
+                'parts' => $result['parts'],
+            ],
         ]], 201);
     }
 

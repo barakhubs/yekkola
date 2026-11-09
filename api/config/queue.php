@@ -75,6 +75,17 @@ return [
             'after_commit' => false,
         ],
 
+        // Transcoding (ProcessMediaAsset) runs for minutes to hours: a job must never be handed to a second
+        // worker while the first is still on it, so retry_after is longer than the whole job can take.
+        'redis-media' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'media',
+            'retry_after' => (int) env('MEDIA_TRANSCODE_TIMEOUT', 3 * 3_600) + 3_600,
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
         'deferred' => [
             'driver' => 'deferred',
         ],

@@ -23,6 +23,9 @@
     "forbidden": "Tu n’as pas accès à cette page."
   },
   "web": {
+    "player": {
+      "loadFailed": "La lecture s’est interrompue. Rouvrez la leçon pour continuer."
+    },
     "nav": {
       "courses": "Cours",
       "teach": "Enseigner sur Yekkola",
@@ -531,7 +534,6 @@
         "ready": "Fichier prêt.",
         "readyWithDuration": "Fichier prêt · {duration}",
         "errored": "Le traitement a échoué. Envoyez le fichier à nouveau.",
-        "erroredWith": "Le traitement a échoué ({error}). Envoyez le fichier à nouveau.",
         "unfinished": "Un envoi précédent n’est pas allé au bout. Choisissez le fichier à nouveau."
       },
       "document": {

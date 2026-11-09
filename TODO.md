@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `docs/r2-media-storage` (docs: move all media to Cloudflare R2, drop Mux)
-- **Next up:** R2 storage disks + R2 video driver, then resume back-office professors + KYC viewer
+- **Current branch:** `feature/prd-07-r2-media` (R2 video driver, encrypted HLS playlists + key, hls.js player, multipart studio uploader; Mux removed)
+- **Next up:** resume back-office professors + KYC viewer; R2 buckets + FFmpeg spike on staging when the accounts exist (0.3, 0.4)
 
 ## Legend
 
@@ -155,18 +155,18 @@ Cannot be defaulted:
 - [x] Schema: categories (+ seed), courses, versions, sections, lessons (stable uid), media assets, quizzes, webhook inbox — #8
 - [x] Course create + settings (category, language, level, audience, price/free with limits and CDF whole francs) (FR-01, FR-09, FR-15, FR-18) — #8
 - [x] Draft details + cover; curriculum CRUD + full reorder; preview limit (FR-02, FR-03, FR-08) — #8
-- [x] Mux driver (HTTP + RS256 JWTs): DRM video uploads with burned-in logo, signed audio with audio rendition, tokens, offline license, signed webhooks (FR-04, FR-05) — #8
+- [x] Mux driver (HTTP + RS256 JWTs): DRM video uploads with burned-in logo, signed audio with audio rendition, tokens, offline license, signed webhooks (FR-04, FR-05) — #8 (removed for R2 in #61)
 - [x] Webhook inbox (dedupe, re-fetch from provider, `media` queue) + fake upload endpoint for staging — #8
 - [x] Document lessons (PDF, private disk); quiz builder with answer validation (FR-06, FR-07) — #8
 - [x] Submit checklist, submit / withdraw, staff approve / reject (locked, audited), start new draft from live (uids kept, media reused) (FR-10–13) — #8
 - [x] Unpublish / republish / archive; delete only if never published (FR-16, FR-17) — #8
 - [ ] Delete only with zero enrollments — with 1.8
 - [ ] Virus scan + page count for documents; pre-signed document uploads (FR-06)
-- [ ] Professor name in the burned-in watermark: drawn by FFmpeg during transcoding with the R2 driver (1.5b), no per-professor overlay image needed (FR-05)
+- [x] Professor name in the burned-in watermark: drawn by FFmpeg during transcoding ("Yekkola · name" + optional logo PNG) (FR-05) — #61
 - [ ] Clean up unreferenced media assets: R2 source, playlists, segments and key (BR-05)
 - [ ] Studio "changes since live" view, student-view preview, download sizes per lesson (FR-14, FR-19, FR-20)
 - [-] Verify DRM + signed thumbnails policy and lowest `max_resolution_tier` in the Mux spike — superseded by R2, 2026-11-09 (no DRM; the rendition ladder and poster frames are ours)
-- [-] Request the Mux upload outside the draft lock (no HTTP call while the row is locked) — superseded by R2, 2026-11-09 (pre-signing R2 URLs makes no HTTP call)
+- [-] Request the Mux upload outside the draft lock (no HTTP call while the row is locked) — superseded by R2, 2026-11-09 (one short R2 call, opening the multipart upload, stays inside the lock; pre-signing part URLs makes no HTTP call)
 - [ ] Admin "changes since live": compare quiz/document content and positions, not lesson timestamps
 - [ ] Separate, larger rate limit for authoring uploads (shared `uploads` limiter is 30/h)
 - [ ] Clean up document files when a section is deleted or a draft copy rolls back
@@ -174,13 +174,17 @@ Cannot be defaulted:
 
 ### 1.5b Media on Cloudflare R2 — owner decision 2026-11-09 (PRD-03, PRD-07)
 
-- [ ] R2 Storage disks: S3-compatible private bucket (KYC, credentials, lesson media) and public bucket (public images) behind `yekkola.private_disk` / `yekkola.public_disk`; KYC still streamed through the API only
-- [ ] R2 `VideoProvider` driver: pre-signed (multipart) upload URLs, `POST /professor/media/{id}/complete` (object and size check, then `processing`), FFmpeg job on the `media` queue (HLS renditions 720p cap + 480p/360p, audio-only HLS, AES-128 one key per asset, burned-in logo + professor name, poster frame), `ready`/`errored` (arch §1.3 B)
-- [ ] `media_assets` schema: R2 object keys, renditions, AES key encrypted at rest (never in R2) (arch §3.3)
-- [ ] Playlist + key endpoints: `GET /lessons/{uid}/hls/{playlist}` (segment URIs → short-lived pre-signed R2 URLs) and `GET /lessons/{uid}/key` (enrollment or preview, account, live web stream session or registered device); `POST /lessons/{uid}/playback` returns the playlist URL (arch §1.3 D, §4.2)
+- [x] R2 Storage disks `r2-private` / `r2-public` (S3 API, `R2_*` env) behind `yekkola.private_disk` / `yekkola.public_disk` / `yekkola.media.disk`; KYC still streamed through the API only — #61
+- [ ] Staging/production env: `PRIVATE_DISK=r2-private`, `PUBLIC_DISK=r2-public`, `VIDEO_DRIVER=r2`, `R2_*`, `FFMPEG_BINARY`/`FFPROBE_BINARY`; `media` queue `retry_after` longer than `MEDIA_TRANSCODE_TIMEOUT` (3 h) + 10 min; private bucket CORS: `PUT` from the web origin with `ETag` exposed, and `GET`/`HEAD` from the web origins (segments); `MEDIA_WORKERS` for the `supervisor-media` Horizon supervisor
+- [ ] Burned-in watermark assets on the workers: logo PNG at `resources/media/watermark.png` (or `MEDIA_WATERMARK_LOGO`) and a TTF for the text (`MEDIA_WATERMARK_FONT`, e.g. Nunito Bold)
+- [x] R2 `VideoProvider` driver: multipart upload with pre-signed part URLs (`/media/{id}/parts`), `POST /professor/media/{id}/complete` (ETags, stored size re-checked against the limit), `ProcessMediaAsset` + `FfmpegTranscoder` on the `media` queue (720p/480p/360p never upscaled, mono audio HLS, AES-128 one key per asset, burned-in watermark, poster), `ready`/`errored` (arch §1.3 B) — #61
+- [ ] Sweep stale `/tmp/yekkola-media-*` work folders on media workers (a hard-killed transcode leaves the source and key file behind)
+- [ ] Delete the R2 source once an asset is `ready` (kept for now in case of re-transcoding; decide with the cost estimate)
+- [x] `media_assets` schema: source key, size, output prefix, renditions, AES key (encrypted cast, never in R2), poster flag (arch §3.3) — #61
+- [x] Playlist + key endpoints: `GET /lessons/{uid}/hls/master.m3u8`, `/hls/{rendition}.m3u8` (segments → pre-signed R2 URLs, signed playlists cached) and `/hls/key`, each re-checking access (`AuthorizeMedia`); `POST /lessons/{uid}/playback` returns `playlist_url` + `poster_url` (arch §1.3 D, §4.2) — #61
 - [ ] Offline license endpoint returns rendition playlist + AES key + expiry (arch §1.3 E) — with 1.9 FR-07
-- [ ] Remove the Mux driver, `/webhooks/video`, the video webhook inbox use and Mux env vars; keep `FakeVideoProvider` for tests; update the `VideoProvider` contract tests
-- [ ] Check the R2/transcoding outage runbook (`docs/runbooks/media-outage.md`) against the live driver
+- [x] Remove the Mux driver, `/webhooks/video`, the video webhook inbox use and Mux env vars; `FakeVideoProvider` reworked for parts; contract tests updated — #61
+- [x] Check the R2/transcoding outage runbook (`docs/runbooks/media-outage.md`) against the driver (job name, cached signed playlists, retries) — #61
 
 ### 1.6 Catalogue & search — PRD-04
 
@@ -263,7 +267,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Clean up stamped copies when a document is replaced (old `document_stamps` rows go with the media row; their files stay)
 - [ ] Check documents uploaded before the stamper check (`inspect`) and tell professors which ones must be re-exported
 - [ ] Quiz attempts on preview lessons: also require the course to be listed (`CourseAccess::previewAllowed`, as playback and documents do)
-- [ ] Playlist and key requests check the live web stream session, so the web stream limit doesn't rely on the player (FR-05) — with the R2 playlist/key endpoints (1.5b)
+- [x] Playlist and key requests check the live web stream session, so the web stream limit doesn't rely on the player (FR-05) — #61
 - [x] Takedown: no new playback/document tokens for anyone — #42; offline removal at next sync comes with entitlement sync
 
 ### 1.9b Copy
@@ -435,7 +439,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Playwright journey: sign in → enrol free → watch preview → finish document + quiz → certificate
 - [ ] Check on staging that the `keepalive` progress PUT on tab close arrives (Chrome, Safari, Firefox; it needs a CORS preflight); if not, save to localStorage on `pagehide` and send on the next visit
 - [ ] Learning view: re-issue playback tokens on a player error after a very long pause
-- [ ] Player swap: Mux Player → HLS player (hls.js via a lightweight player, loaded on demand) for lessons and course-page previews, keeping `WatermarkOverlay` and the stream heartbeat; drop `@mux/*` packages (PRD-06, PRD-07)
+- [x] Player swap: Mux Player → hls.js on a native video/audio element (loaded on demand; Safari native), credentials only to the API, playlist reload on expired segments, keeping `WatermarkOverlay` and the stream heartbeat; `@mux/*` dropped (PRD-06, PRD-07) — #61
+- [ ] Player: own controls (speed menu, quality choice, keyboard shortcuts) if native controls fall short on low-end phones — check in the R2 spike
 - [ ] Wishlist, in-app notifications
 - [ ] Playwright: sign-in, free enroll, paid checkout (fake), learning
 
@@ -453,7 +458,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [-] Video/audio size limit is only checked in the browser: Mux direct uploads can't be capped by size — superseded by R2, 2026-11-09 (upload-complete checks the object size and the transcoder the duration, server-side)
 - [ ] Replacing a ready video/audio: keep the previous asset until the new one is ready (today the lesson points at the new asset at once, so a cancelled or failed replacement leaves it empty)
 - [-] Sync `waiting_upload` assets with the provider (Mux "get upload" → asset id) when the `upload.asset_created` webhook is missed — superseded by R2, 2026-11-09 (no upload webhooks)
-- [ ] Studio uploader: chunked upload to pre-signed R2 URLs (resumable), then the upload-complete call; processing status unchanged (PRD-03 FR-04)
+- [x] Studio uploader: multipart upload to pre-signed R2 URLs (3 parts at a time, retries with backoff, waits while offline, fresh URL on expiry), then the upload-complete call (PRD-03 FR-04) — #61
+- [ ] Studio uploader: resume after a page reload (keep the media id + sent parts; R2 keeps the multipart upload open)
 - [ ] True/false quiz options in the course's language (today the professor's UI language), ideally generated by the API
 - [ ] Show estimated download sizes per lesson in the studio (PRD-03 FR-20)
 - [ ] Expose authoring validation constants (outcomes 3–8, cover size, audiences 4, min lessons) in `/professor/authoring-options` so copy doesn't restate them

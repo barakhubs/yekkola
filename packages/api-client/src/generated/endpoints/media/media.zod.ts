@@ -7,8 +7,7 @@
 import * as zod from "zod";
 
 /**
- * @summary Processing status of an uploaded file (the studio polls this). Re-checks the provider while processing,
-in case a webhook was delayed
+ * @summary Processing status of an uploaded file (the studio polls this until `ready` or `errored`)
  */
 export const ProfessorMediaShowParams = zod.object({
   media: zod.string(),
@@ -20,6 +19,91 @@ export const ProfessorMediaShowResponse = zod.object({
     kind: zod.string(),
     status: zod.string(),
     duration_seconds: zod.int().nullable(),
-    error: zod.string().nullable(),
+    size_bytes: zod.int().nullable(),
+    error: zod
+      .union([
+        zod.literal(
+          "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+        ),
+        zod.literal(null),
+      ])
+      .nullable(),
+  }),
+});
+
+/**
+ * @summary Fresh pre-signed URLs for some parts of an open upload (the next batch, or one whose URL expired)
+ */
+export const ProfessorMediaPartsParams = zod.object({
+  media: zod.string(),
+});
+
+export const professorMediaPartsBodyPartsItemMax = 10000;
+
+export const professorMediaPartsBodyPartsMax = 100;
+
+export const ProfessorMediaPartsBody = zod
+  .object({
+    parts: zod
+      .array(zod.int().min(1).max(professorMediaPartsBodyPartsItemMax))
+      .min(1)
+      .max(professorMediaPartsBodyPartsMax),
+  })
+  .describe("Fresh pre-signed URLs for up to 100 parts of an upload (1-based part numbers).");
+
+export const ProfessorMediaPartsResponse = zod.object({
+  data: zod.object({
+    parts: zod.array(
+      zod.object({
+        number: zod.int(),
+        url: zod.string(),
+      }),
+    ),
+  }),
+});
+
+/**
+ * @summary Confirm the upload once every part is sent: the file is checked and queued for processing (`processing`).
+Calling it again after success is harmless
+ */
+export const ProfessorMediaCompleteParams = zod.object({
+  media: zod.string(),
+});
+
+export const professorMediaCompleteBodyPartsItemNumberMax = 10000;
+
+export const professorMediaCompleteBodyPartsItemEtagMax = 200;
+
+export const professorMediaCompleteBodyPartsMax = 10000;
+
+export const ProfessorMediaCompleteBody = zod
+  .object({
+    parts: zod
+      .array(
+        zod.object({
+          number: zod.int().min(1).max(professorMediaCompleteBodyPartsItemNumberMax),
+          etag: zod.string().max(professorMediaCompleteBodyPartsItemEtagMax),
+        }),
+      )
+      .min(1)
+      .max(professorMediaCompleteBodyPartsMax),
+  })
+  .describe("Every uploaded part with the `ETag` its PUT answered with.");
+
+export const ProfessorMediaCompleteResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    kind: zod.string(),
+    status: zod.string(),
+    duration_seconds: zod.int().nullable(),
+    size_bytes: zod.int().nullable(),
+    error: zod
+      .union([
+        zod.literal(
+          "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+        ),
+        zod.literal(null),
+      ])
+      .nullable(),
   }),
 });

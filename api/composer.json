@@ -20,6 +20,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^11.9",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "meilisearch/meilisearch-php": "^1.17",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",

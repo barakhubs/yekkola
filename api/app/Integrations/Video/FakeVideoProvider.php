@@ -5,184 +5,131 @@ declare(strict_types=1);
 namespace App\Integrations\Video;
 
 use App\Domain\Authoring\Enums\MediaKind;
-use App\Integrations\InvalidWebhookPayload;
-use App\Integrations\InvalidWebhookSignature;
+use App\Domain\Authoring\Models\MediaAsset;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Cache\Repository as Cache;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 
 /**
- * Fake video host for local, staging, and tests. Refused in production.
+ * Fake media host for local, staging, and tests. Refused in production.
  *
- * The upload URL points at our own fake endpoint (PUT /api/v1/_fake/video-uploads/{id}), so the real studio
- * upload flow works on staging: the "upload" completes the asset (completeUpload) and processes it like a
- * provider webhook. markErrored() simulates processing failures. Tokens are opaque strings encoding what was
- * asked for, so tests can assert on them.
+ * Part URLs point at our own fake endpoint (PUT /api/v1/_fake/video-uploads/{upload}/parts/{n}), so the real
+ * studio upload flow works without R2: each part answers with the ETag `"fake-{n}"`, nothing is stored, and
+ * "processing" returns a fixed 20-minute result at once. failProcessing() simulates a file FFmpeg can't read.
+ * Playlists and segment URLs are synthetic.
  */
 final class FakeVideoProvider implements VideoProvider
 {
-    public const WEBHOOK_SIGNATURE_HEADER = 'X-Fake-Signature';
-
     private const PREFIX = 'fake-video:';
 
-    public function __construct(
-        private readonly Cache $cache,
-        private readonly string $webhookSecret,
-    ) {}
+    public function __construct(private readonly Cache $cache) {}
 
     public function name(): string
     {
         return 'fake';
     }
 
-    public function createDirectUpload(DirectUploadRequest $request): DirectUpload
+    public function startUpload(MediaAsset $asset, int $sizeBytes, string $contentType): UploadSession
     {
-        $uploadId = 'fake-upload-'.Str::ulid();
-        $assetId = 'fake-asset-'.Str::ulid();
+        $partSize = UploadSession::partSize($sizeBytes, (int) config('yekkola.media.part_size_mb', 10) * 1024 * 1024);
+        $session = new UploadSession('fake-upload-'.Str::ulid(), "media/{$asset->id}/source", $partSize, max(1, (int) ceil($sizeBytes / $partSize)));
+        $this->cache->put(self::PREFIX.'upload:'.$session->uploadId, $session->partCount, now()->addDays(7));
 
-        $this->cache->put(self::PREFIX.$assetId, [
-            'status' => VideoAssetStatus::Preparing->value,
-            'playback_id' => 'fake-playback-'.Str::ulid(),
-            'passthrough' => $request->passthrough,
-            'kind' => $request->kind->value,
-        ], now()->addDays(30));
-        $this->cache->put(self::PREFIX.'upload:'.$uploadId, $assetId, now()->addDays(30));
-
-        return new DirectUpload($uploadId, rtrim((string) config('app.url'), '/').'/api/v1/_fake/video-uploads/'.$uploadId);
+        return $session;
     }
 
-    /** Whether a direct upload is still waiting for its file (for chunked PUTs before the last one). */
-    public function hasPendingUpload(string $uploadId): bool
+    public function uploadPartUrls(MediaAsset $asset, array $partNumbers, int $ttlSeconds): array
     {
-        return $this->cache->has(self::PREFIX.'upload:'.$uploadId);
-    }
-
-    public function getAsset(string $assetId): VideoAsset
-    {
-        /** @var array{status: string, playback_id: string, passthrough: string}|null $state */
-        $state = $this->cache->get(self::PREFIX.$assetId);
-
-        if ($state === null) {
-            throw new VideoAssetNotFound("No asset [{$assetId}].");
+        $base = rtrim((string) config('app.url'), '/').'/api/v1/_fake/video-uploads/'.$asset->provider_upload_id.'/parts/';
+        $urls = [];
+        foreach ($partNumbers as $number) {
+            $urls[$number] = $base.$number;
         }
 
-        $status = VideoAssetStatus::from($state['status']);
-
-        return new VideoAsset(
-            id: $assetId,
-            status: $status,
-            playbackId: $status === VideoAssetStatus::Ready ? $state['playback_id'] : null,
-            durationSeconds: $status === VideoAssetStatus::Ready ? 1_200.0 : null,
-            passthrough: $state['passthrough'],
-            errorMessage: $status === VideoAssetStatus::Errored ? 'Simulated processing error.' : null,
-        );
+        return $urls;
     }
 
-    public function deleteAsset(string $assetId): void
+    /** The ETag the fake part endpoint answers with, or null when no such upload is open. */
+    public function receivePart(string $uploadId, int $number): ?string
     {
-        $this->cache->forget(self::PREFIX.$assetId);
+        $count = $this->cache->get(self::PREFIX.'upload:'.$uploadId);
+
+        return is_int($count) && $number >= 1 && $number <= $count ? "\"fake-{$number}\"" : null;
     }
 
-    public function playbackTokens(string $playbackId, MediaKind $kind, int $ttlSeconds): PlaybackTokens
+    public function completeUpload(MediaAsset $asset, array $parts): int
     {
-        $expiresAt = CarbonImmutable::now()->addSeconds($ttlSeconds);
-        $suffix = "{$playbackId}:{$expiresAt->getTimestamp()}";
-        $isVideo = $kind === MediaKind::Video;
-
-        return new PlaybackTokens(
-            playbackToken: "fake-playback-token:{$suffix}",
-            drmToken: $kind->supportsDrm() ? "fake-drm-token:{$suffix}" : null,
-            expiresAt: $expiresAt,
-            thumbnailToken: $isVideo ? "fake-thumbnail-token:{$suffix}" : null,
-            storyboardToken: $isVideo ? "fake-storyboard-token:{$suffix}" : null,
-        );
-    }
-
-    public function offlineLicenseToken(string $playbackId, int $licenseSeconds, int $ttlSeconds): string
-    {
-        if ($licenseSeconds <= 0) {
-            throw new InvalidArgumentException('License duration must be positive.');
+        $count = $this->cache->get(self::PREFIX.'upload:'.$asset->provider_upload_id);
+        if (! is_int($count)) {
+            throw new UploadIncomplete('No such upload.');
         }
 
-        return "fake-offline-token:{$playbackId}:license={$licenseSeconds}";
+        $received = [];
+        foreach ($parts as $part) {
+            if (trim($part['etag'], '"') === "fake-{$part['number']}") {
+                $received[$part['number']] = true;
+            }
+        }
+        if (count($received) !== $count || array_diff(range(1, $count), array_keys($received)) !== []) {
+            throw new UploadIncomplete('Missing parts.');
+        }
+
+        $this->cache->forget(self::PREFIX.'upload:'.$asset->provider_upload_id);
+
+        return (int) ($this->cache->pull(self::PREFIX.'size:'.$asset->id) ?? $asset->size_bytes);
     }
 
-    public function audioDownloadUrl(string $playbackId, int $ttlSeconds): string
+    /** The next completeUpload() of this asset reports `$bytes` stored (a client that sent more than it said). */
+    public function storeSize(string $assetId, int $bytes): void
+    {
+        $this->cache->put(self::PREFIX.'size:'.$assetId, $bytes, now()->addDay());
+    }
+
+    public function abortUpload(MediaAsset $asset): void
+    {
+        $this->cache->forget(self::PREFIX.'upload:'.$asset->provider_upload_id);
+    }
+
+    public function process(MediaAsset $asset, string $watermarkText): ProcessedMedia
+    {
+        if ($this->cache->pull(self::PREFIX.'fail:'.$asset->id) !== null) {
+            throw new MediaProcessingFailed('Simulated processing error.');
+        }
+
+        $renditions = $asset->kind === MediaKind::Video
+            ? [
+                new Rendition('720p', 2_000_000, 270_000_000, 1280, 720),
+                new Rendition('480p', 1_000_000, 135_000_000, 854, 480),
+                new Rendition('360p', 600_000, 80_000_000, 640, 360),
+            ]
+            : [new Rendition('audio', 70_000, 10_000_000)];
+
+        return new ProcessedMedia($renditions, 1_200, random_bytes(16), "media/{$asset->id}/hls/fake", $asset->kind === MediaKind::Video);
+    }
+
+    /** The next process() of this asset fails. */
+    public function failProcessing(string $assetId): void
+    {
+        $this->cache->put(self::PREFIX.'fail:'.$assetId, true, now()->addDay());
+    }
+
+    public function mediaPlaylist(MediaAsset $asset, Rendition $rendition, string $keyUri, int $ttlSeconds): string
     {
         $expires = CarbonImmutable::now()->addSeconds($ttlSeconds)->getTimestamp();
+        $raw = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:6\n#EXT-X-PLAYLIST-TYPE:VOD\n"
+            .'#EXT-X-KEY:METHOD=AES-128,URI="'.HlsPlaylist::KEY_PLACEHOLDER."\"\n"
+            ."#EXTINF:6.0,\nseg_00000.ts\n#EXTINF:6.0,\nseg_00001.ts\n#EXT-X-ENDLIST\n";
 
-        return "https://downloads.fake.test/{$playbackId}/audio.m4a?expires={$expires}";
-    }
-
-    public function parseWebhook(Request $request): VideoWebhookEvent
-    {
-        $expected = hash_hmac('sha256', $request->getContent(), $this->webhookSecret);
-
-        if (! hash_equals($expected, (string) $request->header(self::WEBHOOK_SIGNATURE_HEADER))) {
-            throw InvalidWebhookSignature::make();
-        }
-
-        if (! is_string($request->input('id')) || $request->input('id') === '') {
-            throw InvalidWebhookPayload::missing('id');
-        }
-
-        return new VideoWebhookEvent(
-            eventId: (string) $request->input('id'),
-            type: VideoEventType::tryFrom((string) $request->input('type')) ?? VideoEventType::Other,
-            assetId: $request->input('asset_id'),
-            uploadId: $request->input('upload_id'),
-            passthrough: $request->input('passthrough'),
-            payload: $request->all(),
+        return HlsPlaylist::withKey(
+            HlsPlaylist::signSegments($raw, fn (string $segment): string => "https://media.fake.test/{$asset->id}/{$rendition->name}/{$segment}?expires={$expires}"),
+            $keyUri,
         );
     }
 
-    /** Simulate the browser upload finishing and processing completing. Returns the asset id. */
-    public function completeUpload(string $uploadId): ?string
+    public function posterUrl(MediaAsset $asset, int $ttlSeconds): ?string
     {
-        $assetId = $this->assetIdForUpload($uploadId);
-        $state = $assetId === null ? null : $this->cache->get(self::PREFIX.$assetId);
-
-        if (! is_array($state)) {
-            return null;
-        }
-
-        $state['status'] = VideoAssetStatus::Ready->value;
-        $this->cache->put(self::PREFIX.$assetId, $state, now()->addDays(30));
-
-        return $assetId;
+        return $asset->has_poster ? "https://media.fake.test/{$asset->id}/poster.jpg?expires=".CarbonImmutable::now()->addSeconds($ttlSeconds)->getTimestamp() : null;
     }
 
-    /** Simulate a processing failure for an asset. */
-    public function markErrored(string $assetId): void
-    {
-        $state = $this->cache->get(self::PREFIX.$assetId);
-        if (is_array($state)) {
-            $state['status'] = VideoAssetStatus::Errored->value;
-            $this->cache->put(self::PREFIX.$assetId, $state, now()->addDays(30));
-        }
-    }
-
-    public function assetIdForUpload(string $uploadId): ?string
-    {
-        $assetId = $this->cache->get(self::PREFIX.'upload:'.$uploadId);
-
-        return is_string($assetId) ? $assetId : null;
-    }
-
-    /**
-     * Build a correctly signed webhook request (tests and staging tools).
-     *
-     * @param  array<string, mixed>  $payload
-     */
-    public function webhookRequest(array $payload): Request
-    {
-        $body = (string) json_encode($payload);
-
-        $request = Request::create('/api/v1/webhooks/video', 'POST', server: ['CONTENT_TYPE' => 'application/json'], content: $body);
-        $request->headers->set(self::WEBHOOK_SIGNATURE_HEADER, hash_hmac('sha256', $body, $this->webhookSecret));
-
-        return $request;
-    }
+    public function deleteAsset(MediaAsset $asset): void {}
 }

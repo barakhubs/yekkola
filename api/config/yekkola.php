@@ -20,7 +20,7 @@ return [
     'demo_phone_prefix' => '+24399000',
 
     'drivers' => [
-        // fake | mux (mux driver lands with Phase 1.5 authoring)
+        // fake | r2 (Cloudflare R2 + FFmpeg encrypted HLS)
         'video' => env('VIDEO_DRIVER', 'fake'),
         // fake | <aggregator> (deferred until the aggregator is chosen)
         'payments' => env('PAYMENT_DRIVER', 'fake'),
@@ -105,15 +105,32 @@ return [
         'name' => env('SUPER_ADMIN_NAME', 'Super admin'),
     ],
 
-    'mux' => [
-        'token_id' => env('MUX_TOKEN_ID'),
-        'token_secret' => env('MUX_TOKEN_SECRET'),
-        'signing_key_id' => env('MUX_SIGNING_KEY_ID'),
-        'signing_private_key' => env('MUX_SIGNING_PRIVATE_KEY'),
-        'webhook_secret' => env('MUX_WEBHOOK_SECRET'),
-        'drm_configuration_id' => env('MUX_DRM_CONFIGURATION_ID'),
-        // Burned-in watermark image (Yekkola logo PNG, public URL) applied to every uploaded video.
-        'watermark_url' => env('MUX_WATERMARK_URL'),
+    // Lesson video/audio (R2 video driver, arch §1.3). Upload limits are platform settings (CatalogSettings).
+    'media' => [
+        // Private R2 disk holding sources and encrypted HLS output (never public).
+        'disk' => env('MEDIA_DISK', 'r2-private'),
+        'ffmpeg' => env('FFMPEG_BINARY', 'ffmpeg'),
+        'ffprobe' => env('FFPROBE_BINARY', 'ffprobe'),
+        // Seconds all FFmpeg runs of one asset may take together (the job adds 30 min for R2 transfers).
+        'timeout_seconds' => (int) env('MEDIA_TRANSCODE_TIMEOUT', 3 * 3_600),
+        // Queue connection for transcoding: `redis-media` (long retry_after) whenever queues run on Redis.
+        'queue_connection' => env('MEDIA_QUEUE_CONNECTION', env('QUEUE_CONNECTION') === 'redis' ? 'redis-media' : null),
+        // Multipart upload part size (raised automatically for very large files).
+        'part_size_mb' => 10,
+        // Pre-signed part URLs live this long; the studio asks again when one expires.
+        'upload_url_ttl_minutes' => 60,
+        'segment_seconds' => 6,
+        // Video ladder, highest first; renditions above the source height are skipped (the lowest is always made).
+        'renditions' => [
+            ['name' => '720p', 'height' => 720, 'video_kbps' => 1_800, 'audio_kbps' => 96],
+            ['name' => '480p', 'height' => 480, 'video_kbps' => 900, 'audio_kbps' => 64],
+            ['name' => '360p', 'height' => 360, 'video_kbps' => 500, 'audio_kbps' => 64],
+        ],
+        'audio_kbps' => 64,
+        // Burned-in watermark: logo PNG (optional; skipped if missing) + "Yekkola · professor name" text.
+        'watermark_logo' => env('MEDIA_WATERMARK_LOGO', resource_path('media/watermark.png')),
+        // TTF/OTF for the text; empty = FFmpeg's fontconfig default.
+        'watermark_font' => env('MEDIA_WATERMARK_FONT'),
     ],
 
     'checkout' => [
@@ -126,7 +143,7 @@ return [
 
     'catalogue' => [
         // Estimated download size at the lowest offline tier (PRD-04 FR-05): duration × bitrate.
-        // Provisional — confirm against real Mux renditions in the Mux spike (TODO 1.6).
+        // Provisional — replace with the stored rendition sizes from the R2 driver (TODO 1.6).
         'download_kbps' => [
             'video' => (int) env('DOWNLOAD_ESTIMATE_VIDEO_KBPS', 1_000),
             'audio' => (int) env('DOWNLOAD_ESTIMATE_AUDIO_KBPS', 96),

@@ -53,7 +53,15 @@ export const ProfessorDraftShowResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),
@@ -195,7 +203,15 @@ export const ProfessorDraftUpdateResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),
@@ -293,7 +309,15 @@ export const ProfessorDraftCoverResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),
@@ -398,7 +422,15 @@ export const ProfessorDraftReorderResponse = zod.object({
                 kind: zod.string(),
                 status: zod.string(),
                 duration_seconds: zod.int().nullable(),
-                error: zod.string().nullable(),
+                size_bytes: zod.int().nullable(),
+                error: zod
+                  .union([
+                    zod.literal(
+                      "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+                    ),
+                    zod.literal(null),
+                  ])
+                  .nullable(),
               }),
               zod.null(),
             ]),
@@ -533,7 +565,15 @@ export const ProfessorDraftLessonsStoreResponse = zod.object({
         kind: zod.string(),
         status: zod.string(),
         duration_seconds: zod.int().nullable(),
-        error: zod.string().nullable(),
+        size_bytes: zod.int().nullable(),
+        error: zod
+          .union([
+            zod.literal(
+              "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+            ),
+            zod.literal(null),
+          ])
+          .nullable(),
       }),
       zod.null(),
     ]),
@@ -608,7 +648,15 @@ export const ProfessorDraftLessonsUpdateResponse = zod.object({
         kind: zod.string(),
         status: zod.string(),
         duration_seconds: zod.int().nullable(),
-        error: zod.string().nullable(),
+        size_bytes: zod.int().nullable(),
+        error: zod
+          .union([
+            zod.literal(
+              "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+            ),
+            zod.literal(null),
+          ])
+          .nullable(),
       }),
       zod.null(),
     ]),
@@ -653,12 +701,29 @@ export const ProfessorDraftLessonsDestroyParams = zod.object({
 export const ProfessorDraftLessonsDestroyResponse = zod.void();
 
 /**
- * @summary Direct-upload URL for a video/audio lesson. The browser uploads to it; processing status follows
+ * @summary Start uploading a video/audio file for a lesson: the browser PUTs each part straight to storage (reading each
+response's `ETag`), asks for more part URLs as needed, then confirms with `POST /professor/media/{id}/complete`
  */
 export const ProfessorDraftLessonsMediaParams = zod.object({
   course: zod.string(),
   lesson: zod.string(),
 });
+
+export const professorDraftLessonsMediaBodyContentTypeMax = 100;
+
+export const professorDraftLessonsMediaBodyContentTypeRegExp = new RegExp("^[a-z]+\\/[A-Za-z0-9.+-]+$");
+
+export const ProfessorDraftLessonsMediaBody = zod
+  .object({
+    size_bytes: zod.int().min(1),
+    content_type: zod
+      .string()
+      .max(professorDraftLessonsMediaBodyContentTypeMax)
+      .regex(professorDraftLessonsMediaBodyContentTypeRegExp),
+  })
+  .describe(
+    "Start a video/audio upload (PRD-03 FR-04/05): the file's size and type. The size limit per kind is a\nplatform setting, checked by the action.",
+  );
 
 export const ProfessorDraftLessonsMediaResponse = zod.object({
   data: zod.object({
@@ -667,9 +732,26 @@ export const ProfessorDraftLessonsMediaResponse = zod.object({
       kind: zod.string(),
       status: zod.string(),
       duration_seconds: zod.int().nullable(),
-      error: zod.string().nullable(),
+      size_bytes: zod.int().nullable(),
+      error: zod
+        .union([
+          zod.literal(
+            "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+          ),
+          zod.literal(null),
+        ])
+        .nullable(),
     }),
-    upload_url: zod.string(),
+    upload: zod.object({
+      part_size_bytes: zod.int(),
+      part_count: zod.int(),
+      parts: zod.array(
+        zod.object({
+          number: zod.int(),
+          url: zod.string(),
+        }),
+      ),
+    }),
   }),
 });
 
@@ -702,7 +784,15 @@ export const ProfessorDraftLessonsDocumentResponse = zod.object({
         kind: zod.string(),
         status: zod.string(),
         duration_seconds: zod.int().nullable(),
-        error: zod.string().nullable(),
+        size_bytes: zod.int().nullable(),
+        error: zod
+          .union([
+            zod.literal(
+              "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+            ),
+            zod.literal(null),
+          ])
+          .nullable(),
       }),
       zod.null(),
     ]),
@@ -823,7 +913,15 @@ export const ProfessorDraftLessonsQuizResponse = zod.object({
         kind: zod.string(),
         status: zod.string(),
         duration_seconds: zod.int().nullable(),
-        error: zod.string().nullable(),
+        size_bytes: zod.int().nullable(),
+        error: zod
+          .union([
+            zod.literal(
+              "Ce fichier n’a pas pu être traité. Vérifiez qu’il s’agit bien d’une vidéo ou d’un audio lisible, puis envoyez-le à nouveau.",
+            ),
+            zod.literal(null),
+          ])
+          .nullable(),
       }),
       zod.null(),
     ]),

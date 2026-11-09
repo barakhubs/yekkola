@@ -9,6 +9,7 @@ use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\MediaAsset;
 use App\Domain\Platform\Settings\CatalogSettings;
+use App\Integrations\Video\VideoProvider;
 use Database\Seeders\CategorySeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -101,7 +102,7 @@ it("keeps professors out of each other's sections, lessons and media", function 
     $mine = newCourse();
     $section = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/sections", ['title' => 'Section A'])->json('data.id');
     $lesson = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/lessons", ['section_id' => $section, 'type' => 'video', 'title' => 'Vidéo'])->json('data.id');
-    $media = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/lessons/{$lesson}/media")->json('data.media.id');
+    $media = $this->postJson("/api/v1/professor/courses/{$mine['id']}/draft/lessons/{$lesson}/media", ['size_bytes' => 1_000, 'content_type' => 'video/mp4'])->json('data.media.id');
 
     actingAsProfessor('Autre Professeur');
     $theirs = newCourse('Chimie');
@@ -112,6 +113,8 @@ it("keeps professors out of each other's sections, lessons and media", function 
     $this->deleteJson("/api/v1/professor/courses/{$theirs['id']}/draft/lessons/{$lesson}")->assertNotFound();
     $this->postJson("/api/v1/professor/courses/{$theirs['id']}/draft/lessons", ['section_id' => $section, 'type' => 'quiz', 'title' => 'Intrus'])->assertNotFound();
     $this->getJson("/api/v1/professor/media/{$media}")->assertNotFound();
+    $this->postJson("/api/v1/professor/media/{$media}/parts", ['parts' => [1]])->assertNotFound();
+    $this->postJson("/api/v1/professor/media/{$media}/complete", ['parts' => [['number' => 1, 'etag' => '"fake-1"']]])->assertNotFound();
     $this->putJson("/api/v1/professor/courses/{$theirs['id']}/draft/order", ['sections' => [
         ['id' => $theirSection, 'lessons' => [$lesson]],
     ]])->assertUnprocessable();
@@ -192,37 +195,71 @@ it('saves quizzes with validated answers and keeps the answer key in the studio'
         ->assertJsonPath('data.is_content_ready', true);
 });
 
-it('uploads video straight to the provider and tracks processing', function () {
+it('uploads video in parts straight to storage, then processes it once complete', function () {
     $course = newCourse();
     $section = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/sections", ['title' => 'Section 1'])->json('data.id');
     $lesson = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons", ['section_id' => $section, 'type' => 'video', 'title' => 'Vidéo'])->json('data.id');
 
-    $upload = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media")->assertCreated()->json('data');
+    $start = fn (int $size, string $type = 'video/mp4') => $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media", ['size_bytes' => $size, 'content_type' => $type]);
+    $start(app(CatalogSettings::class)->max_video_upload_mb * 1024 * 1024 + 1)->assertUnprocessable()->assertJsonPath('code', 'media.upload_too_large');
+    $start(1_000, 'image/png')->assertUnprocessable()->assertJsonPath('code', 'lesson.type_mismatch');
 
+    // 25 MB in 10 MB parts: three parts, all URLs in the first batch.
+    $upload = $start(25 * 1024 * 1024)->assertCreated()->json('data');
+    $media = $upload['media']['id'];
     expect($upload['media']['status'])->toBe('waiting_upload')
-        ->and($upload['upload_url'])->toContain('/api/v1/_fake/video-uploads/');
+        ->and($upload['upload']['part_count'])->toBe(3)
+        ->and(array_column($upload['upload']['parts'], 'number'))->toBe([1, 2, 3]);
 
-    $this->put(parse_url($upload['upload_url'], PHP_URL_PATH))->assertNoContent();
+    $parts = [];
+    foreach ($upload['upload']['parts'] as $part) {
+        $parts[] = ['number' => $part['number'], 'etag' => $this->put(parse_url($part['url'], PHP_URL_PATH))->assertOk()->headers->get('ETag')];
+    }
+    $this->postJson("/api/v1/professor/media/{$media}/parts", ['parts' => [3, 99]])->assertOk()->assertJsonPath('data.parts.0.number', 3)->assertJsonCount(1, 'data.parts');
 
-    $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")->assertOk()->assertJsonPath('data.status', 'ready');
+    // A missing part: nothing is processed, and the professor can send it and confirm again.
+    $this->postJson("/api/v1/professor/media/{$media}/complete", ['parts' => array_slice($parts, 0, 2)])
+        ->assertUnprocessable()->assertJsonPath('code', 'media.upload_incomplete');
+    $this->getJson("/api/v1/professor/media/{$media}")->assertJsonPath('data.status', 'waiting_upload');
+
+    $this->postJson("/api/v1/professor/media/{$media}/complete", ['parts' => $parts])->assertOk();
+    $this->getJson("/api/v1/professor/media/{$media}")->assertOk()->assertJsonPath('data.status', 'ready')->assertJsonPath('data.error', null);
+    $asset = MediaAsset::query()->sole();
     expect(Lesson::query()->find($lesson)->duration_seconds)->toBe(1_200)
-        ->and(MediaAsset::query()->sole()->status)->toBe(MediaAssetStatus::Ready);
+        ->and($asset->status)->toBe(MediaAssetStatus::Ready)
+        ->and(strlen((string) $asset->key()))->toBe(16)
+        ->and($asset->renditionList())->toHaveCount(3);
+
+    // Confirming again is harmless; asking for part URLs of a finished upload is not.
+    $this->postJson("/api/v1/professor/media/{$media}/complete", ['parts' => $parts])->assertOk()->assertJsonPath('data.status', 'ready');
+    $this->postJson("/api/v1/professor/media/{$media}/parts", ['parts' => [1]])->assertConflict()->assertJsonPath('code', 'media.upload_not_open');
+    $this->put('/api/v1/_fake/video-uploads/fake-upload-unknown/parts/1')->assertNotFound();
 });
 
-it('completes a chunked upload only on its last chunk, like the provider', function () {
+it('refuses a file that turns out larger than the limit once stored', function () {
+    $course = newCourse();
+    $section = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/sections", ['title' => 'Section 1'])->json('data.id');
+    $lesson = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons", ['section_id' => $section, 'type' => 'video', 'title' => 'Vidéo'])->json('data.id');
+    $media = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media", ['size_bytes' => 1_000, 'content_type' => 'video/mp4'])->json('data.media.id');
+
+    app(VideoProvider::class)->storeSize($media, app(CatalogSettings::class)->max_video_upload_mb * 1024 * 1024 + 1);
+    $this->postJson("/api/v1/professor/media/{$media}/complete", ['parts' => [['number' => 1, 'etag' => '"fake-1"']]])
+        ->assertUnprocessable()->assertJsonPath('code', 'media.upload_too_large');
+    $this->getJson("/api/v1/professor/media/{$media}")->assertJsonPath('data.status', 'errored');
+});
+
+it('marks a file that cannot be processed as errored, with a message for the professor', function () {
     $course = newCourse();
     $section = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/sections", ['title' => 'Section 1'])->json('data.id');
     $lesson = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons", ['section_id' => $section, 'type' => 'audio', 'title' => 'Audio'])->json('data.id');
-    $upload = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media")->json('data');
-    $path = parse_url($upload['upload_url'], PHP_URL_PATH);
+    $upload = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media", ['size_bytes' => 1_000, 'content_type' => 'audio/mpeg'])->json('data');
 
-    $this->put($path, [], ['Content-Range' => 'bytes 0-262143/400000'])->assertNoContent();
-    $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")->assertJsonPath('data.status', 'waiting_upload');
+    app(VideoProvider::class)->failProcessing($upload['media']['id']);
+    $this->postJson("/api/v1/professor/media/{$upload['media']['id']}/complete", ['parts' => [['number' => 1, 'etag' => '"fake-1"']]])->assertOk();
 
-    $this->put($path, [], ['Content-Range' => 'bytes 262144-399999/400000'])->assertNoContent();
-    $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")->assertJsonPath('data.status', 'ready');
-
-    $this->put('/api/v1/_fake/video-uploads/fake-upload-unknown', [], ['Content-Range' => 'bytes 0-9/100'])->assertNotFound();
+    $this->getJson("/api/v1/professor/media/{$upload['media']['id']}")
+        ->assertJsonPath('data.status', 'errored')
+        ->assertJsonPath('data.error', __('errors.media.processing_failed'));
 });
 
 it('tells the studio which choices and limits apply', function () {
@@ -245,7 +282,7 @@ it('refuses content that does not match the lesson type', function () {
     $section = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/sections", ['title' => 'Section 1'])->json('data.id');
     $lesson = $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons", ['section_id' => $section, 'type' => 'quiz', 'title' => 'Quiz'])->json('data.id');
 
-    $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media")
+    $this->postJson("/api/v1/professor/courses/{$course['id']}/draft/lessons/{$lesson}/media", ['size_bytes' => 1_000, 'content_type' => 'video/mp4'])
         ->assertUnprocessable()
         ->assertJsonPath('code', 'lesson.type_mismatch');
 });

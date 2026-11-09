@@ -5638,7 +5638,7 @@
         "/professor/courses/{course}/draft/lessons/{lesson}/media": {
             "post": {
                 "operationId": "professor.draft.lessons.media",
-                "summary": "Direct-upload URL for a video/audio lesson. The browser uploads to it; processing status follows",
+                "summary": "Start uploading a video/audio file for a lesson: the browser PUTs each part straight to storage (reading each\nresponse's `ETag`), asks for more part URLs as needed, then confirms with `POST /professor/media/{id}/complete`",
                 "tags": [
                     "Draft"
                 ],
@@ -5660,6 +5660,16 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StartMediaUploadRequest"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "",
@@ -5674,13 +5684,44 @@
                                                 "media": {
                                                     "$ref": "#/components/schemas/MediaAssetResource"
                                                 },
-                                                "upload_url": {
-                                                    "type": "string"
+                                                "upload": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "part_size_bytes": {
+                                                            "type": "integer"
+                                                        },
+                                                        "part_count": {
+                                                            "type": "integer"
+                                                        },
+                                                        "parts": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "number": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "url": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "number",
+                                                                    "url"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "part_size_bytes",
+                                                        "part_count",
+                                                        "parts"
+                                                    ]
                                                 }
                                             },
                                             "required": [
                                                 "media",
-                                                "upload_url"
+                                                "upload"
                                             ]
                                         }
                                     },
@@ -5690,6 +5731,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -6402,7 +6446,7 @@
                 }
             }
         },
-        "/_fake/video-uploads/{upload}": {
+        "/_fake/video-uploads/{upload}/parts/{part}": {
             "put": {
                 "operationId": "fake.video-upload",
                 "tags": [
@@ -6416,11 +6460,19 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "part",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No content"
+                    "200": {
+                        "description": ""
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -6667,6 +6719,134 @@
                             "application/json": {
                                 "schema": {
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/hls/master.m3u8": {
+            "get": {
+                "operationId": "lessons.hls.master",
+                "summary": "The renditions available for the lesson (adaptive bitrate). `session`: the web stream session id",
+                "tags": [
+                    "Hls"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/vnd.apple.mpegurl": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/hls/key": {
+            "get": {
+                "operationId": "lessons.hls.key",
+                "summary": "The AES-128 key (16 raw bytes), only after the access check. Never cached by the browser",
+                "tags": [
+                    "Hls"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/lessons/{lesson}/hls/{rendition}.m3u8": {
+            "get": {
+                "operationId": "lessons.hls.media",
+                "summary": "One rendition: signed segment URLs and our key URI",
+                "tags": [
+                    "Hls"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "rendition",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/vnd.apple.mpegurl": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store, private"
                                 }
                             }
                         }
@@ -8037,7 +8217,7 @@
         "/professor/media/{media}": {
             "get": {
                 "operationId": "professor.media.show",
-                "summary": "Processing status of an uploaded file (the studio polls this). Re-checks the provider while processing,\nin case a webhook was delayed",
+                "summary": "Processing status of an uploaded file (the studio polls this until `ready` or `errored`)",
                 "tags": [
                     "Media"
                 ],
@@ -8069,6 +8249,133 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/professor/media/{media}/parts": {
+            "post": {
+                "operationId": "professor.media.parts",
+                "summary": "Fresh pre-signed URLs for some parts of an open upload (the next batch, or one whose URL expired)",
+                "tags": [
+                    "Media"
+                ],
+                "parameters": [
+                    {
+                        "name": "media",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MediaPartsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "parts": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "number": {
+                                                                "type": "integer"
+                                                            },
+                                                            "url": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "number",
+                                                            "url"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "parts"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/professor/media/{media}/complete": {
+            "post": {
+                "operationId": "professor.media.complete",
+                "summary": "Confirm the upload once every part is sent: the file is checked and queued for processing (`processing`).\nCalling it again after success is harmless",
+                "tags": [
+                    "Media"
+                ],
+                "parameters": [
+                    {
+                        "name": "media",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompleteMediaUploadRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`MediaAssetResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/MediaAssetResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -16249,34 +16556,6 @@
                 }
             }
         },
-        "/webhooks/video": {
-            "post": {
-                "operationId": "webhooks.video",
-                "tags": [
-                    "VideoWebhook"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "received": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    "required": [
-                                        "received"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/me/wishlist": {
             "get": {
                 "operationId": "me.wishlist.index",
@@ -19459,6 +19738,40 @@
                 ],
                 "title": "ChangePhoneRequest"
             },
+            "CompleteMediaUploadRequest": {
+                "type": "object",
+                "description": "Every uploaded part with the `ETag` its PUT answered with.",
+                "properties": {
+                    "parts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "number": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 10000
+                                },
+                                "etag": {
+                                    "type": "string",
+                                    "maxLength": 200
+                                }
+                            },
+                            "required": [
+                                "number",
+                                "etag"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 10000,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "parts"
+                ],
+                "title": "CompleteMediaUploadRequest"
+            },
             "CouponRequest": {
                 "type": "object",
                 "description": "Coupon create \u2014 staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
@@ -21139,10 +21452,20 @@
                             "null"
                         ]
                     },
+                    "size_bytes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
                     "error": {
                         "type": [
                             "string",
                             "null"
+                        ],
+                        "enum": [
+                            "Ce fichier n\u2019a pas pu \u00eatre trait\u00e9. V\u00e9rifiez qu\u2019il s\u2019agit bien d\u2019une vid\u00e9o ou d\u2019un audio lisible, puis envoyez-le \u00e0 nouveau.",
+                            null
                         ]
                     }
                 },
@@ -21151,9 +21474,30 @@
                     "kind",
                     "status",
                     "duration_seconds",
+                    "size_bytes",
                     "error"
                 ],
                 "title": "MediaAssetResource"
+            },
+            "MediaPartsRequest": {
+                "type": "object",
+                "description": "Fresh pre-signed URLs for up to 100 parts of an upload (1-based part numbers).",
+                "properties": {
+                    "parts": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 10000
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    }
+                },
+                "required": [
+                    "parts"
+                ],
+                "title": "MediaPartsRequest"
             },
             "MobileMoneyRail": {
                 "type": "string",
@@ -21866,39 +22210,13 @@
                     "kind": {
                         "type": "string"
                     },
-                    "playback_id": {
+                    "playlist_url": {
                         "type": "string"
                     },
-                    "tokens": {
-                        "type": "object",
-                        "properties": {
-                            "playback": {
-                                "type": "string"
-                            },
-                            "drm": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "thumbnail": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            },
-                            "storyboard": {
-                                "type": [
-                                    "string",
-                                    "null"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "playback",
-                            "drm",
-                            "thumbnail",
-                            "storyboard"
+                    "poster_url": {
+                        "type": [
+                            "string",
+                            "null"
                         ]
                     },
                     "expires_at": {
@@ -21949,8 +22267,8 @@
                 "required": [
                     "lesson_uid",
                     "kind",
-                    "playback_id",
-                    "tokens",
+                    "playlist_url",
+                    "poster_url",
                     "expires_at",
                     "watermark",
                     "stream",
@@ -23333,6 +23651,26 @@
                     "permissions"
                 ],
                 "title": "StaffRequest"
+            },
+            "StartMediaUploadRequest": {
+                "type": "object",
+                "description": "Start a video/audio upload (PRD-03 FR-04/05): the file's size and type. The size limit per kind is a\nplatform setting, checked by the action.",
+                "properties": {
+                    "size_bytes": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "content_type": {
+                        "type": "string",
+                        "pattern": "^[a-z]+\\/[A-Za-z0-9.+-]+$",
+                        "maxLength": 100
+                    }
+                },
+                "required": [
+                    "size_bytes",
+                    "content_type"
+                ],
+                "title": "StartMediaUploadRequest"
             },
             "StartPaymentRequest": {
                 "type": "object",

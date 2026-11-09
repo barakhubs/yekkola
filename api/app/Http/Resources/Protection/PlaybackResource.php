@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Everything a player needs for one lesson (PRD-07 FR-02): the playback ID and signed tokens (Mux Player
- * `tokens.*`), the viewer overlay text, and the stream session to heartbeat. Never a plain media URL.
+ * Everything a player needs for one lesson (PRD-07 FR-02): the encrypted-HLS master playlist on our API (load it
+ * with credentials; segments are signed URLs, loaded without), a poster, the viewer overlay text, and the
+ * stream session to heartbeat. Never a plain media URL.
  *
  * @property PlaybackGrant $resource
  */
@@ -31,14 +32,9 @@ final class PlaybackResource extends JsonResource
         return [
             'lesson_uid' => $grant->lessonUid,
             'kind' => $grant->kind->value,
-            'playback_id' => $grant->playbackId,
-            'tokens' => [
-                'playback' => $grant->tokens->playbackToken,
-                'drm' => $grant->tokens->drmToken,
-                'thumbnail' => $grant->tokens->thumbnailToken,
-                'storyboard' => $grant->tokens->storyboardToken,
-            ],
-            'expires_at' => $grant->tokens->expiresAt->toIso8601String(),
+            'playlist_url' => $grant->playlistUrl,
+            'poster_url' => $grant->posterUrl,
+            'expires_at' => $grant->expiresAt->toIso8601String(),
             'watermark' => $grant->watermark === null ? null : ['text' => $grant->watermark],
             'stream' => $grant->streamSessionId === null ? null : [
                 'session_id' => $grant->streamSessionId,

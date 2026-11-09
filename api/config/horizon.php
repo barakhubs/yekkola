@@ -204,7 +204,7 @@ return [
         'supervisor-1' => [
             'connection' => 'redis',
             // `otp` first: users are waiting for their sign-in code.
-            'queue' => ['payments', 'otp', 'default', 'notifications', 'media'],
+            'queue' => ['payments', 'otp', 'default', 'notifications'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -215,6 +215,19 @@ return [
             'timeout' => 60,
             'nice' => 0,
         ],
+        // Transcoding: long jobs on their own connection (retry_after above the job timeout), few at a time.
+        'supervisor-media' => [
+            'connection' => 'redis-media',
+            'queue' => ['media'],
+            'balance' => 'simple',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 512,
+            'tries' => 3,
+            'timeout' => (int) env('MEDIA_TRANSCODE_TIMEOUT', 3 * 3_600) + 1_800,
+            'nice' => 10,
+        ],
     ],
 
     'environments' => [
@@ -223,6 +236,9 @@ return [
                 'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
+            ],
+            'supervisor-media' => [
+                'maxProcesses' => (int) env('MEDIA_WORKERS', 2),
             ],
         ],
 

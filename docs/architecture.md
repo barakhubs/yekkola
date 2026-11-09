@@ -76,13 +76,13 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 1. `POST /auth/otp/request` → rate-limit check (phone + IP) → create `OtpChallenge` (hashed code, 5 min TTL) → `SmsSender` (queued).
 2. `POST /auth/otp/verify` → verify hash, attempts ≤ 5 → find-or-create `User` → web: session cookie via Sanctum; mobile: register/refresh `Device`, issue a token bound to that device.
 
-> Flows B, D and E describe the R2 design (owner decision, 2026-11-09). The code still runs the Mux driver until the R2 driver lands (TODO 1.5b); rows marked _planned_ in §3 and §4.2 are not built yet.
+> Flows B and D run on the R2 driver (owner decision, 2026-11-09). Flow E (offline) is planned with TODO 1.9 FR-07.
 
 **B. Video upload (professor)**
-1. Studio calls `POST /professor/courses/{id}/draft/lessons/{lid}/media` → `VideoProvider` creates a `MediaAsset` (status `waiting_upload`) and returns pre-signed upload URLs for the private R2 bucket (multipart upload for large files).
-2. Browser uploads the file **directly to R2** (chunked parts, retried, paused while offline; fresh URLs per attempt). Media never touches the app server.
-3. Studio calls `POST /professor/media/{id}/complete` (planned) → API checks the object exists and its size → `processing` → `TranscodeMedia` job on the `media` queue.
-4. The job runs FFmpeg: video → HLS renditions capped at 720p plus lower tiers (e.g. 480p, 360p); audio → audio-only HLS. Segments are encrypted with AES-128, one key per asset. The burned-in watermark (Yekkola logo + professor name) is applied during transcoding. Output goes back to the private bucket; the original upload is deleted once the asset is `ready` (or `errored` with a reason).
+1. Studio calls `POST /professor/courses/{id}/draft/lessons/{lid}/media {size_bytes, content_type}` → `MediaUploads::start` checks the size limit (platform setting) and type, creates a `MediaAsset` (`waiting_upload`), opens an R2 multipart upload (10 MB parts, more for huge files, at most 10,000 parts) and returns the first 20 pre-signed part URLs.
+2. Browser PUTs the parts **directly to R2** (3 at a time, each retried with backoff, paused while offline), reading each `ETag`; more URLs, or a fresh one for an expired URL, come from `POST /professor/media/{id}/parts`. Media never touches the app server. The private bucket's CORS must allow `PUT` from the studio origin and expose `ETag`, and allow `GET`/`HEAD` from the web origins (hls.js fetches segments cross-origin, without credentials).
+3. Studio calls `POST /professor/media/{id}/complete {parts: [{number, etag}]}` → R2 assembles the object (missing parts → `media.upload_incomplete`; the studio can send them and confirm again) → `processing` → `ProcessMediaAsset` job on the `media` queue (unique per asset; `redis-media` connection with a `retry_after` above the job timeout, own Horizon supervisor `supervisor-media`). A repeated complete is harmless.
+4. The job (`R2VideoProvider::process` + `FfmpegTranscoder`) downloads the source to the worker and runs FFmpeg: video → H.264/AAC HLS renditions 720p/480p/360p (never upscaled; the lowest is always made) + a poster frame; audio → mono AAC audio-only HLS. Segments are AES-128 encrypted with one random key per asset (the key file is never uploaded). The burned-in watermark (logo PNG if configured + "Yekkola · professor name") is drawn by FFmpeg. Output goes to `media/{id}/hls/{run}/` in the private bucket (one folder per run, so a duplicate run never mixes segments and keys); the asset becomes `ready` with its renditions, key and duration, and the duration is pushed onto open versions' lessons. A file FFmpeg can't read → `errored` at once (the professor sees a translated message; the reason is logged). R2 or worker failures are retried twice. The source is kept for now (cleanup: TODO 1.5).
 5. Studio polls `GET /professor/media/{id}` (or listens via notifications) to show status.
 
 **C. Paid purchase (mobile money)**
@@ -97,8 +97,8 @@ Rules: domains talk to each other through **actions and events**, not by reachin
 **D. Playback (streaming)**
 1. Player requests `POST /lessons/{uid}/playback`.
 2. API checks: active enrollment (or preview lesson), account status, concurrent-stream limit (web) or registered device (mobile).
-3. Returns the playlist URL + watermark text (+ web `stream.session_id`).
-4. The player fetches the playlists from the API (planned `GET /lessons/{uid}/hls/...`): segment URIs are rewritten to short-lived pre-signed R2 URLs, and the key URI points to `GET /lessons/{uid}/key` (planned), which returns the AES key only after the same access checks. Segments stream **directly from R2**; no DRM (encrypted HLS, accepted by the owner, 2026-11-09).
+3. Returns the master playlist URL on the API (with `?session=` for web streams), a poster URL, and the watermark text (+ web `stream.session_id`).
+4. The player (hls.js; Safari natively) loads `GET /lessons/{uid}/hls/master.m3u8`, then `/hls/{rendition}.m3u8` and `/hls/key`, with credentials. **Every one of these requests repeats the access check** (`AuthorizeMedia`): enrollment or preview, active account, and for browsers a live stream session for that user and lesson. A replaced stream, refund or takedown therefore stops new playlists and keys at once. Media playlists are read from R2 with segment names swapped for pre-signed GET URLs. These are valid for the playback window + 2 × the lesson length, at most 6 h, and cached signed for half the window since they aren't viewer-specific. A player that already holds the playlist and key can finish the lesson within that window: the accepted limit of encrypted HLS without DRM. The key URI points at `/hls/key`, which returns the 16-byte key (`no-store`). Segments stream **directly from R2**; no DRM (encrypted HLS, accepted by the owner, 2026-11-09).
 
 **E. Offline download (mobile)**
 1. App requests `POST /lessons/{uid}/offline-license {device_id}` → API checks enrollment + device is registered and not revoked → returns the chosen rendition's playlist, the AES key, and `expires_at` = now + the _offline license duration_ setting → records `OfflineLicense`.
@@ -145,7 +145,7 @@ yekkola/
 │   │   │   ├── Notifications/             Notifications/*, Channels/(SmsChannel, FcmChannel)
 │   │   │   └── Platform/                  Settings/*Settings.php, Stats/RollupCourseStats
 │   │   ├── Integrations/
-│   │   │   ├── Video/                     VideoProvider (interface), R2VideoProvider (planned), FakeVideoProvider
+│   │   │   ├── Video/                     VideoProvider (interface), R2VideoProvider + FfmpegTranscoder, HlsPlaylist, FakeVideoProvider
 │   │   │   ├── Payments/                  PaymentGateway (interface), FakeGateway, {Aggregator}Gateway (later)
 │   │   │   └── Sms/                       SmsSender (interface), LogSmsSender, {Provider}SmsSender (later)
 │   │   ├── Http/
@@ -253,7 +253,7 @@ PostgreSQL. Conventions:
 | `course_versions` | id, course_id, number, state (`draft`/`in_review`/`rejected`/`approved`/`superseded`), title, subtitle, description, outcomes, requirements, changelog, cover (media, public disk), submitted_at, reviewed_by, reviewed_at, review_notes | Partial unique index: one draft/in-review/rejected version per course. Approved versions are never edited. |
 | `sections` | id, course_version_id, title, position | |
 | `lessons` | id, course_version_id, section_id, uid (stable across versions), type (`video`/`audio`/`document`/`quiz`), title, description, position, is_preview, duration_seconds, media_asset_id | Unique `(course_version_id, uid)`. Document PDF in `media` (collection `document`, private disk). |
-| `media_assets` | id, professor_profile_id, kind (`video`/`audio`), provider, provider_upload_id, provider_asset_id, playback_id, status (`waiting_upload`/`processing`/`ready`/`errored`/`cancelled`), duration_seconds, error | Reused across versions (a new draft doesn't re-upload). **Planned (R2, 2026-11-09):** the Mux ids give way to R2 object keys: `source_key` (the upload, deleted once ready), `output_prefix` (HLS playlists + segments in the private bucket) and `renditions` (jsonb: height, bitrate, size per tier). Also `encryption_key` (the AES-128 key, encrypted at rest with an encrypted cast; never stored in R2 next to the segments) and `processing_started_at`. Status: `waiting_upload` → `processing` → `ready` / `errored`. |
+| `media_assets` | id, professor_profile_id, kind (`video`/`audio`), provider (`r2`/`fake`), provider_upload_id (R2 multipart upload id), source_key, size_bytes, output_prefix, renditions (jsonb `[{name, bandwidth, size_bytes, width, height}]`, highest first), encryption_key (encrypted cast, base64 of the AES-128 key; hidden from serialization), has_poster, status (`waiting_upload`/`processing`/`ready`/`errored`/`cancelled`), duration_seconds, error (technical reason, staff only) | Reused across versions (a new draft doesn't re-upload). Source at `media/{id}/source`, HLS at `media/{id}/hls/{run}/{rendition}/` + `poster.jpg` in the private bucket. The key is never stored in R2. Status: `waiting_upload` → `processing` → `ready` / `errored`. |
 | `quizzes` | id, lesson_id (unique), pass_mark_pct, time_limit_seconds, max_attempts, shuffle_questions | One per quiz lesson; copied with the lesson. |
 | `quiz_questions` | id, quiz_id, type (`single`/`multiple`/`true_false`), prompt, explanation, points, position | |
 | `quiz_options` | id, quiz_question_id, text, is_correct, position | `is_correct` never sent to students before submission. |
@@ -315,7 +315,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | `notification_preferences` | user_id, type, channel (`push`/`sms`/`email`/`in_app`), enabled | Defaults in code; rows only for overrides. |
 | `settings` | spatie/laravel-settings | Groups: commerce, payouts, protection, catalog, learning, moderation. Defaults in `database/settings/`. |
 | `activity_log` | spatie/laravel-activitylog (ULID id; subject/causer ids are strings) | All admin actions (`RecordAudit`) + settings changes (before/after, automatic). |
-| `webhook_events` | id, provider, event_id (unique per provider), type, payload (jsonb), received_at, processed_at, error | Video provider inbox, processed by `ProcessVideoWebhook` on the `media` queue (payments use `payment_events`). Unused once the Mux driver is removed: R2 uploads are confirmed by the studio, not by webhook. |
+| `webhook_events` | id, provider, event_id (unique per provider), type, payload (jsonb), received_at, processed_at, error | Generic provider inbox (payments use `payment_events`). Unused since the Mux driver was removed: R2 uploads are confirmed by the studio, not by webhook. |
 | `course_daily_stats` | course_id, date, views, enrollments, paid_enrollments, revenue_minor, currency, completions, avg_rating | Rolled up nightly + incrementally; feeds dashboards. |
 | `platform_daily_stats` | date (PK), signups, enrollments, orders_created, orders_paid, courses_published, gmv_minor, net_revenue_minor, refunds_minor, payouts_minor (jsonb per currency) | Admin dashboard. Recomputed from source tables by `stats:rollup-platform` (hourly: today + yesterday; `--days` backfills); idempotent upsert. Active students are counted live from `enrollments.last_activity_at` (indexed). |
 
@@ -383,11 +383,11 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | GET | /me/enrollments | My courses with progress (`page`, `per_page`, `filter[state]=in_progress\|completed`, `sort`) |
 | POST | /courses/{id}/enroll | Enroll in a free course |
 | GET | /me/courses/{id} | Learning view: live curriculum, my status per lesson, continue/next lesson, quiz facts (never answers), my certificate, `has_reviewed` |
-| POST | /lessons/{uid}/playback | Playback ID + signed tokens (`playback`, `drm` for video, `thumbnail`, `storyboard`) + watermark text (short name + masked phone) + web `stream.session_id`. Enrolled, or a preview lesson. Never a media URL. **Planned (R2):** returns the API master playlist URL instead of Mux tokens |
-| GET | /lessons/{uid}/hls/{playlist} | Planned (R2): HLS playlist served by the API after the access checks; segment URIs rewritten to short-lived pre-signed R2 URLs, key URI pointing to the key endpoint |
-| GET | /lessons/{uid}/key | Planned (R2): the asset's AES-128 key, only for an active enrollment (or a preview lesson), an active account, and a live stream session (web) or registered device (mobile); `no-store` |
+| POST | /lessons/{uid}/playback | `playlist_url` (API master playlist, with the web stream session), `poster_url`, `expires_at`, watermark text (short name + masked phone) + web `stream.session_id`. Enrolled, or a preview lesson. Never a media file URL |
+| GET | /lessons/{uid}/hls/master.m3u8, /lessons/{uid}/hls/{rendition}.m3u8 | Public route, optional auth (cookie or token), `?session=`: playlists after the access checks (enrollment or preview, active account, live web stream session or device token); segment URIs are pre-signed R2 URLs, the key URI is the key endpoint. `playback.stream_required` (409) without a live session |
+| GET | /lessons/{uid}/hls/key | Same checks; the asset's 16-byte AES-128 key, `no-store` |
 | POST | /lessons/{uid}/playback/heartbeat | `{session_id}` every 30 s; 409 `playback.stream_replaced` → stop (another screen took over) |
-| POST | /lessons/{uid}/offline-license | Offline download for a registered device: Mux persistent license today; planned (R2): rendition playlist + AES key + `expires_at` |
+| POST | /lessons/{uid}/offline-license | Planned (TODO 1.9 FR-07): offline download for a registered device — rendition playlist + AES key + `expires_at` |
 | GET | /lessons/{uid}/document | My stamped copy: `ready` + signed `url` (10 min), or 202 `processing` with `retry_after`. The URL (`GET /documents/{stamp}/download`, signed, no session) streams the PDF inline, `no-store` |
 | GET | /me/entitlements | Mobile sync: active enrollments, revoked items, license states |
 | PUT | /me/progress | Batch progress sync `{items: [{lesson_uid, position_seconds?, completed?, client_updated_at?}]}` (≤ 100; monotonic) |
@@ -446,8 +446,9 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST / PATCH / DELETE | /professor/courses/{id}/draft/sections[/{sid}] | Sections |
 | POST / PATCH / DELETE | /professor/courses/{id}/draft/lessons[/{lid}] | Lessons |
 | PUT | /professor/courses/{id}/draft/order | Full order of sections + lessons |
-| POST | /professor/courses/{id}/draft/lessons/{lid}/media | Direct-upload URL for a video/audio lesson (planned R2: pre-signed URLs for the private bucket) |
-| POST | /professor/media/{id}/complete | Planned (R2): the studio confirms the upload; the API checks the object and queues transcoding (`processing`) |
+| POST | /professor/courses/{id}/draft/lessons/{lid}/media | Start a video/audio upload `{size_bytes, content_type}`: new asset + R2 multipart upload; returns `part_size_bytes`, `part_count` and the first 20 `parts` (`{number, url}`) |
+| POST | /professor/media/{id}/parts | Fresh pre-signed URLs for up to 100 parts of an open upload |
+| POST | /professor/media/{id}/complete | Confirm with every part's ETag: assembles the object and queues processing (`processing`); safe to repeat |
 | POST | /professor/courses/{id}/draft/lessons/{lid}/document | PDF (multipart) |
 | PUT | /professor/courses/{id}/draft/lessons/{lid}/quiz | Whole quiz (settings + questions + options) |
 | GET | /professor/media/{id} | Media processing status |
@@ -512,7 +513,6 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 
 | Method | Path |
 |---|---|
-| POST | /webhooks/video | Video provider (Mux). Removed with the Mux driver: R2 uploads are confirmed through `/professor/media/{id}/complete` |
 | PUT | /_fake/video-uploads/{upload} | Fake video driver only: stands in for the upload URL (local, staging); accepts chunked PUTs (`Content-Range`), completes on the last; exempt from CSRF |
 | POST | /webhooks/payments/{gateway} | Payment gateway (`fake` until the aggregator is integrated) |
 | POST | /webhooks/sms/{provider} (delivery reports) |
@@ -543,7 +543,7 @@ Rules:
 ### 5.2 apps/web
 
 - **Public (marketing) routes:** React Server Components, fetched server-side with ISR (`revalidate` per page type, on-demand revalidation via tag when a course is published). Minimal client JS. Structured data (JSON-LD `Course`, `Person`) and localized metadata for SEO.
-- **Student area:** client components behind an auth guard (`/me` query). Learning page: HLS player (hls.js, via a lightweight player; replaces Mux Player) + `WatermarkOverlay` + curriculum sidebar + Q&A tab; progress posted on intervals and on pause/end.
+- **Student area:** client components behind an auth guard (`/me` query). Learning page: `ProtectedPlayer` (hls.js on a native video/audio element; credentials only to the API's playlist/key URLs) + `WatermarkOverlay` + curriculum sidebar + Q&A tab; progress posted on intervals and on pause/end.
 - **Checkout:** order → rail picker → number input → "approve on your phone" waiting screen polling `GET /orders/{id}` with backoff → success/failure states with retry.
 - **Professor studio:** dashboard (KPI cards + charts), course list (DataTable), course editor (tabs: details, curriculum drag-and-drop, pricing, review status), media uploader (chunked upload to pre-signed R2 URLs with progress + resume, then upload-complete), quiz builder, earnings/payouts tables, reviews & Q&A inbox.
 

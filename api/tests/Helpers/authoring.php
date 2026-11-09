@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Domain\Authoring\Actions\CreateCourse;
 use App\Domain\Authoring\Actions\EditDraft;
+use App\Domain\Authoring\Actions\MediaUploads;
 use App\Domain\Authoring\Actions\SetLessonContent;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Catalog\Models\Category;
@@ -62,10 +63,16 @@ function courseReadyForReview(ProfessorProfile $professor, string $title = 'Math
     return $course->refresh();
 }
 
-/** Requests an upload for a video/audio lesson and completes it through the fake upload endpoint. */
+/** Uploads a video/audio file for a lesson through the fake part endpoint, then completes and processes it. */
 function completeFakeVideo(Course $course, string $lessonId): void
 {
-    $result = app(SetLessonContent::class)->createMediaUpload($course, $lessonId, 'http://localhost:3000');
+    $uploads = app(MediaUploads::class);
+    $started = $uploads->start($course, $lessonId, 12_000_000, 'video/mp4');
 
-    test()->put('/api/v1/_fake/video-uploads/'.$result['asset']->provider_upload_id)->assertNoContent();
+    $parts = [];
+    foreach ($started['parts'] as $part) {
+        $etag = test()->put((string) parse_url($part['url'], PHP_URL_PATH))->assertOk()->headers->get('ETag');
+        $parts[] = ['number' => $part['number'], 'etag' => (string) $etag];
+    }
+    $uploads->complete($started['asset'], $parts);
 }

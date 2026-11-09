@@ -93,4 +93,19 @@ final class AuthoringException extends DomainException
     {
         return new self('course.availability_transition', 409);
     }
+
+    public static function uploadTooLarge(int $maxMb): self
+    {
+        return new self('media.upload_too_large', 422, ['max_mb' => $maxMb]);
+    }
+
+    public static function uploadNotOpen(): self
+    {
+        return new self('media.upload_not_open', 409);
+    }
+
+    public static function uploadIncomplete(): self
+    {
+        return new self('media.upload_incomplete', 422);
+    }
 }

@@ -18,13 +18,8 @@ export const LessonsPlaybackResponse = zod.object({
   data: zod.object({
     lesson_uid: zod.string(),
     kind: zod.string(),
-    playback_id: zod.string(),
-    tokens: zod.object({
-      playback: zod.string(),
-      drm: zod.string().nullable(),
-      thumbnail: zod.string().nullable(),
-      storyboard: zod.string().nullable(),
-    }),
+    playlist_url: zod.string(),
+    poster_url: zod.string().nullable(),
     expires_at: zod.string(),
     watermark: zod
       .object({
@@ -79,13 +74,8 @@ export const LessonsPreviewPlaybackResponse = zod.object({
   data: zod.object({
     lesson_uid: zod.string(),
     kind: zod.string(),
-    playback_id: zod.string(),
-    tokens: zod.object({
-      playback: zod.string(),
-      drm: zod.string().nullable(),
-      thumbnail: zod.string().nullable(),
-      storyboard: zod.string().nullable(),
-    }),
+    playlist_url: zod.string(),
+    poster_url: zod.string().nullable(),
     expires_at: zod.string(),
     watermark: zod
       .object({

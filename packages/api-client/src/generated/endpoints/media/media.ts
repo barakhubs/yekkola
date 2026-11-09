@@ -17,10 +17,17 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { ProfessorMediaShow200 } from "../../model";
+import type {
+  CompleteMediaUploadRequest,
+  MediaPartsRequest,
+  ProfessorMediaComplete200,
+  ProfessorMediaParts200,
+  ProfessorMediaShow200,
+  ValidationExceptionResponse,
+} from "../../model";
 
 import { apiFetch } from "../../../fetcher";
-import type { ErrorType } from "../../../fetcher";
+import type { ErrorType, BodyType } from "../../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -54,8 +61,7 @@ export const getProfessorMediaShowUrl = (media: string) => {
 };
 
 /**
- * @summary Processing status of an uploaded file (the studio polls this). Re-checks the provider while processing,
-in case a webhook was delayed
+ * @summary Processing status of an uploaded file (the studio polls this until `ready` or `errored`)
  */
 export const professorMediaShow = async (
   media: string,
@@ -151,8 +157,7 @@ export function useProfessorMediaShow<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Processing status of an uploaded file (the studio polls this). Re-checks the provider while processing,
-in case a webhook was delayed
+ * @summary Processing status of an uploaded file (the studio polls this until `ready` or `errored`)
  */
 
 export function useProfessorMediaShow<
@@ -167,6 +172,353 @@ export function useProfessorMediaShow<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getProfessorMediaShowQueryOptions(media, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type professorMediaPartsResponse200 = {
+  data: ProfessorMediaParts200;
+  status: 200;
+};
+
+export type professorMediaPartsResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type professorMediaPartsResponseSuccess = professorMediaPartsResponse200 & {
+  headers: Headers;
+};
+export type professorMediaPartsResponseError = professorMediaPartsResponse422 & {
+  headers: Headers;
+};
+
+export type professorMediaPartsResponse =
+  professorMediaPartsResponseSuccess | professorMediaPartsResponseError;
+
+export const getProfessorMediaPartsUrl = (media: string) => {
+  return `/professor/media/${media}/parts`;
+};
+
+/**
+ * @summary Fresh pre-signed URLs for some parts of an open upload (the next batch, or one whose URL expired)
+ */
+export const professorMediaParts = async (
+  media: string,
+  mediaPartsRequest: MediaPartsRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<professorMediaPartsResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<professorMediaPartsResponse>(getProfessorMediaPartsUrl(media), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(mediaPartsRequest),
+  });
+};
+
+export const getProfessorMediaPartsQueryKey = (
+  media: string,
+  mediaPartsRequest?: BodyType<MediaPartsRequest>,
+) => {
+  return ["POST", `/professor/media/${media}/parts`, mediaPartsRequest] as const;
+};
+
+export const getProfessorMediaPartsQueryOptions = <
+  TData = Awaited<ReturnType<typeof professorMediaParts>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  mediaPartsRequest: BodyType<MediaPartsRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaParts>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getProfessorMediaPartsQueryKey(media, mediaPartsRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof professorMediaParts>>> = ({ signal }) =>
+    professorMediaParts(media, mediaPartsRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: media !== null && media !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof professorMediaParts>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type ProfessorMediaPartsQueryResult = NonNullable<Awaited<ReturnType<typeof professorMediaParts>>>;
+export type ProfessorMediaPartsQueryError = ErrorType<ValidationExceptionResponse>;
+
+export function useProfessorMediaParts<
+  TData = Awaited<ReturnType<typeof professorMediaParts>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  mediaPartsRequest: BodyType<MediaPartsRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaParts>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof professorMediaParts>>,
+          TError,
+          Awaited<ReturnType<typeof professorMediaParts>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfessorMediaParts<
+  TData = Awaited<ReturnType<typeof professorMediaParts>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  mediaPartsRequest: BodyType<MediaPartsRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaParts>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof professorMediaParts>>,
+          TError,
+          Awaited<ReturnType<typeof professorMediaParts>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfessorMediaParts<
+  TData = Awaited<ReturnType<typeof professorMediaParts>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  mediaPartsRequest: BodyType<MediaPartsRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaParts>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Fresh pre-signed URLs for some parts of an open upload (the next batch, or one whose URL expired)
+ */
+
+export function useProfessorMediaParts<
+  TData = Awaited<ReturnType<typeof professorMediaParts>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  mediaPartsRequest: BodyType<MediaPartsRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaParts>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfessorMediaPartsQueryOptions(media, mediaPartsRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type professorMediaCompleteResponse200 = {
+  data: ProfessorMediaComplete200;
+  status: 200;
+};
+
+export type professorMediaCompleteResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type professorMediaCompleteResponseSuccess = professorMediaCompleteResponse200 & {
+  headers: Headers;
+};
+export type professorMediaCompleteResponseError = professorMediaCompleteResponse422 & {
+  headers: Headers;
+};
+
+export type professorMediaCompleteResponse =
+  professorMediaCompleteResponseSuccess | professorMediaCompleteResponseError;
+
+export const getProfessorMediaCompleteUrl = (media: string) => {
+  return `/professor/media/${media}/complete`;
+};
+
+/**
+ * @summary Confirm the upload once every part is sent: the file is checked and queued for processing (`processing`).
+Calling it again after success is harmless
+ */
+export const professorMediaComplete = async (
+  media: string,
+  completeMediaUploadRequest: CompleteMediaUploadRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<professorMediaCompleteResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<professorMediaCompleteResponse>(getProfessorMediaCompleteUrl(media), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(completeMediaUploadRequest),
+  });
+};
+
+export const getProfessorMediaCompleteQueryKey = (
+  media: string,
+  completeMediaUploadRequest?: BodyType<CompleteMediaUploadRequest>,
+) => {
+  return ["POST", `/professor/media/${media}/complete`, completeMediaUploadRequest] as const;
+};
+
+export const getProfessorMediaCompleteQueryOptions = <
+  TData = Awaited<ReturnType<typeof professorMediaComplete>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  completeMediaUploadRequest: BodyType<CompleteMediaUploadRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaComplete>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getProfessorMediaCompleteQueryKey(media, completeMediaUploadRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof professorMediaComplete>>> = ({ signal }) =>
+    professorMediaComplete(media, completeMediaUploadRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: media !== null && media !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof professorMediaComplete>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type ProfessorMediaCompleteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof professorMediaComplete>>
+>;
+export type ProfessorMediaCompleteQueryError = ErrorType<ValidationExceptionResponse>;
+
+export function useProfessorMediaComplete<
+  TData = Awaited<ReturnType<typeof professorMediaComplete>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  completeMediaUploadRequest: BodyType<CompleteMediaUploadRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaComplete>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof professorMediaComplete>>,
+          TError,
+          Awaited<ReturnType<typeof professorMediaComplete>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfessorMediaComplete<
+  TData = Awaited<ReturnType<typeof professorMediaComplete>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  completeMediaUploadRequest: BodyType<CompleteMediaUploadRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaComplete>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof professorMediaComplete>>,
+          TError,
+          Awaited<ReturnType<typeof professorMediaComplete>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useProfessorMediaComplete<
+  TData = Awaited<ReturnType<typeof professorMediaComplete>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  completeMediaUploadRequest: BodyType<CompleteMediaUploadRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaComplete>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Confirm the upload once every part is sent: the file is checked and queued for processing (`processing`).
+Calling it again after success is harmless
+ */
+
+export function useProfessorMediaComplete<
+  TData = Awaited<ReturnType<typeof professorMediaComplete>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  media: string,
+  completeMediaUploadRequest: BodyType<CompleteMediaUploadRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof professorMediaComplete>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getProfessorMediaCompleteQueryOptions(media, completeMediaUploadRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
