@@ -790,7 +790,8 @@
         "payouts": "Payouts",
         "questions": "Questions",
         "earnings": "Earnings",
-        "promotions": "Promotions"
+        "promotions": "Promotions",
+        "analytics": "Analytics"
       },
       "welcome": "Hello {name}",
       "progress": "{done} of {total} steps to be ready to teach and be paid.",
@@ -1241,6 +1242,42 @@
           "Your share of each sale is fixed at the time of sale and paid to your mobile-money account on the payout schedule.",
           "Your identity is checked before your first payouts."
         ]
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "intro": "How your courses are doing: enrollments, sales and student progress.",
+      "period": "Period",
+      "days": "{count} days",
+      "kpis": "Key figures",
+      "enrollments": "Enrollments",
+      "sales": "Sales",
+      "revenue": "Paid by students",
+      "revenueHint": "Before the platform’s share. Your earnings are on the Earnings page.",
+      "completions": "Courses completed",
+      "change": "{pct}% vs the previous period",
+      "noChange": "Same as the previous period",
+      "new": "New this period",
+      "enrollmentsPerDay": "Enrollments per day",
+      "salesPerDay": "Sales per day",
+      "updatedHourly": "Updated every hour.",
+      "toEarnings": "See my earnings",
+      "byCourse": "By course",
+      "noCourses": "No courses yet.",
+      "course": "Course",
+      "rating": "Rating",
+      "untitled": "Untitled course",
+      "activeStudents": "Active students",
+      "activeHint": "Made progress in the course during the period (summed per day).",
+      "newReviews": "New reviews",
+      "quizPassRate": "Quiz pass rate",
+      "quizAttempts": "{count, plural, one {# attempt} other {# attempts}}",
+      "funnel": "Where enrolled students are",
+      "steps": {
+        "enrolled": "Enrolled",
+        "started": "Started",
+        "halfway": "Half-way",
+        "completed": "Completed"
       }
     }
   },
