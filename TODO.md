@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-09-admin-coupons-bundles` (back-office coupons and bundles screens)
-- **Next up:** back-office professors + KYC viewer, then course ownership transfer
+- **Current branch:** `docs/r2-media-storage` (docs: move all media to Cloudflare R2, drop Mux)
+- **Next up:** R2 storage disks + R2 video driver, then resume back-office professors + KYC viewer
 
 ## Legend
 
@@ -27,7 +27,7 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 - [x] Git workflow + SOLID guidelines — #1
 - [x] Project TODO list + autonomous workflow commands — #2
 - [x] `.gitattributes` (LF line endings) — #3
-- [x] Runbooks: stuck payments, failed payouts, Mux outage, SMS outage, compromised admin (`docs/runbooks/`) — #3
+- [x] Runbooks: stuck payments, failed payouts, Mux outage (now R2/transcoding outage), SMS outage, compromised admin (`docs/runbooks/`) — #3
 
 ### 0.2 Brand
 
@@ -41,7 +41,8 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 ### 0.3 Accounts & services — all **(needs: owner — account + billing)**
 
 - [ ] Laravel Cloud organisation + `staging` and `production` environments
-- [ ] Mux account (DRM enabled, signing keys, webhook secret)
+- [-] Mux account (DRM enabled, signing keys, webhook secret) — superseded by R2, 2026-11-09
+- [ ] Cloudflare account: R2 buckets per environment (private + public), CORS for browser uploads from the web origins, access keys per environment
 - [ ] Meilisearch Cloud project
 - [ ] Sentry projects (api, web, admin, mobile)
 - [ ] PostHog (or equivalent) project
@@ -52,10 +53,13 @@ References: `PRD-NN FR-NN`, `arch §N` = `docs/architecture.md` section.
 
 ### 0.4 Technical spikes
 
-- [x] Mux research: DRM needs `plus` quality; **audio-only can't use DRM** → signed playback + encrypted offline files; download tiers; free tiers (`docs/research/mux.md`)
-- [x] Mux cost estimate (`docs/research/mux.md` §4) — #3
+- [x] Mux research: DRM needs `plus` quality; **audio-only can't use DRM** → signed playback + encrypted offline files; download tiers; free tiers (`docs/research/mux.md`, now superseded by R2, 2026-11-09)
+- [x] Mux cost estimate (`docs/research/mux.md` §4) — #3 (superseded by R2, 2026-11-09)
+- [ ] R2 + FFmpeg cost estimate (storage, transcoding workers, API playlist/key traffic) to replace `docs/research/mux.md`
 - [x] Spike plans written (`docs/spikes/`) — #3
-- [ ] Run Mux DRM + offline spike (`docs/spikes/mux-drm-offline.md`) **(needs: Mux account)**
+- [-] Run Mux DRM + offline spike (`docs/spikes/mux-drm-offline.md`) — superseded by R2, 2026-11-09
+- [ ] Run R2 media spike (`docs/spikes/r2-hls-media.md`): FFmpeg availability, CPU and memory on Laravel Cloud queue workers (else a dedicated transcoding worker or container); transcoding time per media hour and `media` queue sizing **(needs: Laravel Cloud + Cloudflare accounts)**
+- [ ] Same spike: AES-128 HLS playback and offline download on low-end Android (2 GB RAM, Android 8+) and iOS, and in the web player (hls.js) on low-end phones
 - [ ] Run Next.js-on-Laravel-Cloud monorepo spike (`docs/spikes/laravel-cloud-nextjs.md`) **(needs: Laravel Cloud account)**
 - [ ] Run region latency measurement → choose region (`docs/spikes/region-latency.md`) **(needs: RIPE Atlas credits or DRC testers)**
 
@@ -73,6 +77,7 @@ Provisional defaults recorded in `project-context.md` → _Platform settings_ (c
 - [x] No coupon on top of a bundle _(provisional)_
 - [x] Review SLAs — courses 48 h, applications 72 h _(provisional)_
 - [x] WhatsApp channel — post-launch backlog _(provisional)_
+- [x] Media hosting — all files and media on Cloudflare R2, encrypted HLS (AES-128) instead of Mux DRM; weaker protection accepted (owner, 2026-11-09)
 
 Cannot be defaulted:
 
@@ -140,7 +145,7 @@ Cannot be defaulted:
 - [x] Suspend / reinstate, revenue-share override, payable rule (FR-11, BR-01–03) — #7
 - [ ] Link application/profile subjects to catalogue categories — with 1.6
 - [ ] Hide suspended professors' courses from catalogue and search — with 1.6
-- [ ] Sample lesson upload (≤ 5 min) through Mux — now possible with the Mux driver; wire into the application form
+- [ ] Sample lesson upload (≤ 5 min) through the video driver (pre-signed R2 upload once 1.5b lands); wire into the application form
 - [ ] Notifications on application/KYC decisions — with 1.12 (the web status page says to check back until then)
 - [ ] Check payout number prefix matches the chosen rail — with the payment aggregator (phase 4)
 - [ ] Product analytics events (PRD-02 §9 and other PRDs) — set up with PostHog in Phase 2
@@ -157,15 +162,25 @@ Cannot be defaulted:
 - [x] Unpublish / republish / archive; delete only if never published (FR-16, FR-17) — #8
 - [ ] Delete only with zero enrollments — with 1.8
 - [ ] Virus scan + page count for documents; pre-signed document uploads (FR-06)
-- [ ] Professor name in the burned-in watermark (needs per-professor overlay image) (FR-05)
-- [ ] Clean up unreferenced Mux assets (BR-05)
+- [ ] Professor name in the burned-in watermark: drawn by FFmpeg during transcoding with the R2 driver (1.5b), no per-professor overlay image needed (FR-05)
+- [ ] Clean up unreferenced media assets: R2 source, playlists, segments and key (BR-05)
 - [ ] Studio "changes since live" view, student-view preview, download sizes per lesson (FR-14, FR-19, FR-20)
-- [ ] Verify DRM + signed thumbnails policy and lowest `max_resolution_tier` in the Mux spike
-- [ ] Request the Mux upload outside the draft lock (no HTTP call while the row is locked)
+- [-] Verify DRM + signed thumbnails policy and lowest `max_resolution_tier` in the Mux spike — superseded by R2, 2026-11-09 (no DRM; the rendition ladder and poster frames are ours)
+- [-] Request the Mux upload outside the draft lock (no HTTP call while the row is locked) — superseded by R2, 2026-11-09 (pre-signing R2 URLs makes no HTTP call)
 - [ ] Admin "changes since live": compare quiz/document content and positions, not lesson timestamps
 - [ ] Separate, larger rate limit for authoring uploads (shared `uploads` limiter is 30/h)
 - [ ] Clean up document files when a section is deleted or a draft copy rolls back
-- [ ] Re-poll media assets still waiting for upload; test out-of-order webhooks
+- [ ] Expire media assets never confirmed by upload-complete and delete their R2 uploads (out-of-order webhooks go away with Mux)
+
+### 1.5b Media on Cloudflare R2 — owner decision 2026-11-09 (PRD-03, PRD-07)
+
+- [ ] R2 Storage disks: S3-compatible private bucket (KYC, credentials, lesson media) and public bucket (public images) behind `yekkola.private_disk` / `yekkola.public_disk`; KYC still streamed through the API only
+- [ ] R2 `VideoProvider` driver: pre-signed (multipart) upload URLs, `POST /professor/media/{id}/complete` (object and size check, then `processing`), FFmpeg job on the `media` queue (HLS renditions 720p cap + 480p/360p, audio-only HLS, AES-128 one key per asset, burned-in logo + professor name, poster frame), `ready`/`errored` (arch §1.3 B)
+- [ ] `media_assets` schema: R2 object keys, renditions, AES key encrypted at rest (never in R2) (arch §3.3)
+- [ ] Playlist + key endpoints: `GET /lessons/{uid}/hls/{playlist}` (segment URIs → short-lived pre-signed R2 URLs) and `GET /lessons/{uid}/key` (enrollment or preview, account, live web stream session or registered device); `POST /lessons/{uid}/playback` returns the playlist URL (arch §1.3 D, §4.2)
+- [ ] Offline license endpoint returns rendition playlist + AES key + expiry (arch §1.3 E) — with 1.9 FR-07
+- [ ] Remove the Mux driver, `/webhooks/video`, the video webhook inbox use and Mux env vars; keep `FakeVideoProvider` for tests; update the `VideoProvider` contract tests
+- [ ] Check the R2/transcoding outage runbook (`docs/runbooks/media-outage.md`) against the live driver
 
 ### 1.6 Catalogue & search — PRD-04
 
@@ -179,7 +194,7 @@ Cannot be defaulted:
 - [ ] Popular rail by enrollments in the last 30 days — with 1.8
 - [x] Web page cache expired by tag when a course or professor changes (`RevalidateWebPages` → apps/web `/api/revalidate`, HMAC) — #18
 - [ ] Set `WEB_SERVER_KEY` and `WEB_REVALIDATE_SECRET` (same values in api and web) on staging/production
-- [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against real Mux renditions
+- [ ] Confirm download-size bitrates (`DOWNLOAD_ESTIMATE_*_KBPS`) against our real HLS renditions (or use the stored rendition sizes once the R2 driver records them)
 - [ ] Add `php artisan scout:sync-index-settings` to the Cloud deploy commands; check French typo tolerance on Meilisearch Cloud
 - [ ] Search suggestions as you type (FR-03, Should)
 - [x] Catalogue and certificate throttles key on the visitor IP forwarded by apps/web (`X-Web-Server-Key` + `X-Client-Ip`) — #18
@@ -248,7 +263,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [ ] Clean up stamped copies when a document is replaced (old `document_stamps` rows go with the media row; their files stay)
 - [ ] Check documents uploaded before the stamper check (`inspect`) and tell professors which ones must be re-exported
 - [ ] Quiz attempts on preview lessons: also require the course to be listed (`CourseAccess::previewAllowed`, as playback and documents do)
-- [ ] Shorter web playback tokens refreshed only for a live stream session, so the web stream limit doesn't rely on the player (FR-05)
+- [ ] Playlist and key requests check the live web stream session, so the web stream limit doesn't rely on the player (FR-05) — with the R2 playlist/key endpoints (1.5b)
 - [x] Takedown: no new playback/document tokens for anyone — #42; offline removal at next sync comes with entitlement sync
 
 ### 1.9b Copy
@@ -330,7 +345,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 7. Studio: course editor, curriculum, pricing, quiz builder, submit for review (2.5)
 8. Back office, minimal: sign-in, professor applications, course version approval (2.2)
 
-Needs from the owner for a hosted demo: Mux account (real playback) and Laravel Cloud account (staging) — 0.3.
+Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) and Laravel Cloud account (staging) — 0.3.
 
 ### 2.1 Front-end foundations
 
@@ -420,6 +435,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Playwright journey: sign in → enrol free → watch preview → finish document + quiz → certificate
 - [ ] Check on staging that the `keepalive` progress PUT on tab close arrives (Chrome, Safari, Firefox; it needs a CORS preflight); if not, save to localStorage on `pagehide` and send on the next visit
 - [ ] Learning view: re-issue playback tokens on a player error after a very long pause
+- [ ] Player swap: Mux Player → HLS player (hls.js via a lightweight player, loaded on demand) for lessons and course-page previews, keeping `WatermarkOverlay` and the stream heartbeat; drop `@mux/*` packages (PRD-06, PRD-07)
 - [ ] Wishlist, in-app notifications
 - [ ] Playwright: sign-in, free enroll, paid checkout (fake), learning
 
@@ -434,9 +450,10 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Version diff view “changes since live” (PRD-03 FR-14, needs an API diff endpoint)
 - [ ] Course preview as a student from the studio (PRD-03 FR-19)
 - [ ] Rich-text course description (PRD-03 FR-02 asks for rich text; plain text today) and quiz bulk paste (§6, Should)
-- [ ] Video/audio size limit is only checked in the browser: Mux direct uploads can't be capped by size. Decide a server-side guard (e.g. a max duration setting checked on `video.asset.ready`, asset errored + deleted when over) — PRD-03 FR-04 **(decision)**
+- [-] Video/audio size limit is only checked in the browser: Mux direct uploads can't be capped by size — superseded by R2, 2026-11-09 (upload-complete checks the object size and the transcoder the duration, server-side)
 - [ ] Replacing a ready video/audio: keep the previous asset until the new one is ready (today the lesson points at the new asset at once, so a cancelled or failed replacement leaves it empty)
-- [ ] Sync `waiting_upload` assets with the provider (Mux "get upload" → asset id) when the `upload.asset_created` webhook is missed; needs `VideoProvider::getUpload`
+- [-] Sync `waiting_upload` assets with the provider (Mux "get upload" → asset id) when the `upload.asset_created` webhook is missed — superseded by R2, 2026-11-09 (no upload webhooks)
+- [ ] Studio uploader: chunked upload to pre-signed R2 URLs (resumable), then the upload-complete call; processing status unchanged (PRD-03 FR-04)
 - [ ] True/false quiz options in the course's language (today the professor's UI language), ideally generated by the API
 - [ ] Show estimated download sizes per lesson in the studio (PRD-03 FR-20)
 - [ ] Expose authoring validation constants (outcomes 3–8, cover size, audiences 4, min lessons) in `/professor/authoring-options` so copy doesn't restate them
@@ -453,8 +470,9 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [ ] Flutter app scaffold in `mobile/`, flavors (staging/production), CI `mobile.yml`
 - [ ] Generated API client, Dio, auth + secure storage, `X-Device-Id`
 - [ ] drift schema, outbox, sync engine, entitlement sync
-- [ ] `mux_player_plugin`: Android (Kotlin, Media3, `MuxDownloadManager`) — prototype first
-- [ ] `mux_player_plugin`: iOS (Swift, `MuxOfflineAccessManager`)
+- [-] `mux_player_plugin`: Android (Kotlin, Media3, `MuxDownloadManager`) — superseded by R2, 2026-11-09 (no native-SDK plugin needed)
+- [-] `mux_player_plugin`: iOS (Swift, `MuxOfflineAccessManager`) — superseded by R2, 2026-11-09
+- [ ] Offline encrypted HLS: own downloader for a rendition's segments (resumable, background), AES key wrapped with a per-device key (Keystore / Keychain) with the offline expiry, standard Flutter player with AES-128 HLS + overlay; delete revoked content at sync — prototype early (PRD-07)
 - [ ] Sign-in + device limit flow
 - [ ] Catalogue, search, course and professor pages (offline cache)
 - [ ] Free enroll + checkout (waiting screen)
@@ -484,7 +502,7 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 
 - [ ] Security review (OWASP ASVS L2 checklist), dependency audit
 - [ ] Load test results within NFR targets
-- [ ] Monitoring + alerts live (queues, payments, webhooks, OTP, Mux errors, latency)
+- [ ] Monitoring + alerts live (queues, payments, webhooks, OTP, transcoding failures, latency)
 - [ ] Backup restore drill on production-like data
 - [ ] Runbooks written
 - [ ] Legal pages published (ToS, privacy, professor agreement)

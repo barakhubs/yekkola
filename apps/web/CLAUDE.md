@@ -10,7 +10,7 @@
 - URL state (filters, sort, page) via nuqs. Forms via React Hook Form + Zod schemas from `api-client`.
 - All copy through next-intl (French default, English). Money/dates/phones formatted with `@yekkola/i18n` helpers.
 - Brand: Nunito font (via `next/font/google`), primary indigo `#2c3892`, amber accent `#fdb73b` via theme tokens only — never white text on amber. Spec: `docs/brand.md`.
-- Video: Mux Player + the per-viewer watermark overlay component.
+- Video: Mux Player today, being replaced by an HLS player (hls.js, encrypted HLS from R2; TODO 2.4) + the per-viewer watermark overlay component.
 
 ## Commands
 

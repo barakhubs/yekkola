@@ -14,7 +14,7 @@ Approved professors build courses in the **studio** (web): course details, curri
 
 **Goals**
 - A professor can go from nothing to a submitted course in one sitting.
-- Uploads are reliable on unstable connections (resumable, direct to Mux / storage).
+- Uploads are reliable on unstable connections (resumable, direct to R2 storage).
 - Live courses are never broken by edits in progress.
 
 **Non-goals**
@@ -42,8 +42,8 @@ Approved professors build courses in the **studio** (web): course details, curri
 | FR-01 | Create course → `Course` + first `CourseVersion` (draft). | Must |
 | FR-02 | Details editor with validation (title ≤ 80 chars, subtitle ≤ 120, description rich text, 3–8 outcomes, cover 16:9 ≥ 1280×720). | Must |
 | FR-03 | Curriculum editor: sections and lessons CRUD, drag-and-drop reorder (sections and lessons across sections), autosave. | Must |
-| FR-04 | Video/audio lesson (video: `plus` quality + DRM, max 720p; audio: signed playback): request Mux direct upload → resumable upload from browser with progress → status `processing → ready / errored`. Max file size per setting (default 4 GB video, 500 MB audio). | Must |
-| FR-05 | Burned-in watermark (Yekkola logo + professor name) applied at upload via Mux overlay. | Must |
+| FR-04 | Video/audio lesson: request pre-signed upload URLs for the private R2 bucket → resumable upload from the browser with progress → the studio confirms the upload to the API → FFmpeg transcodes on a queue (video: HLS, max 720p plus lower tiers; audio: audio-only HLS; AES-128 encrypted, PRD-07) → status `processing → ready / errored`. Max file size per setting (default 4 GB video, 500 MB audio), checked again by the API on upload-complete. | Must |
+| FR-05 | Burned-in watermark (Yekkola logo + professor name) applied by FFmpeg during transcoding. | Must |
 | FR-06 | Document lesson: PDF upload (≤ 50 MB) via pre-signed URL, virus scan, page count extracted. | Must |
 | FR-07 | Quiz builder: questions (single, multiple, true/false), options, correct answers, explanation per question, points, pass mark %, optional time limit, optional max attempts, shuffle toggle. | Must |
 | FR-08 | Preview lessons: professor marks lessons as free previews (max per setting, default 3). | Must |
@@ -58,7 +58,7 @@ Approved professors build courses in the **studio** (web): course details, curri
 | FR-17 | Delete: only courses with zero enrollments; otherwise archive. | Must |
 | FR-18 | Free-course limits enforced at the moment of making a course free or submitting a free course (setting). | Must |
 | FR-19 | Course preview as a student (render the draft in the learning UI). | Should |
-| FR-20 | Estimated download sizes per lesson shown to students come from Mux rendition data; studio shows them to professors too. | Should |
+| FR-20 | Estimated download sizes per lesson shown to students come from our rendition data (sizes recorded at transcoding); studio shows them to professors too. | Should |
 
 ## 5. Business rules
 
@@ -66,7 +66,7 @@ Approved professors build courses in the **studio** (web): course details, curri
 - **BR-02** Removing a lesson in a new version removes it for everyone once approved; students' progress on removed lessons is kept but no longer counts toward completion.
 - **BR-03** Existing certificates are not affected by later versions.
 - **BR-04** A course belongs to exactly one professor; transfer is admin-only.
-- **BR-05** Media assets are owned by the professor and deleted from Mux only when no version (live, superseded with enrolled students, or draft) references them.
+- **BR-05** Media assets are owned by the professor and deleted from R2 (source, playlists, segments, key) only when no version (live, superseded with enrolled students, or draft) references them.
 
 ## 6. UX notes
 
@@ -77,7 +77,8 @@ Approved professors build courses in the **studio** (web): course details, curri
 ## 7. Edge cases
 
 - Upload interrupted → resume; if the upload URL expired, request a new one and restart.
-- Mux processing error → lesson shows error with retry/re-upload.
+- Transcoding error → lesson shows error with retry/re-upload.
+- Upload never confirmed (tab closed before upload-complete) → the asset stays `waiting_upload`, the studio offers to resume, and stale uploads are cleaned up.
 - Professor submits while a media asset is still processing → blocked by checklist.
 - Professor suspended while a version is in review → review paused.
 

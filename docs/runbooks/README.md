@@ -6,7 +6,7 @@ What to do when something breaks in production. Each runbook: **symptoms → imp
 |---|---|
 | [Stuck payments](stuck-payments.md) | Payments pending past timeout, students paid but no access |
 | [Failed payouts](failed-payouts.md) | Payout batch partially/fully failed |
-| [Mux outage](mux-outage.md) | Playback, uploads, or webhooks failing |
+| [R2 or transcoding outage](media-outage.md) | Playback, uploads, or media processing failing |
 | [SMS outage](sms-outage.md) | OTP codes not arriving |
 | [Compromised admin account](compromised-admin.md) | Suspicious admin activity |
 | [Deploying the Next.js apps](deploy-laravel-cloud.md) | Setting up or fixing the web / back-office apps on Laravel Cloud |

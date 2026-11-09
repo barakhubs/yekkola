@@ -1,5 +1,7 @@
 # Mux — research findings & cost estimate
 
+> **Superseded (2026-11-09):** the owner moved all media to Cloudflare R2 (encrypted HLS, FFmpeg transcoding) and dropped Mux. Kept for the record. A new R2 + FFmpeg cost estimate is pending (TODO 0.4); until then, do not use the figures below for budgeting.
+
 > Source: Mux docs (mux.com/docs, Oct 2026) via Context7 and mux.com/docs/pricing/video. Prices change — re-check before budgeting.
 > Feeds: TODO Phase 0.4, PRD-03, PRD-07, `project-context.md` → Video & audio.
 

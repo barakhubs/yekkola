@@ -12,7 +12,7 @@
 - Any API change: regenerate the OpenAPI spec and `packages/api-client` in the same change.
 - All user-facing text goes through translations (French default, English). No hard-coded copy.
 - Do not privilege Kinshasa or any city/province in copy, defaults, or data.
-- External services (Mux, payments, SMS) are only reached through their interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`); tests use the fake drivers.
+- External services (media storage/video, payments, SMS) are only reached through their interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`); tests use the fake drivers.
 
 ## Testing (keep it lean — speed matters)
 

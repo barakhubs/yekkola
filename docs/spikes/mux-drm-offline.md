@@ -1,5 +1,7 @@
 # Spike — Mux DRM, watermark, and offline downloads
 
+> **Superseded (2026-11-09):** the owner moved all media to Cloudflare R2 and dropped Mux. This spike will not be run. See [`r2-hls-media.md`](r2-hls-media.md) for the replacement plan. Kept for the record.
+
 **Goal:** prove the full content-protection chain before building on it (PRD-07). Background: [`docs/research/mux.md`](../research/mux.md).
 
 **Needs:** Mux account, DRM enabled (DRM configuration ID), signing key, webhook secret; one Android test device (low-end, Widevine L3 if possible) and one iPhone.
