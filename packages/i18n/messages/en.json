@@ -1490,7 +1490,11 @@
       "quizSummary": "{count, plural, one {# question} other {# questions}} · pass at {pass}%",
       "correct": "Right answer",
       "incorrect": "Wrong answer",
-      "explanation": "Explanation: {text}"
+      "explanation": "Explanation: {text}",
+      "playLesson": "Play lesson",
+      "openDocument": "Open document",
+      "playHint": "Staff-only preview: the lesson as students will see it, without a personal watermark.",
+      "playFailed": "Playback failed. Close and try again."
     },
     "suspendedTitle": "Your account is suspended",
     "suspendedBody": "The back office isn’t available while an account is suspended. Contact an administrator.",
@@ -1825,7 +1829,18 @@
       "noOrders": "No orders.",
       "viewAs": "View as",
       "viewAsConfirm": "View the platform as {name}?",
-      "viewAsHint": "For up to an hour you see what this account sees (site or back office). Payments, refunds, payouts and account changes are blocked. Everything is logged."
+      "viewAsHint": "For up to an hour you see what this account sees (site or back office). Payments, refunds, payouts and account changes are blocked. Everything is logged.",
+      "grant": {
+        "action": "Give access to a course",
+        "title": "Give {name} access to a course",
+        "hint": "No order or payment. Use it for example after a payment settled outside the platform.",
+        "course": "Course",
+        "change": "Change",
+        "search": "Search for a published course",
+        "noResults": "No courses found.",
+        "reason": "Reason (kept in the audit log)",
+        "confirm": "Give access"
+      }
     },
     "settings": {
       "title": "Settings",
@@ -2023,7 +2038,19 @@
       "noFeatured": "No featured courses.",
       "moveUp": "Move “{title}” up",
       "moveDown": "Move “{title}” down",
-      "unfeature": "Remove “{title}” from featured"
+      "unfeature": "Remove “{title}” from featured",
+      "transfer": {
+        "action": "Transfer",
+        "title": "Transfer “{title}”",
+        "hint": "The course moves from {name} to the professor you choose. Future sales go to them; past sales don’t change. The previous professor’s discount codes on this course are switched off and the course leaves their bundles.",
+        "newOwner": "New professor",
+        "change": "Change",
+        "search": "Search for a professor",
+        "noResults": "No professors found.",
+        "sameOwner": "This professor already owns this course.",
+        "reason": "Reason (kept in the audit log)",
+        "confirm": "Transfer course"
+      }
     },
     "categories": {
       "title": "Categories",

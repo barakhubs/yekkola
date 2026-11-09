@@ -36,6 +36,7 @@ import { selectClass } from "@/features/common/styles";
 import { fromSort, toSort, useTableLabels } from "@/features/common/table";
 
 import { COURSE_STATES, COURSE_TONES, courseStateOf } from "./status";
+import { TransferDialog } from "./transfer-dialog";
 
 const col = dataTableColumns<AdminCourseResource>();
 
@@ -193,6 +194,7 @@ export function CourseList() {
               </Button>
             ) : null}
             {(Object.keys(ACTIONS) as Action[]).filter((a) => c.can[a]).map((a) => actionDialog(c, a))}
+            {c.can.transfer ? <TransferDialog course={c} /> : null}
           </span>
         );
       },

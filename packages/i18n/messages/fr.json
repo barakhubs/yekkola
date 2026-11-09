@@ -1490,7 +1490,11 @@
       "quizSummary": "{count, plural, one {# question} other {# questions}} · réussite à {pass} %",
       "correct": "Bonne réponse",
       "incorrect": "Mauvaise réponse",
-      "explanation": "Explication : {text}"
+      "explanation": "Explication : {text}",
+      "playLesson": "Lire la leçon",
+      "openDocument": "Ouvrir le document",
+      "playHint": "Aperçu réservé à l’équipe : la leçon telle que les étudiants la verront, sans filigrane personnel.",
+      "playFailed": "La lecture a échoué. Fermez et réessayez."
     },
     "suspendedTitle": "Votre compte est suspendu",
     "suspendedBody": "Le back office n’est pas accessible pendant une suspension. Contactez un administrateur.",
@@ -1825,7 +1829,18 @@
       "noOrders": "Aucune commande.",
       "viewAs": "Voir comme",
       "viewAsConfirm": "Voir la plateforme comme {name} ?",
-      "viewAsHint": "Pendant une heure au plus, vous voyez ce que ce compte voit (site ou back-office). Paiements, remboursements, versements et modifications du compte sont bloqués. Tout est journalisé."
+      "viewAsHint": "Pendant une heure au plus, vous voyez ce que ce compte voit (site ou back-office). Paiements, remboursements, versements et modifications du compte sont bloqués. Tout est journalisé.",
+      "grant": {
+        "action": "Donner accès à un cours",
+        "title": "Donner accès à un cours à {name}",
+        "hint": "Sans commande ni paiement. À utiliser par exemple après un paiement réglé hors de la plateforme.",
+        "course": "Cours",
+        "change": "Changer",
+        "search": "Rechercher un cours publié",
+        "noResults": "Aucun cours trouvé.",
+        "reason": "Raison (gardée dans le journal d’audit)",
+        "confirm": "Donner accès"
+      }
     },
     "settings": {
       "title": "Paramètres",
@@ -2023,7 +2038,19 @@
       "noFeatured": "Aucun cours en vedette.",
       "moveUp": "Monter « {title} »",
       "moveDown": "Descendre « {title} »",
-      "unfeature": "Retirer « {title} » de la vedette"
+      "unfeature": "Retirer « {title} » de la vedette",
+      "transfer": {
+        "action": "Transférer",
+        "title": "Transférer « {title} »",
+        "hint": "Le cours passe de {name} au professeur choisi. Les ventes à venir lui reviennent ; les ventes passées ne changent pas. Les codes promo de l’ancien professeur sur ce cours sont désactivés et le cours quitte ses packs.",
+        "newOwner": "Nouveau professeur",
+        "change": "Changer",
+        "search": "Rechercher un professeur",
+        "noResults": "Aucun professeur trouvé.",
+        "sameOwner": "Ce professeur possède déjà ce cours.",
+        "reason": "Raison (gardée dans le journal d’audit)",
+        "confirm": "Transférer le cours"
+      }
     },
     "categories": {
       "title": "Catégories",

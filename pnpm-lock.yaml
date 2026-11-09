@@ -35,6 +35,9 @@ importers:
       '@yekkola/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      hls.js:
+        specifier: ^1.7.4
+        version: 1.7.4
       lucide-react:
         specifier: ^1.61.0
         version: 1.61.0(@types/react@19.3.0)(react@19.3.1)

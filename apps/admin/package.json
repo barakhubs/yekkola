@@ -16,6 +16,7 @@
     "@yekkola/api-client": "workspace:*",
     "@yekkola/i18n": "workspace:*",
     "@yekkola/ui": "workspace:*",
+    "hls.js": "^1.7.4",
     "lucide-react": "^1.61.0",
     "next": "^16.4.2",
     "next-intl": "^4.14.9",
