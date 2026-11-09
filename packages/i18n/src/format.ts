@@ -37,6 +37,13 @@ export function formatDate(iso: string, locale: Locale, style: DateStyle = "medi
   return new Intl.DateTimeFormat(intlTag(locale), { dateStyle: style }).format(new Date(iso));
 }
 
+/** A calendar month from the API ("2026-11") as "novembre 2026" / "November 2026". */
+export function formatMonth(month: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlTag(locale), { month: "long", year: "numeric", timeZone: "UTC" }).format(
+    new Date(`${month.slice(0, 7)}-01T00:00:00Z`),
+  );
+}
+
 export function formatDateTime(iso: string, locale: Locale): string {
   return new Intl.DateTimeFormat(intlTag(locale), { dateStyle: "medium", timeStyle: "short" }).format(
     new Date(iso),
