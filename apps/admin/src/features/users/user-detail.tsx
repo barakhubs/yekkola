@@ -25,6 +25,7 @@ import type { ReactNode } from "react";
 import { useErrorText } from "@/features/common/errors";
 import { Link } from "@/i18n/navigation";
 
+import { GrantEnrollmentDialog } from "./grant-enrollment-dialog";
 import { USER_TONES, userStateOf } from "./status";
 
 type Action = { kind: "status"; status: UserStatus } | { kind: "signOut" } | { kind: "device"; id: string };
@@ -119,6 +120,7 @@ export function UserDetail({ id }: { id: string }) {
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
+          {u.can.grant_enrollment ? <GrantEnrollmentDialog userId={id} name={u.name ?? "—"} /> : null}
           {u.can.reactivate ? statusAction("active", t("reactivate"), t("reactivateHint")) : null}
           {u.can.suspend ? statusAction("suspended", t("suspend"), t("suspendHint")) : null}
           {u.can.ban ? statusAction("banned", t("ban"), t("banHint"), true) : null}

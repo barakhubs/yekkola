@@ -69,7 +69,7 @@ final class AdminUserDetailResource extends JsonResource
     }
 
     /**
-     * @return array{suspend: bool, ban: bool, reactivate: bool, sign_out: bool, remove_device: bool, impersonate: bool}
+     * @return array{suspend: bool, ban: bool, reactivate: bool, sign_out: bool, remove_device: bool, impersonate: bool, grant_enrollment: bool}
      */
     private function can(User $staff): array
     {
@@ -84,6 +84,7 @@ final class AdminUserDetailResource extends JsonResource
             'sign_out' => $manage,
             'remove_device' => $manage,
             'impersonate' => Impersonation::allowed($staff, $this->resource),
+            'grant_enrollment' => $manage && $this->status !== UserStatus::Banned,
         ];
     }
 

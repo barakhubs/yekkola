@@ -108,4 +108,10 @@ final class AuthoringException extends DomainException
     {
         return new self('media.upload_incomplete', 422);
     }
+
+    /** The new owner must be another active, approved professor. */
+    public static function invalidTransferTarget(): self
+    {
+        return new self('course.invalid_transfer_target', 422);
+    }
 }

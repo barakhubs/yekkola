@@ -137,6 +137,7 @@ export const AdminUsersShowResponse = zod.object({
       sign_out: zod.string(),
       remove_device: zod.string(),
       impersonate: zod.boolean(),
+      grant_enrollment: zod.string(),
     }),
   }),
 });
@@ -220,6 +221,7 @@ export const AdminUsersStatusResponse = zod.object({
       sign_out: zod.string(),
       remove_device: zod.string(),
       impersonate: zod.boolean(),
+      grant_enrollment: zod.string(),
     }),
   }),
 });
@@ -290,6 +292,7 @@ export const AdminUsersSignOutResponse = zod.object({
       sign_out: zod.string(),
       remove_device: zod.string(),
       impersonate: zod.boolean(),
+      grant_enrollment: zod.string(),
     }),
   }),
 });
@@ -361,6 +364,89 @@ export const AdminUsersDevicesDestroyResponse = zod.object({
       sign_out: zod.string(),
       remove_device: zod.string(),
       impersonate: zod.boolean(),
+      grant_enrollment: zod.string(),
+    }),
+  }),
+});
+
+/**
+ * @summary Gives the account access to a course (source `admin`): no order, payment or ledger entry. A reason (`note`) is
+required. `enrollment.already_active` (409) when it already has access
+ */
+export const AdminUsersEnrollmentsStoreParams = zod.object({
+  user: zod.string().describe("The user ID"),
+});
+
+export const adminUsersEnrollmentsStoreBodyNoteMin = 3;
+export const adminUsersEnrollmentsStoreBodyNoteMax = 2000;
+
+export const AdminUsersEnrollmentsStoreBody = zod
+  .object({
+    course_id: zod.string(),
+    note: zod.string().min(adminUsersEnrollmentsStoreBodyNoteMin).max(adminUsersEnrollmentsStoreBodyNoteMax),
+  })
+  .describe("Give an account access to a course, with the reason kept in the audit log (PRD-09 FR-04).");
+
+export const adminUsersEnrollmentsStoreResponseDataEnrollmentCountMin = 0;
+
+export const AdminUsersEnrollmentsStoreResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    name: zod.string().nullable(),
+    phone: zod.string().nullable().describe("Null once the account is anonymised."),
+    status: zod.string(),
+    roles: zod.array(zod.string()),
+    is_staff: zod.boolean(),
+    last_seen_at: zod.string().nullable(),
+    deletion_requested_at: zod.string().nullable(),
+    created_at: zod.string(),
+    email: zod.string().nullable(),
+    locale: zod.string(),
+    province: zod.string().nullable(),
+    city: zod.string().nullable(),
+    last_login_at: zod.string().nullable(),
+    professor_profile_id: zod.string().nullable().describe("Their professor profile, if they teach."),
+    devices: zod.array(
+      zod.object({
+        id: zod.string(),
+        platform: zod.string(),
+        name: zod.string().nullable(),
+        app_version: zod.string().nullable(),
+        last_active_at: zod.string().nullable(),
+        registered_at: zod.string(),
+      }),
+    ),
+    enrollment_count: zod.int().min(adminUsersEnrollmentsStoreResponseDataEnrollmentCountMin),
+    enrollments: zod.array(
+      zod.object({
+        course_id: zod.string(),
+        course: zod.string().nullable(),
+        source: zod.string(),
+        status: zod.string(),
+        progress_pct: zod.int(),
+        enrolled_at: zod.string(),
+      }),
+    ),
+    orders: zod.array(
+      zod.object({
+        id: zod.string(),
+        number: zod.string(),
+        status: zod.string(),
+        total: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        created_at: zod.string(),
+      }),
+    ),
+    can: zod.object({
+      suspend: zod.string(),
+      ban: zod.string(),
+      reactivate: zod.string(),
+      sign_out: zod.string(),
+      remove_device: zod.string(),
+      impersonate: zod.boolean(),
+      grant_enrollment: zod.string(),
     }),
   }),
 });

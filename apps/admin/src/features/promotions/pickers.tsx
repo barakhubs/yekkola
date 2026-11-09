@@ -69,8 +69,8 @@ function Results<T>({
 }
 
 /**
- * Search the published paid courses (admin courses list, `catalog.view`). Free and taken-down courses aren't
- * offered: neither a coupon nor a bundle means anything for them.
+ * Search the published courses (admin courses list, `catalog.view`). Paid ones only by default — a coupon or a
+ * bundle means nothing for a free course; `includeFree` for granting access. Taken-down courses are never offered.
  */
 export function CoursePicker({
   label,
@@ -78,9 +78,11 @@ export function CoursePicker({
   onPick,
   professorId,
   isDisabled,
+  includeFree = false,
 }: {
   label: string;
   empty: string;
+  includeFree?: boolean;
   onPick: (course: AdminCourseResource) => void;
   /** Only this professor's courses (a professor's own bundle). */
   professorId?: string | null;
@@ -100,7 +102,9 @@ export function CoursePicker({
     {
       query: {
         select: (r) =>
-          success(r).data.filter((c) => !c.is_free && c.price !== null && c.taken_down_at === null),
+          success(r).data.filter(
+            (c) => c.taken_down_at === null && (includeFree || (!c.is_free && c.price !== null)),
+          ),
       },
     },
   );

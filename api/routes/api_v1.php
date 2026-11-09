@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\Admin\FeaturedCourseController;
 use App\Http\Controllers\Api\V1\Admin\KycSubmissionController;
 use App\Http\Controllers\Api\V1\Admin\LedgerAdjustmentController;
 use App\Http\Controllers\Api\V1\Admin\LedgerController;
+use App\Http\Controllers\Api\V1\Admin\LessonPreviewController;
 use App\Http\Controllers\Api\V1\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\V1\Admin\PayoutBatchController;
 use App\Http\Controllers\Api\V1\Admin\ProfessorApplicationController as AdminApplicationController;
@@ -281,6 +282,14 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::get('/course-versions/{version}', [CourseVersionController::class, 'show'])->name('course-versions.show');
         Route::post('/course-versions/{version}/approve', [CourseVersionController::class, 'approve'])->name('course-versions.approve');
         Route::post('/course-versions/{version}/reject', [CourseVersionController::class, 'reject'])->name('course-versions.reject');
+        // Lesson preview in the review screen (PRD-09 FR-07): staff playlists, key and original documents.
+        Route::middleware('throttle:hls')->group(function (): void {
+            Route::get('/course-versions/{version}/lessons/{lesson}/preview', [LessonPreviewController::class, 'show'])->name('lesson-previews.show');
+            Route::get('/course-versions/{version}/lessons/{lesson}/document', [LessonPreviewController::class, 'document'])->name('lesson-previews.document');
+            Route::get('/media/{asset}/hls/master.m3u8', [LessonPreviewController::class, 'master'])->name('media-previews.master');
+            Route::get('/media/{asset}/hls/key', [LessonPreviewController::class, 'key'])->name('media-previews.key');
+            Route::get('/media/{asset}/hls/{rendition}.m3u8', [LessonPreviewController::class, 'media'])->where('rendition', '[a-z0-9]{1,16}')->name('media-previews.media');
+        });
     });
 
     Route::middleware('can:'.Permission::KycView->value)->group(function () {
@@ -301,6 +310,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::post('/courses/{course}/republish', [AdminCourseController::class, 'republish'])->name('courses.republish');
         Route::post('/courses/{course}/take-down', [AdminCourseController::class, 'takeDown'])->name('courses.take-down');
         Route::post('/courses/{course}/restore', [AdminCourseController::class, 'restore'])->name('courses.restore');
+        Route::post('/courses/{course}/transfer', [AdminCourseController::class, 'transfer'])->name('courses.transfer');
         Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
         Route::put('/categories/order', [AdminCategoryController::class, 'order'])->name('categories.order');
@@ -377,6 +387,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
         Route::post('/users/{user}/status', [AdminUserController::class, 'status'])->name('users.status');
         Route::post('/users/{user}/sign-out', [AdminUserController::class, 'signOut'])->name('users.sign-out');
         Route::delete('/users/{user}/devices/{device}', [AdminUserController::class, 'removeDevice'])->name('users.devices.destroy');
+        Route::post('/users/{user}/enrollments', [AdminUserController::class, 'grantEnrollment'])->name('users.enrollments.store');
         Route::post('/users/{user}/impersonate', [ImpersonationController::class, 'start'])->middleware('throttle:impersonation')->name('users.impersonate');
     });
 

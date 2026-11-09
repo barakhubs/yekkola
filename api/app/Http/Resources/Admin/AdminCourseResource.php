@@ -6,6 +6,7 @@ namespace App\Http\Resources\Admin;
 
 use App\Domain\Authoring\Enums\CourseStatus;
 use App\Domain\Authoring\Models\Course;
+use App\Domain\Identity\Enums\Role;
 use App\Domain\Shared\Enums\Currency;
 use App\Domain\Shared\ValueObjects\Money;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ final class AdminCourseResource extends JsonResource
             'published_at' => $this->published_at?->toIso8601String(),
             'taken_down_at' => $this->taken_down_at?->toIso8601String(),
             'takedown_reason' => $this->takedown_reason,
-            'can' => $this->can(),
+            'can' => $this->can($request),
         ];
     }
 
@@ -56,9 +57,9 @@ final class AdminCourseResource extends JsonResource
     }
 
     /**
-     * @return array{unpublish: bool, republish: bool, take_down: bool, restore: bool}
+     * @return array{unpublish: bool, republish: bool, take_down: bool, restore: bool, transfer: bool}
      */
-    private function can(): array
+    private function can(Request $request): array
     {
         $takenDown = $this->taken_down_at !== null;
         $live = $this->live_version_id !== null;
@@ -68,6 +69,8 @@ final class AdminCourseResource extends JsonResource
             'republish' => ! $takenDown && $live && $this->status === CourseStatus::Unpublished,
             'take_down' => ! $takenDown && $live,
             'restore' => $takenDown,
+            // Super admin only (PRD-09 FR-08).
+            'transfer' => $request->user()?->hasRole(Role::SuperAdmin->value) === true,
         ];
     }
 }

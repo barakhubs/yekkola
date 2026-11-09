@@ -23,6 +23,7 @@ import type {
   AdminCoursesRepublish200,
   AdminCoursesRestore200,
   AdminCoursesTakeDown200,
+  AdminCoursesTransfer200,
   AdminCoursesUnpublish200,
   AuthorizationExceptionResponse,
   CoursesIndex200,
@@ -43,6 +44,7 @@ import type {
   ProfessorCoursesUpdate200,
   ProfessorCoursesWithdraw200,
   StaffNoteRequest,
+  TransferCourseRequest,
   UpdateCourseSettingsRequest,
   ValidationExceptionResponse,
 } from "../../model";
@@ -2866,6 +2868,203 @@ export function useAdminCoursesRestore<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAdminCoursesRestoreQueryOptions(course, staffNoteRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCoursesTransferResponse200 = {
+  data: AdminCoursesTransfer200;
+  status: 200;
+};
+
+export type adminCoursesTransferResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCoursesTransferResponse404 = {
+  data: ModelNotFoundExceptionResponse;
+  status: 404;
+};
+
+export type adminCoursesTransferResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type adminCoursesTransferResponseSuccess = adminCoursesTransferResponse200 & {
+  headers: Headers;
+};
+export type adminCoursesTransferResponseError = (
+  adminCoursesTransferResponse403 | adminCoursesTransferResponse404 | adminCoursesTransferResponse422
+) & {
+  headers: Headers;
+};
+
+export type adminCoursesTransferResponse =
+  adminCoursesTransferResponseSuccess | adminCoursesTransferResponseError;
+
+export const getAdminCoursesTransferUrl = (course: string) => {
+  return `/admin/courses/${course}/transfer`;
+};
+
+/**
+ * @summary Moves the course to another active professor (super admin only). Future sales earn the new professor; the old
+professor's coupons on it are switched off and it leaves their bundles. A reason (`note`) is required
+ */
+export const adminCoursesTransfer = async (
+  course: string,
+  transferCourseRequest: TransferCourseRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCoursesTransferResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<adminCoursesTransferResponse>(getAdminCoursesTransferUrl(course), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(transferCourseRequest),
+  });
+};
+
+export const getAdminCoursesTransferQueryKey = (
+  course: string,
+  transferCourseRequest?: BodyType<TransferCourseRequest>,
+) => {
+  return ["POST", `/admin/courses/${course}/transfer`, transferCourseRequest] as const;
+};
+
+export const getAdminCoursesTransferQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCoursesTransfer>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  transferCourseRequest: BodyType<TransferCourseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTransfer>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCoursesTransferQueryKey(course, transferCourseRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCoursesTransfer>>> = ({ signal }) =>
+    adminCoursesTransfer(course, transferCourseRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: course !== null && course !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTransfer>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type AdminCoursesTransferQueryResult = NonNullable<Awaited<ReturnType<typeof adminCoursesTransfer>>>;
+export type AdminCoursesTransferQueryError = ErrorType<
+  AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+>;
+
+export function useAdminCoursesTransfer<
+  TData = Awaited<ReturnType<typeof adminCoursesTransfer>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  transferCourseRequest: BodyType<TransferCourseRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTransfer>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesTransfer>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesTransfer>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesTransfer<
+  TData = Awaited<ReturnType<typeof adminCoursesTransfer>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  transferCourseRequest: BodyType<TransferCourseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTransfer>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCoursesTransfer>>,
+          TError,
+          Awaited<ReturnType<typeof adminCoursesTransfer>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCoursesTransfer<
+  TData = Awaited<ReturnType<typeof adminCoursesTransfer>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  transferCourseRequest: BodyType<TransferCourseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTransfer>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Moves the course to another active professor (super admin only). Future sales earn the new professor; the old
+professor's coupons on it are switched off and it leaves their bundles. A reason (`note`) is required
+ */
+
+export function useAdminCoursesTransfer<
+  TData = Awaited<ReturnType<typeof adminCoursesTransfer>>,
+  TError = ErrorType<
+    AuthorizationExceptionResponse | ModelNotFoundExceptionResponse | ValidationExceptionResponse
+  >,
+>(
+  course: string,
+  transferCourseRequest: BodyType<TransferCourseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCoursesTransfer>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCoursesTransferQueryOptions(course, transferCourseRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

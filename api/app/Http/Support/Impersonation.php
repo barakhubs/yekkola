@@ -40,7 +40,8 @@ final class Impersonation
         'admin.refunds.approve', 'admin.refunds.reject', 'admin.refunds.retry', 'admin.payments.*',
         'admin.payout-batches.store', 'admin.payout-batches.approve', 'admin.payouts.*', 'admin.ledger.adjustments.*',
         'admin.staff.store', 'admin.staff.update', 'admin.staff.destroy', 'admin.staff.password',
-        'admin.users.status', 'admin.users.sign-out', 'admin.users.devices.*', 'admin.users.impersonate', 'admin.reports.resolve',
+        'admin.users.status', 'admin.users.sign-out', 'admin.users.devices.*', 'admin.users.impersonate', 'admin.users.enrollments.*', 'admin.reports.resolve',
+        'admin.courses.transfer',
         'admin.settings.update', 'admin.settings.branding.*',
     ];
 

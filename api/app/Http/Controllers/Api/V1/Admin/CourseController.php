@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Domain\Authoring\Actions\ChangeCourseAvailability;
+use App\Domain\Authoring\Actions\TransferCourse;
 use App\Domain\Authoring\Models\Course;
+use App\Domain\Identity\Enums\Role;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StaffNoteRequest;
+use App\Http\Requests\Admin\TransferCourseRequest;
 use App\Http\Resources\Admin\AdminCourseResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -69,6 +72,22 @@ final class CourseController extends Controller
     public function restore(StaffNoteRequest $request, Course $course, ChangeCourseAvailability $change): AdminCourseResource
     {
         return $this->present($change->restore($course, $this->staff($request), (string) $request->note()));
+    }
+
+    /**
+     * Moves the course to another active professor (super admin only). Future sales earn the new professor; the old
+     * professor's coupons on it are switched off and it leaves their bundles. A reason (`note`) is required.
+     */
+    public function transfer(TransferCourseRequest $request, Course $course, TransferCourse $transfer): AdminCourseResource
+    {
+        abort_unless($this->staff($request)->hasRole(Role::SuperAdmin->value), 403);
+
+        return $this->present($transfer->handle(
+            $course,
+            $request->string('professor_profile_id')->toString(),
+            $this->staff($request),
+            $request->string('note')->toString(),
+        ));
     }
 
     private function present(Course $course): AdminCourseResource

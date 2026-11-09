@@ -10,10 +10,12 @@ use App\Domain\Identity\Actions\RevokeDevice;
 use App\Domain\Identity\Actions\SignOutEverywhere;
 use App\Domain\Identity\Models\Device;
 use App\Domain\Identity\Models\User;
+use App\Domain\Learning\Actions\GrantStaffEnrollment;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Platform\Actions\RecordAudit;
 use App\Domain\Shared\ValueObjects\PhoneNumber;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\GrantEnrollmentRequest;
 use App\Http\Requests\Admin\UserStatusRequest;
 use App\Http\Resources\Admin\AdminUserDetailResource;
 use App\Http\Resources\Admin\AdminUserResource;
@@ -76,6 +78,19 @@ final class UserController extends Controller
     public function status(UserStatusRequest $request, User $user, ChangeUserStatus $change): AdminUserDetailResource
     {
         $change->handle($user, $request->status(), (string) $request->input('note'), $this->staff($request));
+
+        return $this->show($user->refresh());
+    }
+
+    /**
+     * Gives the account access to a course (source `admin`): no order, payment or ledger entry. A reason (`note`) is
+     * required. `enrollment.already_active` (409) when it already has access.
+     */
+    public function grantEnrollment(GrantEnrollmentRequest $request, User $user, GrantStaffEnrollment $grant): AdminUserDetailResource
+    {
+        $staff = $this->staff($request);
+        ChangeUserStatus::assertMayManage($user, $staff);
+        $grant->handle($user, $request->string('course_id')->toString(), $staff, $request->string('note')->toString());
 
         return $this->show($user->refresh());
     }

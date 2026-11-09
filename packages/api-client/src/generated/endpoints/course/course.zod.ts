@@ -1309,6 +1309,7 @@ export const AdminCoursesIndexResponse = zod.object({
         republish: zod.string(),
         take_down: zod.string(),
         restore: zod.boolean(),
+        transfer: zod.boolean().describe("Super admin only (PRD-09 FR-08)."),
       }),
     }),
   ),
@@ -1395,6 +1396,7 @@ export const AdminCoursesUnpublishResponse = zod.object({
       republish: zod.string(),
       take_down: zod.string(),
       restore: zod.boolean(),
+      transfer: zod.boolean().describe("Super admin only (PRD-09 FR-08)."),
     }),
   }),
 });
@@ -1447,6 +1449,7 @@ export const AdminCoursesRepublishResponse = zod.object({
       republish: zod.string(),
       take_down: zod.string(),
       restore: zod.boolean(),
+      transfer: zod.boolean().describe("Super admin only (PRD-09 FR-08)."),
     }),
   }),
 });
@@ -1502,6 +1505,7 @@ export const AdminCoursesTakeDownResponse = zod.object({
       republish: zod.string(),
       take_down: zod.string(),
       restore: zod.boolean(),
+      transfer: zod.boolean().describe("Super admin only (PRD-09 FR-08)."),
     }),
   }),
 });
@@ -1554,6 +1558,63 @@ export const AdminCoursesRestoreResponse = zod.object({
       republish: zod.string(),
       take_down: zod.string(),
       restore: zod.boolean(),
+      transfer: zod.boolean().describe("Super admin only (PRD-09 FR-08)."),
+    }),
+  }),
+});
+
+/**
+ * @summary Moves the course to another active professor (super admin only). Future sales earn the new professor; the old
+professor's coupons on it are switched off and it leaves their bundles. A reason (`note`) is required
+ */
+export const AdminCoursesTransferParams = zod.object({
+  course: zod.string().describe("The course ID"),
+});
+
+export const adminCoursesTransferBodyNoteMin = 3;
+export const adminCoursesTransferBodyNoteMax = 2000;
+
+export const AdminCoursesTransferBody = zod
+  .object({
+    professor_profile_id: zod.string(),
+    note: zod.string().min(adminCoursesTransferBodyNoteMin).max(adminCoursesTransferBodyNoteMax),
+  })
+  .describe("Move a course to another professor, with the reason kept in the audit log (PRD-09 FR-08).");
+
+export const AdminCoursesTransferResponse = zod.object({
+  data: zod.object({
+    id: zod.string(),
+    slug: zod.string(),
+    title: zod
+      .string()
+      .nullable()
+      .describe("The live version's title (or the draft's, before the first approval)."),
+    professor: zod.object({
+      id: zod.string(),
+      display_name: zod.string(),
+    }),
+    category: zod.string().nullable(),
+    status: zod.string(),
+    is_free: zod.boolean(),
+    price: zod
+      .object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      })
+      .nullable(),
+    enrollment_count: zod.int(),
+    rating_avg: zod.number(),
+    rating_count: zod.int(),
+    featured_position: zod.int().nullable(),
+    published_at: zod.string().nullable(),
+    taken_down_at: zod.string().nullable(),
+    takedown_reason: zod.string().nullable(),
+    can: zod.object({
+      unpublish: zod.string(),
+      republish: zod.string(),
+      take_down: zod.string(),
+      restore: zod.boolean(),
+      transfer: zod.boolean().describe("Super admin only (PRD-09 FR-08)."),
     }),
   }),
 });

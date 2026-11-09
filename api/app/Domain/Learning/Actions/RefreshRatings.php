@@ -30,9 +30,15 @@ final class RefreshRatings
         [$avg, $count] = $this->aggregate(Review::query()->published()->where('reviews.course_id', $courseId));
         $course->forceFill(['rating_avg' => $avg, 'rating_count' => $count])->saveQuietly();
 
+        $this->professor($course->professor_profile_id);
+    }
+
+    /** Recounts one professor's rating over the courses they own now (e.g. after a course transfer). */
+    public function professor(string $professorProfileId): void
+    {
         [$avg, $count] = $this->aggregate(Review::query()->published()
-            ->whereIn('reviews.course_id', Course::query()->withTrashed()->where('professor_profile_id', $course->professor_profile_id)->select('id')));
-        ProfessorProfile::query()->whereKey($course->professor_profile_id)->update(['rating_avg' => $avg, 'rating_count' => $count]);
+            ->whereIn('reviews.course_id', Course::query()->withTrashed()->where('professor_profile_id', $professorProfileId)->select('id')));
+        ProfessorProfile::query()->whereKey($professorProfileId)->update(['rating_avg' => $avg, 'rating_count' => $count]);
     }
 
     /**

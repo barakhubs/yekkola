@@ -39,7 +39,7 @@ it('closes a taken-down course to everyone, enrolled students included, until re
     $this->postJson("/api/v1/admin/courses/{$this->course->id}/take-down", ['note' => 'Plainte pour droits d’auteur'])->assertOk()
         ->assertJsonPath('data.status', 'unpublished')
         ->assertJsonPath('data.takedown_reason', 'Plainte pour droits d’auteur')
-        ->assertJsonPath('data.can', ['unpublish' => false, 'republish' => false, 'take_down' => false, 'restore' => true]);
+        ->assertJsonPath('data.can', ['unpublish' => false, 'republish' => false, 'take_down' => false, 'restore' => true, 'transfer' => false]);
 
     asStudent();
     $this->postJson("/api/v1/lessons/{$this->video->uid}/playback")->assertForbidden()->assertJsonPath('code', 'enrollment.course_taken_down');

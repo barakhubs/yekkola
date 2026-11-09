@@ -25,6 +25,7 @@ import type { ReactNode } from "react";
 import { useErrorText } from "@/features/common/errors";
 import { VERSION_TONES, versionStateOf } from "@/features/common/status";
 import { Link } from "@/i18n/navigation";
+import { LessonPreview } from "./lesson-preview";
 
 type LessonType = "video" | "audio" | "document" | "quiz";
 
@@ -226,7 +227,7 @@ export function ReviewDetail({ id }: { id: string }) {
               <h3 className="font-bold">{t("sectionNumber", { number: index + 1, title: section.title })}</h3>
               <ol className="grid gap-2">
                 {section.lessons.map((lesson) => (
-                  <LessonRow key={lesson.id} lesson={lesson} />
+                  <LessonRow key={lesson.id} lesson={lesson} versionId={id} />
                 ))}
               </ol>
             </li>
@@ -237,7 +238,7 @@ export function ReviewDetail({ id }: { id: string }) {
   );
 }
 
-function LessonRow({ lesson }: { lesson: StudioLessonResource }) {
+function LessonRow({ lesson, versionId }: { lesson: StudioLessonResource; versionId: string }) {
   const t = useTranslations("admin.reviews");
   const locale = useLocale() as Locale;
   const type = lesson.type as LessonType;
@@ -269,6 +270,15 @@ function LessonRow({ lesson }: { lesson: StudioLessonResource }) {
         <p className="text-xs text-muted-foreground">
           {lesson.document.name} · {formatBytes(lesson.document.size_bytes, locale)}
         </p>
+      ) : null}
+      {(type === "document" && lesson.document) ||
+      ((type === "video" || type === "audio") && lesson.media?.status === "ready") ? (
+        <LessonPreview
+          versionId={versionId}
+          lessonId={lesson.id}
+          title={lesson.title}
+          kind={type as "video" | "audio" | "document"}
+        />
       ) : null}
       {lesson.quiz ? (
         <details className="rounded-md bg-muted/40 p-2 text-sm">

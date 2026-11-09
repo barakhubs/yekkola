@@ -466,7 +466,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 |---|---|---|
 | GET | /admin/dashboard | KPIs + charts |
 | GET / PATCH | /admin/users[/{id}] | Search, view, suspend/ban/reactivate |
-| POST | /admin/users/{id}/enrollments | Grant enrollment |
+| POST | /admin/users/{id}/enrollments | Grant access `{course_id, note}` (`users.manage`): source `admin`, no order/payment/ledger; live, not taken-down course; `enrollment.already_active` (409); audited `enrollment.granted` |
 | GET | /admin/professor-applications[/{id}] | Queue (`moderation.review`; `filter[status]`, `filter[subject]`, `sort`); each item has `can` (start_review, decide) for the signed-in staff member |
 | POST | /admin/professor-applications/{id}/(start-review\|approve\|reject\|request-info) | Decide (note required except approve) |
 | GET | /admin/professor-applications/{id}/credentials/{file} | Stream a credential file (audited) |
@@ -477,6 +477,8 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST | /admin/professors/{id}/(suspend\|reinstate) | With reason |
 | GET | /admin/course-versions[/{id}] | Review queue (`?filter[state]=in_review`, `sort`); detail with curriculum + changes since live and `can` (approve, reject) |
 | POST | /admin/course-versions/{id}/(approve\|reject) | Decide (note required to reject) |
+| GET | /admin/course-versions/{id}/lessons/{lessonId}/(preview\|document) | Reviewer preview (`moderation.review`): `{kind, playlist_url, poster_url, document_url}`; the original PDF inline (audited `lesson.document_previewed`) |
+| GET | /admin/media/{assetId}/hls/(master.m3u8\|{rendition}.m3u8\|key) | Staff HLS for previews (`moderation.review`, staff session on each request; signed segment URLs; no stream limit or viewer watermark) |
 | GET / PUT | /admin/featured-courses | Featured rail: full ordered list of listed course ids (`catalog.manage`, audited) |
 | GET / PATCH | /admin/courses[/{id}] | Unpublish, takedown |
 | CRUD | /admin/categories (+ `PUT /admin/categories/order`) | Categories |
@@ -503,6 +505,7 @@ Balances (`held`, `available`, `paid_out`) are computed from entries; a cached b
 | POST / DELETE | /admin/settings/branding/{asset} | Brand images (`settings.manage`; `asset` = `logo`, `footer_logo`, `favicon`, `share_image`): multipart `file` (no SVG; logos PNG/WebP/JPEG ≤ 1 MB; favicon square PNG 48–1024 px ≤ 512 KB; share image ≥ 1200×630 ≤ 5 MB) stored on the public disk under a new name; DELETE goes back to the built-in one. Saved in the `branding` settings group (audited), old file deleted, web pages refreshed (`branding` tag) |
 | GET | /admin/dashboard | Back-office home (any staff): 30-day KPIs vs the 30 before, active students 7/30 d, daily series, queues (applications and course reviews with overdue vs SLA, KYC, open reports, refunds, stuck payments, failed payouts). Money only with `commerce.view`/`finance.view`; each queue only with its permission |
 | GET / POST | /admin/courses, /admin/courses/{id}/(unpublish\|republish\|take-down\|restore) | Courses (`catalog.view` to list, `catalog.manage` to act; reason `note` required, audited). Unpublish: off the catalogue, enrolled keep access; take down: closed to everyone |
+| POST | /admin/courses/{id}/transfer | Move to another active professor `{professor_profile_id, note}` (super admin): future sales only (order items snapshot the owner); the old professor's coupons on it are switched off, it leaves their bundles (active ones are archived), media used only by this course moves too; audited `course.transferred` |
 | GET / POST / PATCH / DELETE / PUT | /admin/categories[/{id}], /admin/categories/order | Category tree (`catalog.manage`): all categories with fr/en names, visibility, counts; two levels at most; delete only when unused (409 `category.in_use`); order one level `{parent_id, ids}`; audited; saving refreshes the public pages |
 | GET / POST | /admin/reviews, /admin/reviews/{id}/(hide\|restore) | Review moderation (`moderation.reports`): hide/restore with a reason; ratings recounted under the professor → course lock; course and professor pages refreshed; audited |
 | GET | /admin/audit-log | Audit log (`audit.view`): newest first; filters event (or family, e.g. `refund`), causer, subject, dates; entries carry causer, subject, details (before/after, reason) and IP |

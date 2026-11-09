@@ -10,4 +10,6 @@ export type AdminCourseResourceCan = {
   republish: string;
   take_down: string;
   restore: boolean;
+  /** Super admin only (PRD-09 FR-08). */
+  transfer: boolean;
 };
