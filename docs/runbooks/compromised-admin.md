@@ -16,7 +16,7 @@
 
 ## Recover
 7. Reverse damage through audited admin actions: reversing ledger adjustments, restoring settings, restoring payout methods (with professor confirmation).
-8. Rotate any secrets the account could see (if super admin): Mux keys, gateway keys, webhook secrets.
+8. Rotate any secrets the account could see (if super admin): R2 access keys, gateway keys, webhook secrets.
 9. Re-enable the staff member only with a new verified number and TOTP enabled.
 
 ## Follow up

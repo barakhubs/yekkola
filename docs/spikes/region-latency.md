@@ -17,7 +17,7 @@ Ask 5–10 testers on different operators and cities to open a simple page that 
 
 - Primary metric: median and p90 RTT/TTFB per region, across cities and operators.
 - Pick the region with the lower p90; if within 10%, pick the one with better Laravel Cloud feature availability.
-- Note: Mux media and Cloudflare-fronted assets are served from CDNs, so this choice mainly affects API calls.
+- Note: media segments come from Cloudflare R2 and Cloudflare-fronted assets from Cloudflare's network, so this choice mainly affects API calls — including the playlist and key requests made at the start of each playback.
 
 ## Results
 

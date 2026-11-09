@@ -39,7 +39,7 @@ Enrolled students learn through video, audio, documents, and quizzes; their prog
 |---|---|---|
 | FR-01 | My courses: list with progress %, last activity, continue button; filters (in progress, completed). | Must |
 | FR-02 | Learning view: curriculum sidebar (status per lesson), lesson content, next/previous, mark complete (documents), Q&A tab. | Must |
-| FR-03 | Player: Mux Player with DRM tokens from API; speed control; captions if available (Could); per-viewer watermark overlay (PRD-07). | Must |
+| FR-03 | Player: HLS player (hls.js on web, a standard AES-128 HLS player on mobile) playing the encrypted playlists served by the API (PRD-07); speed control; captions if available (Could); per-viewer watermark overlay (PRD-07). | Must |
 | FR-04 | Auto-complete rule: video/audio complete at ≥ 90% watched; document complete when opened + marked done; quiz complete when passed. | Must |
 | FR-05 | Progress saved every 15 s and on pause/end/leave; batch sync endpoint; monotonic merge (completion never regresses; furthest position wins). | Must |
 | FR-06 | Document viewer: in-browser/in-app PDF viewer on stamped file; download button (stamped). | Must |
@@ -87,5 +87,5 @@ Enrolled students learn through video, audio, documents, and quizzes; their prog
 
 ## 10. Open questions
 
-- Captions/subtitles: rely on Mux auto-generated captions (French support?) — **Open**, verify.
+- Captions/subtitles: Mux auto-generated captions are gone with Mux (2026-11-09); options are professor-uploaded WebVTT tracks or a speech-to-text step in the transcoding job (French quality?) — **Open**.
 - Should quizzes be standalone purchasable "practice exams"? — **Open** (product idea for exam prep).

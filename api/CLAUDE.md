@@ -68,7 +68,7 @@ Notes: Laravel's test client sends `Accept-Language: en-us` by default — set t
 | End all sessions/tokens | `App\Domain\Identity\Actions\SignOutEverywhere` (bumps `auth_epoch`, deletes tokens) |
 | Phone of a user | `$user->phone` (a `PhoneNumber`); `phone_e164` is only the column |
 | Roles / permissions | `App\Domain\Identity\Enums\{Role, Permission}` — policies check permissions, never role names. Re-run `RolesAndPermissionsSeeder` after changing the enums. |
-| Video/audio host | `App\Integrations\Video\VideoProvider`: `MuxVideoProvider` (HTTP + RS256 JWTs) or `FakeVideoProvider` (uploads complete via `PUT /api/v1/_fake/video-uploads/{id}`) |
+| Video/audio host | `App\Integrations\Video\VideoProvider`: `MuxVideoProvider` today, being replaced by `R2VideoProvider` (pre-signed R2 upload, upload-complete, FFmpeg HLS AES-128 job, playlists + keys; TODO 1.5b), or `FakeVideoProvider` (uploads complete via `PUT /api/v1/_fake/video-uploads/{id}`) |
 | Public catalogue | `Course::query()->listed()` is the only public filter (published, live version, active professor); cards eager-load `BrowseCourses::cardRelations()` |
 | Search index | `Course` is Scout-searchable (queued, after commit); `SyncCourseIndex` reindexes (after commit) on professor/user/category changes; `MakeListedSearchable` re-checks listing when the job runs. Production refuses any driver but `meilisearch`. Run `php artisan scout:sync-index-settings` on deploy |
 | Payments | Every gateway result goes through `PaymentLifecycle::apply()` (locks order then payment); start with `StartPayment`, re-query with `SyncPayment`. Ledger writes only via `PostLedgerTransaction` (balanced, one per type + reference) |

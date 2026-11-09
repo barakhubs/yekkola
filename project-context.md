@@ -11,7 +11,7 @@
 | [`docs/architecture.md`](docs/architecture.md)                 | System architecture, repo/file structure, database schema, API catalogue, UI architecture, scaling, security |
 | [`docs/prd/`](docs/prd/)                                       | One PRD per product area — requirements, rules, acceptance criteria                                          |
 | [`docs/brand.md`](docs/brand.md)                               | Colours, scales, contrast, Nunito type scale, tagline, logo brief                                            |
-| [`docs/research/`](docs/research/)                             | Vendor research (Mux findings + cost estimate)                                                               |
+| [`docs/research/`](docs/research/)                             | Vendor research (Mux findings, superseded by R2; R2 cost estimate pending)                                   |
 | [`docs/spikes/`](docs/spikes/)                                 | De-risking experiments: plans and results                                                                    |
 | [`docs/runbooks/`](docs/runbooks/)                             | Incident playbooks                                                                                           |
 | [`docs/catalogue-categories.md`](docs/catalogue-categories.md) | Launch category tree (provisional seed)                                                                      |
@@ -80,9 +80,9 @@ Use these terms consistently in code, API, and UI copy.
 
 `Course → CourseVersion → Sections → Lessons`, where each lesson is one of:
 
-- **Video** — the expensive one: transcoding, DRM, bandwidth. Hosted on Mux.
-- **Audio** — lecture-style content at a fraction of video's data cost. Hosted on Mux as audio-only assets (signed playback — Mux doesn't support DRM on audio). Treat as first-class, not an afterthought.
-- **Document** — PDF/slides/worksheets. Stored in object storage.
+- **Video** — the expensive one: transcoding, encryption, bandwidth. Stored in Cloudflare R2 as encrypted HLS.
+- **Audio** — lecture-style content at a fraction of video's data cost. Stored in R2 as audio-only encrypted HLS, protected like video. Treat as first-class, not an afterthought.
+- **Document** — PDF/slides/worksheets. Stored in the private R2 bucket.
 - **Quiz** — multiple-choice/true-false practice tests with scoring and explanations. Central to the exam-prep persona.
 
 **Versioning:**
@@ -96,42 +96,41 @@ Use these terms consistently in code, API, and UI copy.
 
 Paid content must not be trivially shareable — piracy directly undercuts professor income. Protection applies to free courses too (it is the professor's content).
 
-- **Video:** Mux DRM (Widevine / FairPlay). Signed playback + DRM tokens are issued by the API only to users with an active enrollment (or for preview lessons).
-- **Audio:** Mux signed playback (short-lived tokens, same access checks) — Mux can't DRM audio-only assets. Offline audio is encrypted at rest in app-private storage with a per-device key and the same expiry as offline licenses. Weaker than DRM; accepted for v1 (see [`docs/research/mux.md`](docs/research/mux.md) §2).
+- **Video and audio: encrypted HLS, no DRM** (owner decision, 2026-11-09). Segments are encrypted with AES-128, one key per asset. The API serves the playlists itself: segment URIs are short-lived pre-signed R2 URLs, and the key comes from an API endpoint that returns it only to users with an active enrollment (or for preview lessons). Weaker than Widevine/FairPlay DRM — a valid key decrypts the segments — and accepted by the owner.
 - **Watermarking, two layers:**
-  - _Burned in at upload_ (Mux `overlay_settings`): Yekkola logo + professor name, identical for all viewers.
-  - _Per-viewer overlay in the player_: viewer's name/phone drawn over the video by our web and mobile players, repositioning periodically. Mux has no per-viewer watermark, so this is ours — a deterrent against screen recording, not forensic tracing.
-- **Offline (mobile):** video downloaded through Mux's native SDKs as DRM-protected files with a persistent license; audio encrypted at rest (above). Never store plain media files on device.
+  - _Burned in during transcoding_ (FFmpeg): Yekkola logo + professor name, identical for all viewers.
+  - _Per-viewer overlay in the player_: viewer's name/phone drawn over the video by our web and mobile players, repositioning periodically — a deterrent against screen recording, not forensic tracing.
+- **Offline (mobile):** the app downloads the encrypted segments and stores the key wrapped with a per-device key, with the _offline license duration_ as its expiry. Never store plain media files on device.
 - **Documents:** served via short-lived signed URLs; every download is stamped with the student's name/phone (per-student PDF watermark, generated on a queue and cached).
 - **Devices:**
   - _Registered devices_ (mobile apps — can hold offline downloads) are limited per account (admin setting, default 2).
   - _Web_ does not count as a registered device but is limited to **concurrent streams** per account (admin setting, default 1).
-  - Removing a device revokes its tokens and stops new licenses for it.
-- **Revocation (be precise about this):** refunds, bans, and takedowns stop streaming immediately (no new tokens). A persistent offline license **cannot be killed remotely**; the app deletes revoked content at its next online sync, and in the worst case the content stops playing when its license expires. Keep the _offline license duration_ setting short enough to make this acceptable (suggested 7–14 days).
+  - Removing a device revokes its tokens and stops new playlists, keys, and offline downloads for it.
+- **Revocation (be precise about this):** refunds, bans, and takedowns stop streaming immediately (no new playlists or keys). An offline download **cannot be killed remotely**; the app deletes revoked content at its next online sync, and in the worst case the content stops playing when its expiry passes. Keep the _offline license duration_ setting short enough to make this acceptable (suggested 7–14 days).
 
 ## Consumption model (important — do not conflate)
 
-- **Web:** DRM streaming playback via Mux Player.
-- **Mobile (Flutter):** **download-then-watch is the primary pattern**, not streaming. This is the core accessibility differentiator. Downloads are DRM-protected (above), resumable, survive backgrounding, and progress is tracked offline and synced when back online.
+- **Web:** encrypted HLS streaming through an HLS player (hls.js).
+- **Mobile (Flutter):** **download-then-watch is the primary pattern**, not streaming. This is the core accessibility differentiator. Downloads stay encrypted (above), are resumable, survive backgrounding, and progress is tracked offline and synced when back online.
 - **Data cost is the real constraint**, not just connectivity:
-  - Downloads use the lowest resolution tier the Mux native SDK offers (540p on Android, 720p tier on iOS at time of writing); students can choose a higher tier.
+  - Downloads use our lowest rendition (e.g. 360p or 480p) by default; students can choose a higher tier (up to 720p).
   - Always show download size before the student commits.
   - Audio lessons and documents should be promoted in the UI as the low-data option.
 
 Do not default to a streaming-only mobile design — it undermines the product's core purpose.
 
-## Video & audio (Mux)
+## Media storage & video (Cloudflare R2)
 
-Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, transcoding, DRM, burned-in watermark, and delivery. Laravel stores only Mux asset/playback IDs and metadata.
+All media lives in **Cloudflare R2** (owner decision, 2026-11-09; replaces Mux). Nothing is stored on Laravel Cloud's local disk. R2 has no egress fees.
 
-- **Upload:** professors upload straight from the browser to Mux via direct-upload URLs issued by the API; Mux webhooks (`video.asset.ready`, errors) update `MediaAsset` status.
-- **Playback (web):** Mux Player (React) with signed playback + DRM tokens, plus our per-viewer overlay.
-- **Offline (mobile):** Mux DRM persistent licenses. The API signs the DRM token with `offline: true` and `licenseExpiration` = the admin _offline license duration_ setting; `playDuration` optional.
-- **Flutter gap:** Mux ships native players with offline-download managers for Android (`MuxDownloadManager`, Media3) and iOS (`MuxOfflineAccessManager`, AVFoundation), but **no Flutter SDK**. Phase 3 includes a small in-house Flutter plugin wrapping these native SDKs via platform channels (download, progress, delete, play with overlay). Prototype it early — it is the riskiest mobile piece.
-- **Mux client:** Laravel HTTP client for the Mux REST API + `firebase/php-jwt` for signed playback/DRM tokens. (The official `muxinc/mux-php` SDK requires Guzzle 7; Laravel 13 ships Guzzle 8.) Mux keys live only in API env vars.
-- Keep a `VideoProvider` interface (direct upload, webhook handling, playback/DRM tokens, offline token) so domain code doesn't depend on Mux directly.
-- **Quality level:** DRM requires `video_quality: plus` (basic can't use DRM). Cap lecture video at 720p to control encoding, storage, and delivery cost.
-- **Research & cost estimate:** [`docs/research/mux.md`](docs/research/mux.md) (≈ $270/month at launch scale, ≈ $3.7k/month at 10k active students — illustrative). Remaining checks are in the [Mux spike](docs/spikes/mux-drm-offline.md).
+- **Files:** documents, images, avatars, KYC documents, credential files, brand assets, and lesson media go through `Storage::disk()` on S3-compatible R2 disks. A **private bucket** holds KYC, credentials, and lesson media; a **public bucket** holds public images. KYC stays private and is streamed through the API only.
+- **Upload:** professors upload video/audio straight from the browser to the private bucket with pre-signed URLs issued by the API, so media never touches the app server. The studio then confirms the upload to the API, which starts processing.
+- **Processing:** a queue worker runs FFmpeg and writes the output back to R2. Video becomes HLS renditions capped at 720p, plus lower tiers (e.g. 480p, 360p); audio becomes audio-only HLS. Segments are encrypted with AES-128, one key per asset. The burned-in watermark is applied during transcoding. `MediaAsset` status: `processing → ready / errored`.
+- **Keys:** stored encrypted at rest in the database, never in R2 next to the segments.
+- **Playback (web):** an HLS player (hls.js, e.g. via a lightweight player) against API-served playlists, plus our per-viewer overlay.
+- **Offline (mobile):** a standard Flutter video player that supports AES-128 HLS; downloads go through our own downloader, and the key handling is ours (above). No native-SDK plugin is needed.
+- Keep a provider-neutral `VideoProvider` interface (upload URLs, upload-complete, processing, playlists and keys, offline keys) so domain code doesn't depend on a host. The R2 driver replaces the Mux driver; the fake driver stays for tests.
+- **Remaining checks** (TODO 0.4): FFmpeg availability, CPU, and memory on Laravel Cloud queue workers (else a dedicated transcoding worker or container); transcoding time and queue sizing; AES-128 HLS on low-end Android; a new cost estimate (the Mux one in [`docs/research/mux.md`](docs/research/mux.md) is superseded). Plan: [R2 media spike](docs/spikes/r2-hls-media.md).
 
 ## Business model
 
@@ -177,7 +176,8 @@ Videos and audio are **not** stored on Laravel Cloud. Mux handles storage, trans
 - **OpenAPI spec generated from code** (Scramble) — the source of truth for the typed TypeScript client and for Flutter
 - Domain-oriented code: business logic in Action classes per domain; controllers stay thin
 - Laravel Queues on Redis/Valkey + **Laravel Horizon** (production) — webhooks, notifications, PDF stamping, sync processing, stats rollups
-- Laravel Storage / Flysystem — all non-Mux files via `Storage::disk()`
+- Laravel Storage / Flysystem — every file via `Storage::disk()` (S3-compatible Cloudflare R2 disks)
+- FFmpeg on queue workers — HLS transcoding, AES-128 encryption, burned-in watermark
 - `spatie/laravel-settings` — admin-configurable platform settings
 - `spatie/laravel-translatable` — admin-managed `fr`/`en` fields
 - Laravel Scout + Meilisearch — course and professor search
@@ -203,7 +203,7 @@ Two Next.js apps sharing UI and API code:
   - shadcn charts (Recharts) — dashboards: KPI cards, revenue/enrollment trends, funnels
   - React Hook Form + Zod — forms and validation
   - next-intl — French (default) + English from shared catalogues
-  - Mux Player (React) — DRM playback, plus our per-viewer watermark overlay component
+  - HLS player (hls.js, e.g. via a lightweight player) — encrypted HLS playback, plus our per-viewer watermark overlay component
 - **Dashboards:** professor studio and admin dashboards are first-class features, backed by pre-aggregated stats endpoints — not computed in the browser.
 
 ### Mobile (Flutter)
@@ -212,7 +212,7 @@ Two Next.js apps sharing UI and API code:
 - Dio — HTTP client against `/api/v1` (client generated from OpenAPI)
 - flutter_secure_storage — auth tokens
 - drift (SQLite) — offline DB for catalogue cache, entitlements, progress, sync queue
-- In-house Flutter plugin wrapping Mux Player for Android / iOS — DRM playback and offline downloads (no official Mux Flutter SDK)
+- Standard Flutter video player with AES-128 HLS support + our own downloader for encrypted offline segments (key wrapped with a per-device key)
 - background_downloader — document downloads
 - Firebase Cloud Messaging + flutter_local_notifications
 - ARB / `intl` — French + English
@@ -227,9 +227,9 @@ Two Next.js apps sharing UI and API code:
     - `apps/admin/` — Next.js (Node 20+)
   - Each app scales independently and has its own env vars and domain
   - Domains on one parent domain (e.g. `api.`, `www.`, `admin.`) so Sanctum cookie auth works
-  - PostgreSQL (Laravel Cloud managed), Valkey/Redis (Laravel Cloud managed), Laravel Cloud object storage bucket
+  - PostgreSQL (Laravel Cloud managed), Valkey/Redis (Laravel Cloud managed)
   - Environments: `local`, `staging`, `production`
-- Video/audio: Mux
+- Files and media: Cloudflare R2 (private + public buckets per environment); transcoding with FFmpeg on queue workers
 - Search: Meilisearch Cloud
 - Error tracking: Sentry (Laravel, Next.js, Flutter); uptime monitoring on API health endpoint
 - Product analytics: PostHog (or equivalent) — event names defined in PRDs
@@ -258,7 +258,7 @@ yekkola/
 ## Architecture decisions worth preserving
 
 1. **Storage is abstracted.** Files go through `Storage::disk()`; video/audio go through `VideoProvider`. Swapping providers is a config/adapter change.
-2. **Media never touches the app server.** Professors upload directly to Mux (direct upload URLs) and to object storage (pre-signed URLs); Laravel only receives webhooks/confirmations.
+2. **Media never touches the app server.** Professors upload directly to R2 with pre-signed URLs; Laravel only receives upload confirmations and serves playlists and keys.
 3. **API-only backend, one contract for all clients.** Web, back office, and mobile consume the same `/api/v1`. Nothing a client needs may exist only in a UI layer. The OpenAPI spec is generated from code; endpoints with real logic have feature tests.
 4. **No business logic in the front ends.** Prices, access rules, splits, limits, and permissions are decided by the API; React and Flutter display and submit. The back office is just another API client with admin permissions.
 5. **External integrations behind interfaces** (`VideoProvider`, `PaymentGateway`, `SmsSender`), each with a fake driver used in tests and local dev.
@@ -287,11 +287,11 @@ Each area has a PRD in [`docs/prd/`](docs/prd/).
 | --- | ---------------------------- | ------------------------------------------------------------------------------------ |
 | 01  | Auth & identity              | Phone OTP, devices, roles, account deletion                                          |
 | 02  | Professor onboarding         | Application, manual vetting, KYC, public profile                                     |
-| 03  | Course authoring             | Course builder, 4 lesson types, Mux upload, versioning, review submission            |
+| 03  | Course authoring             | Course builder, 4 lesson types, media upload, versioning, review submission          |
 | 04  | Discovery                    | Catalogue, categories, search, filters, course & professor pages, wishlist, SEO      |
 | 05  | Checkout & payments          | Free enroll, orders, mobile money, coupons, bundles, parent payer, refunds, receipts |
 | 06  | Learning experience          | Player, progress, quizzes, certificates, reviews, lesson Q&A                         |
-| 07  | Content protection & offline | DRM, watermarks, device limits, offline downloads & sync                             |
+| 07  | Content protection & offline | Encrypted HLS, watermarks, device limits, offline downloads & sync                   |
 | 08  | Earnings & payouts           | Ledger, professor earnings, payout batches, statements                               |
 | 09  | Back office                  | Admin dashboard, moderation, users, finance, settings, audit                         |
 | 10  | Notifications                | Push, SMS, email, in-app; preferences; templates                                     |
@@ -303,16 +303,16 @@ Each area has a PRD in [`docs/prd/`](docs/prd/).
 - **Performance (web):** public pages LCP < 2.5 s on a slow 3G profile; initial JS for public pages kept small (server components by default, no heavy client libraries on marketing pages). Images via responsive, compressed formats.
 - **Performance (API):** p95 < 300 ms for read endpoints, < 800 ms for writes (excluding external calls, which go to queues).
 - **Mobile:** usable on 2 GB RAM Android devices; app size kept small; every screen has an offline state.
-- **Availability:** 99.9% target for the API; payment and Mux webhooks must tolerate API downtime (providers retry; reconciliation jobs catch the rest).
+- **Availability:** 99.9% target for the API; payment webhooks must tolerate API downtime (providers retry; reconciliation jobs catch the rest); media processing resumes from the queue.
 - **Accessibility:** WCAG 2.1 AA for web; keyboard navigable back office.
 - **Security & privacy:** OWASP ASVS L2 as the bar; PII (phone, KYC documents) encrypted at rest where stored; KYC documents in a private bucket, never public URLs; least-privilege admin roles; full audit log of admin actions. Comply with DRC data-protection law (confirm with counsel).
 - **Scalability:** designed for horizontal scale to millions of users — see [`docs/architecture.md`](docs/architecture.md#7-scalability).
 
 ## Build sequence
 
-1. **Backend** — data model, domain actions, Mux integration (direct upload, webhooks, DRM tokens), auth/OTP, orders + payment state machine + ledger + payouts against fake gateway drivers, full `/api/v1` (public, student, professor, admin) with feature tests and generated OpenAPI spec.
+1. **Backend** — data model, domain actions, media on R2 (pre-signed upload, FFmpeg encrypted HLS, playlists and keys), auth/OTP, orders + payment state machine + ledger + payouts against fake gateway drivers, full `/api/v1` (public, student, professor, admin) with feature tests and generated OpenAPI spec.
 2. **Web** — shared `ui` / `api-client` / `i18n` packages, then the back office (needed to vet professors and approve content before launch) and the web app (public site, student learning, professor studio).
-3. **Mobile** — Flutter app against `/api/v1`, offline-first with DRM downloads (incl. the Mux native-SDK plugin, prototyped early).
+3. **Mobile** — Flutter app against `/api/v1`, offline-first with encrypted HLS downloads (prototype them early on low-end Android).
 
 **Integrated later (deferred, not dropped):** real SMS gateway and real payment aggregator. Both are built behind interfaces from day one (`SmsSender`, `PaymentGateway`) with fake/log drivers, so they slot in whenever chosen without touching domain code. Free courses work end to end without a payment gateway. **Both must be live before public launch** — sign-in depends on SMS, paid courses on payments.
 
@@ -338,7 +338,7 @@ Defaults marked _(provisional)_ are working values so nothing blocks; confirm th
 | Separate payer on orders (parent pays for student)     | on                                                                                         | Feature is built; admin turns it on/off.                                           |
 | Registered device limit per account                    | 2                                                                                          | Mobile devices that can hold downloads.                                            |
 | Concurrent web streams per account                     | 1                                                                                          |                                                                                    |
-| Offline license duration                               | 14 days                                                                                    | How long downloads play before the app must re-validate online.                    |
+| Offline license duration                               | 14 days                                                                                    | How long downloads (and their stored key) play before the app must re-validate.    |
 | Free-course limits                                     | unlimited                                                                                  | Max free courses and/or free media hours per professor.                            |
 | Payment gateways / rails enabled                       | —                                                                                          | Pause a gateway or rail during an outage. Adding a gateway is dev work.            |
 | Refund window                                          | 7 days                                                                                     | Days after purchase a student can request a refund (and max progress %, e.g. 20%). |
