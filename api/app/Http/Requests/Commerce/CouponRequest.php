@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Commerce;
 
-use App\Domain\Commerce\Actions\SaveCoupon;
 use App\Domain\Commerce\Enums\CouponScope;
 use App\Domain\Commerce\Enums\DiscountFunder;
 use App\Domain\Commerce\Enums\DiscountType;
@@ -14,8 +13,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Coupon create (all fields) or update (operational fields only) — staff (PRD-09 FR-13) and professors
- * (PRD-05 FR-12; scope and funder are then set by the server).
+ * Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the
+ * server). Updates use UpdateCouponRequest (operational fields only).
  */
 final class CouponRequest extends FormRequest
 {
@@ -29,21 +28,10 @@ final class CouponRequest extends FormRequest
      */
     public function rules(): array
     {
-        $operational = [
-            'is_active' => ['sometimes', 'boolean'],
-            'ends_at' => ['sometimes', 'nullable', 'date'],
-            'max_redemptions' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:1000000'],
-            'per_user_limit' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:100'],
-        ];
-
-        if ($this->isMethod('PATCH')) {
-            return $operational;
-        }
-
         $byProfessor = $this->routeIs('professor.*');
 
         return [
-            ...$operational,
+            ...UpdateCouponRequest::OPERATIONAL,
             'code' => ['required', 'string', 'min:6', 'max:40', 'regex:/^[A-Za-z0-9_-]+$/', function (string $attribute, mixed $value, Closure $fail): void {
                 if (Coupon::query()->where('code', Coupon::normalize((string) $value))->exists()) {
                     $fail(__('validation.unique', ['attribute' => $attribute]));
@@ -60,13 +48,5 @@ final class CouponRequest extends FormRequest
             'starts_at' => ['sometimes', 'nullable', 'date'],
             'ends_at' => ['sometimes', 'nullable', 'date', 'after:starts_at'],
         ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function coupon(): array
-    {
-        return $this->isMethod('PATCH') ? $this->safe()->only(SaveCoupon::UPDATABLE) : $this->validated();
     }
 }

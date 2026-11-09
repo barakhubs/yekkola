@@ -85,6 +85,24 @@ export const ProfessorsShowResponse = zod.object({
   }),
 });
 
+export const adminProfessorsIndexQueryPageDefault = 1;
+export const adminProfessorsIndexQueryPerPageDefault = 15;
+
+export const AdminProfessorsIndexQueryParams = zod.object({
+  page: zod.int().default(adminProfessorsIndexQueryPageDefault),
+  per_page: zod.int().default(adminProfessorsIndexQueryPerPageDefault),
+  "filter[search]": zod.string().optional().describe("Part of the display name or slug."),
+  "filter[status]": zod.string().optional().describe("active or suspended."),
+  "filter[kyc_status]": zod.string().optional().describe("none, pending, verified or rejected."),
+  "filter[province_id]": zod.string().optional(),
+  sort: zod
+    .string()
+    .optional()
+    .describe(
+      "`display_name`, `created_at` or `student_count`; prefix `-` for descending (default `-created_at`).",
+    ),
+});
+
 export const adminProfessorsIndexResponseMetaPerPageMin = 0;
 
 export const adminProfessorsIndexResponseMetaTotalMin = 0;

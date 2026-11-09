@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Commerce\Models;
 
+use App\Domain\Authoring\Models\Course;
 use App\Domain\Commerce\Enums\CouponScope;
 use App\Domain\Commerce\Enums\DiscountFunder;
 use App\Domain\Commerce\Enums\DiscountType;
+use App\Domain\Professors\Models\ProfessorProfile;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -68,6 +71,38 @@ final class Coupon extends Model
     public function redemptions(): HasMany
     {
         return $this->hasMany(CouponRedemption::class);
+    }
+
+    /**
+     * @return BelongsTo<Course, $this>
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    /**
+     * @return BelongsTo<ProfessorProfile, $this>
+     */
+    public function professor(): BelongsTo
+    {
+        return $this->belongsTo(ProfessorProfile::class, 'professor_profile_id');
+    }
+
+    /**
+     * What staff see at a glance (PRD-09 FR-13): usable now, or why not. `uses` = paid redemptions.
+     *
+     * @return 'active'|'inactive'|'scheduled'|'expired'|'used_up'
+     */
+    public function state(int $uses): string
+    {
+        return match (true) {
+            ! $this->is_active => 'inactive',
+            $this->ends_at !== null && ! $this->ends_at->isFuture() => 'expired',
+            $this->max_redemptions !== null && $uses >= $this->max_redemptions => 'used_up',
+            $this->starts_at !== null && $this->starts_at->isFuture() => 'scheduled',
+            default => 'active',
+        };
     }
 
     public function isRedeemableNow(): bool

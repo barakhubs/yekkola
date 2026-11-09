@@ -1058,11 +1058,10 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/BundleRequest"
+                                "$ref": "#/components/schemas/UpdateBundleRequest"
                             }
                         }
                     }
@@ -1098,6 +1097,55 @@
                 "tags": [
                     "Bundle"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[title]",
+                        "in": "query",
+                        "description": "Part of the title.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "draft, active or archived.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[currency]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at`, `title` or `price_minor`; prefix `-` for descending (default `-created_at`).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `BundleResource`",
@@ -1109,7 +1157,17 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/BundleResource"
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/BundleResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "professor"
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         },
                                         "links": {
@@ -1267,7 +1325,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/BundleResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/BundleResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "professor"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -1304,11 +1372,10 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/BundleRequest"
+                                "$ref": "#/components/schemas/UpdateBundleRequest"
                             }
                         }
                     }
@@ -1322,7 +1389,17 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/BundleResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/BundleResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "professor"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -2342,11 +2419,10 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CouponRequest"
+                                "$ref": "#/components/schemas/UpdateCouponRequest"
                             }
                         }
                     }
@@ -2385,6 +2461,56 @@
                 "tags": [
                     "Coupon"
                 ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[code]",
+                        "in": "query",
+                        "description": "Part of the code.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[scope]",
+                        "in": "query",
+                        "description": "platform, professor or course.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[is_active]",
+                        "in": "query",
+                        "description": "`1` active, `0` inactive.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`created_at` or `code`; prefix `-` for descending (default `-created_at`).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Paginated set of `CouponResource`",
@@ -2396,7 +2522,18 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/CouponResource"
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/CouponResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "professor",
+                                                            "course"
+                                                        ]
+                                                    }
+                                                ]
                                             }
                                         },
                                         "links": {
@@ -2554,7 +2691,18 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/CouponResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/CouponResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "professor",
+                                                        "course"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -2599,7 +2747,18 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/CouponResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/CouponResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "professor",
+                                                        "course"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -2634,11 +2793,10 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CouponRequest"
+                                "$ref": "#/components/schemas/UpdateCouponRequest"
                             }
                         }
                     }
@@ -2652,7 +2810,18 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/CouponResource"
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/CouponResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "professor",
+                                                        "course"
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     },
                                     "required": [
@@ -9908,6 +10077,63 @@
                 "operationId": "admin.professors.index",
                 "tags": [
                     "Professor"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "filter[search]",
+                        "in": "query",
+                        "description": "Part of the display name or slug.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[status]",
+                        "in": "query",
+                        "description": "active or suspended.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[kyc_status]",
+                        "in": "query",
+                        "description": "none, pending, verified or rejected.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[province_id]",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "`display_name`, `created_at` or `student_count`; prefix `-` for descending (default `-created_at`).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -18815,7 +19041,7 @@
             },
             "BundleRequest": {
                 "type": "object",
-                "description": "Bundle create/update (PRD-05 FR-13, PRD-09 FR-13).",
+                "description": "Bundle create (PRD-05 FR-13, PRD-09 FR-13). Updates use UpdateBundleRequest (any field).",
                 "properties": {
                     "title": {
                         "type": "string",
@@ -18879,6 +19105,25 @@
                     },
                     "status": {
                         "type": "string"
+                    },
+                    "professor": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "The professor who made it; null for a platform bundle (loaded in the back office).",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "display_name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "display_name"
+                        ]
                     },
                     "price": {
                         "type": "object",
@@ -19216,7 +19461,7 @@
             },
             "CouponRequest": {
                 "type": "object",
-                "description": "Coupon create (all fields) or update (operational fields only) \u2014 staff (PRD-09 FR-13) and professors\n(PRD-05 FR-12; scope and funder are then set by the server).",
+                "description": "Coupon create \u2014 staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
                 "properties": {
                     "is_active": {
                         "type": "boolean"
@@ -19329,6 +19574,46 @@
                             "null"
                         ]
                     },
+                    "professor": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "description": "Names for the back office (loaded there): who and what the coupon applies to.",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "display_name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "display_name"
+                        ]
+                    },
+                    "course": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "title"
+                        ]
+                    },
                     "discount_type": {
                         "type": "string"
                     },
@@ -19374,6 +19659,16 @@
                     "uses": {
                         "type": "integer"
                     },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive",
+                            "scheduled",
+                            "expired",
+                            "used_up"
+                        ]
+                    },
                     "created_at": {
                         "type": "string"
                     }
@@ -19394,6 +19689,7 @@
                     "ends_at",
                     "is_active",
                     "uses",
+                    "state",
                     "created_at"
                 ],
                 "title": "CouponResource"
@@ -23854,6 +24150,79 @@
                     "created_at"
                 ],
                 "title": "ThreadResource"
+            },
+            "UpdateBundleRequest": {
+                "type": "object",
+                "description": "Bundle update (PRD-05 FR-13, PRD-09 FR-13): any field; SaveBundle checks the result as a whole. Sending only\n`status` takes a bundle off sale even if its courses changed price since.",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 120
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "price_minor": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 3
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BundleStatus"
+                    },
+                    "course_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 2,
+                        "maxItems": 20,
+                        "uniqueItems": true
+                    }
+                },
+                "title": "UpdateBundleRequest"
+            },
+            "UpdateCouponRequest": {
+                "type": "object",
+                "description": "Coupon update (PRD-09 FR-13, PRD-05 FR-12): only the operational fields \u2014 active, end date, limits. What a\ncoupon is worth never changes once created (SaveCoupon::UPDATABLE).",
+                "properties": {
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "ends_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "max_redemptions": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 1000000
+                    },
+                    "per_user_limit": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 100
+                    }
+                },
+                "title": "UpdateCouponRequest"
             },
             "UpdateCourseSettingsRequest": {
                 "type": "object",

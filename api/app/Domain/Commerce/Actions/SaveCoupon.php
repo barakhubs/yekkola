@@ -39,7 +39,11 @@ final class SaveCoupon
     {
         if ($coupon !== null) {
             $before = $coupon->only(self::UPDATABLE);
-            $coupon->fill(array_intersect_key($data, array_flip(self::UPDATABLE)))->save();
+            $coupon->fill(array_intersect_key($data, array_flip(self::UPDATABLE)));
+            if ($coupon->starts_at !== null && $coupon->ends_at !== null && $coupon->ends_at->lte($coupon->starts_at)) {
+                throw ValidationException::withMessages(['ends_at' => __('commerce.coupon.ends_before_start')]);
+            }
+            $coupon->save();
             $this->recordAudit->handle('coupon.updated', $coupon, ['before' => $before, 'after' => $coupon->only(self::UPDATABLE)], causer: $actor);
 
             return $coupon;

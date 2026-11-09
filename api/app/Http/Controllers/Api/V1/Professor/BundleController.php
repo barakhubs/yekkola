@@ -11,6 +11,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Commerce\BundleRequest;
+use App\Http\Requests\Commerce\UpdateBundleRequest;
 use App\Http\Resources\Commerce\BundleResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ final class BundleController extends Controller
         return (new BundleResource($bundle->load(['courses' => fn ($q) => $q->with(BrowseCourses::cardRelations())])))->response()->setStatusCode(201);
     }
 
-    public function update(BundleRequest $request, string $bundle, SaveBundle $save): BundleResource
+    public function update(UpdateBundleRequest $request, string $bundle, SaveBundle $save): BundleResource
     {
         $professor = $this->professor($request);
         $model = Bundle::query()->where('professor_profile_id', $professor->id)->findOrFail($bundle);

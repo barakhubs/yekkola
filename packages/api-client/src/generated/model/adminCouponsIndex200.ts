@@ -4,12 +4,12 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { AdminCouponsIndex200DataItem } from "./adminCouponsIndex200DataItem";
 import type { AdminCouponsIndex200Links } from "./adminCouponsIndex200Links";
 import type { AdminCouponsIndex200Meta } from "./adminCouponsIndex200Meta";
-import type { CouponResource } from "./couponResource";
 
 export type AdminCouponsIndex200 = {
-  data: CouponResource[];
+  data: AdminCouponsIndex200DataItem[];
   links: AdminCouponsIndex200Links;
   meta: AdminCouponsIndex200Meta;
 };

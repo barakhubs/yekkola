@@ -20,6 +20,13 @@ export const BundlesShowResponse = zod.object({
     title: zod.string(),
     description: zod.string().nullable(),
     status: zod.string(),
+    professor: zod
+      .object({
+        id: zod.string(),
+        display_name: zod.string(),
+      })
+      .nullish()
+      .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
     price: zod.object({
       amount_minor: zod.int(),
       currency: zod.string(),
@@ -79,6 +86,13 @@ export const ProfessorBundlesIndexResponse = zod.object({
       title: zod.string(),
       description: zod.string().nullable(),
       status: zod.string(),
+      professor: zod
+        .object({
+          id: zod.string(),
+          display_name: zod.string(),
+        })
+        .nullish()
+        .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
       price: zod.object({
         amount_minor: zod.int(),
         currency: zod.string(),
@@ -183,7 +197,7 @@ export const ProfessorBundlesStoreBody = zod
       .min(professorBundlesStoreBodyCourseIdsMin)
       .max(professorBundlesStoreBodyCourseIdsMax),
   })
-  .describe("Bundle create/update (PRD-05 FR-13, PRD-09 FR-13).");
+  .describe("Bundle create (PRD-05 FR-13, PRD-09 FR-13). Updates use UpdateBundleRequest (any field).");
 
 export const ProfessorBundlesStoreResponse = zod.object({
   data: zod.object({
@@ -192,6 +206,13 @@ export const ProfessorBundlesStoreResponse = zod.object({
     title: zod.string(),
     description: zod.string().nullable(),
     status: zod.string(),
+    professor: zod
+      .object({
+        id: zod.string(),
+        display_name: zod.string(),
+      })
+      .nullish()
+      .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
     price: zod.object({
       amount_minor: zod.int(),
       currency: zod.string(),
@@ -256,20 +277,28 @@ export const professorBundlesUpdateBodyCourseIdsMax = 20;
 
 export const ProfessorBundlesUpdateBody = zod
   .object({
-    title: zod.string().min(professorBundlesUpdateBodyTitleMin).max(professorBundlesUpdateBodyTitleMax),
+    title: zod
+      .string()
+      .min(professorBundlesUpdateBodyTitleMin)
+      .max(professorBundlesUpdateBodyTitleMax)
+      .optional(),
     description: zod.string().max(professorBundlesUpdateBodyDescriptionMax).nullish(),
-    price_minor: zod.int().min(1),
+    price_minor: zod.int().min(1).optional(),
     currency: zod
       .string()
       .min(professorBundlesUpdateBodyCurrencyMin)
-      .max(professorBundlesUpdateBodyCurrencyMax),
+      .max(professorBundlesUpdateBodyCurrencyMax)
+      .optional(),
     status: zod.enum(["draft", "active", "archived"]).optional(),
     course_ids: zod
       .array(zod.string())
       .min(professorBundlesUpdateBodyCourseIdsMin)
-      .max(professorBundlesUpdateBodyCourseIdsMax),
+      .max(professorBundlesUpdateBodyCourseIdsMax)
+      .optional(),
   })
-  .describe("Bundle create/update (PRD-05 FR-13, PRD-09 FR-13).");
+  .describe(
+    "Bundle update (PRD-05 FR-13, PRD-09 FR-13): any field; SaveBundle checks the result as a whole. Sending only\n`status` takes a bundle off sale even if its courses changed price since.",
+  );
 
 export const ProfessorBundlesUpdateResponse = zod.object({
   data: zod.object({
@@ -278,6 +307,13 @@ export const ProfessorBundlesUpdateResponse = zod.object({
     title: zod.string(),
     description: zod.string().nullable(),
     status: zod.string(),
+    professor: zod
+      .object({
+        id: zod.string(),
+        display_name: zod.string(),
+      })
+      .nullish()
+      .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
     price: zod.object({
       amount_minor: zod.int(),
       currency: zod.string(),
@@ -325,63 +361,87 @@ export const ProfessorBundlesUpdateResponse = zod.object({
   }),
 });
 
+export const adminBundlesIndexQueryPageDefault = 1;
+export const adminBundlesIndexQueryPerPageDefault = 15;
+
+export const AdminBundlesIndexQueryParams = zod.object({
+  page: zod.int().default(adminBundlesIndexQueryPageDefault),
+  per_page: zod.int().default(adminBundlesIndexQueryPerPageDefault),
+  "filter[title]": zod.string().optional().describe("Part of the title."),
+  "filter[status]": zod.string().optional().describe("draft, active or archived."),
+  "filter[currency]": zod.string().optional(),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at`, `title` or `price_minor`; prefix `-` for descending (default `-created_at`)."),
+});
+
 export const adminBundlesIndexResponseMetaPerPageMin = 0;
 
 export const adminBundlesIndexResponseMetaTotalMin = 0;
 
 export const AdminBundlesIndexResponse = zod.object({
   data: zod.array(
-    zod.object({
-      id: zod.string(),
-      slug: zod.string(),
-      title: zod.string(),
-      description: zod.string().nullable(),
-      status: zod.string(),
-      price: zod.object({
-        amount_minor: zod.int(),
-        currency: zod.string(),
-      }),
-      list_total: zod.object({
-        amount_minor: zod.int(),
-        currency: zod.string(),
-      }),
-      courses: zod.array(
-        zod.object({
-          id: zod.string(),
-          slug: zod.string(),
-          title: zod.string().nullable(),
-          subtitle: zod.string().nullable(),
-          cover_url: zod.string().nullable(),
-          professor: zod.object({
-            slug: zod.string(),
+    zod
+      .object({
+        id: zod.string(),
+        slug: zod.string(),
+        title: zod.string(),
+        description: zod.string().nullable(),
+        status: zod.string(),
+        professor: zod
+          .object({
+            id: zod.string(),
             display_name: zod.string(),
-            avatar_url: zod.string().nullable(),
-            is_verified: zod.boolean(),
-          }),
-          category: zod
-            .object({
-              slug: zod.string(),
-              name: zod.string(),
-            })
-            .nullable(),
-          language: zod.string(),
-          level: zod.string(),
-          audience: zod.array(zod.string()),
-          is_free: zod.boolean(),
-          price: zod
-            .object({
-              amount_minor: zod.int(),
-              currency: zod.string(),
-            })
-            .nullable(),
-          rating: zod.number().nullable(),
-          rating_count: zod.int(),
-          enrollment_count: zod.int(),
-          total_duration_seconds: zod.int(),
-          published_at: zod.string().nullable(),
+          })
+          .nullable()
+          .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
+        price: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
         }),
-      ),
-    }),
+        list_total: zod.object({
+          amount_minor: zod.int(),
+          currency: zod.string(),
+        }),
+        courses: zod.array(
+          zod.object({
+            id: zod.string(),
+            slug: zod.string(),
+            title: zod.string().nullable(),
+            subtitle: zod.string().nullable(),
+            cover_url: zod.string().nullable(),
+            professor: zod.object({
+              slug: zod.string(),
+              display_name: zod.string(),
+              avatar_url: zod.string().nullable(),
+              is_verified: zod.boolean(),
+            }),
+            category: zod
+              .object({
+                slug: zod.string(),
+                name: zod.string(),
+              })
+              .nullable(),
+            language: zod.string(),
+            level: zod.string(),
+            audience: zod.array(zod.string()),
+            is_free: zod.boolean(),
+            price: zod
+              .object({
+                amount_minor: zod.int(),
+                currency: zod.string(),
+              })
+              .nullable(),
+            rating: zod.number().nullable(),
+            rating_count: zod.int(),
+            enrollment_count: zod.int(),
+            total_duration_seconds: zod.int(),
+            published_at: zod.string().nullable(),
+          }),
+        ),
+      })
+      .and(zod.looseObject({})),
   ),
   links: zod.object({
     first: zod.string().nullable(),
@@ -438,60 +498,69 @@ export const AdminBundlesStoreBody = zod
       .min(adminBundlesStoreBodyCourseIdsMin)
       .max(adminBundlesStoreBodyCourseIdsMax),
   })
-  .describe("Bundle create/update (PRD-05 FR-13, PRD-09 FR-13).");
+  .describe("Bundle create (PRD-05 FR-13, PRD-09 FR-13). Updates use UpdateBundleRequest (any field).");
 
 export const AdminBundlesStoreResponse = zod.object({
-  data: zod.object({
-    id: zod.string(),
-    slug: zod.string(),
-    title: zod.string(),
-    description: zod.string().nullable(),
-    status: zod.string(),
-    price: zod.object({
-      amount_minor: zod.int(),
-      currency: zod.string(),
-    }),
-    list_total: zod.object({
-      amount_minor: zod.int(),
-      currency: zod.string(),
-    }),
-    courses: zod.array(
-      zod.object({
-        id: zod.string(),
-        slug: zod.string(),
-        title: zod.string().nullable(),
-        subtitle: zod.string().nullable(),
-        cover_url: zod.string().nullable(),
-        professor: zod.object({
-          slug: zod.string(),
+  data: zod
+    .object({
+      id: zod.string(),
+      slug: zod.string(),
+      title: zod.string(),
+      description: zod.string().nullable(),
+      status: zod.string(),
+      professor: zod
+        .object({
+          id: zod.string(),
           display_name: zod.string(),
-          avatar_url: zod.string().nullable(),
-          is_verified: zod.boolean(),
-        }),
-        category: zod
-          .object({
-            slug: zod.string(),
-            name: zod.string(),
-          })
-          .nullable(),
-        language: zod.string(),
-        level: zod.string(),
-        audience: zod.array(zod.string()),
-        is_free: zod.boolean(),
-        price: zod
-          .object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          })
-          .nullable(),
-        rating: zod.number().nullable(),
-        rating_count: zod.int(),
-        enrollment_count: zod.int(),
-        total_duration_seconds: zod.int(),
-        published_at: zod.string().nullable(),
+        })
+        .nullable()
+        .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
+      price: zod.object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
       }),
-    ),
-  }),
+      list_total: zod.object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      }),
+      courses: zod.array(
+        zod.object({
+          id: zod.string(),
+          slug: zod.string(),
+          title: zod.string().nullable(),
+          subtitle: zod.string().nullable(),
+          cover_url: zod.string().nullable(),
+          professor: zod.object({
+            slug: zod.string(),
+            display_name: zod.string(),
+            avatar_url: zod.string().nullable(),
+            is_verified: zod.boolean(),
+          }),
+          category: zod
+            .object({
+              slug: zod.string(),
+              name: zod.string(),
+            })
+            .nullable(),
+          language: zod.string(),
+          level: zod.string(),
+          audience: zod.array(zod.string()),
+          is_free: zod.boolean(),
+          price: zod
+            .object({
+              amount_minor: zod.int(),
+              currency: zod.string(),
+            })
+            .nullable(),
+          rating: zod.number().nullable(),
+          rating_count: zod.int(),
+          enrollment_count: zod.int(),
+          total_duration_seconds: zod.int(),
+          published_at: zod.string().nullable(),
+        }),
+      ),
+    })
+    .and(zod.looseObject({})),
 });
 
 export const AdminBundlesUpdateParams = zod.object({
@@ -511,68 +580,84 @@ export const adminBundlesUpdateBodyCourseIdsMax = 20;
 
 export const AdminBundlesUpdateBody = zod
   .object({
-    title: zod.string().min(adminBundlesUpdateBodyTitleMin).max(adminBundlesUpdateBodyTitleMax),
+    title: zod.string().min(adminBundlesUpdateBodyTitleMin).max(adminBundlesUpdateBodyTitleMax).optional(),
     description: zod.string().max(adminBundlesUpdateBodyDescriptionMax).nullish(),
-    price_minor: zod.int().min(1),
-    currency: zod.string().min(adminBundlesUpdateBodyCurrencyMin).max(adminBundlesUpdateBodyCurrencyMax),
+    price_minor: zod.int().min(1).optional(),
+    currency: zod
+      .string()
+      .min(adminBundlesUpdateBodyCurrencyMin)
+      .max(adminBundlesUpdateBodyCurrencyMax)
+      .optional(),
     status: zod.enum(["draft", "active", "archived"]).optional(),
     course_ids: zod
       .array(zod.string())
       .min(adminBundlesUpdateBodyCourseIdsMin)
-      .max(adminBundlesUpdateBodyCourseIdsMax),
+      .max(adminBundlesUpdateBodyCourseIdsMax)
+      .optional(),
   })
-  .describe("Bundle create/update (PRD-05 FR-13, PRD-09 FR-13).");
+  .describe(
+    "Bundle update (PRD-05 FR-13, PRD-09 FR-13): any field; SaveBundle checks the result as a whole. Sending only\n`status` takes a bundle off sale even if its courses changed price since.",
+  );
 
 export const AdminBundlesUpdateResponse = zod.object({
-  data: zod.object({
-    id: zod.string(),
-    slug: zod.string(),
-    title: zod.string(),
-    description: zod.string().nullable(),
-    status: zod.string(),
-    price: zod.object({
-      amount_minor: zod.int(),
-      currency: zod.string(),
-    }),
-    list_total: zod.object({
-      amount_minor: zod.int(),
-      currency: zod.string(),
-    }),
-    courses: zod.array(
-      zod.object({
-        id: zod.string(),
-        slug: zod.string(),
-        title: zod.string().nullable(),
-        subtitle: zod.string().nullable(),
-        cover_url: zod.string().nullable(),
-        professor: zod.object({
-          slug: zod.string(),
+  data: zod
+    .object({
+      id: zod.string(),
+      slug: zod.string(),
+      title: zod.string(),
+      description: zod.string().nullable(),
+      status: zod.string(),
+      professor: zod
+        .object({
+          id: zod.string(),
           display_name: zod.string(),
-          avatar_url: zod.string().nullable(),
-          is_verified: zod.boolean(),
-        }),
-        category: zod
-          .object({
-            slug: zod.string(),
-            name: zod.string(),
-          })
-          .nullable(),
-        language: zod.string(),
-        level: zod.string(),
-        audience: zod.array(zod.string()),
-        is_free: zod.boolean(),
-        price: zod
-          .object({
-            amount_minor: zod.int(),
-            currency: zod.string(),
-          })
-          .nullable(),
-        rating: zod.number().nullable(),
-        rating_count: zod.int(),
-        enrollment_count: zod.int(),
-        total_duration_seconds: zod.int(),
-        published_at: zod.string().nullable(),
+        })
+        .nullable()
+        .describe("The professor who made it; null for a platform bundle (loaded in the back office)."),
+      price: zod.object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
       }),
-    ),
-  }),
+      list_total: zod.object({
+        amount_minor: zod.int(),
+        currency: zod.string(),
+      }),
+      courses: zod.array(
+        zod.object({
+          id: zod.string(),
+          slug: zod.string(),
+          title: zod.string().nullable(),
+          subtitle: zod.string().nullable(),
+          cover_url: zod.string().nullable(),
+          professor: zod.object({
+            slug: zod.string(),
+            display_name: zod.string(),
+            avatar_url: zod.string().nullable(),
+            is_verified: zod.boolean(),
+          }),
+          category: zod
+            .object({
+              slug: zod.string(),
+              name: zod.string(),
+            })
+            .nullable(),
+          language: zod.string(),
+          level: zod.string(),
+          audience: zod.array(zod.string()),
+          is_free: zod.boolean(),
+          price: zod
+            .object({
+              amount_minor: zod.int(),
+              currency: zod.string(),
+            })
+            .nullable(),
+          rating: zod.number().nullable(),
+          rating_count: zod.int(),
+          enrollment_count: zod.int(),
+          total_duration_seconds: zod.int(),
+          published_at: zod.string().nullable(),
+        }),
+      ),
+    })
+    .and(zod.looseObject({})),
 });

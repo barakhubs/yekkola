@@ -9,8 +9,8 @@ import type { CouponScope } from "./couponScope";
 import type { DiscountType } from "./discountType";
 
 /**
- * Coupon create (all fields) or update (operational fields only) — staff (PRD-09 FR-13) and professors
- * (PRD-05 FR-12; scope and funder are then set by the server).
+ * Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the
+ * server). Updates use UpdateCouponRequest (operational fields only).
  */
 export interface CouponRequest {
   is_active?: boolean;

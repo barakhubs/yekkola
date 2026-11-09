@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-11-08
+> Last updated: 2026-11-09
 
 ## Now
 
-- **Current branch:** `chore/backend-hardening` (rate limits everywhere, OpenAPI artifact, k6 load tests)
-- **Next up:** the remaining back-office items (coupons/bundles, professors + KYC viewer), then course ownership transfer
+- **Current branch:** `feature/prd-09-admin-coupons-bundles` (back-office coupons and bundles screens)
+- **Next up:** back-office professors + KYC viewer, then course ownership transfer
 
 ## Legend
 
@@ -287,7 +287,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Reports queue: dismiss, warn, hide/take down, suspend; one decision closes the item's open reports — #52
 - [x] Q&A threads moderation: hide/restore questions and replies — #54
 - [x] Orders, payments (recheck), refunds — #35, #37
-- [ ] Coupons, bundles
+- [x] Coupons, bundles — #11; names, filters and separate update bodies for the back office — this PR
 - [x] Ledger explorer, adjustments, payout batches — #33, #34, #36
 - [x] Settings endpoints — invariants checked across groups, one transaction, audited — #39
 - [x] Brand image endpoints (upload/remove per asset, public `GET /branding`) — #53
@@ -364,7 +364,8 @@ Needs from the owner for a hosted demo: Mux account (real playback) and Laravel 
 - [x] Reports screen + dashboard queue — #52
 - [x] Q&A moderation screen — #54
 - [x] Orders, payments (timeline, recheck), refunds — #35, #37
-- [ ] Coupons, bundles
+- [x] Coupons (create platform-funded, limits, deactivate) and bundles (create, edit, on/off sale) — this PR
+- [ ] Coupon form offers every currency (USD default): expose enabled currencies + default to `promotions.manage` staff and use them
 - [x] Finance: ledger explorer, adjustments, payout batches — #35, #36
 - [x] Settings screen — #39
 - [x] Settings in tabs (open tab in the URL) + Branding tab: logo, footer logo, favicon, share image — #53

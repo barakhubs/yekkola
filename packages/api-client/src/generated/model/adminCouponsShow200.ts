@@ -4,8 +4,8 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { CouponResource } from "./couponResource";
+import type { AdminCouponsShow200Data } from "./adminCouponsShow200Data";
 
 export type AdminCouponsShow200 = {
-  data: CouponResource;
+  data: AdminCouponsShow200Data;
 };

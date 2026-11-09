@@ -279,6 +279,24 @@ it('keeps promotions to staff with the permission, and platform-funded', functio
     expect(Coupon::query()->find($staffCoupon)->max_redemptions)->toBe(50);
 });
 
+it('changes only the operational fields of a coupon, and never ends it before it starts', function () {
+    $coupon = coupon(['code' => 'RENTREE', 'starts_at' => now()->addDays(10), 'max_redemptions' => 5]);
+    Sanctum::actingAs($this->admin);
+
+    $this->patchJson("/api/v1/admin/coupons/{$coupon->id}", [
+        'value' => 90, 'discount_type' => 'fixed', 'funded_by' => 'professor', 'scope' => 'course', 'max_redemptions' => 8,
+    ])->assertOk()->assertJsonPath('data.value', 20)->assertJsonPath('data.state', 'scheduled');
+    $fresh = $coupon->fresh();
+    expect($fresh->discount_type->value)->toBe('percent')
+        ->and($fresh->funded_by->value)->toBe('platform')
+        ->and($fresh->scope->value)->toBe('platform')
+        ->and($fresh->max_redemptions)->toBe(8);
+
+    $this->patchJson("/api/v1/admin/coupons/{$coupon->id}", ['ends_at' => now()->addDays(5)->toIso8601String()])
+        ->assertUnprocessable()->assertJsonValidationErrors('ends_at');
+    expect($coupon->fresh()->ends_at)->toBeNull();
+});
+
 it('refuses every code after too many wrong guesses in a day', function () {
     coupon(['code' => 'RENTREE']);
     $rules = app(CouponRules::class);

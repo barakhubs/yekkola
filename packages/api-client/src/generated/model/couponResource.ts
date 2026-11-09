@@ -4,6 +4,9 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
+import type { CouponResourceCourse } from "./couponResourceCourse";
+import type { CouponResourceProfessor } from "./couponResourceProfessor";
+import type { CouponResourceState } from "./couponResourceState";
 
 export interface CouponResource {
   id: string;
@@ -13,6 +16,13 @@ export interface CouponResource {
   professor_profile_id: string | null;
   /** @nullable */
   course_id: string | null;
+  /**
+   * Names for the back office (loaded there): who and what the coupon applies to.
+   * @nullable
+   */
+  professor?: CouponResourceProfessor;
+  /** @nullable */
+  course?: CouponResourceCourse;
   discount_type: string;
   value: number;
   /** @nullable */
@@ -28,5 +38,6 @@ export interface CouponResource {
   ends_at: string | null;
   is_active: boolean;
   uses: number;
+  state: CouponResourceState;
   created_at: string;
 }

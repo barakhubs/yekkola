@@ -18,6 +18,19 @@ export const ProfessorCouponsIndexResponse = zod.object({
       scope: zod.string(),
       professor_profile_id: zod.string().nullable(),
       course_id: zod.string().nullable(),
+      professor: zod
+        .object({
+          id: zod.string(),
+          display_name: zod.string(),
+        })
+        .nullish()
+        .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+      course: zod
+        .object({
+          id: zod.string(),
+          title: zod.string().nullable(),
+        })
+        .nullish(),
       discount_type: zod.string(),
       value: zod.int(),
       currency: zod.string().nullable(),
@@ -28,6 +41,7 @@ export const ProfessorCouponsIndexResponse = zod.object({
       ends_at: zod.string().nullable(),
       is_active: zod.boolean(),
       uses: zod.int(),
+      state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
       created_at: zod.string(),
     }),
   ),
@@ -107,7 +121,7 @@ export const ProfessorCouponsStoreBody = zod
     starts_at: zod.iso.datetime({ offset: true }).nullish(),
   })
   .describe(
-    "Coupon create (all fields) or update (operational fields only) — staff (PRD-09 FR-13) and professors\n(PRD-05 FR-12; scope and funder are then set by the server).",
+    "Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
   );
 
 export const ProfessorCouponsStoreResponse = zod.object({
@@ -117,6 +131,19 @@ export const ProfessorCouponsStoreResponse = zod.object({
     scope: zod.string(),
     professor_profile_id: zod.string().nullable(),
     course_id: zod.string().nullable(),
+    professor: zod
+      .object({
+        id: zod.string(),
+        display_name: zod.string(),
+      })
+      .nullish()
+      .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+    course: zod
+      .object({
+        id: zod.string(),
+        title: zod.string().nullable(),
+      })
+      .nullish(),
     discount_type: zod.string(),
     value: zod.int(),
     currency: zod.string().nullable(),
@@ -127,6 +154,7 @@ export const ProfessorCouponsStoreResponse = zod.object({
     ends_at: zod.string().nullable(),
     is_active: zod.boolean(),
     uses: zod.int(),
+    state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
     created_at: zod.string(),
   }),
 });
@@ -139,47 +167,15 @@ export const professorCouponsUpdateBodyMaxRedemptionsMax = 1000000;
 
 export const professorCouponsUpdateBodyPerUserLimitMax = 100;
 
-export const professorCouponsUpdateBodyCodeMin = 6;
-export const professorCouponsUpdateBodyCodeMax = 40;
-
-export const professorCouponsUpdateBodyCodeRegExp = new RegExp("^[A-Za-z0-9_-]+$");
-export const professorCouponsUpdateBodyValueMax = 100;
-
-export const professorCouponsUpdateBodyCurrencyMin = 3;
-export const professorCouponsUpdateBodyCurrencyMax = 3;
-
 export const ProfessorCouponsUpdateBody = zod
   .object({
     is_active: zod.boolean().optional(),
     ends_at: zod.iso.datetime({ offset: true }).nullish(),
     max_redemptions: zod.int().min(1).max(professorCouponsUpdateBodyMaxRedemptionsMax).nullish(),
     per_user_limit: zod.int().min(1).max(professorCouponsUpdateBodyPerUserLimitMax).nullish(),
-    code: zod
-      .string()
-      .min(professorCouponsUpdateBodyCodeMin)
-      .max(professorCouponsUpdateBodyCodeMax)
-      .regex(professorCouponsUpdateBodyCodeRegExp),
-    scope: zod
-      .enum(["platform", "professor", "course"])
-      .describe("What a coupon applies to (PRD-05 FR-11).\n"),
-    professor_profile_id: zod.string().nullish(),
-    course_id: zod.string().nullish(),
-    discount_type: zod.enum(["percent", "fixed"]),
-    value: zod.int().min(1).max(professorCouponsUpdateBodyValueMax),
-    currency: zod
-      .string()
-      .min(professorCouponsUpdateBodyCurrencyMin)
-      .max(professorCouponsUpdateBodyCurrencyMax)
-      .nullish(),
-    funded_by: zod
-      .enum(["platform"])
-      .describe(
-        "Staff never commit a professor's earnings: their coupons are platform-funded (professors fund their own).",
-      ),
-    starts_at: zod.iso.datetime({ offset: true }).nullish(),
   })
   .describe(
-    "Coupon create (all fields) or update (operational fields only) — staff (PRD-09 FR-13) and professors\n(PRD-05 FR-12; scope and funder are then set by the server).",
+    "Coupon update (PRD-09 FR-13, PRD-05 FR-12): only the operational fields — active, end date, limits. What a\ncoupon is worth never changes once created (SaveCoupon::UPDATABLE).",
   );
 
 export const ProfessorCouponsUpdateResponse = zod.object({
@@ -189,6 +185,19 @@ export const ProfessorCouponsUpdateResponse = zod.object({
     scope: zod.string(),
     professor_profile_id: zod.string().nullable(),
     course_id: zod.string().nullable(),
+    professor: zod
+      .object({
+        id: zod.string(),
+        display_name: zod.string(),
+      })
+      .nullish()
+      .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+    course: zod
+      .object({
+        id: zod.string(),
+        title: zod.string().nullable(),
+      })
+      .nullish(),
     discount_type: zod.string(),
     value: zod.int(),
     currency: zod.string().nullable(),
@@ -199,8 +208,24 @@ export const ProfessorCouponsUpdateResponse = zod.object({
     ends_at: zod.string().nullable(),
     is_active: zod.boolean(),
     uses: zod.int(),
+    state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
     created_at: zod.string(),
   }),
+});
+
+export const adminCouponsIndexQueryPageDefault = 1;
+export const adminCouponsIndexQueryPerPageDefault = 15;
+
+export const AdminCouponsIndexQueryParams = zod.object({
+  page: zod.int().default(adminCouponsIndexQueryPageDefault),
+  per_page: zod.int().default(adminCouponsIndexQueryPerPageDefault),
+  "filter[code]": zod.string().optional().describe("Part of the code."),
+  "filter[scope]": zod.string().optional().describe("platform, professor or course."),
+  "filter[is_active]": zod.string().optional().describe("`1` active, `0` inactive."),
+  sort: zod
+    .string()
+    .optional()
+    .describe("`created_at` or `code`; prefix `-` for descending (default `-created_at`)."),
 });
 
 export const adminCouponsIndexResponseMetaPerPageMin = 0;
@@ -209,24 +234,40 @@ export const adminCouponsIndexResponseMetaTotalMin = 0;
 
 export const AdminCouponsIndexResponse = zod.object({
   data: zod.array(
-    zod.object({
-      id: zod.string(),
-      code: zod.string(),
-      scope: zod.string(),
-      professor_profile_id: zod.string().nullable(),
-      course_id: zod.string().nullable(),
-      discount_type: zod.string(),
-      value: zod.int(),
-      currency: zod.string().nullable(),
-      funded_by: zod.string(),
-      max_redemptions: zod.int().nullable(),
-      per_user_limit: zod.int().nullable(),
-      starts_at: zod.string().nullable(),
-      ends_at: zod.string().nullable(),
-      is_active: zod.boolean(),
-      uses: zod.int(),
-      created_at: zod.string(),
-    }),
+    zod
+      .object({
+        id: zod.string(),
+        code: zod.string(),
+        scope: zod.string(),
+        professor_profile_id: zod.string().nullable(),
+        course_id: zod.string().nullable(),
+        professor: zod
+          .object({
+            id: zod.string(),
+            display_name: zod.string(),
+          })
+          .nullable()
+          .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+        course: zod
+          .object({
+            id: zod.string(),
+            title: zod.string().nullable(),
+          })
+          .nullable(),
+        discount_type: zod.string(),
+        value: zod.int(),
+        currency: zod.string().nullable(),
+        funded_by: zod.string(),
+        max_redemptions: zod.int().nullable(),
+        per_user_limit: zod.int().nullable(),
+        starts_at: zod.string().nullable(),
+        ends_at: zod.string().nullable(),
+        is_active: zod.boolean(),
+        uses: zod.int(),
+        state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
+        created_at: zod.string(),
+      })
+      .and(zod.looseObject({})),
   ),
   links: zod.object({
     first: zod.string().nullable(),
@@ -304,28 +345,44 @@ export const AdminCouponsStoreBody = zod
     starts_at: zod.iso.datetime({ offset: true }).nullish(),
   })
   .describe(
-    "Coupon create (all fields) or update (operational fields only) — staff (PRD-09 FR-13) and professors\n(PRD-05 FR-12; scope and funder are then set by the server).",
+    "Coupon create — staff (PRD-09 FR-13) and professors (PRD-05 FR-12; scope and funder are then set by the\nserver). Updates use UpdateCouponRequest (operational fields only).",
   );
 
 export const AdminCouponsStoreResponse = zod.object({
-  data: zod.object({
-    id: zod.string(),
-    code: zod.string(),
-    scope: zod.string(),
-    professor_profile_id: zod.string().nullable(),
-    course_id: zod.string().nullable(),
-    discount_type: zod.string(),
-    value: zod.int(),
-    currency: zod.string().nullable(),
-    funded_by: zod.string(),
-    max_redemptions: zod.int().nullable(),
-    per_user_limit: zod.int().nullable(),
-    starts_at: zod.string().nullable(),
-    ends_at: zod.string().nullable(),
-    is_active: zod.boolean(),
-    uses: zod.int(),
-    created_at: zod.string(),
-  }),
+  data: zod
+    .object({
+      id: zod.string(),
+      code: zod.string(),
+      scope: zod.string(),
+      professor_profile_id: zod.string().nullable(),
+      course_id: zod.string().nullable(),
+      professor: zod
+        .object({
+          id: zod.string(),
+          display_name: zod.string(),
+        })
+        .nullable()
+        .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+      course: zod
+        .object({
+          id: zod.string(),
+          title: zod.string().nullable(),
+        })
+        .nullable(),
+      discount_type: zod.string(),
+      value: zod.int(),
+      currency: zod.string().nullable(),
+      funded_by: zod.string(),
+      max_redemptions: zod.int().nullable(),
+      per_user_limit: zod.int().nullable(),
+      starts_at: zod.string().nullable(),
+      ends_at: zod.string().nullable(),
+      is_active: zod.boolean(),
+      uses: zod.int(),
+      state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
+      created_at: zod.string(),
+    })
+    .and(zod.looseObject({})),
 });
 
 export const AdminCouponsShowParams = zod.object({
@@ -333,24 +390,40 @@ export const AdminCouponsShowParams = zod.object({
 });
 
 export const AdminCouponsShowResponse = zod.object({
-  data: zod.object({
-    id: zod.string(),
-    code: zod.string(),
-    scope: zod.string(),
-    professor_profile_id: zod.string().nullable(),
-    course_id: zod.string().nullable(),
-    discount_type: zod.string(),
-    value: zod.int(),
-    currency: zod.string().nullable(),
-    funded_by: zod.string(),
-    max_redemptions: zod.int().nullable(),
-    per_user_limit: zod.int().nullable(),
-    starts_at: zod.string().nullable(),
-    ends_at: zod.string().nullable(),
-    is_active: zod.boolean(),
-    uses: zod.int(),
-    created_at: zod.string(),
-  }),
+  data: zod
+    .object({
+      id: zod.string(),
+      code: zod.string(),
+      scope: zod.string(),
+      professor_profile_id: zod.string().nullable(),
+      course_id: zod.string().nullable(),
+      professor: zod
+        .object({
+          id: zod.string(),
+          display_name: zod.string(),
+        })
+        .nullable()
+        .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+      course: zod
+        .object({
+          id: zod.string(),
+          title: zod.string().nullable(),
+        })
+        .nullable(),
+      discount_type: zod.string(),
+      value: zod.int(),
+      currency: zod.string().nullable(),
+      funded_by: zod.string(),
+      max_redemptions: zod.int().nullable(),
+      per_user_limit: zod.int().nullable(),
+      starts_at: zod.string().nullable(),
+      ends_at: zod.string().nullable(),
+      is_active: zod.boolean(),
+      uses: zod.int(),
+      state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
+      created_at: zod.string(),
+    })
+    .and(zod.looseObject({})),
 });
 
 export const AdminCouponsUpdateParams = zod.object({
@@ -361,66 +434,50 @@ export const adminCouponsUpdateBodyMaxRedemptionsMax = 1000000;
 
 export const adminCouponsUpdateBodyPerUserLimitMax = 100;
 
-export const adminCouponsUpdateBodyCodeMin = 6;
-export const adminCouponsUpdateBodyCodeMax = 40;
-
-export const adminCouponsUpdateBodyCodeRegExp = new RegExp("^[A-Za-z0-9_-]+$");
-export const adminCouponsUpdateBodyValueMax = 100;
-
-export const adminCouponsUpdateBodyCurrencyMin = 3;
-export const adminCouponsUpdateBodyCurrencyMax = 3;
-
 export const AdminCouponsUpdateBody = zod
   .object({
     is_active: zod.boolean().optional(),
     ends_at: zod.iso.datetime({ offset: true }).nullish(),
     max_redemptions: zod.int().min(1).max(adminCouponsUpdateBodyMaxRedemptionsMax).nullish(),
     per_user_limit: zod.int().min(1).max(adminCouponsUpdateBodyPerUserLimitMax).nullish(),
-    code: zod
-      .string()
-      .min(adminCouponsUpdateBodyCodeMin)
-      .max(adminCouponsUpdateBodyCodeMax)
-      .regex(adminCouponsUpdateBodyCodeRegExp),
-    scope: zod
-      .enum(["platform", "professor", "course"])
-      .describe("What a coupon applies to (PRD-05 FR-11).\n"),
-    professor_profile_id: zod.string().nullish(),
-    course_id: zod.string().nullish(),
-    discount_type: zod.enum(["percent", "fixed"]),
-    value: zod.int().min(1).max(adminCouponsUpdateBodyValueMax),
-    currency: zod
-      .string()
-      .min(adminCouponsUpdateBodyCurrencyMin)
-      .max(adminCouponsUpdateBodyCurrencyMax)
-      .nullish(),
-    funded_by: zod
-      .enum(["platform"])
-      .describe(
-        "Staff never commit a professor's earnings: their coupons are platform-funded (professors fund their own).",
-      ),
-    starts_at: zod.iso.datetime({ offset: true }).nullish(),
   })
   .describe(
-    "Coupon create (all fields) or update (operational fields only) — staff (PRD-09 FR-13) and professors\n(PRD-05 FR-12; scope and funder are then set by the server).",
+    "Coupon update (PRD-09 FR-13, PRD-05 FR-12): only the operational fields — active, end date, limits. What a\ncoupon is worth never changes once created (SaveCoupon::UPDATABLE).",
   );
 
 export const AdminCouponsUpdateResponse = zod.object({
-  data: zod.object({
-    id: zod.string(),
-    code: zod.string(),
-    scope: zod.string(),
-    professor_profile_id: zod.string().nullable(),
-    course_id: zod.string().nullable(),
-    discount_type: zod.string(),
-    value: zod.int(),
-    currency: zod.string().nullable(),
-    funded_by: zod.string(),
-    max_redemptions: zod.int().nullable(),
-    per_user_limit: zod.int().nullable(),
-    starts_at: zod.string().nullable(),
-    ends_at: zod.string().nullable(),
-    is_active: zod.boolean(),
-    uses: zod.int(),
-    created_at: zod.string(),
-  }),
+  data: zod
+    .object({
+      id: zod.string(),
+      code: zod.string(),
+      scope: zod.string(),
+      professor_profile_id: zod.string().nullable(),
+      course_id: zod.string().nullable(),
+      professor: zod
+        .object({
+          id: zod.string(),
+          display_name: zod.string(),
+        })
+        .nullable()
+        .describe("Names for the back office (loaded there): who and what the coupon applies to."),
+      course: zod
+        .object({
+          id: zod.string(),
+          title: zod.string().nullable(),
+        })
+        .nullable(),
+      discount_type: zod.string(),
+      value: zod.int(),
+      currency: zod.string().nullable(),
+      funded_by: zod.string(),
+      max_redemptions: zod.int().nullable(),
+      per_user_limit: zod.int().nullable(),
+      starts_at: zod.string().nullable(),
+      ends_at: zod.string().nullable(),
+      is_active: zod.boolean(),
+      uses: zod.int(),
+      state: zod.enum(["active", "inactive", "scheduled", "expired", "used_up"]),
+      created_at: zod.string(),
+    })
+    .and(zod.looseObject({})),
 });

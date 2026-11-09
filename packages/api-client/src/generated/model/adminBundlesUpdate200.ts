@@ -4,8 +4,8 @@
  * Yekkola
  * OpenAPI spec version: 1.0.0
  */
-import type { BundleResource } from "./bundleResource";
+import type { AdminBundlesUpdate200Data } from "./adminBundlesUpdate200Data";
 
 export type AdminBundlesUpdate200 = {
-  data: BundleResource;
+  data: AdminBundlesUpdate200Data;
 };
