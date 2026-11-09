@@ -1,3 +1,4 @@
+export * from "./analytics/analytics.zod";
 export * from "./application/application.zod";
 export * from "./audit-log/audit-log.zod";
 export * from "./authoring-options/authoring-options.zod";

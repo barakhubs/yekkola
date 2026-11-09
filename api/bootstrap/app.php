@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Authoring\Console\RollupCourseStatsCommand;
 use App\Domain\Commerce\Console\ReconcilePayments;
 use App\Domain\Finance\Console\BuildDuePayoutBatches;
 use App\Domain\Finance\Console\CheckLedger;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         SyncPayouts::class,
         CheckLedger::class,
         RollupPlatformStatsCommand::class,
+        RollupCourseStatsCommand::class,
         SendProfessorDigest::class,
         CheckStuckPayments::class,
         PrepareLoadTest::class,
