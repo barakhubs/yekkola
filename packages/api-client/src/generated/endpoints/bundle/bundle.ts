@@ -24,6 +24,8 @@ import type {
   AdminBundlesUpdate200,
   AuthorizationExceptionResponse,
   BundleRequest,
+  BundlesIndex200,
+  BundlesIndexParams,
   BundlesShow200,
   ModelNotFoundExceptionResponse,
   ProfessorBundlesIndex200,
@@ -53,6 +55,147 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export type bundlesIndexResponse200 = {
+  data: BundlesIndex200;
+  status: 200;
+};
+
+export type bundlesIndexResponseSuccess = bundlesIndexResponse200 & {
+  headers: Headers;
+};
+export type bundlesIndexResponse = bundlesIndexResponseSuccess;
+
+export const getBundlesIndexUrl = (params?: BundlesIndexParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/bundles?${stringifiedParams}` : `/bundles`;
+};
+
+/**
+ * @summary Bundles on sale, newest first: just enough for the sitemap and links (slug, title, last change)
+ */
+export const bundlesIndex = async (
+  params?: BundlesIndexParams,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<bundlesIndexResponse> => {
+  return apiFetch<bundlesIndexResponse>(getBundlesIndexUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getBundlesIndexQueryKey = (params?: BundlesIndexParams) => {
+  return [`/bundles`, ...(params ? [params] : [])] as const;
+};
+
+export const getBundlesIndexQueryOptions = <
+  TData = Awaited<ReturnType<typeof bundlesIndex>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: BundlesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getBundlesIndexQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof bundlesIndex>>> = ({ signal }) =>
+    bundlesIndex(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof bundlesIndex>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type BundlesIndexQueryResult = NonNullable<Awaited<ReturnType<typeof bundlesIndex>>>;
+export type BundlesIndexQueryError = ErrorType<unknown>;
+
+export function useBundlesIndex<
+  TData = Awaited<ReturnType<typeof bundlesIndex>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | BundlesIndexParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesIndex>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof bundlesIndex>>,
+          TError,
+          Awaited<ReturnType<typeof bundlesIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useBundlesIndex<
+  TData = Awaited<ReturnType<typeof bundlesIndex>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: BundlesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesIndex>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof bundlesIndex>>,
+          TError,
+          Awaited<ReturnType<typeof bundlesIndex>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useBundlesIndex<
+  TData = Awaited<ReturnType<typeof bundlesIndex>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: BundlesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Bundles on sale, newest first: just enough for the sitemap and links (slug, title, last change)
+ */
+
+export function useBundlesIndex<
+  TData = Awaited<ReturnType<typeof bundlesIndex>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: BundlesIndexParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof bundlesIndex>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getBundlesIndexQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
 
 export type bundlesShowResponse200 = {
   data: BundlesShow200;

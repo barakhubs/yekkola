@@ -94,6 +94,7 @@ Route::post('/guest/orders', [GuestOrderController::class, 'store'])->middleware
 Route::get('/guest/orders/{order}', [GuestOrderController::class, 'show'])->middleware('throttle:order-status')->name('guest.orders.show');
 Route::post('/guest/orders/{order}/payments', [GuestOrderController::class, 'pay'])->middleware(['throttle:payments', 'idempotent'])->name('guest.orders.pay');
 Route::get('/guest/orders/{order}/receipt.pdf', [GuestOrderController::class, 'receipt'])->middleware('throttle:order-status')->name('guest.orders.receipt');
+Route::get('/bundles', [BundleController::class, 'index'])->middleware('throttle:catalogue')->name('bundles.index');
 Route::get('/bundles/{slug}', [BundleController::class, 'show'])->middleware('throttle:catalogue')->name('bundles.show');
 Route::middleware('signed-in')->group(function () {
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
@@ -415,6 +416,7 @@ Route::middleware(['signed-in', 'staff', 'password-changed'])->prefix('admin')->
     // Coupons and bundles (PRD-09 FR-13): a combinable permission, like finance
     Route::middleware('can:'.Permission::PromotionsManage->value)->group(function () {
         Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+        Route::get('/coupons/options', [AdminCouponController::class, 'options'])->name('coupons.options');
         Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
         Route::get('/coupons/{coupon}', [AdminCouponController::class, 'show'])->name('coupons.show');
         Route::patch('/coupons/{coupon}', [AdminCouponController::class, 'update'])->name('coupons.update');

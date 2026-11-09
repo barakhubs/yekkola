@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Domain\Commerce\Actions\SaveCoupon;
 use App\Domain\Commerce\Models\Coupon;
 use App\Domain\Identity\Models\User;
+use App\Domain\Platform\Settings\CommerceSettings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Commerce\CouponRequest;
 use App\Http\Requests\Commerce\UpdateCouponRequest;
@@ -39,6 +40,18 @@ final class CouponController extends Controller
             ->appends($request->query());
 
         return CouponResource::collection($coupons);
+    }
+
+    /**
+     * What the coupon form offers: the enabled currencies (platform setting), default first.
+     *
+     * @return array{data: array{currencies: list<string>, default_currency: string}}
+     */
+    public function options(CommerceSettings $commerce): array
+    {
+        $currencies = array_values(array_unique([$commerce->default_currency, ...$commerce->enabled_currencies]));
+
+        return ['data' => ['currencies' => $currencies, 'default_currency' => $commerce->default_currency]];
     }
 
     public function store(CouponRequest $request, SaveCoupon $save): JsonResponse

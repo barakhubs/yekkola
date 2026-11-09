@@ -38,6 +38,12 @@ export class ApiError extends Error {
     return this.body.code;
   }
 
+  /** Seconds to wait before trying again (rate limits send `retry_after`); undefined when not given. */
+  get retryAfterSeconds(): number | undefined {
+    const value = this.body.retry_after;
+    return typeof value === "number" && value > 0 ? value : undefined;
+  }
+
   /** The API's translated summary, ready to show people; undefined when the response had none. */
   get title(): string | undefined {
     return typeof this.body.title === "string" && this.body.title !== "" ? this.body.title : undefined;

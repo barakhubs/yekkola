@@ -47,6 +47,11 @@ export const ProfessorDraftShowResponse = zod.object({
             is_preview: zod.boolean(),
             duration_seconds: zod.int().nullable(),
             is_content_ready: zod.boolean(),
+            download_bytes: zod
+              .int()
+              .describe(
+                "What students will download (lowest offline tier), as on the course page (PRD-03 FR-20).",
+              ),
             media: zod.union([
               zod.object({
                 id: zod.string(),
@@ -197,6 +202,11 @@ export const ProfessorDraftUpdateResponse = zod.object({
             is_preview: zod.boolean(),
             duration_seconds: zod.int().nullable(),
             is_content_ready: zod.boolean(),
+            download_bytes: zod
+              .int()
+              .describe(
+                "What students will download (lowest offline tier), as on the course page (PRD-03 FR-20).",
+              ),
             media: zod.union([
               zod.object({
                 id: zod.string(),
@@ -303,6 +313,11 @@ export const ProfessorDraftCoverResponse = zod.object({
             is_preview: zod.boolean(),
             duration_seconds: zod.int().nullable(),
             is_content_ready: zod.boolean(),
+            download_bytes: zod
+              .int()
+              .describe(
+                "What students will download (lowest offline tier), as on the course page (PRD-03 FR-20).",
+              ),
             media: zod.union([
               zod.object({
                 id: zod.string(),
@@ -416,6 +431,11 @@ export const ProfessorDraftReorderResponse = zod.object({
             is_preview: zod.boolean(),
             duration_seconds: zod.int().nullable(),
             is_content_ready: zod.boolean(),
+            download_bytes: zod
+              .int()
+              .describe(
+                "What students will download (lowest offline tier), as on the course page (PRD-03 FR-20).",
+              ),
             media: zod.union([
               zod.object({
                 id: zod.string(),
@@ -559,6 +579,9 @@ export const ProfessorDraftLessonsStoreResponse = zod.object({
     is_preview: zod.boolean(),
     duration_seconds: zod.int().nullable(),
     is_content_ready: zod.boolean(),
+    download_bytes: zod
+      .int()
+      .describe("What students will download (lowest offline tier), as on the course page (PRD-03 FR-20)."),
     media: zod.union([
       zod.object({
         id: zod.string(),
@@ -642,6 +665,9 @@ export const ProfessorDraftLessonsUpdateResponse = zod.object({
     is_preview: zod.boolean(),
     duration_seconds: zod.int().nullable(),
     is_content_ready: zod.boolean(),
+    download_bytes: zod
+      .int()
+      .describe("What students will download (lowest offline tier), as on the course page (PRD-03 FR-20)."),
     media: zod.union([
       zod.object({
         id: zod.string(),
@@ -778,6 +804,9 @@ export const ProfessorDraftLessonsDocumentResponse = zod.object({
     is_preview: zod.boolean(),
     duration_seconds: zod.int().nullable(),
     is_content_ready: zod.boolean(),
+    download_bytes: zod
+      .int()
+      .describe("What students will download (lowest offline tier), as on the course page (PRD-03 FR-20)."),
     media: zod.union([
       zod.object({
         id: zod.string(),
@@ -907,6 +936,9 @@ export const ProfessorDraftLessonsQuizResponse = zod.object({
     is_preview: zod.boolean(),
     duration_seconds: zod.int().nullable(),
     is_content_ready: zod.boolean(),
+    download_bytes: zod
+      .int()
+      .describe("What students will download (lowest offline tier), as on the course page (PRD-03 FR-20)."),
     media: zod.union([
       zod.object({
         id: zod.string(),

@@ -20,6 +20,7 @@ import type {
 import type {
   AdminCouponsIndex200,
   AdminCouponsIndexParams,
+  AdminCouponsOptions200,
   AdminCouponsShow200,
   AdminCouponsStore201,
   AdminCouponsUpdate200,
@@ -816,6 +817,139 @@ export function useAdminCouponsStore<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAdminCouponsStoreQueryOptions(couponRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type adminCouponsOptionsResponse200 = {
+  data: AdminCouponsOptions200;
+  status: 200;
+};
+
+export type adminCouponsOptionsResponse403 = {
+  data: AuthorizationExceptionResponse;
+  status: 403;
+};
+
+export type adminCouponsOptionsResponseSuccess = adminCouponsOptionsResponse200 & {
+  headers: Headers;
+};
+export type adminCouponsOptionsResponseError = adminCouponsOptionsResponse403 & {
+  headers: Headers;
+};
+
+export type adminCouponsOptionsResponse =
+  adminCouponsOptionsResponseSuccess | adminCouponsOptionsResponseError;
+
+export const getAdminCouponsOptionsUrl = () => {
+  return `/admin/coupons/options`;
+};
+
+/**
+ * @summary What the coupon form offers: the enabled currencies (platform setting), default first
+ */
+export const adminCouponsOptions = async (
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<adminCouponsOptionsResponse> => {
+  return apiFetch<adminCouponsOptionsResponse>(getAdminCouponsOptionsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getAdminCouponsOptionsQueryKey = () => {
+  return [`/admin/coupons/options`] as const;
+};
+
+export const getAdminCouponsOptionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminCouponsOptions>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsOptions>>, TError, TData>>;
+  request?: SecondParameter<typeof apiFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminCouponsOptionsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminCouponsOptions>>> = ({ signal }) =>
+    adminCouponsOptions({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminCouponsOptions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminCouponsOptionsQueryResult = NonNullable<Awaited<ReturnType<typeof adminCouponsOptions>>>;
+export type AdminCouponsOptionsQueryError = ErrorType<AuthorizationExceptionResponse>;
+
+export function useAdminCouponsOptions<
+  TData = Awaited<ReturnType<typeof adminCouponsOptions>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsOptions>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCouponsOptions>>,
+          TError,
+          Awaited<ReturnType<typeof adminCouponsOptions>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCouponsOptions<
+  TData = Awaited<ReturnType<typeof adminCouponsOptions>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsOptions>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminCouponsOptions>>,
+          TError,
+          Awaited<ReturnType<typeof adminCouponsOptions>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminCouponsOptions<
+  TData = Awaited<ReturnType<typeof adminCouponsOptions>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsOptions>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary What the coupon form offers: the enabled currencies (platform setting), default first
+ */
+
+export function useAdminCouponsOptions<
+  TData = Awaited<ReturnType<typeof adminCouponsOptions>>,
+  TError = ErrorType<AuthorizationExceptionResponse>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminCouponsOptions>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminCouponsOptionsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

@@ -393,6 +393,16 @@ export const AdminCouponsStoreResponse = zod.object({
     .and(zod.looseObject({})),
 });
 
+/**
+ * @summary What the coupon form offers: the enabled currencies (platform setting), default first
+ */
+export const AdminCouponsOptionsResponse = zod.object({
+  data: zod.object({
+    currencies: zod.array(zod.string()),
+    default_currency: zod.string(),
+  }),
+});
+
 export const AdminCouponsShowParams = zod.object({
   coupon: zod.string().describe("The coupon ID"),
 });
