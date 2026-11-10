@@ -106,7 +106,7 @@ URLs that answer 404. Use R2 for every environment except your own machine.
    with `bin/ffmpeg -version` in Commands.
 2. **Watermark font**: nothing to do. Nunito (OFL) ships in `resources/media/Nunito.ttf` and is the default
    (`MEDIA_WATERMARK_FONT` overrides it). Optional logo: a transparent PNG at `resources/media/watermark.png`.
-3. **Video worker**: a second background process (or worker cluster) for the `media` queue:
+3. **Video worker** (not needed with `VIDEO_DRIVER=fake`, which processes at once): a second background process (or worker cluster) for the `media` queue:
    `php artisan queue:work redis-media --queue=media --tries=3 --timeout=12600 --memory=1024 --sleep=5`.
    Idle, it uses little memory; FFmpeg uses CPU only while converting.
 4. Set `VIDEO_DRIVER=r2`, redeploy, and upload a 1–2 minute video: it goes straight to R2, turns *processing*,
