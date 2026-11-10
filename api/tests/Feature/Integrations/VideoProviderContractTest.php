@@ -44,6 +44,18 @@ it('completes an upload only with every part and its ETag', function () {
         ->and($provider->receivePart($session->uploadId, 1))->toBeNull();
 });
 
+it('reads an open upload whose part count the cache gives back as a string (Redis)', function () {
+    $provider = new FakeVideoProvider(cache()->store());
+    $asset = fakeAsset();
+    $session = $provider->startUpload($asset, (int) $asset->size_bytes, 'video/mp4');
+    $asset->provider_upload_id = $session->uploadId;
+    cache()->put('fake-video:upload:'.$session->uploadId, (string) $session->partCount, now()->addDay());
+
+    $parts = array_map(fn (int $n) => ['number' => $n, 'etag' => (string) $provider->receivePart($session->uploadId, $n)], [1, 2, 3]);
+    expect($parts[0]['etag'])->toBe('"fake-1"')
+        ->and($provider->completeUpload($asset, $parts))->toBe($asset->size_bytes);
+});
+
 it('processes video into a ladder and audio into one rendition, each with its own key', function () {
     $provider = new FakeVideoProvider(cache()->store());
 
