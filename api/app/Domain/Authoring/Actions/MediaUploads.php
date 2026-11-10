@@ -168,7 +168,7 @@ final class MediaUploads
 
     private function partCount(MediaAsset $asset): int
     {
-        $partSize = UploadSession::partSize((int) $asset->size_bytes, (int) config('yekkola.media.part_size_mb') * 1024 * 1024);
+        $partSize = $this->videos->partSizeBytes((int) $asset->size_bytes);
 
         return max(1, (int) ceil((int) $asset->size_bytes / $partSize));
     }

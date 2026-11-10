@@ -7423,6 +7423,7 @@
         "/_fake/video-uploads/{upload}/parts/{part}": {
             "put": {
                 "operationId": "fake.video-upload",
+                "summary": "The ETag also comes back in the body: a proxy or the browser's CORS rules may hide the header, and the studio\nthen reads it from here (R2 itself always exposes the header, per the bucket's CORS policy)",
                 "tags": [
                     "FakeVideoUpload"
                 ],
@@ -7446,7 +7447,22 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "etag": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "etag"
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"

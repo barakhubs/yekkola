@@ -6,9 +6,15 @@
  */
 import * as zod from "zod";
 
+/**
+ * @summary The ETag also comes back in the body: a proxy or the browser's CORS rules may hide the header, and the studio
+then reads it from here (R2 itself always exposes the header, per the bucket's CORS policy)
+ */
 export const FakeVideoUploadParams = zod.object({
   upload: zod.string(),
   part: zod.int(),
 });
 
-export const FakeVideoUploadResponse = zod.unknown();
+export const FakeVideoUploadResponse = zod.object({
+  etag: zod.string(),
+});

@@ -204,8 +204,8 @@ it('uploads video in parts straight to storage, then processes it once complete'
     $start(app(CatalogSettings::class)->max_video_upload_mb * 1024 * 1024 + 1)->assertUnprocessable()->assertJsonPath('code', 'media.upload_too_large');
     $start(1_000, 'image/png')->assertUnprocessable()->assertJsonPath('code', 'lesson.type_mismatch');
 
-    // 25 MB in 10 MB parts: three parts, all URLs in the first batch.
-    $upload = $start(25 * 1024 * 1024)->assertCreated()->json('data');
+    // 3 MB in the fake driver's 1 MB parts: three parts, all URLs in the first batch.
+    $upload = $start(3 * 1024 * 1024)->assertCreated()->json('data');
     $media = $upload['media']['id'];
     expect($upload['media']['status'])->toBe('waiting_upload')
         ->and($upload['upload']['part_count'])->toBe(3)

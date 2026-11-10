@@ -15,7 +15,7 @@ use App\Integrations\Video\UploadSession;
 | on staging (docs/spikes/r2-hls-media.md); its playlist signing goes through HlsPlaylist, tested here.
 */
 
-function fakeAsset(MediaKind $kind = MediaKind::Video, int $size = 25 * 1024 * 1024): MediaAsset
+function fakeAsset(MediaKind $kind = MediaKind::Video, int $size = 3 * 1024 * 1024): MediaAsset
 {
     return new MediaAsset(['id' => (string) Str::ulid(), 'kind' => $kind, 'size_bytes' => $size, 'has_poster' => $kind === MediaKind::Video]);
 }

@@ -22,6 +22,8 @@ final class FakeVideoProvider implements VideoProvider
 {
     private const PREFIX = 'fake-video:';
 
+    private const PART_BYTES = 1024 * 1024;
+
     public function __construct(private readonly Cache $cache) {}
 
     public function name(): string
@@ -29,9 +31,18 @@ final class FakeVideoProvider implements VideoProvider
         return 'fake';
     }
 
+    /**
+     * 1 MB parts: they go through the API's own fake endpoint, so they must fit PHP's and the web server's request
+     * size limits (R2 parts go straight to R2 and stay at 10 MB).
+     */
+    public function partSizeBytes(int $sizeBytes): int
+    {
+        return UploadSession::partSize($sizeBytes, self::PART_BYTES, self::PART_BYTES);
+    }
+
     public function startUpload(MediaAsset $asset, int $sizeBytes, string $contentType): UploadSession
     {
-        $partSize = UploadSession::partSize($sizeBytes, (int) config('yekkola.media.part_size_mb', 10) * 1024 * 1024);
+        $partSize = $this->partSizeBytes($sizeBytes);
         $session = new UploadSession('fake-upload-'.Str::ulid(), "media/{$asset->id}/source", $partSize, max(1, (int) ceil($sizeBytes / $partSize)));
         $this->cache->put(self::PREFIX.'upload:'.$session->uploadId, $session->partCount, now()->addDays(7));
 
@@ -66,7 +77,7 @@ final class FakeVideoProvider implements VideoProvider
 
         $received = [];
         foreach ($parts as $part) {
-            if (trim($part['etag'], '"') === "fake-{$part['number']}") {
+            if (trim((string) preg_replace('/^W\//', '', $part['etag']), '"') === "fake-{$part['number']}") {
                 $received[$part['number']] = true;
             }
         }

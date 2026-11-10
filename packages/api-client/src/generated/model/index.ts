@@ -402,6 +402,7 @@ export * from "./deviceResource";
 export * from "./discountType";
 export * from "./documentRequest";
 export * from "./enrollmentResource";
+export * from "./fakeVideoUpload200";
 export * from "./featured200";
 export * from "./featured200Data";
 export * from "./featuredCoursesRequest";
