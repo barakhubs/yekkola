@@ -1,11 +1,11 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-11-09
+> Last updated: 2026-11-10
 
 ## Now
 
-- **Current branch:** `chore/ffmpeg-setup` (FFmpeg install script, watermark font, default paths)
+- **Current branch:** `fix/document-inline-frame` (document lessons blocked inline: host sends X-Frame-Options deny; allow our front ends with frame-ancestors)
 - **Next up:** owner: switch staging to `VIDEO_DRIVER=r2` and run the R2 media test; then Phase 3 (mobile)
 
 ## Legend
