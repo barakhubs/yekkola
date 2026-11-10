@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Integrations\Video;
 
 use App\Domain\Authoring\Enums\MediaKind;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
@@ -12,7 +13,9 @@ use Symfony\Component\Process\Process;
 /**
  * Turns a source file into AES-128 encrypted HLS with FFmpeg (arch §1.3 C):
  * - video: one pass per rendition of the ladder (720p cap, never upscaled; the lowest is always made), H.264 +
- *   AAC, the logo and "Yekkola · professor" burned in, plus a poster frame;
+ *   AAC, the logo and "Yekkola · professor" burned in, plus a poster frame. The text is drawn by PHP (GD) into a
+ *   transparent PNG and laid over with `overlay`: static FFmpeg 7 builds often lack `drawtext` (it needs
+ *   HarfBuzz), and `overlay` is always there;
  * - audio: one mono AAC rendition.
  * Every rendition uses the same key; the playlist's key URI is a placeholder we replace when serving it.
  * Output: `{out}/{rendition}/index.m3u8` + `seg_*.ts`, `{out}/poster.jpg`.
@@ -49,10 +52,8 @@ final class FfmpegTranscoder
             if ($kind === MediaKind::Audio) {
                 $renditions[] = $this->audio($source, $out, $keyInfo, $probe['duration']);
             } else {
-                $textFile = $out.'/watermark.txt';
-                file_put_contents($textFile, $watermarkText);
                 foreach ($this->ladder((int) $probe['height']) as $step) {
-                    $renditions[] = $this->video($source, $out, $keyInfo, $textFile, $step, $probe);
+                    $renditions[] = $this->video($source, $out, $keyInfo, $watermarkText, $step, $probe);
                 }
             }
 
@@ -60,7 +61,7 @@ final class FfmpegTranscoder
         } finally {
             @unlink($keyFile); // never uploaded next to the segments
             @unlink($keyInfo);
-            @unlink($out.'/watermark.txt');
+            array_map('unlink', glob($out.'/watermark-*.png') ?: []); // not part of the output
         }
 
         return ['duration' => (int) round($probe['duration']), 'renditions' => $renditions, 'poster' => $poster];
@@ -124,29 +125,35 @@ final class FfmpegTranscoder
      * @param  array{name: string, height: int, video_kbps: int, audio_kbps: int}  $step
      * @param  array{duration: float, width: int|null, height: int|null, audio: bool}  $probe
      */
-    private function video(string $source, string $out, string $keyInfo, string $textFile, array $step, array $probe): Rendition
+    private function video(string $source, string $out, string $keyInfo, string $watermarkText, array $step, array $probe): Rendition
     {
         $dir = $out.'/'.$step['name'];
         @mkdir($dir, 0700, true);
         $height = $step['height'];
         $segment = (int) $this->config['segment_seconds'];
         $logo = is_string($this->config['watermark_logo'] ?? null) && is_file($this->config['watermark_logo']) ? $this->config['watermark_logo'] : null;
-        $font = is_string($this->config['watermark_font'] ?? null) && $this->config['watermark_font'] !== '' ? ':fontfile='.$this->escape($this->config['watermark_font']) : '';
         $budget = $this->remaining();
-        $fontSize = max(12, intdiv($height, 26));
+        $margin = max(12, intdiv($height, 26));
 
-        // textfile is relative to the working directory ($out): no path escaping; expansion=none so a `%` in a
-        // professor's name is drawn as is.
-        $graph = "[0:v]scale=-2:{$height},format=yuv420p[v0];"
-            .'[v0]drawtext=textfile='.basename($textFile).":expansion=none{$font}:fontsize={$fontSize}:fontcolor=white@0.55:shadowcolor=black@0.4:shadowx=1:shadowy=1:x=w-tw-{$fontSize}:y=h-th-{$fontSize}[v1]";
-        $graph .= $logo !== null
-            ? ';[1:v]scale=-2:'.max(16, intdiv($height, 14)).",format=rgba,colorchannelmixer=aa=0.6[logo];[v1][logo]overlay={$fontSize}:{$fontSize}[v]"
-            : ';[v1]null[v]';
-
+        // Inputs: 0 the source, then the text image and the logo when there are any; overlays chained in order.
         $args = [(string) $this->config['ffmpeg'], '-y', '-v', 'error', '-i', $source];
+        $graph = "[0:v]scale=-2:{$height}[v0]";
+        $last = 'v0';
+        $input = 1;
+        $text = "{$out}/watermark-{$height}.png";
+        if ($this->watermarkImage($watermarkText, $height, $text)) {
+            $args = [...$args, '-i', $text];
+            $graph .= ";[{$last}][{$input}:v]overlay=W-w-{$margin}:H-h-{$margin}[vt]";
+            $last = 'vt';
+            $input++;
+        }
         if ($logo !== null) {
             $args = [...$args, '-i', $logo];
+            $graph .= ";[{$input}:v]scale=-2:".max(16, intdiv($height, 14)).",format=rgba,colorchannelmixer=aa=0.6[logo];[{$last}][logo]overlay={$margin}:{$margin}[vl]";
+            $last = 'vl';
         }
+        $graph .= ";[{$last}]format=yuv420p[v]";
+
         $args = [
             ...$args,
             '-filter_complex', $graph, '-map', '[v]', '-map', '0:a:0?',
@@ -161,6 +168,49 @@ final class FfmpegTranscoder
         $width = $probe['width'] !== null && $probe['height'] ? (int) (round($probe['width'] * $height / $probe['height'] / 2) * 2) : null;
 
         return $this->measure($step['name'], $dir, $probe['duration'], $width, $height);
+    }
+
+    /**
+     * Draws the burned-in text (e.g. "Yekkola · professor name") with the watermark font, white at 55 % with a soft
+     * shadow, into a transparent PNG sized for a video of `$videoHeight`. False when GD/FreeType or the font is
+     * missing: the video is then made without the text (logged) rather than not at all.
+     */
+    public function watermarkImage(string $text, int $videoHeight, string $path): bool
+    {
+        $font = $this->config['watermark_font'] ?? null;
+        if ($text === '' || ! is_string($font) || ! is_file($font) || ! function_exists('imagettftext')) {
+            Log::warning('Video watermark text skipped: GD with FreeType or the watermark font is missing.', ['font' => $font]);
+
+            return false;
+        }
+
+        $size = max(9, intdiv($videoHeight, 34)); // points
+        $box = imagettfbbox($size, 0, $font, $text);
+        if ($box === false) {
+            return false;
+        }
+        $pad = 3;
+        $width = $box[2] - $box[0] + $pad * 2 + 1;
+        $height = $box[1] - $box[7] + $pad * 2 + 1;
+
+        $image = imagecreatetruecolor(max(1, $width), max(1, $height));
+        if ($image === false) {
+            return false;
+        }
+        imagesavealpha($image, true);
+        imagealphablending($image, false);
+        imagefill($image, 0, 0, (int) imagecolorallocatealpha($image, 0, 0, 0, 127));
+        imagealphablending($image, true);
+
+        $x = $pad - $box[0];
+        $y = $pad - $box[7];
+        imagettftext($image, $size, 0, $x + 1, $y + 1, (int) imagecolorallocatealpha($image, 0, 0, 0, 76), $font, $text); // shadow, 40 %
+        imagettftext($image, $size, 0, $x, $y, (int) imagecolorallocatealpha($image, 255, 255, 255, 57), $font, $text); // 55 %
+
+        $saved = imagepng($image, $path);
+        imagedestroy($image);
+
+        return $saved && is_file($path);
     }
 
     private function audio(string $source, string $out, string $keyInfo, float $duration): Rendition
@@ -217,17 +267,6 @@ final class FfmpegTranscoder
         $bandwidth = (int) ceil($size * 8 / max(1.0, $duration) * 1.5);
 
         return new Rendition($name, $bandwidth, $size, $width, $height);
-    }
-
-    /**
-     * A path as a filter option value inside `-filter_complex`: escaped for the option parser, then again for the
-     * filtergraph parser (FFmpeg's two escaping levels).
-     */
-    private function escape(string $path): string
-    {
-        $option = str_replace(['\\', ':', "'"], ['\\\\', '\\:', "\\'"], str_replace('\\', '/', $path));
-
-        return str_replace(['\\', "'", '[', ']', ',', ';'], ['\\\\', "\\'", '\\[', '\\]', '\\,', '\\;'], $option);
     }
 
     /** Seconds left of the FFmpeg budget for this asset (set at the start of transcode()). */

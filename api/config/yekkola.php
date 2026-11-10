@@ -137,8 +137,8 @@ return [
         'audio_kbps' => 64,
         // Burned-in watermark: logo PNG (optional; skipped if missing) + "Yekkola · professor name" text.
         'watermark_logo' => env('MEDIA_WATERMARK_LOGO', resource_path('media/watermark.png')),
-        // TTF/OTF for the text: Nunito (OFL, shipped in resources/media), since servers may have no fonts at all.
-        'watermark_font' => env('MEDIA_WATERMARK_FONT') ?: resource_path('media/Nunito.ttf'),
+        // TTF/OTF for the text: Nunito Bold (OFL, shipped in resources/media), since servers may have no fonts at all.
+        'watermark_font' => env('MEDIA_WATERMARK_FONT') ?: resource_path('media/Nunito-Bold.ttf'),
     ],
 
     'checkout' => [

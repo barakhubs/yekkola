@@ -121,3 +121,18 @@ it('sends transcoding to the long-timeout media connection of whichever queue dr
             ->and(config("queue.connections.{$connection}.driver"))->toBe($driver);
     }
 });
+
+it('draws the burned-in watermark text into a transparent image (no FFmpeg drawtext needed)', function () {
+    $transcoder = new App\Integrations\Video\FfmpegTranscoder(config('yekkola.media'));
+    $path = sys_get_temp_dir().'/wm-'.Str::ulid().'.png';
+
+    expect($transcoder->watermarkImage('Yekkola · Marie Kabongo 100%', 720, $path))->toBeTrue();
+    [$width, $height] = getimagesize($path) ?: [0, 0];
+    $image = imagecreatefrompng($path);
+    expect($width)->toBeGreaterThan($height * 4)
+        ->and($height)->toBeGreaterThan(10)
+        ->and(imagecolorat($image, 0, 0) >> 24 & 0x7F)->toBe(127); // a transparent corner
+    @unlink($path);
+
+    expect($transcoder->watermarkImage('', 720, $path))->toBeFalse();
+});
