@@ -61,7 +61,11 @@ final class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(DocumentStamper::class, FpdiDocumentStamper::class);
-        $this->app->singleton(OtpCodeHasher::class, fn (Application $app): OtpCodeHasher => new OtpCodeHasher((string) $app['config']->get('app.key')));
+        $this->app->singleton(OtpCodeHasher::class, fn (Application $app): OtpCodeHasher => new OtpCodeHasher(
+            (string) $app['config']->get('app.key'),
+            // Never in production (IntegrationServiceProvider refuses to boot with it set).
+            $app->isProduction() ? null : (is_string($code = $app['config']->get('yekkola.auth.test_code')) && $code !== '' ? $code : null),
+        ));
 
         // Atomic locks (payment handlers, payout runs) come from the default cache store.
         $this->app->bind(LockProvider::class, function (Application $app): LockProvider {

@@ -48,6 +48,8 @@ browser code at build time: **redeploy after changing one**.
 - Web only: `NEXT_PUBLIC_SITE_URL` (Cloud sets it to the app's URL), `WEB_SERVER_KEY`, `WEB_REVALIDATE_SECRET`
   (same values as in the API), optional `API_INTERNAL_URL`.
 - On the API: `FRONTEND_WEB_URL` and `FRONTEND_ADMIN_URL` must be these apps' URLs (CORS, "View as" redirects).
+- Staging without an SMS provider: `OTP_TEST_CODE=<6 digits>` makes every sign-in code that value (no log or worker
+  needed to read it). Never in production: the API refuses to boot with it set.
 
 ## Files and media on Cloudflare R2
 

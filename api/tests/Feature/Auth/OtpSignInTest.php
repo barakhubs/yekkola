@@ -26,6 +26,24 @@ it('sends a 6-digit code by SMS and stores only its hash', function () {
         ->and($challenge->expires_at->diffInMinutes(now(), true))->toBeGreaterThan(4.9);
 });
 
+it('uses the fixed test code outside production, so staging works without SMS', function () {
+    config(['yekkola.auth.test_code' => '424242']);
+    app()->forgetInstance(App\Domain\Identity\Support\OtpCodeHasher::class);
+
+    $this->postJson('/api/v1/auth/otp/request', ['phone' => '+243812345678'], MOBILE_APP)->assertAccepted();
+    expect(lastSmsCode('+243812345678'))->toBe('424242');
+
+    $this->postJson('/api/v1/auth/otp/verify', ['phone' => '+243812345678', 'code' => '424242', 'device' => mobileDevice()], MOBILE_APP)
+        ->assertOk();
+});
+
+it('refuses to boot production with a fixed test code', function () {
+    expect(fn () => App\Providers\IntegrationServiceProvider::assertNoOtpTestCode(true, '424242'))
+        ->toThrow(RuntimeException::class, 'OTP_TEST_CODE');
+    App\Providers\IntegrationServiceProvider::assertNoOtpTestCode(false, '424242');
+    App\Providers\IntegrationServiceProvider::assertNoOtpTestCode(true, null);
+});
+
 it('rejects invalid phone numbers', function () {
     $this->postJson('/api/v1/auth/otp/request', ['phone' => '12'], ['Accept-Language' => 'fr'])
         ->assertUnprocessable()

@@ -110,6 +110,8 @@ final class IntegrationServiceProvider extends ServiceProvider
             }
         }
 
+        self::assertNoOtpTestCode($this->app->isProduction(), config('yekkola.auth.test_code'));
+
         if ($this->app->isProduction() && config('scout.driver') !== 'meilisearch') {
             throw new RuntimeException('SCOUT_DRIVER must be meilisearch in production.');
         }
@@ -121,6 +123,14 @@ final class IntegrationServiceProvider extends ServiceProvider
 
         if ($this->app->isProduction() && $this->driver('bot_challenge') === 'turnstile' && (string) config('yekkola.turnstile.secret') === '') {
             throw new RuntimeException('TURNSTILE_SECRET_KEY must be set in production.');
+        }
+    }
+
+    /** A fixed sign-in code is for local and staging only. */
+    public static function assertNoOtpTestCode(bool $production, mixed $code): void
+    {
+        if ($production && is_string($code) && $code !== '') {
+            throw new RuntimeException('OTP_TEST_CODE must not be set in production.');
         }
     }
 

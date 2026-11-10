@@ -56,6 +56,8 @@ return [
         // Grace period before a deletion request anonymises the account (FR-11).
         'deletion_grace_days' => 14,
         'export_ttl_days' => 7,
+        // Local/staging only: every sign-in code is this 6-digit value (no SMS provider needed). Production refuses it.
+        'test_code' => env('OTP_TEST_CODE'),
         // Android SMS Retriever app hash (11 chars) appended to OTP texts once the app exists.
         'sms_retriever_hash' => env('SMS_RETRIEVER_HASH'),
     ],
