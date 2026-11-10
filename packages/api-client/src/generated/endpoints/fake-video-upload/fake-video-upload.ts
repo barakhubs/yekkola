@@ -17,7 +17,7 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { ModelNotFoundExceptionResponse } from "../../model";
+import type { FakeVideoUpload200, ModelNotFoundExceptionResponse } from "../../model";
 
 import { apiFetch } from "../../../fetcher";
 import type { ErrorType } from "../../../fetcher";
@@ -40,7 +40,7 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export type fakeVideoUploadResponse200 = {
-  data: void;
+  data: FakeVideoUpload200;
   status: 200;
 };
 
@@ -62,6 +62,10 @@ export const getFakeVideoUploadUrl = (upload: string, part: number) => {
   return `/_fake/video-uploads/${upload}/parts/${part}`;
 };
 
+/**
+ * @summary The ETag also comes back in the body: a proxy or the browser's CORS rules may hide the header, and the studio
+then reads it from here (R2 itself always exposes the header, per the bucket's CORS policy)
+ */
 export const fakeVideoUpload = async (
   upload: string,
   part: number,
@@ -160,6 +164,10 @@ export function useFakeVideoUpload<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary The ETag also comes back in the body: a proxy or the browser's CORS rules may hide the header, and the studio
+then reads it from here (R2 itself always exposes the header, per the bucket's CORS policy)
+ */
 
 export function useFakeVideoUpload<
   TData = Awaited<ReturnType<typeof fakeVideoUpload>>,
