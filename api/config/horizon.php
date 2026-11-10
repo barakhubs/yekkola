@@ -242,6 +242,17 @@ return [
             ],
         ],
 
+        // Staging runs everything production runs, on fewer processes. An environment missing here gets no
+        // workers at all: Horizon starts but processes nothing.
+        'staging' => [
+            'supervisor-1' => [
+                'maxProcesses' => 3,
+            ],
+            'supervisor-media' => [
+                'maxProcesses' => (int) env('MEDIA_WORKERS', 1),
+            ],
+        ],
+
         'local' => [
             'supervisor-1' => [
                 'maxProcesses' => 3,
