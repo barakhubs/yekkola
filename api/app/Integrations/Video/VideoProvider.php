@@ -21,6 +21,9 @@ interface VideoProvider
 {
     public function name(): string;
 
+    /** Bytes per upload part for a file of `$sizeBytes` (the browser cuts the file this way). */
+    public function partSizeBytes(int $sizeBytes): int;
+
     /** Open a multipart upload of `$sizeBytes` for the asset. */
     public function startUpload(MediaAsset $asset, int $sizeBytes, string $contentType): UploadSession;
 
