@@ -95,7 +95,17 @@ function putPart(
     xhr.upload.onprogress = (event) => onProgress(event.loaded);
     xhr.onload = () => {
       job.requests.delete(xhr);
-      const etag = xhr.getResponseHeader("ETag");
+      // R2 exposes the ETag header (bucket CORS); the fake driver also returns it in the body, in case a proxy
+      // or CORS hides the header.
+      let etag = xhr.getResponseHeader("ETag");
+      if (!etag) {
+        try {
+          const body = JSON.parse(xhr.responseText) as { etag?: unknown };
+          if (typeof body.etag === "string") etag = body.etag;
+        } catch {
+          // not JSON: no ETag
+        }
+      }
       if (xhr.status >= 200 && xhr.status < 300 && etag) resolve(etag);
       else reject(Object.assign(new Error("part failed"), { status: xhr.status }));
     };

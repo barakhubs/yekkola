@@ -45,11 +45,16 @@ final class R2VideoProvider implements VideoProvider
         return 'r2';
     }
 
+    public function partSizeBytes(int $sizeBytes): int
+    {
+        return UploadSession::partSize($sizeBytes, (int) $this->config['part_size_mb'] * 1024 * 1024);
+    }
+
     public function startUpload(MediaAsset $asset, int $sizeBytes, string $contentType): UploadSession
     {
         $key = "media/{$asset->id}/source";
         $result = $this->client->createMultipartUpload(['Bucket' => $this->bucket, 'Key' => $key, 'ContentType' => $contentType]);
-        $partSize = UploadSession::partSize($sizeBytes, (int) $this->config['part_size_mb'] * 1024 * 1024);
+        $partSize = $this->partSizeBytes($sizeBytes);
 
         return new UploadSession((string) $result['UploadId'], $key, $partSize, max(1, (int) ceil($sizeBytes / $partSize)));
     }
