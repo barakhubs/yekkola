@@ -104,3 +104,13 @@ it('processes at once with the fake driver, and on the video queue with R2', fun
     config(['yekkola.drivers.video' => 'r2']);
     expect((new App\Domain\Authoring\Jobs\ProcessMediaAsset('a'))->connection)->toBe('redis-media');
 });
+
+it('stores R2 multipart upload ids, which are longer than 255 characters', function () {
+    $professor = actingAsProfessor();
+    $asset = MediaAsset::query()->create([
+        'professor_profile_id' => $professor->id, 'kind' => 'video', 'provider' => 'r2', 'status' => 'waiting_upload',
+        'provider_upload_id' => str_repeat('A1b_-', 80), 'source_key' => 'media/x/source',
+    ]);
+
+    expect(strlen((string) $asset->fresh()->provider_upload_id))->toBe(400);
+});
