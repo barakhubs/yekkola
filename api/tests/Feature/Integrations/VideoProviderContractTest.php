@@ -96,3 +96,11 @@ it('lists renditions in the master playlist with their bandwidth and size', func
         ->and($master)->toContain("#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720,NAME=\"720p\"\nhttps://api.test/720p.m3u8")
         ->and($master)->toContain("#EXT-X-STREAM-INF:BANDWIDTH=70000,NAME=\"audio\"\nhttps://api.test/audio.m3u8");
 });
+
+it('processes at once with the fake driver, and on the video queue with R2', function () {
+    config(['yekkola.drivers.video' => 'fake', 'yekkola.media.queue_connection' => 'redis-media']);
+    expect((new App\Domain\Authoring\Jobs\ProcessMediaAsset('a'))->connection)->toBe('sync');
+
+    config(['yekkola.drivers.video' => 'r2']);
+    expect((new App\Domain\Authoring\Jobs\ProcessMediaAsset('a'))->connection)->toBe('redis-media');
+});

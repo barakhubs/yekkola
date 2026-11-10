@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `chore/web-polish` (more reviews, error page, sign-in countdown, sitemap bundles, studio download sizes, coupon currencies)
-- **Next up:** Phase 3 (mobile)
+- **Current branch:** `chore/ffmpeg-setup` (FFmpeg install script, watermark font, default paths)
+- **Next up:** owner: switch staging to `VIDEO_DRIVER=r2` and run the R2 media test; then Phase 3 (mobile)
 
 ## Legend
 

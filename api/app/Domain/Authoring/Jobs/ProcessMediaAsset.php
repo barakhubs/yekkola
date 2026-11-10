@@ -43,7 +43,8 @@ final class ProcessMediaAsset implements ShouldBeUnique, ShouldQueue
     public function __construct(public readonly string $mediaAssetId)
     {
         $this->onQueue('media');
-        $connection = config('yekkola.media.queue_connection');
+        // The fake driver's "processing" is instant: run it right away, no video worker needed (local, staging).
+        $connection = config('yekkola.drivers.video') === 'fake' ? 'sync' : config('yekkola.media.queue_connection');
         if (is_string($connection) && $connection !== '') {
             $this->onConnection($connection);
         }

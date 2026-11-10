@@ -111,8 +111,9 @@ return [
     'media' => [
         // Private R2 disk holding sources and encrypted HLS output (never public).
         'disk' => env('MEDIA_DISK', 'r2-private'),
-        'ffmpeg' => env('FFMPEG_BINARY', 'ffmpeg'),
-        'ffprobe' => env('FFPROBE_BINARY', 'ffprobe'),
+        // `sh scripts/install-ffmpeg.sh` puts static builds in api/bin (Laravel Cloud build); else the system's.
+        'ffmpeg' => env('FFMPEG_BINARY') ?: (is_file(base_path('bin/ffmpeg')) ? base_path('bin/ffmpeg') : 'ffmpeg'),
+        'ffprobe' => env('FFPROBE_BINARY') ?: (is_file(base_path('bin/ffprobe')) ? base_path('bin/ffprobe') : 'ffprobe'),
         // Seconds all FFmpeg runs of one asset may take together (the job adds 30 min for R2 transfers).
         'timeout_seconds' => (int) env('MEDIA_TRANSCODE_TIMEOUT', 3 * 3_600),
         // Queue connection for transcoding: `redis-media` (long retry_after) whenever queues run on Redis.
@@ -131,8 +132,8 @@ return [
         'audio_kbps' => 64,
         // Burned-in watermark: logo PNG (optional; skipped if missing) + "Yekkola · professor name" text.
         'watermark_logo' => env('MEDIA_WATERMARK_LOGO', resource_path('media/watermark.png')),
-        // TTF/OTF for the text; empty = FFmpeg's fontconfig default.
-        'watermark_font' => env('MEDIA_WATERMARK_FONT'),
+        // TTF/OTF for the text: Nunito (OFL, shipped in resources/media), since servers may have no fonts at all.
+        'watermark_font' => env('MEDIA_WATERMARK_FONT') ?: resource_path('media/Nunito.ttf'),
     ],
 
     'checkout' => [
