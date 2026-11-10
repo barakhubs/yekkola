@@ -96,8 +96,22 @@ URLs that answer 404. Use R2 for every environment except your own machine.
    MEDIA_DISK=r2-private
    ```
 
-   Lesson video moves to R2 only with `VIDEO_DRIVER=r2`, and that needs FFmpeg on the queue workers
-   (`FFMPEG_BINARY`, `FFPROBE_BINARY`; R2 media spike, TODO 0.4). Until then keep `VIDEO_DRIVER=fake`.
+   Lesson video moves to R2 only with `VIDEO_DRIVER=r2`; keep `VIDEO_DRIVER=fake` until the next section is done.
+
+## Real video and audio (`VIDEO_DRIVER=r2`)
+
+1. **FFmpeg**: add `sh scripts/install-ffmpeg.sh` to the API's build commands, **before** any `php artisan
+   config:cache` / `optimize`. It downloads static FFmpeg + FFprobe into `api/bin` (no root needed; skipped when
+   already there). The API finds them there; leave `FFMPEG_BINARY` / `FFPROBE_BINARY` unset. Check after the deploy
+   with `bin/ffmpeg -version` in Commands.
+2. **Watermark font**: nothing to do. Nunito (OFL) ships in `resources/media/Nunito.ttf` and is the default
+   (`MEDIA_WATERMARK_FONT` overrides it). Optional logo: a transparent PNG at `resources/media/watermark.png`.
+3. **Video worker**: a second background process (or worker cluster) for the `media` queue:
+   `php artisan queue:work redis-media --queue=media --tries=3 --timeout=12600 --memory=1024 --sleep=5`.
+   Idle, it uses little memory; FFmpeg uses CPU only while converting.
+4. Set `VIDEO_DRIVER=r2`, redeploy, and upload a 1–2 minute video: it goes straight to R2, turns *processing*,
+   then *ready*; a failure is logged as `Media processing failed` in the video worker's logs. Lessons uploaded
+   under `fake` are placeholders: upload them again. Back out with `VIDEO_DRIVER=fake`.
 6. **Web and admin apps**: add the public host to `NEXT_PUBLIC_IMAGE_HOSTS` (e.g. `media.yekkola.com`, comma
    separated with any others) and **redeploy both** (the value is compiled in).
 7. **Re-upload** what was stored on the old local disk: brand images (back office → Settings → Branding), then
@@ -107,8 +121,10 @@ URLs that answer 404. Use R2 for every environment except your own machine.
 
 ## API workers and scheduler
 
-- Queue workers must listen on `payments,otp,default,notifications` (same order as `config/horizon.php`), or
-  notifications and other jobs never run. Transcoding runs on its own connection: with Horizon this is the
+- One plain worker is enough to start (low memory): `php artisan queue:work redis
+  --queue=payments,otp,default,notifications --tries=3 --timeout=90 --sleep=3 --memory=128 --max-jobs=500`.
+  Without it, sign-in codes, notifications and payment checks never run. Horizon (`php artisan horizon`, configured
+  for production, staging and local) can replace it later for auto-scaling and its dashboard. Transcoding runs on its own connection: with Horizon this is the
   `supervisor-media` supervisor; without Horizon run a second worker,
   `php artisan queue:work redis-media --queue=media --timeout=12600` (`MEDIA_TRANSCODE_TIMEOUT` + 30 min).
 - The scheduler must run (`php artisan schedule:run` every minute): payment reconciliation, payouts, the ledger

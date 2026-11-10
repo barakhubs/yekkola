@@ -28,3 +28,5 @@ Thumbs.db
 
 # PHPStan cache
 /storage/phpstan
+# Static FFmpeg from scripts/install-ffmpeg.sh
+/bin/
