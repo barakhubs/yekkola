@@ -1284,7 +1284,8 @@
         "started": "Started",
         "halfway": "Half-way",
         "completed": "Completed"
-      }
+      },
+      "noActivity": "No activity in this period."
     },
     "studioReviews": {
       "title": "Reviews",

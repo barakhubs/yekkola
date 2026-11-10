@@ -275,6 +275,7 @@ function Funnel({
 /** A small daily bar chart; the numbers are also in a table for screen readers. */
 function Bars({ title, days, value }: { title: string; days: Day[]; value: (day: Day) => number }) {
   const locale = useLocale() as Locale;
+  const empty = useTranslations("web.analytics")("noActivity");
   const max = Math.max(1, ...days.map(value));
   const width = 100 / Math.max(1, days.length);
   const total = days.reduce((sum, d) => sum + value(d), 0);
@@ -285,23 +286,27 @@ function Bars({ title, days, value }: { title: string; days: Day[]; value: (day:
         <span>{title}</span>
         <span className="text-muted-foreground tabular-nums">{total}</span>
       </figcaption>
-      <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="h-28 w-full" aria-hidden>
-        {days.map((d, i) => {
-          const h = (value(d) / max) * 38;
-          return (
-            <rect
-              key={d.date}
-              x={i * width + width * 0.15}
-              y={40 - h}
-              width={width * 0.7}
-              height={h}
-              className="fill-primary"
-            />
-          );
-        })}
-      </svg>
-      <table className="sr-only">
-        <caption>{title}</caption>
+      {total === 0 ? (
+        <p className="grid h-28 place-items-center text-sm text-muted-foreground">{empty}</p>
+      ) : (
+        <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="h-28 w-full" aria-hidden>
+          {days.map((d, i) => {
+            const h = (value(d) / max) * 38;
+            return (
+              <rect
+                key={d.date}
+                x={i * width + width * 0.15}
+                y={40 - h}
+                width={width * 0.7}
+                height={h}
+                className="fill-primary"
+              />
+            );
+          })}
+        </svg>
+      )}
+      {/* Same numbers for screen readers. No <caption>: browsers draw it outside the visually hidden table. */}
+      <table className="sr-only" aria-label={title}>
         <tbody>
           {days.map((d) => (
             <tr key={d.date}>
