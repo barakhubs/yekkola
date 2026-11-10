@@ -105,7 +105,7 @@ URLs that answer 404. Use R2 for every environment except your own machine.
    config:cache` / `optimize`. It downloads static FFmpeg + FFprobe for both x86_64 and arm64 into `api/bin`
    (the build machine may differ from the instances), and `bin/ffmpeg` picks the right one at run time. The API finds them there; leave `FFMPEG_BINARY` / `FFPROBE_BINARY` unset. Check after the deploy
    with `bin/ffmpeg -version` in Commands.
-2. **Watermark font**: nothing to do. Nunito (OFL) ships in `resources/media/Nunito.ttf` and is the default
+2. **Watermark font**: nothing to do. Nunito (OFL) ships in `resources/media/Nunito-Bold.ttf` and is the default
    (`MEDIA_WATERMARK_FONT` overrides it). Optional logo: a transparent PNG at `resources/media/watermark.png`.
 3. **Video worker** (not needed with `VIDEO_DRIVER=fake`, which processes at once): a second background process (or worker cluster) for the `media` queue:
    `php artisan queue:work <media connection> --queue=media --tries=3 --timeout=12600 --memory=1024 --sleep=5`,
