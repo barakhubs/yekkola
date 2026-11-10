@@ -481,7 +481,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 
 ## Phase 3 — Mobile (Flutter)
 
-- [~] Flutter app scaffold in `mobile/`, flavors (staging/production; Android), CI `mobile.yml`, ARB fr/en, Nunito + brand theme — #78
+- [x] Flutter app scaffold in `mobile/`, flavors (staging/production; Android), CI `mobile.yml`, ARB fr/en, Nunito + brand theme — #78
 - [x] Generated API client (swagger_parser, student-facing operations), Dio, auth + secure storage, `X-Device-Id` — #78
 - [ ] iOS flavors (staging/production schemes and bundle IDs) **(needs: a Mac with Xcode)**
 - [ ] Android release signing (upload key in CI secrets) before the first Play build
