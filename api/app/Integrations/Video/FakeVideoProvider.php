@@ -63,15 +63,15 @@ final class FakeVideoProvider implements VideoProvider
     /** The ETag the fake part endpoint answers with, or null when no such upload is open. */
     public function receivePart(string $uploadId, int $number): ?string
     {
-        $count = $this->cache->get(self::PREFIX.'upload:'.$uploadId);
+        $count = $this->partCount($uploadId);
 
-        return is_int($count) && $number >= 1 && $number <= $count ? "\"fake-{$number}\"" : null;
+        return $count !== null && $number >= 1 && $number <= $count ? "\"fake-{$number}\"" : null;
     }
 
     public function completeUpload(MediaAsset $asset, array $parts): int
     {
-        $count = $this->cache->get(self::PREFIX.'upload:'.$asset->provider_upload_id);
-        if (! is_int($count)) {
+        $count = $this->partCount((string) $asset->provider_upload_id);
+        if ($count === null) {
             throw new UploadIncomplete('No such upload.');
         }
 
@@ -94,6 +94,14 @@ final class FakeVideoProvider implements VideoProvider
     public function storeSize(string $assetId, int $bytes): void
     {
         $this->cache->put(self::PREFIX.'size:'.$assetId, $bytes, now()->addDay());
+    }
+
+    /** Parts of an open upload. Redis gives cached numbers back as strings, the array store as integers. */
+    private function partCount(string $uploadId): ?int
+    {
+        $count = $this->cache->get(self::PREFIX.'upload:'.$uploadId);
+
+        return is_numeric($count) ? (int) $count : null;
     }
 
     public function abortUpload(MediaAsset $asset): void
