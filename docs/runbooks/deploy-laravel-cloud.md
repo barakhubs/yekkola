@@ -101,8 +101,8 @@ URLs that answer 404. Use R2 for every environment except your own machine.
 ## Real video and audio (`VIDEO_DRIVER=r2`)
 
 1. **FFmpeg**: add `sh scripts/install-ffmpeg.sh` to the API's build commands, **before** any `php artisan
-   config:cache` / `optimize`. It downloads static FFmpeg + FFprobe into `api/bin` (no root needed; skipped when
-   already there). The API finds them there; leave `FFMPEG_BINARY` / `FFPROBE_BINARY` unset. Check after the deploy
+   config:cache` / `optimize`. It downloads static FFmpeg + FFprobe for both x86_64 and arm64 into `api/bin`
+   (the build machine may differ from the instances), and `bin/ffmpeg` picks the right one at run time. The API finds them there; leave `FFMPEG_BINARY` / `FFPROBE_BINARY` unset. Check after the deploy
    with `bin/ffmpeg -version` in Commands.
 2. **Watermark font**: nothing to do. Nunito (OFL) ships in `resources/media/Nunito.ttf` and is the default
    (`MEDIA_WATERMARK_FONT` overrides it). Optional logo: a transparent PNG at `resources/media/watermark.png`.
