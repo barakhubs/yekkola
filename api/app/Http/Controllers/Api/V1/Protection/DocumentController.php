@@ -59,6 +59,20 @@ final class DocumentController extends Controller
             'Content-Type' => 'application/pdf',
             'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',
+            // The web app shows the PDF inline in an iframe. The host may add `X-Frame-Options: deny` to every
+            // response (Laravel Cloud does); `frame-ancestors` overrides it and allows only our own front ends.
+            'Content-Security-Policy' => 'frame-ancestors '.$this->frameAncestors(),
         ], 'inline');
+    }
+
+    private function frameAncestors(): string
+    {
+        $origins = collect([config('yekkola.web_url'), config('yekkola.admin_url')])
+            ->filter(fn (mixed $url): bool => is_string($url) && $url !== '')
+            ->map(fn (string $url): string => rtrim($url, '/'))
+            ->unique()
+            ->implode(' ');
+
+        return $origins !== '' ? "'self' {$origins}" : "'self'";
     }
 }
