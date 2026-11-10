@@ -116,8 +116,13 @@ return [
         'ffprobe' => env('FFPROBE_BINARY') ?: (is_file(base_path('bin/ffprobe')) ? base_path('bin/ffprobe') : 'ffprobe'),
         // Seconds all FFmpeg runs of one asset may take together (the job adds 30 min for R2 transfers).
         'timeout_seconds' => (int) env('MEDIA_TRANSCODE_TIMEOUT', 3 * 3_600),
-        // Queue connection for transcoding: `redis-media` (long retry_after) whenever queues run on Redis.
-        'queue_connection' => env('MEDIA_QUEUE_CONNECTION', env('QUEUE_CONNECTION') === 'redis' ? 'redis-media' : null),
+        // Queue connection for transcoding, with a retry_after longer than a transcode: `redis-media` or
+        // `database-media`, following QUEUE_CONNECTION (other drivers: the default connection).
+        'queue_connection' => env('MEDIA_QUEUE_CONNECTION') ?: match (env('QUEUE_CONNECTION')) {
+            'redis' => 'redis-media',
+            'database' => 'database-media',
+            default => null,
+        },
         // Multipart upload part size (raised automatically for very large files).
         'part_size_mb' => 10,
         // Pre-signed part URLs live this long; the studio asks again when one expires.
