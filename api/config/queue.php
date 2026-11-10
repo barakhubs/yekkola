@@ -86,6 +86,16 @@ return [
             'after_commit' => false,
         ],
 
+        // Same for the database queue (QUEUE_CONNECTION=database): transcoding outlasts the default retry_after.
+        'database-media' => [
+            'driver' => 'database',
+            'connection' => env('DB_QUEUE_CONNECTION'),
+            'table' => env('DB_QUEUE_TABLE', 'jobs'),
+            'queue' => 'media',
+            'retry_after' => (int) env('MEDIA_TRANSCODE_TIMEOUT', 3 * 3_600) + 3_600,
+            'after_commit' => false,
+        ],
+
         'deferred' => [
             'driver' => 'deferred',
         ],

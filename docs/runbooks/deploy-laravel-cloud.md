@@ -100,14 +100,17 @@ URLs that answer 404. Use R2 for every environment except your own machine.
 
 ## Real video and audio (`VIDEO_DRIVER=r2`)
 
-1. **FFmpeg**: add `sh scripts/install-ffmpeg.sh` to the API's build commands, **before** any `php artisan
+1. **FFmpeg**: add `sh scripts/install-ffmpeg.sh` to the API's build commands (and nothing else that writes to
+   `api/bin`), **before** any `php artisan
    config:cache` / `optimize`. It downloads static FFmpeg + FFprobe for both x86_64 and arm64 into `api/bin`
    (the build machine may differ from the instances), and `bin/ffmpeg` picks the right one at run time. The API finds them there; leave `FFMPEG_BINARY` / `FFPROBE_BINARY` unset. Check after the deploy
    with `bin/ffmpeg -version` in Commands.
 2. **Watermark font**: nothing to do. Nunito (OFL) ships in `resources/media/Nunito.ttf` and is the default
    (`MEDIA_WATERMARK_FONT` overrides it). Optional logo: a transparent PNG at `resources/media/watermark.png`.
 3. **Video worker** (not needed with `VIDEO_DRIVER=fake`, which processes at once): a second background process (or worker cluster) for the `media` queue:
-   `php artisan queue:work redis-media --queue=media --tries=3 --timeout=12600 --memory=1024 --sleep=5`.
+   `php artisan queue:work <media connection> --queue=media --tries=3 --timeout=12600 --memory=1024 --sleep=5`,
+   where the connection is `database-media` when `QUEUE_CONNECTION=database`, `redis-media` when it is `redis`
+   (`php artisan tinker --execute="echo config('yekkola.media.queue_connection');"` prints it).
    Idle, it uses little memory; FFmpeg uses CPU only while converting.
 4. Set `VIDEO_DRIVER=r2`, redeploy, and upload a 1–2 minute video: it goes straight to R2, turns *processing*,
    then *ready*; a failure is logged as `Media processing failed` in the video worker's logs. Lessons uploaded
@@ -121,8 +124,8 @@ URLs that answer 404. Use R2 for every environment except your own machine.
 
 ## API workers and scheduler
 
-- One plain worker is enough to start (low memory): `php artisan queue:work redis
-  --queue=payments,otp,default,notifications --tries=3 --timeout=90 --sleep=3 --memory=128 --max-jobs=500`.
+- One plain worker is enough to start (low memory), on the default connection (`QUEUE_CONNECTION`):
+  `php artisan queue:work --queue=payments,otp,default,notifications --tries=3 --timeout=90 --sleep=3 --memory=128 --max-jobs=500`.
   Without it, sign-in codes, notifications and payment checks never run. Horizon (`php artisan horizon`, configured
   for production, staging and local) can replace it later for auto-scaling and its dashboard. Transcoding runs on its own connection: with Horizon this is the
   `supervisor-media` supervisor; without Horizon run a second worker,

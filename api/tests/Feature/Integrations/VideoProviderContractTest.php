@@ -114,3 +114,10 @@ it('stores R2 multipart upload ids, which are longer than 255 characters', funct
 
     expect(strlen((string) $asset->fresh()->provider_upload_id))->toBe(400);
 });
+
+it('sends transcoding to the long-timeout media connection of whichever queue driver is in use', function () {
+    foreach (['redis' => 'redis-media', 'database' => 'database-media'] as $driver => $connection) {
+        expect(config("queue.connections.{$connection}.retry_after"))->toBeGreaterThan(config('yekkola.media.timeout_seconds') + 1_800)
+            ->and(config("queue.connections.{$connection}.driver"))->toBe($driver);
+    }
+});
