@@ -1284,7 +1284,8 @@
         "started": "Ont commencé",
         "halfway": "À mi-parcours",
         "completed": "Ont terminé"
-      }
+      },
+      "noActivity": "Aucune activité sur cette période."
     },
     "studioReviews": {
       "title": "Avis",
