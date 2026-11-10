@@ -118,6 +118,7 @@ URLs that answer 404. Use R2 for every environment except your own machine.
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
+| `php artisan horizon` runs but jobs (sign-in codes, notifications) never run; `queue:work --once` does run them | `APP_ENV` has no entry in `config/horizon.php` → `environments`, so Horizon starts no workers | Add the environment there (production, staging and local are defined) and redeploy. |
 | Logos, avatars or covers return 404 at `https://api.…/storage/…` | Files on the API's local disk (`PUBLIC_DISK=public`): not served, not shared, wiped on deploy | Move to R2 (section "Files and media on Cloudflare R2"), redeploy, re-upload the images. |
 | Build: `corepack: not found` | Old build command | Use the build command above (pnpm via `npm install -g`). |
 | Build: page "took more than 60 seconds" | The API wasn't answering while pages were prerendered | Fixed in code: build-time API calls time out after 10 s and the page fills in at its first revalidation. Deploy the API first anyway. |
