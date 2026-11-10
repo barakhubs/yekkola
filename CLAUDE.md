@@ -9,7 +9,7 @@
 - **Work autonomously.** Don't hand tasks to the user or wait for go-aheads — plan, build, check, commit, push, and open the PR yourself. The only user step is merging PRs.
 - Never hard-code values listed under _Platform settings_ or _Open decisions_ in `project-context.md`. Don't block on them either: implement behind a setting/interface with a safe default, document the default, and add a `TODO.md` item to confirm it.
 - Business logic lives only in the API. Front ends (web, admin, mobile) display and submit.
-- Any API change: regenerate the OpenAPI spec and `packages/api-client` in the same change.
+- Any API change: regenerate the OpenAPI spec, `packages/api-client` and the mobile client (`mobile/lib/core/api/generated`) in the same change.
 - All user-facing text goes through translations (French default, English). No hard-coded copy.
 - Do not privilege Kinshasa or any city/province in copy, defaults, or data.
 - External services (media storage/video, payments, SMS) are only reached through their interfaces (`VideoProvider`, `PaymentGateway`, `SmsSender`); tests use the fake drivers.
@@ -59,4 +59,4 @@
 - API: see `api/CLAUDE.md` → Commands (`composer setup`, `composer check`)
 - Web (repo root, pnpm + Turborepo, Node ≥ 20.19, 22.12+ recommended): `pnpm install`, `pnpm dev` (web :3000, admin :3001), `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm format`
 - API client: `pnpm api-client:generate` after `composer openapi` in `api/` (CI `contract.yml` fails if stale)
-- Mobile: added when scaffolded (Phase 3)
+- Mobile (`mobile/`, Flutter 3.47): `flutter run --flavor staging`, `flutter analyze`, `flutter test`; API client: `dart run tool/generate_api_client.dart` after `composer openapi` (CI `mobile.yml` fails if stale)

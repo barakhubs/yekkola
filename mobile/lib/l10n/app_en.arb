@@ -1,0 +1,71 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Yekkola",
+  "appTagline": "Congo's best teachers, anywhere in Congo.",
+
+  "commonContinue": "Continue",
+  "commonCancel": "Cancel",
+  "commonRetry": "Try again",
+
+  "languageFrench": "Français",
+  "languageEnglish": "English",
+  "languageLabel": "Language",
+
+  "authTitle": "Sign in",
+  "authSubtitle": "Sign in with your phone number: we'll text you a code.",
+  "authPhoneLabel": "Phone number",
+  "authPhoneHint": "Example: 0812 345 678",
+  "authSendCode": "Get the code",
+  "authSessionExpired": "You were signed out on this device. Sign in again to continue.",
+  "authCodeTitle": "Enter the code",
+  "authCodeSentTo": "Code sent to {phone}.",
+  "authCodeLabel": "6-digit code",
+  "authVerify": "Confirm",
+  "authResend": "Resend the code",
+  "authResendIn": "Resend the code in {seconds} s",
+  "authChangeNumber": "Change number",
+  "authNoCodeTitle": "Still no code?",
+  "authNoCodeHint": "Check the number and that your phone can receive texts (signal, full storage), then try again a little later.",
+
+  "deviceLimitTitle": "Too many devices signed in",
+  "deviceLimitBody": "{limit, plural, =1{Your account can be signed in on 1 phone at a time.} other{Your account can be signed in on {limit} phones at a time.}} Choose a device to sign out to use this one. Its downloads are deleted as soon as it goes online again, and stop playing after their expiry date.",
+  "deviceLimitSignOut": "Sign out this device",
+  "deviceLastActive": "Last active: {date}",
+  "deviceUnnamedAndroid": "Android phone",
+  "deviceUnnamedIos": "iPhone",
+  "deviceThisOne": "This device",
+
+  "profileTitle": "Welcome to Yekkola!",
+  "profileSubtitle": "What's your name? It will appear on your certificates.",
+  "profileNameLabel": "Full name",
+  "profileNameRequired": "Enter your name.",
+
+  "suspendedTitle": "Your account is suspended",
+  "suspendedBody": "You can't take courses for now. Contact Yekkola support to find out more.",
+
+  "homeTitle": "My courses",
+  "homeWelcome": "Hello {name}!",
+  "homeComingSoon": "Your courses and downloads will appear here.",
+
+  "accountSignOut": "Sign out",
+  "accountDevices": "Devices",
+  "accountDevicesIntro": "The phones where the Yekkola app is signed in and can keep downloads.",
+  "accountNoDevices": "No registered devices.",
+  "accountRemoveDevice": "Remove",
+  "accountRemoveDeviceTitle": "Remove this device?",
+  "accountRemoveDeviceBody": "It will be signed out. Its downloads are deleted as soon as it goes online again, and stop playing after their expiry date.",
+
+  "errorNetwork": "No connection. Check your network and try again.",
+  "errorGeneric": "Something went wrong. Try again.",
+  "errorPhoneInvalid": "Invalid phone number.",
+  "errorPhoneCountry": "Numbers from this country aren't supported yet.",
+  "errorOtpInvalid": "{remaining, plural, =0{Wrong code.} =1{Wrong code. 1 try left.} other{Wrong code. {remaining} tries left.}}",
+  "errorOtpExpired": "This code has expired. Ask for a new one.",
+  "errorOtpTooManyAttempts": "Too many tries. Ask for a new code.",
+  "errorOtpLocked": "Too many wrong codes for this number. Try again later.",
+  "errorOtpRateLimited": "Too many codes requested. Try again later.",
+  "errorOtpUnavailable": "Sending codes is temporarily unavailable. Try again later.",
+  "errorTryAgainIn": "Try again in {seconds} s.",
+  "errorAccountBanned": "This account has been deactivated."
+}

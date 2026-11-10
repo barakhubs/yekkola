@@ -1,0 +1,15 @@
+# Generates the typed Dio client and models from the API's OpenAPI spec (swagger_parser 2).
+# Don't run swagger_parser directly: tool/generate_api_client.dart first cuts the spec to the
+# student-facing operations (into .dart_tool/openapi.mobile.json), then runs it.
+#   dart run tool/generate_api_client.dart           regenerate (after `composer openapi` in api/)
+#   dart run tool/generate_api_client.dart --check   CI: fail if the committed client is stale
+swagger_parser:
+  schema_path: .dart_tool/openapi.mobile.json
+  output_directory: lib/core/api/generated
+  generation:
+    root_api_class_name: YekkolaApi
+    http_client: dio
+    serializer: plain
+    # Older app versions must survive enum values the API adds later.
+    unknown_enum_values: preserve
+    unknown_discriminator_values: preserve
