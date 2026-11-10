@@ -195,10 +195,12 @@ yekkola/
 │   ├── i18n/                              fr.json, en.json (namespaced), shared formatters (money, dates, phone)
 │   └── config/                            tsconfig, eslint, tailwind preset, prettier
 ├── mobile/                                Flutter (phase 3)
-│   └── lib/
-│       ├── core/                          api client, auth, db (drift), sync engine, i18n, theme
-│       ├── features/<feature>/            data/, domain/, presentation/  (media: HLS downloader + key store)
-│       └── main.dart
+│   ├── lib/
+│   │   ├── core/                          config (flavors), api (Dio, interceptor, generated client), storage, device, i18n, theme, router; later db (drift), sync engine
+│   │   ├── features/<feature>/            data/, domain/, presentation/  (auth, account; media: HLS downloader + key store)
+│   │   ├── l10n/                          app_fr.arb (template), app_en.arb
+│   │   └── main.dart
+│   └── tool/generate_api_client.dart      cuts api/openapi.json to student operations, runs swagger_parser
 ├── docs/                                  architecture.md, prd/
 ├── loadtest/                              k6 load tests (README.md; test students from `php artisan loadtest:prepare`)
 ├── .github/workflows/                     api.yml, web.yml, contract.yml, mobile.yml
@@ -589,6 +591,10 @@ Rules:
 - **Downloads:** our own HLS downloader fetches one rendition's encrypted segments (resumable, survives backgrounding) into app-private storage. The AES key is stored wrapped with a per-device key (Android Keystore / iOS Keychain), with the offline expiry. Playback goes through a standard Flutter video player that supports AES-128 HLS, with our watermark overlay on top. Documents via background_downloader into app-private storage.
 - **Device identity:** generated `install_id` stored in secure storage; sent as `X-Device-Id`.
 - **Min app version:** `/config` returns `min_supported_version`; older apps show a forced-update screen.
+- **API client:** generated into `mobile/lib/core/api/generated` by `tool/generate_api_client.dart`: it cuts `api/openapi.json` to the student-facing operations (admin, professor, staff, webhook and fake-gateway paths and the schemas only they use are dropped), then runs swagger_parser (plain Dio methods and plain Dart codecs, no build_runner). Unknown enum values are preserved, so older app versions survive new API values. A hand-written interceptor adds `Authorization: Bearer`, `X-Device-Id`, `Accept-Language` and `X-Request-Id`; failures become `ApiException` (the error envelope). A 401 for the current token ends the session.
+- **Session:** the device token and a cached copy of the user live in secure storage and are read before the first frame, so the app opens offline. Sign-in: phone → code → (at the device limit) choose a device to sign out, retried with the same code and `replace_device_id` → name on first sign-in. Suspended accounts see only an explanation screen.
+- **Flavors:** `staging` (`com.yekkola.app.staging`) and `production` (`com.yekkola.app`) on Android; the flavor picks the API host, `--dart-define=API_BASE_URL` overrides it. Android backups and device-to-device transfer are off (Keystore-bound secrets must not be restored elsewhere). iOS schemes pending.
+- **CI:** `mobile.yml` (format, `flutter analyze`, client up to date, `flutter test`, staging debug APK) runs on `mobile/**` and `api/openapi.json` changes.
 
 ---
 
@@ -643,7 +649,7 @@ Built so that growth is an infrastructure change, not a rewrite.
 ## 10. Testing strategy
 
 - **API:** Pest feature tests per endpoint (auth, validation, authorization, happy path, edge cases) — these are the contract. Unit tests for the ledger (balanced transactions), state machines, price/quote calculation, and progress merge rules. Fake drivers for video, payments, SMS.
-- **Contract:** CI regenerates OpenAPI + `api-client` and fails on drift; the API workflow publishes `openapi.json` as the `openapi-spec` build artifact.
+- **Contract:** CI regenerates OpenAPI + `api-client` (and the mobile client in `mobile.yml`) and fails on drift; the API workflow publishes `openapi.json` as the `openapi-spec` build artifact.
 - **Web:** Vitest + Testing Library for features; Playwright end-to-end for critical journeys (sign-in, free enroll, paid checkout with fake gateway, lesson playback page, studio upload, admin approval).
 - **Mobile:** unit tests for sync engine and merge logic; integration tests for download/offline playback on real devices (Android low-end device in the test matrix).
 - **Non-functional:** k6 load tests in `loadtest/` (catalogue, playback, progress, checkout; test students from `php artisan loadtest:prepare` on staging); Lighthouse CI budgets on public pages; accessibility checks (axe) in Playwright.
