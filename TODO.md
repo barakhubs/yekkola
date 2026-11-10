@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/mobile-scaffold` (Phase 3 starts: Flutter app scaffold + phone sign-in with the device limit)
+- **Current branch:** `feature/mobile-scaffold`, PR #78 (Phase 3 starts: Flutter app scaffold + phone sign-in with the device limit)
 - **Next up:** offline encrypted HLS prototype on low-end Android (own PR); owner: switch staging to `VIDEO_DRIVER=r2` and run the R2 media test
 
 ## Legend
@@ -481,8 +481,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 
 ## Phase 3 — Mobile (Flutter)
 
-- [~] Flutter app scaffold in `mobile/`, flavors (staging/production; Android), CI `mobile.yml`, ARB fr/en, Nunito + brand theme
-- [~] Generated API client (swagger_parser, student-facing operations), Dio, auth + secure storage, `X-Device-Id`
+- [~] Flutter app scaffold in `mobile/`, flavors (staging/production; Android), CI `mobile.yml`, ARB fr/en, Nunito + brand theme — #78
+- [x] Generated API client (swagger_parser, student-facing operations), Dio, auth + secure storage, `X-Device-Id` — #78
 - [ ] iOS flavors (staging/production schemes and bundle IDs) **(needs: a Mac with Xcode)**
 - [ ] Android release signing (upload key in CI secrets) before the first Play build
 - [ ] Confirm the production API host for the `production` flavor (defaults to `api.yekkola.com`, same as staging today) **(needs: owner, with the production environment)**
@@ -490,7 +490,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [-] `mux_player_plugin`: Android (Kotlin, Media3, `MuxDownloadManager`) — superseded by R2, 2026-11-09 (no native-SDK plugin needed)
 - [-] `mux_player_plugin`: iOS (Swift, `MuxOfflineAccessManager`) — superseded by R2, 2026-11-09
 - [ ] Offline encrypted HLS: own downloader for a rendition's segments (resumable, background), AES key wrapped with a per-device key (Keystore / Keychain) with the offline expiry, standard Flutter player with AES-128 HLS + overlay; delete revoked content at sync — prototype early (PRD-07)
-- [~] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list
+- [x] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list — #78
 - [ ] Try sign-in end to end on a real Android phone against staging
 - [ ] `POST /auth/otp/request` returns the normalised `phone`, so the app stops pre-normalising national numbers (+243 default lives only in the API)
 - [ ] Catalogue, search, course and professor pages (offline cache)
