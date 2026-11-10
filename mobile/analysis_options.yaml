@@ -1,0 +1,25 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Generated from api/openapi.json (tool/generate_api_client.dart) and lib/l10n/*.arb.
+    - lib/core/api/generated/**
+    - lib/l10n/generated/**
+    - build/**
+    - android/**
+    - ios/**
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - always_declare_return_types
+    - avoid_print
+    - unawaited_futures
+    - prefer_final_locals
+
+
+formatter:
+  page_width: 120

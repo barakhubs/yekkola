@@ -1,0 +1,65 @@
+name: Mobile
+
+# The Flutter app (mobile/). Also runs when the API spec changes, so the generated Dart client
+# can't fall behind it.
+on:
+  pull_request:
+    paths:
+      - "mobile/**"
+      - "api/openapi.json"
+      - ".github/workflows/mobile.yml"
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - "api/openapi.json"
+      - ".github/workflows/mobile.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  checks:
+    name: Format, analyze, client, test, build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.2
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format
+        # Generated code keeps its generator's formatting.
+        run: dart format --output=none --set-exit-if-changed $(find lib test tool -name '*.dart' -not -path '*/generated/*')
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: API client is up to date
+        run: dart run tool/generate_api_client.dart --check
+
+      - name: Test
+        run: flutter test
+
+      - name: Build (staging, debug APK)
+        run: flutter build apk --debug --flavor staging
