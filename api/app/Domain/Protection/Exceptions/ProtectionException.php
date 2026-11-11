@@ -37,6 +37,17 @@ final class ProtectionException extends DomainException
         return new self('playback.stream_required', 409);
     }
 
+    /** Offline licenses are only for the app's registered device that is asking (PRD-07 FR-07). */
+    public static function registeredDeviceRequired(): self
+    {
+        return new self('offline.device_required', 403);
+    }
+
+    public static function renditionUnavailable(): self
+    {
+        return new self('offline.rendition_unavailable', 422);
+    }
+
     public static function notADocument(): self
     {
         return new self('document.not_a_document', 422);

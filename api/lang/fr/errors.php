@@ -133,6 +133,10 @@ return [
         'preview_only' => 'Connectez-vous et inscrivez-vous pour suivre cette leçon.',
         'stream_replaced' => 'Ce cours est en lecture sur un autre écran.',
     ],
+    'offline' => [
+        'device_required' => 'Les téléchargements se font depuis l’application, sur un appareil enregistré. Reconnectez-vous puis réessayez.',
+        'rendition_unavailable' => 'Cette qualité n’est pas disponible pour cette leçon.',
+    ],
     'document' => [
         'not_a_document' => 'Cette leçon n’a pas de document.',
         'unavailable' => 'Ce document n’est pas disponible pour le moment.',

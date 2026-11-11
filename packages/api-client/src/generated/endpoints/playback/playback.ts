@@ -19,9 +19,11 @@ import type {
 
 import type {
   HeartbeatRequest,
+  LessonsOfflineLicense200,
   LessonsPlayback200,
   LessonsPlaybackHeartbeat200,
   LessonsPreviewPlayback200,
+  OfflineLicenseRequest,
   ValidationExceptionResponse,
 } from "../../model";
 
@@ -346,6 +348,181 @@ export function useLessonsPlaybackHeartbeat<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getLessonsPlaybackHeartbeatQueryOptions(lesson, heartbeatRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type lessonsOfflineLicenseResponse200 = {
+  data: LessonsOfflineLicense200;
+  status: 200;
+};
+
+export type lessonsOfflineLicenseResponse422 = {
+  data: ValidationExceptionResponse;
+  status: 422;
+};
+
+export type lessonsOfflineLicenseResponseSuccess = lessonsOfflineLicenseResponse200 & {
+  headers: Headers;
+};
+export type lessonsOfflineLicenseResponseError = lessonsOfflineLicenseResponse422 & {
+  headers: Headers;
+};
+
+export type lessonsOfflineLicenseResponse =
+  lessonsOfflineLicenseResponseSuccess | lessonsOfflineLicenseResponseError;
+
+export const getLessonsOfflineLicenseUrl = (lesson: string) => {
+  return `/lessons/${lesson}/offline-license`;
+};
+
+/**
+ * @summary Offline download for this registered device: the rendition's playlist, the AES key and the license
+expiry. Asking again renews the license and refreshes the segment URLs (to resume a download).
+`offline.device_required` (403) outside the app or from another install than the token's device
+ */
+export const lessonsOfflineLicense = async (
+  lesson: string,
+  offlineLicenseRequest?: OfflineLicenseRequest,
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<lessonsOfflineLicenseResponse> => {
+  const getHeaders = (
+    h?: NonNullable<RequestInit["headers"]>,
+  ): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+  return apiFetch<lessonsOfflineLicenseResponse>(getLessonsOfflineLicenseUrl(lesson), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(offlineLicenseRequest),
+  });
+};
+
+export const getLessonsOfflineLicenseQueryKey = (
+  lesson: string,
+  offlineLicenseRequest?: BodyType<OfflineLicenseRequest>,
+) => {
+  return ["POST", `/lessons/${lesson}/offline-license`, offlineLicenseRequest] as const;
+};
+
+export const getLessonsOfflineLicenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  lesson: string,
+  offlineLicenseRequest?: BodyType<OfflineLicenseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof lessonsOfflineLicense>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getLessonsOfflineLicenseQueryKey(lesson, offlineLicenseRequest);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof lessonsOfflineLicense>>> = ({ signal }) =>
+    lessonsOfflineLicense(lesson, offlineLicenseRequest, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: lesson !== null && lesson !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof lessonsOfflineLicense>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type LessonsOfflineLicenseQueryResult = NonNullable<Awaited<ReturnType<typeof lessonsOfflineLicense>>>;
+export type LessonsOfflineLicenseQueryError = ErrorType<ValidationExceptionResponse>;
+
+export function useLessonsOfflineLicense<
+  TData = Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  lesson: string,
+  offlineLicenseRequest: undefined | BodyType<OfflineLicenseRequest>,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof lessonsOfflineLicense>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+          TError,
+          Awaited<ReturnType<typeof lessonsOfflineLicense>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useLessonsOfflineLicense<
+  TData = Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  lesson: string,
+  offlineLicenseRequest?: BodyType<OfflineLicenseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof lessonsOfflineLicense>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+          TError,
+          Awaited<ReturnType<typeof lessonsOfflineLicense>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useLessonsOfflineLicense<
+  TData = Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  lesson: string,
+  offlineLicenseRequest?: BodyType<OfflineLicenseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof lessonsOfflineLicense>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Offline download for this registered device: the rendition's playlist, the AES key and the license
+expiry. Asking again renews the license and refreshes the segment URLs (to resume a download).
+`offline.device_required` (403) outside the app or from another install than the token's device
+ */
+
+export function useLessonsOfflineLicense<
+  TData = Awaited<ReturnType<typeof lessonsOfflineLicense>>,
+  TError = ErrorType<ValidationExceptionResponse>,
+>(
+  lesson: string,
+  offlineLicenseRequest?: BodyType<OfflineLicenseRequest>,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof lessonsOfflineLicense>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getLessonsOfflineLicenseQueryOptions(lesson, offlineLicenseRequest, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

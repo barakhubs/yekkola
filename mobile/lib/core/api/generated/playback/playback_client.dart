@@ -5,6 +5,9 @@ import 'dart:convert' as convert;
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
 import 'models/heartbeat_request.dart' as models show HeartbeatRequest;
+import 'models/lessons_offline_license_response200.dart'
+    as models
+    show LessonsOfflineLicenseResponse200;
 import 'models/lessons_playback_heartbeat_response200.dart'
     as models
     show LessonsPlaybackHeartbeatResponse200;
@@ -14,6 +17,9 @@ import 'models/lessons_playback_response200.dart'
 import 'models/lessons_preview_playback_response200.dart'
     as models
     show LessonsPreviewPlaybackResponse200;
+import 'models/offline_license_request.dart'
+    as models
+    show OfflineLicenseRequest;
 
 class PlaybackClient {
   PlaybackClient(this._transport);
@@ -87,6 +93,47 @@ class PlaybackClient {
       cancelToken: cancelToken,
     );
     return models.LessonsPlaybackHeartbeatResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
+  }
+
+  /// Offline download for this registered device: the rendition's playlist, the AES key and the license
+  /// expiry. Asking again renews the license and refreshes the segment URLs (to resume a download).
+  /// `offline.device_required` (403) outside the app or from another install than the token's device
+  Future<models.LessonsOfflineLicenseResponse200> lessonsOfflineLicense({
+    Map<String, Object?> extra = const {
+      "openapi.servers": [
+        {"url": "http://localhost:8000/api/v1"},
+      ],
+    },
+    CancelToken? cancelToken,
+    Options? options,
+    required String lesson,
+    models.OfflineLicenseRequest? body,
+  }) async {
+    if (const {'', '.', '..'}.contains(Uri.encodeComponent(lesson))) {
+      throw ArgumentError('Invalid path segment.');
+    }
+    final _options = (options ?? Options()).copyWith(
+      method: "POST",
+      responseType: ResponseType.json,
+      extra: {...?options?.extra, ...extra},
+      contentType: "application/json",
+      headers: {
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
+          if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
+        'Accept': "application/json",
+      },
+      validateStatus: (status) => status != null && (status == 200),
+    );
+    final response = await _transport.request<dynamic>(
+      "/lessons/" + Uri.encodeComponent(lesson) + "/offline-license",
+      options: _options,
+      data: body == null ? null : convert.jsonEncode(body),
+      cancelToken: cancelToken,
+    );
+    return models.LessonsOfflineLicenseResponse200.fromJson(
       response.data as Map<String, Object?>,
     );
   }

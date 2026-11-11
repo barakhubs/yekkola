@@ -64,6 +64,46 @@ export const LessonsPlaybackHeartbeatResponse = zod.object({
 });
 
 /**
+ * @summary Offline download for this registered device: the rendition's playlist, the AES key and the license
+expiry. Asking again renews the license and refreshes the segment URLs (to resume a download).
+`offline.device_required` (403) outside the app or from another install than the token's device
+ */
+export const LessonsOfflineLicenseParams = zod.object({
+  lesson: zod.string(),
+});
+
+export const lessonsOfflineLicenseBodyRenditionRegExp = new RegExp("^[a-z0-9]{1,16}$");
+
+export const LessonsOfflineLicenseBody = zod
+  .object({
+    rendition: zod.string().regex(lessonsOfflineLicenseBodyRenditionRegExp).nullish(),
+  })
+  .describe("Which rendition to download (PRD-07 FR-08); omitted = our lowest.");
+
+export const LessonsOfflineLicenseResponse = zod.object({
+  data: zod.object({
+    license_id: zod.string(),
+    lesson_uid: zod.string(),
+    media_id: zod.string(),
+    kind: zod.string(),
+    rendition: zod.object({
+      name: zod.string(),
+      size_bytes: zod.int(),
+      width: zod.int().nullable(),
+      height: zod.int().nullable(),
+    }),
+    renditions: zod.array(zod.unknown()),
+    playlist: zod.string(),
+    segments_expire_at: zod.string(),
+    key: zod.string(),
+    expires_at: zod.string(),
+    watermark: zod.object({
+      text: zod.string(),
+    }),
+  }),
+});
+
+/**
  * @summary Tokens for a preview lesson of a listed course, without signing in (PRD-04 FR-06). No watermark name
  */
 export const LessonsPreviewPlaybackParams = zod.object({

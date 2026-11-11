@@ -16,6 +16,7 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\Payment;
 use App\Domain\Finance\Models\Payout;
 use App\Domain\Finance\Models\PayoutBatch;
+use App\Domain\Identity\Events\DeviceRevoked;
 use App\Domain\Identity\Events\UserAnonymizing;
 use App\Domain\Identity\Models\PersonalAccessToken;
 use App\Domain\Identity\Models\User;
@@ -39,6 +40,7 @@ use App\Domain\Professors\Listeners\EraseProfessorData;
 use App\Domain\Professors\Models\KycSubmission;
 use App\Domain\Professors\Models\ProfessorProfile;
 use App\Domain\Protection\Listeners\EraseProtectionData;
+use App\Domain\Protection\Listeners\RevokeOfflineLicenses;
 use App\Domain\Protection\Stamping\DocumentStamper;
 use App\Domain\Protection\Stamping\FpdiDocumentStamper;
 use App\Http\Support\ClientIp;
@@ -174,6 +176,7 @@ final class AppServiceProvider extends ServiceProvider
         Event::listen(UserAnonymizing::class, EraseProfessorData::class);
         Event::listen(UserAnonymizing::class, EraseLearningData::class);
         Event::listen(UserAnonymizing::class, EraseProtectionData::class);
+        Event::listen(DeviceRevoked::class, RevokeOfflineLicenses::class);
         Event::listen(UserAnonymizing::class, EraseNotificationData::class);
 
         // Learning: a new live version changes what counts toward progress (PRD-06 BR-02).
