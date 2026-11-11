@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,7 +7,9 @@ import 'core/i18n/locale_controller.dart';
 import 'core/providers.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/auth_controller.dart';
+import 'features/media/presentation/downloads_controller.dart';
 import 'l10n/generated/app_localizations.dart';
 
 class YekkolaApp extends ConsumerStatefulWidget {
@@ -25,6 +29,11 @@ class _YekkolaAppState extends ConsumerState<YekkolaApp> {
 
   @override
   Widget build(BuildContext context) {
+    // The API ended this device's session (removed, phone changed, banned): its downloads go now — the
+    // "next sync" of PRD-07 BR-04. A plain sign-out keeps them for that account only.
+    ref.listen(authControllerProvider, (_, next) {
+      if (next is SignedOut && next.sessionExpired) unawaited(ref.read(downloadStoreProvider).deleteAll());
+    });
     final router = ref.watch(routerProvider);
     final config = ref.watch(appConfigProvider);
 

@@ -5,6 +5,20 @@ abstract final class Formatters {
   /// `12 nov. 2026, 14:05` / `Nov 12, 2026, 2:05 PM`.
   static String dateTime(DateTime value, String locale) => DateFormat.yMMMd(locale).add_jm().format(value.toLocal());
 
+  /// Download sizes: `80 Mo` / `80 MB` (decimal units, as phones show storage).
+  static String bytes(int value, String locale) {
+    const units = ['B', 'KB', 'MB', 'GB'];
+    const unitsFr = ['o', 'Ko', 'Mo', 'Go'];
+    var size = value.toDouble();
+    var unit = 0;
+    while (size >= 1000 && unit < units.length - 1) {
+      size /= 1000;
+      unit++;
+    }
+    final number = NumberFormat(size >= 10 || unit == 0 ? '#,##0' : '#,##0.0', locale).format(size);
+    return '$number ${(locale == 'fr' ? unitsFr : units)[unit]}';
+  }
+
   /// E.164 → readable groups: `+243812345678` → `+243 812 345 678`. Other formats are returned as is.
   static String phone(String e164) {
     final match = RegExp(r'^\+243(\d{9})$').firstMatch(e164);

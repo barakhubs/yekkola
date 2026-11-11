@@ -67,5 +67,27 @@
   "errorOtpRateLimited": "Too many codes requested. Try again later.",
   "errorOtpUnavailable": "Sending codes is temporarily unavailable. Try again later.",
   "errorTryAgainIn": "Try again in {seconds} s.",
-  "errorAccountBanned": "This account has been deactivated."
+  "errorAccountBanned": "This account has been deactivated.",
+
+  "mediaLabTitle": "Downloads (test)",
+  "mediaLabIntro": "Offline prototype: download a lesson, turn on airplane mode, then play it. Files stay encrypted on the phone.",
+  "mediaLabEmpty": "No video or audio lessons in your courses.",
+  "mediaVideoLesson": "Video lesson",
+  "mediaAudioLesson": "Audio lesson",
+  "mediaDownload": "Download",
+  "mediaDownloading": "Downloading… {percent}%",
+  "mediaPaused": "Paused at {percent}% — tap Download to resume",
+  "mediaDownloaded": "Downloaded ({size}), playable until {date}",
+  "mediaPlay": "Play",
+  "mediaPause": "Pause",
+  "mediaDelete": "Delete download",
+  "mediaRenew": "Renew",
+  "mediaNotDownloaded": "This lesson isn't (fully) downloaded.",
+  "mediaLicenseExpired": "This download has expired. Connect to the internet to renew it.",
+  "mediaPlaybackFailed": "This download can't be played. Delete it and download it again.",
+  "mediaAvailableUntil": "Available offline until {date}",
+  "errorOfflineDeviceRequired": "Downloads are made on a registered device. Sign in again and retry.",
+  "errorOfflineUnsupported": "This lesson can't be downloaded yet.",
+  "errorOfflineMediaChanged": "This download was removed: the lesson changed. Download it again.",
+  "errorOfflineNotDownloaded": "This download isn't on this phone for your account."
 }

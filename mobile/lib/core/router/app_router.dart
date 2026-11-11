@@ -11,6 +11,8 @@ import '../../features/auth/presentation/phone_screen.dart';
 import '../../features/auth/presentation/profile_screen.dart';
 import '../../features/auth/presentation/suspended_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/media/presentation/downloads_lab_screen.dart';
+import '../../features/media/presentation/offline_player_screen.dart';
 
 abstract final class Routes {
   static const signIn = '/sign-in';
@@ -20,6 +22,8 @@ abstract final class Routes {
   static const suspended = '/suspended';
   static const home = '/home';
   static const devices = '/account/devices';
+  static const downloadsLab = '/lab/downloads';
+  static String offlinePlayer(String lessonUid) => '/lab/downloads/$lessonUid';
 }
 
 /// Where the session says the user must be, or null to stay. Pure, so it is easy to reason about.
@@ -51,6 +55,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.suspended, builder: (_, _) => const SuspendedScreen()),
       GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen()),
       GoRoute(path: Routes.devices, builder: (_, _) => const DevicesScreen()),
+      GoRoute(
+        path: Routes.downloadsLab,
+        builder: (_, _) => const DownloadsLabScreen(),
+        routes: [
+          GoRoute(
+            path: ':lesson',
+            builder: (_, state) =>
+                OfflinePlayerScreen(lessonUid: state.pathParameters['lesson']!, title: state.extra as String?),
+          ),
+        ],
+      ),
     ],
   );
   ref.onDispose(router.dispose);

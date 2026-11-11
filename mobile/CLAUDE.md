@@ -16,7 +16,8 @@ Student app. Download-then-watch is the primary pattern — never design streami
 
 - `lib/core/`: config (flavor → API), `api/` (Dio, headers interceptor, `ApiException`, generated client), storage, device identity, i18n (locale, formatters), theme, router.
 - `lib/core/api/generated/` and `lib/l10n/generated/`: generated, never edited by hand.
-- `lib/features/<feature>/{data,domain,presentation}`: `auth` (sign-in, session), `account` (devices), `home`.
+- `lib/features/<feature>/{data,domain,presentation}`: `auth` (sign-in, session), `account` (devices), `home`, `media` (offline license, segment downloader, key vault, loopback server, offline player, staging-only lab screen).
+- `lib/core/platform/`: platform channels (`SecureScreen` → `FLAG_SECURE` in `MainActivity.kt`).
 
 ## Commands (run in `mobile/`)
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/i18n/locale_controller.dart';
+import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../auth/domain/auth_state.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends ConsumerWidget {
     final name = auth is SignedIn ? auth.user.name ?? '' : '';
     final theme = Theme.of(context);
     final language = ref.watch(localeControllerProvider).languageCode;
+    final isProduction = ref.watch(appConfigProvider).isProduction;
 
     return Scaffold(
       appBar: AppBar(
@@ -29,11 +31,14 @@ class HomeScreen extends ConsumerWidget {
             icon: const Icon(Icons.account_circle_outlined),
             onSelected: (value) => switch (value) {
               'devices' => context.push(Routes.devices),
+              'downloads-lab' => context.push(Routes.downloadsLab),
               'fr' || 'en' => ref.read(authControllerProvider.notifier).changeLanguage(value),
               _ => ref.read(authControllerProvider.notifier).signOut(),
             },
             itemBuilder: (_) => [
               PopupMenuItem(value: 'devices', child: Text(l10n.accountDevices)),
+              // Offline prototype: staging builds only.
+              if (!isProduction) PopupMenuItem(value: 'downloads-lab', child: Text(l10n.mediaLabTitle)),
               const PopupMenuDivider(),
               CheckedPopupMenuItem(value: 'fr', checked: language == 'fr', child: Text(l10n.languageFrench)),
               CheckedPopupMenuItem(value: 'en', checked: language == 'en', child: Text(l10n.languageEnglish)),
