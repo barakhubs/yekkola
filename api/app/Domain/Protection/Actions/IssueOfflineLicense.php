@@ -18,6 +18,7 @@ use App\Domain\Protection\ViewerMark;
 use App\Integrations\Video\Rendition;
 use App\Integrations\Video\VideoProvider;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -65,7 +66,30 @@ final class IssueOfflineLicense
         }
 
         $now = CarbonImmutable::now();
-        $license = DB::transaction(function () use ($user, $device, $lessonUid, $asset, $rendition, $now): OfflineLicense {
+        try {
+            $license = $this->save($user, $device, $lessonUid, $asset, $rendition, $now);
+        } catch (UniqueConstraintViolationException) {
+            // Two first requests at once (double tap, client retry): the other one inserted; update it.
+            $license = $this->save($user, $device, $lessonUid, $asset, $rendition, $now);
+        }
+
+        return new OfflineGrant(
+            license: $license,
+            kind: $asset->kind,
+            rendition: $rendition,
+            renditions: $renditions,
+            playlist: $this->video->mediaPlaylist($asset, $rendition, route('lessons.hls.key', ['lesson' => $lessonUid]), self::SEGMENT_TTL_SECONDS),
+            key: $key,
+            // Signed playlists are cached for half their lifetime, so only this much is guaranteed.
+            segmentsExpireAt: $now->addSeconds(intdiv(self::SEGMENT_TTL_SECONDS, 2)),
+            watermark: ViewerMark::overlay($user),
+        );
+    }
+
+    /** One license per device and lesson, renewed in place. */
+    private function save(User $user, Device $device, string $lessonUid, MediaAsset $asset, Rendition $rendition, CarbonImmutable $now): OfflineLicense
+    {
+        return DB::transaction(function () use ($user, $device, $lessonUid, $asset, $rendition, $now): OfflineLicense {
             $license = OfflineLicense::query()->where('device_id', $device->id)->where('lesson_uid', $lessonUid)
                 ->lockForUpdate()->first() ?? new OfflineLicense(['device_id' => $device->id, 'lesson_uid' => $lessonUid]);
 
@@ -81,17 +105,6 @@ final class IssueOfflineLicense
 
             return $license;
         });
-
-        return new OfflineGrant(
-            license: $license,
-            kind: $asset->kind,
-            rendition: $rendition,
-            renditions: $renditions,
-            playlist: $this->video->mediaPlaylist($asset, $rendition, route('lessons.hls.key', ['lesson' => $lessonUid]), self::SEGMENT_TTL_SECONDS),
-            key: $key,
-            segmentsExpireAt: $now->addSeconds(self::SEGMENT_TTL_SECONDS),
-            watermark: ViewerMark::overlay($user),
-        );
     }
 
     /** The token's device, still registered, and the same install that is asking. */
