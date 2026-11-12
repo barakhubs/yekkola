@@ -161,7 +161,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   children: [
                     Text(l10n.checkoutAlreadyOwned, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
                     const SizedBox(height: 12),
-                    FilledButton(onPressed: () => context.go(Routes.home), child: Text(l10n.checkoutGoToCourse)),
+                    FilledButton(
+                      onPressed: () => context.pushReplacement(Routes.learn(widget.courseId)),
+                      child: Text(l10n.checkoutGoToCourse),
+                    ),
                   ],
                 ),
               ),
@@ -189,7 +192,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   // Everything selected is already owned (FR-04).
                   Text(l10n.checkoutAlreadyOwned, style: theme.textTheme.titleMedium),
                   const SizedBox(height: 12),
-                  FilledButton(onPressed: () => context.go(Routes.home), child: Text(l10n.checkoutGoToCourse)),
+                  FilledButton(
+                    onPressed: () => context.pushReplacement(Routes.learn(widget.courseId)),
+                    child: Text(l10n.checkoutGoToCourse),
+                  ),
                 ] else ...[
                   Text(l10n.checkoutSummary, style: theme.textTheme.titleLarge),
                   const SizedBox(height: 8),

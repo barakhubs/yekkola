@@ -18,6 +18,9 @@ import '../../features/catalog/presentation/search_screen.dart';
 import '../../features/checkout/presentation/checkout_screen.dart';
 import '../../features/checkout/presentation/order_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/learning/presentation/learn_course_screen.dart';
+import '../../features/learning/presentation/lesson_player_screen.dart';
+import '../../features/learning/presentation/my_courses_screen.dart';
 import '../../features/media/presentation/downloads_lab_screen.dart';
 import '../../features/media/presentation/offline_player_screen.dart';
 
@@ -35,6 +38,8 @@ abstract final class Routes {
   static String professor(String slug) => '/professors/$slug';
   static String checkout(String courseId) => '/checkout/$courseId';
   static String order(String orderId) => '/orders/$orderId';
+  static String learn(String courseId) => '/learn/$courseId';
+  static String lesson(String courseId, String lessonUid) => '/learn/$courseId/lessons/$lessonUid';
 
   /// My courses.
   static const home = '/home';
@@ -78,7 +83,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [GoRoute(path: Routes.explore, builder: (_, _) => const ExploreScreen())],
           ),
           StatefulShellBranch(
-            routes: [GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen())],
+            routes: [GoRoute(path: Routes.home, builder: (_, _) => const MyCoursesScreen())],
           ),
         ],
       ),
@@ -102,6 +107,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/orders/:order',
         builder: (_, state) => OrderScreen(orderId: state.pathParameters['order']!),
+      ),
+      GoRoute(
+        path: '/learn/:course',
+        builder: (_, state) => LearnCourseScreen(courseId: state.pathParameters['course']!),
+        routes: [
+          GoRoute(
+            path: 'lessons/:lesson',
+            builder: (_, state) =>
+                LessonPlayerScreen(lessonUid: state.pathParameters['lesson']!, title: state.extra as String?),
+          ),
+        ],
       ),
       GoRoute(path: Routes.devices, builder: (_, _) => const DevicesScreen()),
       GoRoute(

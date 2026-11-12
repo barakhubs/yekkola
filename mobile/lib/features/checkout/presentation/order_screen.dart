@@ -211,7 +211,12 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
           const SizedBox(height: 16),
           Text(l10n.checkoutPaidBody, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 24),
-          FilledButton(onPressed: () => context.go(Routes.home), child: Text(l10n.checkoutStartLearning)),
+          FilledButton(
+            onPressed: () => order.items.isEmpty
+                ? context.go(Routes.home)
+                : context.pushReplacement(Routes.learn(order.items.first.courseId)),
+            child: Text(l10n.checkoutStartLearning),
+          ),
         ];
       case CheckoutState.refunded:
         return [

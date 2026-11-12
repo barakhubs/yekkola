@@ -188,5 +188,16 @@
   "checkoutDiscountAmount": "− {amount}",
   "checkoutCouponNotApplied": "You already have a pending order for this course: it keeps its price, so the promo code doesn't apply to it.",
   "checkoutRefundedTitle": "Order refunded",
-  "checkoutRefundedBody": "This order was refunded; the course is no longer in your account."
+  "checkoutRefundedBody": "This order was refunded; the course is no longer in your account.",
+
+  "learnNoCourses": "You don't have any courses yet. Find one you like!",
+  "learnExplore": "Explore courses",
+  "learnProgress": "{percent}% done",
+  "learnCompleted": "Course completed",
+  "learnContinue": "Continue: {lesson}",
+  "learnSoon": "Documents and quizzes are coming to the app soon. You can open them on the website meanwhile.",
+  "learnLessonDone": "Lesson done",
+  "learnLessonStarted": "Lesson started",
+  "learnDownloaded": "Downloaded",
+  "learnStreamOffline": "No connection. Download the lesson while you're online to watch it offline."
 }

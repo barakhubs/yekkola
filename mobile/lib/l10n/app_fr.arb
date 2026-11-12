@@ -219,5 +219,18 @@
   "@checkoutDiscountAmount": {"placeholders": {"amount": {"type": "String"}}},
   "checkoutCouponNotApplied": "Tu as déjà une commande en attente pour ce cours : elle garde son prix, le code promo ne s’y applique pas.",
   "checkoutRefundedTitle": "Commande remboursée",
-  "checkoutRefundedBody": "Cette commande a été remboursée ; le cours n’est plus dans ton compte."
+  "checkoutRefundedBody": "Cette commande a été remboursée ; le cours n’est plus dans ton compte.",
+
+  "learnNoCourses": "Tu n’as pas encore de cours. Trouve-en un à ton goût !",
+  "learnExplore": "Explorer les cours",
+  "learnProgress": "{percent} % terminé",
+  "@learnProgress": {"placeholders": {"percent": {"type": "int"}}},
+  "learnCompleted": "Cours terminé",
+  "learnContinue": "Continuer : {lesson}",
+  "@learnContinue": {"placeholders": {"lesson": {"type": "String"}}},
+  "learnSoon": "Les documents et les quiz arrivent bientôt dans l’application. Tu peux les ouvrir sur le site en attendant.",
+  "learnLessonDone": "Leçon terminée",
+  "learnLessonStarted": "Leçon commencée",
+  "learnDownloaded": "Téléchargée",
+  "learnStreamOffline": "Pas de connexion. Télécharge la leçon quand tu es connecté pour la regarder hors ligne."
 }
