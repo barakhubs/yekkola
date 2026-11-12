@@ -1,0 +1,12 @@
+# drift code generation (lib/core/db only): dart run build_runner build
+targets:
+  $default:
+    builders:
+      drift_dev:
+        generate_for:
+          - lib/core/db/**
+        options:
+          store_date_time_values_as_text: true
+      source_gen:combining_builder:
+        generate_for:
+          - lib/core/db/**
