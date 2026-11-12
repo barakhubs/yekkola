@@ -21,7 +21,7 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/learning/presentation/learn_course_screen.dart';
 import '../../features/learning/presentation/lesson_player_screen.dart';
 import '../../features/learning/presentation/my_courses_screen.dart';
-import '../../features/media/presentation/downloads_lab_screen.dart';
+import '../../features/media/presentation/downloads_screen.dart';
 import '../../features/media/presentation/offline_player_screen.dart';
 
 abstract final class Routes {
@@ -44,8 +44,8 @@ abstract final class Routes {
   /// My courses.
   static const home = '/home';
   static const devices = '/account/devices';
-  static const downloadsLab = '/lab/downloads';
-  static String offlinePlayer(String lessonUid) => '/lab/downloads/$lessonUid';
+  static const downloads = '/downloads';
+  static String offlinePlayer(String lessonUid) => '/downloads/$lessonUid';
 }
 
 /// Where the session says the user must be, or null to stay. Pure, so it is easy to reason about.
@@ -123,8 +123,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: Routes.devices, builder: (_, _) => const DevicesScreen()),
       GoRoute(
-        path: Routes.downloadsLab,
-        builder: (_, _) => const DownloadsLabScreen(),
+        path: Routes.downloads,
+        builder: (_, _) => const DownloadsScreen(),
         routes: [
           GoRoute(
             path: ':lesson',

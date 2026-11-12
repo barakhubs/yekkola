@@ -11,6 +11,7 @@ class LearningViewResourceSectionsItemLessonsItem {
     required this.status,
     required this.positionSeconds,
     required this.quiz,
+    required this.downloads,
     this.additionalProperties = const {},
   });
 
@@ -37,6 +38,9 @@ class LearningViewResourceSectionsItemLessonsItem {
           : LearningViewResourceSectionsItemLessonsItemQuiz.fromJson(
               json["quiz"] as Map<String, Object?>,
             ),
+      downloads: (json["downloads"] as List<Object?>)
+          .map((item) => item)
+          .toList(),
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
@@ -58,6 +62,8 @@ class LearningViewResourceSectionsItemLessonsItem {
 
   final LearningViewResourceSectionsItemLessonsItemQuiz? quiz;
 
+  final List<Object?> downloads;
+
   static const _knownKeys = <String>{
     "uid",
     "type",
@@ -66,6 +72,7 @@ class LearningViewResourceSectionsItemLessonsItem {
     "status",
     "position_seconds",
     "quiz",
+    "downloads",
   };
 
   final Map<String, Object?> additionalProperties;
@@ -80,6 +87,7 @@ class LearningViewResourceSectionsItemLessonsItem {
     "status": this.status,
     "position_seconds": this.positionSeconds,
     "quiz": this.quiz?.toJson(),
+    "downloads": this.downloads.map((item) => item).toList(),
   };
 }
 

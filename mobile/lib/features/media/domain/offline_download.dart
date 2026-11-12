@@ -17,6 +17,9 @@ class OfflineDownload {
     required this.watermark,
     required this.completedSegments,
     this.lastOpenedAt,
+    this.courseId,
+    this.courseTitle,
+    this.lessonTitle,
   });
 
   factory OfflineDownload.fromJson(Map<String, Object?> json) => OfflineDownload(
@@ -33,6 +36,9 @@ class OfflineDownload {
     watermark: json['watermark']! as String,
     completedSegments: json['completed_segments']! as int,
     lastOpenedAt: json['last_opened_at'] == null ? null : DateTime.parse(json['last_opened_at']! as String),
+    courseId: json['course_id'] as String?,
+    courseTitle: json['course_title'] as String?,
+    lessonTitle: json['lesson_title'] as String?,
   );
 
   /// The account it was downloaded for: other accounts signed in on this phone never see or play it.
@@ -63,6 +69,11 @@ class OfflineDownload {
   /// forward (see [openedAt]).
   final DateTime? lastOpenedAt;
 
+  /// For the downloads screen (shown offline): which course and lesson this is.
+  final String? courseId;
+  final String? courseTitle;
+  final String? lessonTitle;
+
   bool get isComplete => completedSegments >= segmentCount;
 
   /// What the wrapped key is bound to: changing any of these (e.g. a longer expiry) breaks the key.
@@ -87,6 +98,9 @@ class OfflineDownload {
     watermark: watermark,
     completedSegments: completedSegments ?? this.completedSegments,
     lastOpenedAt: lastOpenedAt ?? this.lastOpenedAt,
+    courseId: courseId,
+    courseTitle: courseTitle,
+    lessonTitle: lessonTitle,
   );
 
   /// Records a playback at [now] without letting a clock set back drag the guard backwards.
@@ -107,5 +121,8 @@ class OfflineDownload {
     'watermark': watermark,
     'completed_segments': completedSegments,
     'last_opened_at': lastOpenedAt?.toUtc().toIso8601String(),
+    'course_id': courseId,
+    'course_title': courseTitle,
+    'lesson_title': lessonTitle,
   };
 }

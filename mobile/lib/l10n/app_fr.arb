@@ -1,17 +1,13 @@
 {
   "@@locale": "fr",
-
   "appTitle": "Yekkola",
   "appTagline": "Les meilleurs profs du Congo, partout au Congo.",
-
   "commonContinue": "Continuer",
   "commonCancel": "Annuler",
   "commonRetry": "Réessayer",
-
   "languageFrench": "Français",
   "languageEnglish": "English",
   "languageLabel": "Langue",
-
   "authTitle": "Connexion",
   "authSubtitle": "Connecte-toi avec ton numéro de téléphone : on t’envoie un code par SMS.",
   "authPhoneLabel": "Numéro de téléphone",
@@ -20,39 +16,64 @@
   "authSessionExpired": "Tu as été déconnecté de cet appareil. Reconnecte-toi pour continuer.",
   "authCodeTitle": "Saisis le code",
   "authCodeSentTo": "Code envoyé au {phone}.",
-  "@authCodeSentTo": { "placeholders": { "phone": { "type": "String" } } },
+  "@authCodeSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "authCodeLabel": "Code à 6 chiffres",
   "authVerify": "Valider",
   "authResend": "Renvoyer le code",
   "authResendIn": "Renvoyer le code dans {seconds} s",
-  "@authResendIn": { "placeholders": { "seconds": { "type": "int" } } },
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "authChangeNumber": "Changer de numéro",
   "authNoCodeTitle": "Toujours pas de code ?",
   "authNoCodeHint": "Vérifie le numéro et que ton téléphone reçoit les SMS (réseau, mémoire pleine), puis réessaie un peu plus tard.",
-
   "deviceLimitTitle": "Trop d’appareils connectés",
   "deviceLimitBody": "{limit, plural, =1{Ton compte peut être connecté sur 1 téléphone à la fois.} other{Ton compte peut être connecté sur {limit} téléphones à la fois.}} Choisis l’appareil à déconnecter pour utiliser celui-ci. Ses téléchargements seront supprimés dès qu’il se reconnectera à internet, et ne pourront plus être lus après leur date d’expiration.",
-  "@deviceLimitBody": { "placeholders": { "limit": { "type": "int" } } },
+  "@deviceLimitBody": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
   "deviceLimitSignOut": "Déconnecter cet appareil",
   "deviceLastActive": "Dernière activité : {date}",
-  "@deviceLastActive": { "placeholders": { "date": { "type": "String" } } },
+  "@deviceLastActive": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "deviceUnnamedAndroid": "Téléphone Android",
   "deviceUnnamedIos": "iPhone",
   "deviceThisOne": "Cet appareil",
-
   "profileTitle": "Bienvenue sur Yekkola !",
   "profileSubtitle": "Comment t’appelles-tu ? Ton nom apparaîtra sur tes certificats.",
   "profileNameLabel": "Nom complet",
   "profileNameRequired": "Indique ton nom.",
-
   "suspendedTitle": "Ton compte est suspendu",
   "suspendedBody": "Tu ne peux pas suivre de cours pour le moment. Contacte le support Yekkola pour en savoir plus.",
-
   "homeTitle": "Mes cours",
   "homeWelcome": "Bonjour {name} !",
-  "@homeWelcome": { "placeholders": { "name": { "type": "String" } } },
+  "@homeWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "homeComingSoon": "Tes cours et tes téléchargements arriveront ici.",
-
   "accountSignOut": "Se déconnecter",
   "accountDevices": "Appareils",
   "accountDevicesIntro": "Les téléphones où l’application Yekkola est connectée et peut garder des téléchargements.",
@@ -60,34 +81,60 @@
   "accountRemoveDevice": "Retirer",
   "accountRemoveDeviceTitle": "Retirer cet appareil ?",
   "accountRemoveDeviceBody": "Il sera déconnecté. Ses téléchargements seront supprimés dès qu’il se reconnectera à internet, et ne pourront plus être lus après leur date d’expiration.",
-
   "errorNetwork": "Pas de connexion. Vérifie ton réseau et réessaie.",
   "errorGeneric": "Une erreur est survenue. Réessaie.",
   "errorPhoneInvalid": "Numéro de téléphone invalide.",
   "errorPhoneCountry": "Les numéros de ce pays ne sont pas encore pris en charge.",
   "errorOtpInvalid": "{remaining, plural, =0{Code incorrect.} =1{Code incorrect. Encore 1 essai.} other{Code incorrect. Encore {remaining} essais.}}",
-  "@errorOtpInvalid": { "placeholders": { "remaining": { "type": "int" } } },
+  "@errorOtpInvalid": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
   "errorOtpExpired": "Ce code a expiré. Demande un nouveau code.",
   "errorOtpTooManyAttempts": "Trop de tentatives. Demande un nouveau code.",
   "errorOtpLocked": "Trop de codes incorrects pour ce numéro. Réessaie plus tard.",
   "errorOtpRateLimited": "Trop de codes demandés. Réessaie plus tard.",
   "errorOtpUnavailable": "L’envoi de codes est temporairement indisponible. Réessaie plus tard.",
   "errorTryAgainIn": "Réessaie dans {seconds} s.",
-  "@errorTryAgainIn": { "placeholders": { "seconds": { "type": "int" } } },
+  "@errorTryAgainIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "errorAccountBanned": "Ce compte a été désactivé.",
-
-  "mediaLabTitle": "Téléchargements (test)",
-  "mediaLabIntro": "Prototype hors connexion : télécharge une leçon, active le mode avion, puis lis-la. Les fichiers restent chiffrés sur le téléphone.",
-  "mediaLabEmpty": "Aucune leçon vidéo ou audio dans tes cours.",
-  "mediaVideoLesson": "Leçon vidéo",
-  "mediaAudioLesson": "Leçon audio",
   "mediaDownload": "Télécharger",
   "mediaDownloading": "Téléchargement… {percent} %",
-  "@mediaDownloading": {"placeholders": {"percent": {"type": "int"}}},
+  "@mediaDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "mediaPaused": "En pause à {percent} % — touche Télécharger pour reprendre",
-  "@mediaPaused": {"placeholders": {"percent": {"type": "int"}}},
+  "@mediaPaused": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "mediaDownloaded": "Téléchargée ({size}), lisible jusqu’au {date}",
-  "@mediaDownloaded": {"placeholders": {"size": {"type": "String"}, "date": {"type": "String"}}},
+  "@mediaDownloaded": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "mediaPlay": "Lire",
   "mediaPause": "Pause",
   "mediaDelete": "Supprimer le téléchargement",
@@ -96,12 +143,17 @@
   "mediaLicenseExpired": "Ce téléchargement a expiré. Connecte-toi à internet pour le renouveler.",
   "mediaPlaybackFailed": "Impossible de lire ce téléchargement. Supprime-le puis télécharge-le à nouveau.",
   "mediaAvailableUntil": "Disponible hors connexion jusqu’au {date}",
-  "@mediaAvailableUntil": {"placeholders": {"date": {"type": "String"}}},
+  "@mediaAvailableUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "errorOfflineDeviceRequired": "Les téléchargements se font sur un appareil enregistré. Reconnecte-toi puis réessaie.",
   "errorOfflineUnsupported": "Cette leçon ne peut pas encore être téléchargée.",
   "errorOfflineMediaChanged": "Ce téléchargement a été supprimé : la leçon a changé. Télécharge-la à nouveau.",
   "errorOfflineNotDownloaded": "Ce téléchargement n’est pas sur ce téléphone pour ton compte.",
-
   "navExplore": "Explorer",
   "catalogSearchHint": "Rechercher un cours, une matière…",
   "catalogFeatured": "À la une",
@@ -110,7 +162,13 @@
   "catalogFree": "Cours gratuits",
   "catalogSeeAll": "Tout voir",
   "catalogResults": "{count, plural, =0{Aucun cours} =1{1 cours} other{{count} cours}}",
-  "@catalogResults": {"placeholders": {"count": {"type": "int"}}},
+  "@catalogResults": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "catalogNoResults": "Aucun cours ne correspond. Essaie d’autres mots ou retire un filtre.",
   "filterFree": "Gratuits",
   "filterPaid": "Payants",
@@ -124,18 +182,57 @@
   "sortPriceDesc": "Prix décroissant",
   "priceFree": "Gratuit",
   "offlineCopy": "Hors connexion : page enregistrée le {date}.",
-  "@offlineCopy": {"placeholders": {"date": {"type": "String"}}},
+  "@offlineCopy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "offlineNothing": "Pas de connexion, et cette page n’est pas encore enregistrée sur ton téléphone. Réessaie une fois connecté.",
   "courseBy": "Par {name}",
-  "@courseBy": {"placeholders": {"name": {"type": "String"}}},
+  "@courseBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "courseRating": "{rating} ({count, plural, =1{1 avis} other{{count} avis}})",
-  "@courseRating": {"placeholders": {"rating": {"type": "String"}, "count": {"type": "int"}}},
+  "@courseRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "courseStudents": "{count, plural, =1{1 étudiant} other{{count} étudiants}}",
-  "@courseStudents": {"placeholders": {"count": {"type": "int"}}},
+  "@courseStudents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "courseLessons": "{count, plural, =1{1 leçon} other{{count} leçons}}",
-  "@courseLessons": {"placeholders": {"count": {"type": "int"}}},
+  "@courseLessons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "courseDownloadSize": "{size} à télécharger",
-  "@courseDownloadSize": {"placeholders": {"size": {"type": "String"}}},
+  "@courseDownloadSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "courseAbout": "À propos du cours",
   "courseOutcomes": "Ce que tu vas apprendre",
   "courseRequirements": "Prérequis",
@@ -156,19 +253,51 @@
   "lessonTypeDocument": "Document",
   "lessonTypeQuiz": "Quiz",
   "durationHoursMinutes": "{hours} h {minutes} min",
-  "@durationHoursMinutes": {"placeholders": {"hours": {"type": "int"}, "minutes": {"type": "int"}}},
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "durationMinutes": "{minutes} min",
-  "@durationMinutes": {"placeholders": {"minutes": {"type": "int"}}},
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "professorVerified": "Professeur vérifié",
   "professorCourses": "Ses cours",
   "professorMemberSince": "Sur Yekkola depuis {date}",
-  "@professorMemberSince": {"placeholders": {"date": {"type": "String"}}},
+  "@professorMemberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "ratingNew": "Nouveau",
   "refreshFailedCopy": "Mise à jour impossible pour le moment : page enregistrée le {date}.",
-  "@refreshFailedCopy": {"placeholders": {"date": {"type": "String"}}},
+  "@refreshFailedCopy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "courseUpdatedOn": "Mis à jour le {date}",
-  "@courseUpdatedOn": {"placeholders": {"date": {"type": "String"}}},
-
+  "@courseUpdatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "checkoutTitle": "Paiement",
   "checkoutSummary": "Ta commande",
   "checkoutDiscount": "Réduction",
@@ -176,7 +305,13 @@
   "checkoutCoupon": "Code promo",
   "checkoutApplyCoupon": "Appliquer",
   "checkoutCouponApplied": "Code {code} appliqué",
-  "@checkoutCouponApplied": {"placeholders": {"code": {"type": "String"}}},
+  "@checkoutCouponApplied": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
   "checkoutRemoveCoupon": "Retirer",
   "checkoutOperator": "Opérateur mobile money",
   "railOrange": "Orange Money",
@@ -186,9 +321,21 @@
   "checkoutPayer": "Numéro qui paie",
   "checkoutPayerHint": "Le numéro mobile money qui recevra la demande de paiement.",
   "checkoutPay": "Payer {amount}",
-  "@checkoutPay": {"placeholders": {"amount": {"type": "String"}}},
+  "@checkoutPay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "checkoutBuy": "Acheter · {price}",
-  "@checkoutBuy": {"placeholders": {"price": {"type": "String"}}},
+  "@checkoutBuy": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "checkoutGetFree": "Obtenir le cours",
   "checkoutEnrolled": "C’est fait ! Le cours est dans « Mes cours ».",
   "checkoutAlreadyOwned": "Tu as déjà accès à ce cours.",
@@ -197,12 +344,39 @@
   "checkoutSecure": "Tu confirmes le paiement sur ton téléphone avec ton code secret. Yekkola ne le voit jamais.",
   "checkoutWaitingTitle": "Valide le paiement sur ton téléphone",
   "checkoutWaitingBody": "{operator} t’envoie une demande de paiement de {amount} au {phone}. Saisis ton code secret pour valider.",
-  "@checkoutWaitingBody": {"placeholders": {"operator": {"type": "String"}, "amount": {"type": "String"}, "phone": {"type": "String"}}},
+  "@checkoutWaitingBody": {
+    "placeholders": {
+      "operator": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "checkoutWaitingHint": "Pas de message ? Vérifie ton réseau ; la demande peut prendre jusqu’à une minute.",
   "checkoutExpiresIn": "La commande expire dans {time}",
-  "@checkoutExpiresIn": {"placeholders": {"time": {"type": "String"}}},
+  "@checkoutExpiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "durationMinutesSeconds": "{minutes} min {seconds} s",
-  "@durationMinutesSeconds": {"placeholders": {"minutes": {"type": "int"}, "seconds": {"type": "int"}}},
+  "@durationMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "checkoutPaidTitle": "Paiement confirmé !",
   "checkoutPaidBody": "Tu as maintenant accès à ton cours.",
   "checkoutStartLearning": "Commencer le cours",
@@ -214,20 +388,43 @@
   "checkoutStartOver": "Recommencer",
   "checkoutUnknownOrder": "Cette commande est introuvable.",
   "checkoutOwnedExcluded": "{count, plural, =1{Un cours que tu as déjà est retiré, et le prix réduit d’autant.} other{{count} cours que tu as déjà sont retirés, et le prix réduit d’autant.}}",
-  "@checkoutOwnedExcluded": {"placeholders": {"count": {"type": "int"}}},
+  "@checkoutOwnedExcluded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "checkoutDiscountAmount": "− {amount}",
-  "@checkoutDiscountAmount": {"placeholders": {"amount": {"type": "String"}}},
+  "@checkoutDiscountAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "checkoutCouponNotApplied": "Tu as déjà une commande en attente pour ce cours : elle garde son prix, le code promo ne s’y applique pas.",
   "checkoutRefundedTitle": "Commande remboursée",
   "checkoutRefundedBody": "Cette commande a été remboursée ; le cours n’est plus dans ton compte.",
-
   "learnNoCourses": "Tu n’as pas encore de cours. Trouve-en un à ton goût !",
   "learnExplore": "Explorer les cours",
   "learnProgress": "{percent} % terminé",
-  "@learnProgress": {"placeholders": {"percent": {"type": "int"}}},
+  "@learnProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "learnCompleted": "Cours terminé",
   "learnContinue": "Continuer : {lesson}",
-  "@learnContinue": {"placeholders": {"lesson": {"type": "String"}}},
+  "@learnContinue": {
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
   "learnSoon": "Les documents et les quiz arrivent bientôt dans l’application. Tu peux les ouvrir sur le site en attendant.",
   "learnLessonDone": "Leçon terminée",
   "learnLessonStarted": "Leçon commencée",
@@ -237,13 +434,63 @@
   "playerBack10": "Reculer de 10 secondes",
   "playerSpeed": "Vitesse de lecture",
   "playerSpeedValue": "{speed}×",
-  "@playerSpeedValue": {"placeholders": {"speed": {"type": "String"}}},
+  "@playerSpeedValue": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
   "playerStopped": "La lecture s’est arrêtée.",
   "errorPlaybackSetup": "La lecture n’a pas pu démarrer. Réessaie plus tard.",
   "learnLastActivity": "Vu le {date}",
-  "@learnLastActivity": {"placeholders": {"date": {"type": "String"}}},
+  "@learnLastActivity": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "learnFilterAll": "Tous",
   "learnFilterInProgress": "En cours",
   "learnFilterCompleted": "Terminés",
-  "learnNoneInFilter": "Aucun cours ici pour le moment."
+  "learnNoneInFilter": "Aucun cours ici pour le moment.",
+  "downloadsTitle": "Téléchargements",
+  "downloadsEmpty": "Aucun téléchargement. Dans un cours, touche l’icône de téléchargement d’une leçon pour la garder hors connexion.",
+  "downloadWifiOnly": "Télécharger uniquement en Wi-Fi",
+  "downloadWifiOnlyHint": "Les téléchargements attendent le Wi-Fi et se mettent en pause sans Wi-Fi.",
+  "downloadStorageUsed": "{size} utilisés sur ce téléphone",
+  "@downloadStorageUsed": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadDeleteAll": "Tout supprimer",
+  "downloadDeleteAllTitle": "Supprimer tous les téléchargements ?",
+  "downloadDeleteAllBody": "Ils ne seront plus disponibles hors connexion. Tu pourras les télécharger à nouveau.",
+  "downloadOtherCourse": "Autres leçons",
+  "downloadQueued": "En attente",
+  "downloadWaitingForWifi": "En attente du Wi-Fi",
+  "downloadChooseQuality": "Choisis la qualité",
+  "downloadQualityRecommended": "{height}p — recommandée, moins de données",
+  "@downloadQualityRecommended": {
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadQualityHeight": "{height}p",
+  "@downloadQualityHeight": {
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadQualityAudio": "Audio",
+  "downloadDataNote": "Le téléchargement utilise tes données mobiles si tu n’es pas en Wi-Fi.",
+  "downloadWifiOnlyNote": "Le téléchargement commencera en Wi-Fi (réglage dans Téléchargements)."
 }
