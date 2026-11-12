@@ -12,6 +12,9 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../auth/domain/auth_state.dart';
 import '../../auth/presentation/api_error_text.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../../core/providers.dart';
+import '../data/checkout_repository.dart';
+import '../data/idempotency.dart';
 import '../domain/checkout_state.dart';
 import 'checkout_providers.dart';
 import 'payment_form.dart';
@@ -37,6 +40,15 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
   Timer? _poll;
   Timer? _clock;
 
+  /// In the background: no polling (data and battery); checked again on return.
+  bool _paused = false;
+
+  void _schedule() {
+    _poll?.cancel();
+    if (!mounted || _paused) return;
+    _poll = Timer(pollDelay(_polls++), _load);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,9 +72,11 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      _paused = false;
       _polls = 0;
       unawaited(_load());
-    } else if (state == AppLifecycleState.paused) {
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      _paused = true;
       _poll?.cancel();
     }
   }
@@ -77,28 +91,26 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
         _error = null;
       });
       await _settle(order);
-      if (stateOf(order) == CheckoutState.waiting) {
-        _poll = Timer(pollDelay(_polls++), _load);
-      }
+      if (stateOf(order) == CheckoutState.waiting) _schedule();
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _error = e);
       // Offline or a hiccup: keep trying while the student waits (not after a 404).
-      if (e.status != 404) _poll = Timer(pollDelay(_polls++), _load);
+      if (e.status != 404) _schedule();
     }
   }
 
   /// A final result: forget the open order; a confirmed payment refreshes "my courses".
   Future<void> _settle(OrderResource order) async {
     final state = stateOf(order);
-    if (state != CheckoutState.paid && state != CheckoutState.expired) return;
+    if (state != CheckoutState.paid && state != CheckoutState.expired && state != CheckoutState.refunded) return;
     final auth = ref.read(authControllerProvider);
     if (auth is SignedIn) {
       for (final item in order.items) {
         await ref.read(checkoutRepositoryProvider).forgetOpenOrder(auth.user.id, item.courseId);
       }
     }
-    if (state == CheckoutState.paid) ref.read(enrollmentsChangedProvider.notifier).changed();
+    if (state == CheckoutState.paid && mounted) ref.read(enrollmentsChangedProvider.notifier).changed();
   }
 
   Future<void> _pay(String rail, String msisdn) async {
@@ -111,6 +123,11 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
       await _load();
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e);
+      // Not a final refusal: the request may have reached the operator — look at the order again.
+      if (!IdempotencyKeys.isFinalAnswer(e)) {
+        _polls = 0;
+        await _load();
+      }
     } finally {
       if (mounted) setState(() => _paying = false);
     }
@@ -146,8 +163,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
     final locale = Localizations.localeOf(context).languageCode;
     final total = Formatters.money(order.total.amountMinor, order.total.currency, locale);
     final latest = order.payments.isEmpty ? null : order.payments.first;
-    final now = DateTime.now();
-    final canPay = canStillPay(order, now);
+    // The server's clock and status decide, not the phone's (often wrong on low-end phones).
+    final now = ref.read(serverClockProvider).now();
+    final canPay = CheckoutRepository.canBePaid(order);
 
     Widget heading(IconData icon, String text, {Color? color}) => Semantics(
       header: true,
@@ -175,7 +193,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
           const SizedBox(height: 16),
           Text(l10n.checkoutWaitingHint, textAlign: TextAlign.center),
           const SizedBox(height: 24),
-          const Center(child: CircularProgressIndicator()),
+          Center(child: CircularProgressIndicator(semanticsLabel: l10n.checkoutWaitingTitle)),
           const SizedBox(height: 16),
           if (!left.isNegative)
             Text(
@@ -194,6 +212,12 @@ class _OrderScreenState extends ConsumerState<OrderScreen> with WidgetsBindingOb
           Text(l10n.checkoutPaidBody, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 24),
           FilledButton(onPressed: () => context.go(Routes.home), child: Text(l10n.checkoutStartLearning)),
+        ];
+      case CheckoutState.refunded:
+        return [
+          heading(Icons.undo, l10n.checkoutRefundedTitle),
+          const SizedBox(height: 16),
+          Text(l10n.checkoutRefundedBody, textAlign: TextAlign.center),
         ];
       case CheckoutState.expired:
         return [

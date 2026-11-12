@@ -103,6 +103,16 @@ void main() {
       expect(await IdempotencyKeys(db).keyFor('order:a'), isNot(seen.first));
     });
 
+    test('a key older than a day is not reused', () async {
+      var now = DateTime.utc(2026, 11, 12, 10);
+      final keys = IdempotencyKeys(db, clock: () => now);
+      final first = await keys.keyFor('order:c');
+      now = now.add(const Duration(hours: 23));
+      expect(await keys.keyFor('order:c'), first);
+      now = now.add(const Duration(hours: 2));
+      expect(await keys.keyFor('order:c'), isNot(first));
+    });
+
     test('a final refusal (422) forgets the key', () async {
       final keys = IdempotencyKeys(db);
       late String first;
@@ -128,8 +138,8 @@ void main() {
       });
       final checkout = repo(api);
 
-      await expectLater(checkout.createOrder(userId: 'u', courseId: _course), throwsA(isA<ApiException>()));
-      final order = await checkout.createOrder(userId: 'u', courseId: _course);
+      await expectLater(checkout.orderFor(userId: 'u', courseId: _course), throwsA(isA<ApiException>()));
+      final order = (await checkout.orderFor(userId: 'u', courseId: _course)).order;
 
       expect(order.id, '01JORDER000000000000000000');
       final keys = api.requests.map((r) => r.headers['Idempotency-Key']).toList();
@@ -139,6 +149,64 @@ void main() {
         'course_ids': [_course],
       });
       expect(await checkout.openOrder('u', _course), order.id);
+    });
+
+    test('the API refusing a second open order resumes that order (order.open_order_exists)', () async {
+      final api = FakeApi(
+        (request, _) => request.path == '/orders'
+            ? const FakeResponse(409, {
+                'status': 409,
+                'code': 'order.open_order_exists',
+                'order_id': '01JORDER000000000000000000',
+              })
+            : FakeResponse(200, {
+                'data': _order(payments: [_payment('failed')]),
+              }),
+      );
+      final checkout = repo(api);
+
+      final result = await checkout.orderFor(userId: 'u', courseId: _course, coupon: 'PROMO');
+
+      expect(result.order.id, '01JORDER000000000000000000');
+      expect(result.keptOpenOrder, isTrue);
+      expect(await checkout.openOrder('u', _course), '01JORDER000000000000000000');
+    });
+
+    test('an order still open is reused (even with another coupon); offline it is kept, not forgotten', () async {
+      var offline = false;
+      final api = FakeApi((request, _) {
+        if (offline) throw StateError('no network');
+        if (request.path == '/orders') return FakeResponse(201, {'data': _order()});
+        return FakeResponse(200, {
+          'data': _order(payments: [_payment('failed')]),
+        });
+      });
+      final checkout = repo(api);
+      await checkout.rememberOpenOrder('u', _course, '01JORDER000000000000000000');
+
+      final result = await checkout.orderFor(userId: 'u', courseId: _course, coupon: 'PROMO');
+      expect(result.keptOpenOrder, isTrue);
+      expect(api.requests.where((r) => r.path == '/orders'), isEmpty);
+
+      offline = true;
+      await expectLater(checkout.orderFor(userId: 'u', courseId: _course), throwsA(isA<ApiException>()));
+      expect(await checkout.openOrder('u', _course), '01JORDER000000000000000000');
+    });
+
+    test('an old key bringing back an expired order is dropped and the order created again', () async {
+      var created = 0;
+      final api = FakeApi((request, _) {
+        created++;
+        return FakeResponse(201, {'data': created == 1 ? _order(status: 'expired') : _order()});
+      });
+      final checkout = repo(api);
+
+      final result = await checkout.orderFor(userId: 'u', courseId: _course);
+
+      expect(result.order.status, 'pending');
+      final keys = api.requests.map((r) => r.headers['Idempotency-Key']).toList();
+      expect(keys, hasLength(2));
+      expect(keys[1], isNot(keys[0]));
     });
 
     test('a new payment attempt gets a new key; a lost request keeps its own', () async {
@@ -173,11 +241,14 @@ void main() {
       expect(stateOf(order(_order(payments: [_payment('succeeded')]))), CheckoutState.waiting);
     });
 
-    test('can still pay only an open order before its deadline', () {
-      final now = DateTime.utc(2026, 11, 12, 10);
-      expect(canStillPay(order(_order(expiresAt: '2026-11-12T10:15:00Z')), now), isTrue);
-      expect(canStillPay(order(_order(expiresAt: '2026-11-12T09:59:00Z')), now), isFalse);
-      expect(canStillPay(order(_order(status: 'paid')), now), isFalse);
+    test("can still pay is the API's status, never the phone's clock", () {
+      // Deadline long past by the phone's clock, but the API still says pending: payable.
+      expect(CheckoutRepository.canBePaid(order(_order(expiresAt: '2000-01-01T00:00:00Z'))), isTrue);
+      expect(CheckoutRepository.canBePaid(order(_order(status: 'awaiting_payment'))), isTrue);
+      expect(CheckoutRepository.canBePaid(order(_order(status: 'expired'))), isFalse);
+      expect(CheckoutRepository.canBePaid(order(_order(status: 'paid'))), isFalse);
+      // A refund is not "you now have access".
+      expect(stateOf(order(_order(status: 'refunded'))), CheckoutState.refunded);
     });
 
     test('polls quickly at first, then gently', () {

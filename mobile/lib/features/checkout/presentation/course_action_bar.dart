@@ -54,7 +54,10 @@ class _CourseActionBarState extends ConsumerState<CourseActionBar> {
       button = FilledButton(
         onPressed: _busy ? null : _enroll,
         child: _busy
-            ? const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+            ? Semantics(
+                label: l10n.checkoutGetFree,
+                child: const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5)),
+              )
             : Text(l10n.checkoutGetFree),
       );
     } else if (price != null) {

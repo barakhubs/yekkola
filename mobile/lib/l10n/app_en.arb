@@ -184,5 +184,9 @@
   "checkoutExpiredBody": "The payment time ran out. Start your order again.",
   "checkoutStartOver": "Start again",
   "checkoutUnknownOrder": "This order can't be found.",
-  "checkoutOwnedExcluded": "{count, plural, =1{A course you already have is left out, and the price reduced accordingly.} other{{count} courses you already have are left out, and the price reduced accordingly.}}"
+  "checkoutOwnedExcluded": "{count, plural, =1{A course you already have is left out, and the price reduced accordingly.} other{{count} courses you already have are left out, and the price reduced accordingly.}}",
+  "checkoutDiscountAmount": "− {amount}",
+  "checkoutCouponNotApplied": "You already have a pending order for this course: it keeps its price, so the promo code doesn't apply to it.",
+  "checkoutRefundedTitle": "Order refunded",
+  "checkoutRefundedBody": "This order was refunded; the course is no longer in your account."
 }

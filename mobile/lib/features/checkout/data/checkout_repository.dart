@@ -5,6 +5,15 @@ import '../../../core/api/generated/yekkola_api.dart';
 import '../../../core/db/app_database.dart';
 import 'idempotency.dart';
 
+class OrderResult {
+  const OrderResult(this.order, {this.keptOpenOrder = false});
+
+  final OrderResource order;
+
+  /// An order that already existed was reused (it keeps its price; a new coupon doesn't apply to it).
+  final bool keptOpenOrder;
+}
+
 /// Enrolment and mobile-money checkout (PRD-05). Prices, exclusions, coupons and rails are decided by the API;
 /// the app shows them and submits. Money writes carry an Idempotency-Key that survives app restarts.
 class CheckoutRepository {
@@ -33,23 +42,62 @@ class CheckoutRepository {
     return response.data;
   }
 
-  /// Creates the order (FR-03) under a key kept per account, course and coupon, so a retry after a lost
-  /// answer returns the same order. Remembered as this course's open order, to resume after a restart.
-  Future<OrderResource> createOrder({required String userId, required String courseId, String? coupon}) async {
-    final scope = 'order:$userId:$courseId:${coupon ?? ''}';
-    final order = await keys.run(scope, (key) async {
-      final response = await ApiException.guard(
-        () => _dio.post<Map<String, Object?>>(
-          '/orders',
-          data: _selection(courseId, coupon),
-          options: Options(headers: {'Idempotency-Key': key}),
-        ),
-      );
-      return OrdersStoreResponse201.fromJson(response.data!).data;
-    });
-    await rememberOpenOrder(userId, courseId, order.id);
-    return order;
+  /// The order to pay for this course (FR-03): the open one if there is one, else a new one.
+  /// - An order remembered on this phone and still open (per the API) is reused; it keeps its own price, so a
+  ///   coupon can't be added to it ([OrderResult.keptOpenOrder]).
+  /// - The API refuses a second open order for the same course (`order.open_order_exists`, e.g. one opened
+  ///   on the web or before a reinstall): that order is resumed.
+  /// - A key that brings back an order which can no longer be paid (an old, lost attempt) is dropped and the
+  ///   order created once more under a new key.
+  Future<OrderResult> orderFor({required String userId, required String courseId, String? coupon}) async {
+    final openId = await openOrder(userId, courseId);
+    if (openId != null) {
+      try {
+        final open = await order(openId);
+        if (canBePaid(open) || open.status == 'paid') return OrderResult(open, keptOpenOrder: true);
+        await forgetOpenOrder(userId, courseId);
+      } on ApiException catch (e) {
+        if (e.status != 404) rethrow; // offline: keep it, try again later
+        await forgetOpenOrder(userId, courseId);
+      }
+    }
+
+    try {
+      var created = await _create(userId, courseId, coupon);
+      if (!canBePaid(created) && created.status != 'paid') {
+        await keys.forget(_orderScope(userId, courseId, coupon));
+        created = await _create(userId, courseId, coupon);
+      }
+      return OrderResult(created);
+    } on ApiException catch (e) {
+      final existing = e.context['order_id'];
+      if (e.code == 'order.open_order_exists' && existing is String) {
+        await rememberOpenOrder(userId, courseId, existing);
+        return OrderResult(await order(existing), keptOpenOrder: true);
+      }
+      rethrow;
+    }
   }
+
+  /// Open per the API (the server expires orders past their deadline). The phone's clock is not trusted.
+  static bool canBePaid(OrderResource order) => order.status == 'pending' || order.status == 'awaiting_payment';
+
+  static String _orderScope(String userId, String courseId, String? coupon) =>
+      'order:$userId:$courseId:${coupon ?? ''}';
+
+  /// One order under a key kept per account, course and coupon: a retry after a lost answer returns the same
+  /// order. It is remembered as this course's open order before the key is forgotten.
+  Future<OrderResource> _create(String userId, String courseId, String? coupon) =>
+      keys.run(_orderScope(userId, courseId, coupon), (key) async {
+        final response = await ApiException.guard(
+          () => _dio.post<Map<String, Object?>>(
+            '/orders',
+            data: _selection(courseId, coupon),
+            options: Options(headers: {'Idempotency-Key': key}),
+          ),
+        );
+        return OrdersStoreResponse201.fromJson(response.data!).data;
+      }, onResult: (order) => rememberOpenOrder(userId, courseId, order.id));
 
   Future<OrderResource> order(String orderId) async =>
       (await ApiException.guard(() => _api.order.ordersShow(order: orderId))).data;

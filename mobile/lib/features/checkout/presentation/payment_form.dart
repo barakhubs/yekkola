@@ -101,7 +101,10 @@ class _PaymentFormState extends ConsumerState<PaymentForm> {
               ? null
               : () => widget.onSubmit(_rail!, normalizePhoneInput(_phone.text)),
           child: widget.busy
-              ? const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+              ? Semantics(
+                  label: widget.submitLabel,
+                  child: const SizedBox.square(dimension: 22, child: CircularProgressIndicator(strokeWidth: 2.5)),
+                )
               : Text(widget.submitLabel),
         ),
         const SizedBox(height: 8),

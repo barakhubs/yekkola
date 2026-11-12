@@ -214,5 +214,10 @@
   "checkoutStartOver": "Recommencer",
   "checkoutUnknownOrder": "Cette commande est introuvable.",
   "checkoutOwnedExcluded": "{count, plural, =1{Un cours que tu as déjà est retiré, et le prix réduit d’autant.} other{{count} cours que tu as déjà sont retirés, et le prix réduit d’autant.}}",
-  "@checkoutOwnedExcluded": {"placeholders": {"count": {"type": "int"}}}
+  "@checkoutOwnedExcluded": {"placeholders": {"count": {"type": "int"}}},
+  "checkoutDiscountAmount": "− {amount}",
+  "@checkoutDiscountAmount": {"placeholders": {"amount": {"type": "String"}}},
+  "checkoutCouponNotApplied": "Tu as déjà une commande en attente pour ce cours : elle garde son prix, le code promo ne s’y applique pas.",
+  "checkoutRefundedTitle": "Commande remboursée",
+  "checkoutRefundedBody": "Cette commande a été remboursée ; le cours n’est plus dans ton compte."
 }
