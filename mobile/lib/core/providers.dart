@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/auth/presentation/auth_controller.dart';
 import 'api/api_headers_interceptor.dart';
 import 'api/generated/yekkola_api.dart';
+import 'api/server_clock.dart';
 import 'config/app_config.dart';
 import 'device/device_identity.dart';
 import 'i18n/locale_controller.dart';
@@ -13,6 +14,9 @@ import 'storage/secure_store.dart';
 final appConfigProvider = Provider<AppConfig>((ref) => throw UnimplementedError('overridden in main'));
 final secureStoreProvider = Provider<SecureStore>((ref) => const FlutterSecureStore());
 final deviceIdentityProvider = Provider<DeviceIdentity>((ref) => throw UnimplementedError('overridden in main'));
+
+/// The API's clock (see [ServerClock]); fed by every API response.
+final serverClockProvider = Provider<ServerClock>((ref) => ServerClock());
 
 final dioProvider = Provider<Dio>((ref) {
   final config = ref.watch(appConfigProvider);
@@ -34,6 +38,7 @@ final dioProvider = Provider<Dio>((ref) {
       onSuspended: () => ref.read(authControllerProvider.notifier).refreshUser(),
     ),
   );
+  dio.interceptors.add(ref.watch(serverClockProvider).interceptor);
   ref.onDispose(dio.close);
   return dio;
 });

@@ -6,12 +6,13 @@ import '../../../core/api/generated/yekkola_api.dart';
 import '../../../core/i18n/formatters.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../checkout/presentation/course_action_bar.dart';
 import 'catalog_labels.dart';
 import 'catalog_providers.dart';
 import 'widgets/catalog_widgets.dart';
 
 /// A course page (PRD-04 FR-04): what it teaches, who teaches it, the curriculum with download sizes (data
-/// cost matters — PRD-07 FR-08) and the price. Readable offline once opened. Enrolling comes with checkout.
+/// cost matters — PRD-07 FR-08), the price and the enrol/buy action. Readable offline once opened.
 class CourseScreen extends ConsumerWidget {
   const CourseScreen({super.key, required this.slug});
 
@@ -23,6 +24,10 @@ class CourseScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(),
+      bottomNavigationBar: switch (value) {
+        AsyncData(:final value) => CourseActionBar(course: value.data),
+        _ => null,
+      },
       body: CachedView(
         value: value,
         onRetry: () => ref.invalidate(courseProvider(slug)),

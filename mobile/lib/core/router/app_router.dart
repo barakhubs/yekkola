@@ -15,6 +15,8 @@ import '../../features/catalog/presentation/course_screen.dart';
 import '../../features/catalog/presentation/explore_screen.dart';
 import '../../features/catalog/presentation/professor_screen.dart';
 import '../../features/catalog/presentation/search_screen.dart';
+import '../../features/checkout/presentation/checkout_screen.dart';
+import '../../features/checkout/presentation/order_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/media/presentation/downloads_lab_screen.dart';
 import '../../features/media/presentation/offline_player_screen.dart';
@@ -31,6 +33,8 @@ abstract final class Routes {
   static const search = '/explore/search';
   static String course(String slug) => '/courses/$slug';
   static String professor(String slug) => '/professors/$slug';
+  static String checkout(String courseId) => '/checkout/$courseId';
+  static String order(String orderId) => '/orders/$orderId';
 
   /// My courses.
   static const home = '/home';
@@ -90,6 +94,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/professors/:slug',
         builder: (_, state) => ProfessorScreen(slug: state.pathParameters['slug']!),
+      ),
+      GoRoute(
+        path: '/checkout/:course',
+        builder: (_, state) => CheckoutScreen(courseId: state.pathParameters['course']!),
+      ),
+      GoRoute(
+        path: '/orders/:order',
+        builder: (_, state) => OrderScreen(orderId: state.pathParameters['order']!),
       ),
       GoRoute(path: Routes.devices, builder: (_, _) => const DevicesScreen()),
       GoRoute(
