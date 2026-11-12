@@ -116,6 +116,8 @@ class DownloadsController extends Notifier<Map<String, DownloadEntry>> {
     }
   }
 
+  bool isDownloading(String lessonUid) => _cancels.containsKey(lessonUid);
+
   /// Pauses: finished segments stay; [start] resumes.
   void pause(String lessonUid) => _cancels[lessonUid]?.cancel();
 
