@@ -9,7 +9,9 @@ import '../../auth/presentation/api_error_text.dart';
 import '../../catalog/presentation/catalog_labels.dart';
 import '../../catalog/presentation/widgets/catalog_widgets.dart';
 import '../../media/presentation/downloads_controller.dart';
+import '../../../core/sync/sync_providers.dart';
 import 'learning_providers.dart';
+import 'lesson_player_screen.dart';
 
 /// A course as its student sees it (PRD-06 FR-02): progress, "continue", and the curriculum with each
 /// lesson's status. Video and audio lessons play online or, once downloaded, offline (PRD-07 FR-16);
@@ -88,22 +90,32 @@ bool _playable(String type) => type == 'video' || type == 'audio';
 
 /// Plays a video/audio lesson: the download if this account has a complete one, else streaming. Documents and
 /// quizzes come in a later step.
-void openLesson(
+Future<void> openLesson(
   BuildContext context,
   WidgetRef ref,
   String courseId,
   LearningViewResourceSectionsItemLessonsItem lesson,
-) {
+) async {
   if (!_playable(lesson.type2)) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).learnSoon)));
     return;
   }
   final download = ref.read(downloadsControllerProvider)[lesson.uid]?.download;
-  if (download != null && download.isComplete) {
-    context.push(Routes.offlinePlayer(lesson.uid), extra: lesson.title);
+  // A complete download still within its license plays offline; an expired one streams instead (online).
+  if (download != null && download.isComplete && download.isUsableAt(DateTime.now().toUtc())) {
+    await context.push(Routes.offlinePlayer(lesson.uid), extra: lesson.title);
   } else {
-    context.push(Routes.lesson(courseId, lesson.uid), extra: lesson.title);
+    await context.push(
+      Routes.lesson(courseId, lesson.uid),
+      extra: LessonArgs(title: lesson.title, positionSeconds: lesson.positionSeconds),
+    );
   }
+  // Back from the lesson: send the progress, then show the updated statuses and "continue".
+  if (!context.mounted) return;
+  final engine = ref.read(syncEngineProvider);
+  final refresh = ref.read(learningRefreshProvider.notifier);
+  await engine.flush();
+  refresh.pull();
 }
 
 class _LessonRow extends ConsumerWidget {

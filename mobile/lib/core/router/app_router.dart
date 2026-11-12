@@ -114,8 +114,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: 'lessons/:lesson',
-            builder: (_, state) =>
-                LessonPlayerScreen(lessonUid: state.pathParameters['lesson']!, title: state.extra as String?),
+            builder: (_, state) => LessonPlayerScreen(
+              lessonUid: state.pathParameters['lesson']!,
+              args: state.extra is LessonArgs ? state.extra! as LessonArgs : const LessonArgs(),
+            ),
           ),
         ],
       ),

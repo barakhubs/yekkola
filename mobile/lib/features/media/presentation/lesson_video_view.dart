@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../core/i18n/formatters.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../learning/data/progress_sync.dart';
 import 'viewer_overlay.dart';
@@ -39,6 +40,12 @@ class LessonVideoView extends StatelessWidget {
                   else
                     VideoPlayer(player),
                   if (watermark != null) ViewerOverlay(text: watermark!),
+                  ValueListenableBuilder<VideoPlayerValue>(
+                    valueListenable: player,
+                    builder: (context, value, _) => value.isBuffering
+                        ? Center(child: CircularProgressIndicator(semanticsLabel: l10n.playerBuffering))
+                        : const SizedBox.shrink(),
+                  ),
                 ],
               ),
             ),
@@ -47,12 +54,48 @@ class LessonVideoView extends StatelessWidget {
         VideoProgressIndicator(player, allowScrubbing: true, padding: const EdgeInsets.symmetric(horizontal: 16)),
         ValueListenableBuilder<VideoPlayerValue>(
           valueListenable: player,
-          builder: (context, value, _) => IconButton(
-            iconSize: 48,
-            color: Colors.white,
-            tooltip: value.isPlaying ? l10n.mediaPause : l10n.mediaPlay,
-            icon: Icon(value.isPlaying ? Icons.pause_circle : Icons.play_circle),
-            onPressed: () => value.isPlaying ? player.pause() : player.play(),
+          builder: (context, value, _) => Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                iconSize: 32,
+                color: Colors.white,
+                tooltip: l10n.playerBack10,
+                icon: const Icon(Icons.replay_10),
+                onPressed: () => player.seekTo(value.position - const Duration(seconds: 10)),
+              ),
+              IconButton(
+                iconSize: 48,
+                color: Colors.white,
+                tooltip: value.isPlaying ? l10n.mediaPause : l10n.mediaPlay,
+                icon: Icon(value.isPlaying ? Icons.pause_circle : Icons.play_circle),
+                onPressed: () => value.isPlaying ? player.pause() : player.play(),
+              ),
+              // Playback speed (PRD-06 FR-03).
+              PopupMenuButton<double>(
+                tooltip: l10n.playerSpeed,
+                initialValue: value.playbackSpeed,
+                onSelected: player.setPlaybackSpeed,
+                itemBuilder: (_) => [
+                  for (final speed in const [0.75, 1.0, 1.25, 1.5, 2.0])
+                    PopupMenuItem(
+                      value: speed,
+                      child: Text(
+                        l10n.playerSpeedValue(Formatters.decimal(speed, Localizations.localeOf(context).languageCode)),
+                      ),
+                    ),
+                ],
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    l10n.playerSpeedValue(
+                      Formatters.decimal(value.playbackSpeed, Localizations.localeOf(context).languageCode),
+                    ),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         if (footer != null)
@@ -123,14 +166,17 @@ class ProgressTracker {
   bool _wasPlaying = false;
   bool _stopped = false;
 
+  /// [serverSeconds]: the API's position for this lesson (watched elsewhere); the furthest wins (PRD-06 FR-05).
   static Future<void> resume(
     ProgressRepository progress,
     String userId,
     String lessonUid,
-    VideoPlayerController player,
-  ) async {
+    VideoPlayerController player, {
+    int? serverSeconds,
+  }) async {
     final saved = await progress.positionOf(userId, lessonUid);
-    final at = Duration(seconds: saved?.positionSeconds ?? 0);
+    final local = saved?.positionSeconds ?? 0;
+    final at = Duration(seconds: (serverSeconds ?? 0) > local ? serverSeconds! : local);
     if (at > const Duration(seconds: 5) && at < player.value.duration - const Duration(seconds: 5)) {
       await player.seekTo(at);
     }

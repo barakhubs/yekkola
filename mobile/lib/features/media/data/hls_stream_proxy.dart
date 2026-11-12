@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
@@ -85,32 +86,63 @@ class HlsStreamProxy {
     }
   }
 
-  /// Our token goes only to our API's host: a playlist pointing a key elsewhere is refused.
+  /// Our token goes only where the master playlist came from (the API's own URLs, as it generates them), and
+  /// that must be the API host the app talks to: a playlist pointing a key elsewhere is refused.
   void _ensureApi(Uri url) {
     final api = Uri.parse(_api.options.baseUrl);
-    if (url.scheme != api.scheme || url.host != api.host || url.port != api.port) {
+    final sameAsMaster = url.scheme == _masterUrl.scheme && url.host == _masterUrl.host && url.port == _masterUrl.port;
+    if (!sameAsMaster || _masterUrl.host != api.host) {
       throw const ApiException(code: 'playback.foreign_url', status: 0);
+    }
+  }
+
+  /// No redirects: our headers must not follow one to another host.
+  static Options _options(ResponseType type) =>
+      Options(responseType: type, followRedirects: false, maxRedirects: 0, validateStatus: (s) => s == 200);
+
+  /// A refusal's body arrives as text or bytes (not JSON-decoded): decode it so the API's code and
+  /// translated message reach the student.
+  static Future<T> _fetch<T>(Future<T> Function() call) async {
+    try {
+      return await call();
+    } on DioException catch (e) {
+      final response = e.response;
+      final raw = response?.data;
+      if (response != null && (raw is String || raw is List<int>)) {
+        try {
+          final text = raw is String ? raw : utf8.decode(raw as List<int>);
+          response.data = jsonDecode(text);
+        } catch (_) {
+          response.data = null;
+        }
+      }
+      throw ApiException.fromDio(e);
     }
   }
 
   Future<String> _text(Uri url) async {
     _ensureApi(url);
-    final response = await ApiException.guard(
-      () => _api.getUri<String>(url, options: Options(responseType: ResponseType.plain)),
-    );
+    final response = await _fetch(() => _api.getUri<String>(url, options: _options(ResponseType.plain)));
     return response.data ?? '';
   }
 
-  Future<Uint8List> _fetchKey() async {
-    final cached = _key;
-    if (cached != null) return cached;
+  /// One key fetch at a time (two variants may ask together); only a 16-byte AES-128 key is accepted.
+  Future<Uint8List> _fetchKey() => _keyFuture ??= _loadKey().whenComplete(() {
+    if (_key == null) _keyFuture = null; // failed: a later request tries again
+  });
+
+  Future<Uint8List>? _keyFuture;
+
+  Future<Uint8List> _loadKey() async {
     final url = _keyUrl;
     if (url == null) throw const ApiException(code: 'playback.no_key', status: 0);
     _ensureApi(url);
-    final response = await ApiException.guard(
-      () => _api.getUri<List<int>>(url, options: Options(responseType: ResponseType.bytes)),
-    );
-    return _key = Uint8List.fromList(response.data ?? const []);
+    final response = await _fetch(() => _api.getUri<List<int>>(url, options: _options(ResponseType.bytes)));
+    final bytes = response.data ?? const <int>[];
+    if (bytes.length != 16) throw const ApiException(code: 'playback.bad_key', status: 0);
+    final key = Uint8List.fromList(bytes);
+    if (bytes is Uint8List) bytes.fillRange(0, bytes.length, 0);
+    return _key = key;
   }
 
   /// Variant URIs → local `v/<n>.m3u8` (remembering where each really is).
@@ -144,6 +176,7 @@ class HlsStreamProxy {
   Future<void> close() async {
     _key?.fillRange(0, _key!.length, 0);
     _key = null;
+    _keyFuture = null;
     await _server.close(force: true);
   }
 }

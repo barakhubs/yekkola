@@ -232,5 +232,18 @@
   "learnLessonDone": "Leçon terminée",
   "learnLessonStarted": "Leçon commencée",
   "learnDownloaded": "Téléchargée",
-  "learnStreamOffline": "Pas de connexion. Télécharge la leçon quand tu es connecté pour la regarder hors ligne."
+  "learnStreamOffline": "Pas de connexion. Télécharge la leçon quand tu es connecté pour la regarder hors ligne.",
+  "playerBuffering": "Chargement…",
+  "playerBack10": "Reculer de 10 secondes",
+  "playerSpeed": "Vitesse de lecture",
+  "playerSpeedValue": "{speed}×",
+  "@playerSpeedValue": {"placeholders": {"speed": {"type": "String"}}},
+  "playerStopped": "La lecture s’est arrêtée.",
+  "errorPlaybackSetup": "La lecture n’a pas pu démarrer. Réessaie plus tard.",
+  "learnLastActivity": "Vu le {date}",
+  "@learnLastActivity": {"placeholders": {"date": {"type": "String"}}},
+  "learnFilterAll": "Tous",
+  "learnFilterInProgress": "En cours",
+  "learnFilterCompleted": "Terminés",
+  "learnNoneInFilter": "Aucun cours ici pour le moment."
 }

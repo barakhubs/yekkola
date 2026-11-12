@@ -12,9 +12,11 @@ final _key = Uint8List.fromList(List.generate(16, (i) => 0x30 + i));
 
 /// The API: serves the master, the media playlist and the key, recording what our client sent.
 class _Api implements HttpClientAdapter {
-  _Api({this.keyUri = '$_api/lessons/$_lesson/hls/key'});
+  _Api({this.keyUri = '$_api/lessons/$_lesson/hls/key', this.refuseKey = false, this.keyBytes});
 
   final String keyUri;
+  final bool refuseKey;
+  final List<int>? keyBytes;
   final requests = <RequestOptions>[];
 
   @override
@@ -34,7 +36,19 @@ class _Api implements HttpClientAdapter {
         200,
       );
     }
-    if (path.endsWith('/key')) return ResponseBody.fromBytes(_key, 200);
+    if (path.endsWith('/key')) {
+      if (refuseKey) {
+        return ResponseBody.fromString(
+          jsonEncode({'status': 403, 'code': 'enrollment.required', 'title': 'Inscription requise.'}),
+          403,
+          headers: {
+            Headers.contentTypeHeader: ['application/json'],
+          },
+        );
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      return ResponseBody.fromBytes(Uint8List.fromList(keyBytes ?? _key), 200);
+    }
     return ResponseBody.fromString('', 404);
   }
 
@@ -52,8 +66,8 @@ void main() {
     return (response.statusCode, await response.expand((b) => b).toList());
   }
 
-  (Dio, _Api) api({String? keyUri}) {
-    final adapter = keyUri == null ? _Api() : _Api(keyUri: keyUri);
+  (Dio, _Api) api({String? keyUri, bool refuseKey = false, List<int>? keyBytes}) {
+    final adapter = _Api(keyUri: keyUri ?? '$_api/lessons/$_lesson/hls/key', refuseKey: refuseKey, keyBytes: keyBytes);
     final dio = Dio(BaseOptions(baseUrl: _api, headers: {'Authorization': 'Bearer t', 'X-Device-Id': 'install-1'}))
       ..httpClientAdapter = adapter;
     return (dio, adapter);
@@ -95,6 +109,36 @@ void main() {
     expect(status, isNot(200));
     expect(adapter.requests.any((r) => r.uri.host == 'evil.test'), isFalse);
     await proxy.close();
+  });
+
+  test("a refusal keeps the API's code for the student (access ended mid-lesson)", () async {
+    final (dio, _) = api(refuseKey: true);
+    final proxy = await HlsStreamProxy.start(api: dio, masterUrl: '$_api/lessons/$_lesson/hls/master.m3u8');
+    await get(proxy.playlistUri);
+    await get(proxy.playlistUri.resolve('v/0.m3u8'));
+
+    expect((await get(proxy.playlistUri.resolve('key'))).$1, 403);
+    expect(proxy.lastError?.code, 'enrollment.required');
+    expect(proxy.lastError?.title, 'Inscription requise.');
+    await proxy.close();
+  });
+
+  test('two players asking for the key together cause one fetch; a wrong-length key is refused', () async {
+    final (dio, adapter) = api();
+    final proxy = await HlsStreamProxy.start(api: dio, masterUrl: '$_api/lessons/$_lesson/hls/master.m3u8');
+    await get(proxy.playlistUri);
+    await get(proxy.playlistUri.resolve('v/0.m3u8'));
+    final both = await Future.wait([get(proxy.playlistUri.resolve('key')), get(proxy.playlistUri.resolve('key'))]);
+    expect(both.map((r) => r.$2), everyElement(_key));
+    expect(adapter.requests.where((r) => r.uri.path.endsWith('/key')), hasLength(1));
+    await proxy.close();
+
+    final (short, _) = api(keyBytes: const [1, 2, 3]);
+    final bad = await HlsStreamProxy.start(api: short, masterUrl: '$_api/lessons/$_lesson/hls/master.m3u8');
+    await get(bad.playlistUri);
+    await get(bad.playlistUri.resolve('v/0.m3u8'));
+    expect((await get(bad.playlistUri.resolve('key'))).$1, isNot(200));
+    await bad.close();
   });
 
   test('closing stops serving', () async {

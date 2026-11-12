@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/mobile-learning`, PR #86 (My courses, learning view, streaming player)
+- **Current branch:** `feature/mobile-learning`, PR #87 (review fixes for the learning screens, #86)
 - **Next up:** downloads manager (quality, sizes, Wi-Fi only, storage, background); owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
@@ -505,7 +505,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Search query survives the app being restored by the OS (it travels in the route's `extra` today)
 - [x] Free enroll + checkout (PRD-05 FR-01–FR-06, FR-09, FR-11, FR-19, BR-05): course-page button (open / get / buy), quote with coupon and owned-course exclusion, operator + payer number, order and payment under idempotency keys kept on the phone, waiting screen with countdown and backoff polling, failure reason + retry on the same order, open order resumed after a restart — #85
 - [ ] App: buy a course for another student (PRD-05 FR-14, setting-controlled), order history and receipts (FR-15, FR-17), refund requests (FR-16)
-- [x] My courses, learning view, streaming player with overlay and `FLAG_SECURE` (PRD-06 FR-01–FR-05, PRD-07 FR-02, FR-04, FR-13): My courses tab with progress, course view with lesson status and continue, per-lesson download, streaming through a loopback proxy (credentials never reach R2), resume + progress saving shared with offline playback — #86
+- [x] My courses, learning view, streaming player with overlay and `FLAG_SECURE` (PRD-06 FR-01–FR-05 in part, PRD-07 FR-02, FR-04, FR-13): My courses tab (progress, last activity, in progress / completed filters), course view (lesson status, continue, per-lesson download), streaming through a loopback proxy (credentials never reach R2), speed control and 10 s back, resume at the furthest of phone and API, progress saving shared with offline playback, mid-lesson failures stop with the reason and a retry — #86, review fixes #87
+- [ ] Learning gaps vs PRD-06: next / previous lesson from the player (FR-02); captions or transcript if the PRD asks; resume across devices for downloads (offline player uses the phone's position)
 - [ ] App: document and quiz lessons (shown as "coming soon" in the course view)
 - [ ] Downloads manager (quality, sizes, Wi-Fi only, storage, license expiry)
 - [ ] Documents (stamped, app-private), quizzes (offline attempts)
