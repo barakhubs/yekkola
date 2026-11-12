@@ -199,5 +199,16 @@
   "learnLessonDone": "Lesson done",
   "learnLessonStarted": "Lesson started",
   "learnDownloaded": "Downloaded",
-  "learnStreamOffline": "No connection. Download the lesson while you're online to watch it offline."
+  "learnStreamOffline": "No connection. Download the lesson while you're online to watch it offline.",
+  "playerBuffering": "Loading…",
+  "playerBack10": "Back 10 seconds",
+  "playerSpeed": "Playback speed",
+  "playerSpeedValue": "{speed}×",
+  "playerStopped": "Playback stopped.",
+  "errorPlaybackSetup": "Playback couldn't start. Try again later.",
+  "learnLastActivity": "Watched {date}",
+  "learnFilterAll": "All",
+  "learnFilterInProgress": "In progress",
+  "learnFilterCompleted": "Completed",
+  "learnNoneInFilter": "No courses here yet."
 }
