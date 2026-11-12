@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-11-11
+> Last updated: 2026-11-12
 
 ## Now
 
-- **Current branch:** `feature/prd-07-offline-hls`, PR #79 (offline license endpoint + offline encrypted HLS prototype in the app)
-- **Next up:** owner: switch staging to `VIDEO_DRIVER=r2`, then run the prototype on a low-end Android phone; then the drift schema, outbox and entitlement sync
+- **Current branch:** `feature/mobile-sync-engine` (drift database, outbox and sync engine; offline progress)
+- **Next up:** entitlement sync (`GET /me/entitlements` + deleting revoked downloads); owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
 
@@ -486,7 +486,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] iOS flavors (staging/production schemes and bundle IDs) **(needs: a Mac with Xcode)**
 - [ ] Android release signing (upload key in CI secrets) before the first Play build
 - [ ] Confirm the production API host for the `production` flavor (defaults to `api.yekkola.com`, same as staging today) **(needs: owner, with the production environment)**
-- [ ] drift schema, outbox, sync engine, entitlement sync
+- [x] drift schema, outbox, sync engine (progress is the first writer: offline player saves and resumes) — #80
+- [ ] `PUT /me/progress` response: `courses` is an empty JSON list when nothing changed and typed `string` in the spec; make it an object and type it, then use the generated client in `ProgressOutboxHandler`
 - [-] `mux_player_plugin`: Android (Kotlin, Media3, `MuxDownloadManager`) — superseded by R2, 2026-11-09 (no native-SDK plugin needed)
 - [-] `mux_player_plugin`: iOS (Swift, `MuxOfflineAccessManager`) — superseded by R2, 2026-11-09
 - [x] Offline encrypted HLS prototype: own downloader for a rendition's segments (resumable, license renewal on expired URLs), AES key wrapped with a per-device key bound to the offline expiry, `video_player` (AES-128 HLS) via a loopback server, overlay, `FLAG_SECURE`; staging-only lab screen (PRD-07 FR-07, FR-13, FR-16) — #79
