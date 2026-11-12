@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/mobile-catalogue`, PR #84 (review fixes for the catalogue, #83)
-- **Next up:** free enroll + checkout (waiting screen); owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
+- **Current branch:** `feature/mobile-checkout` (free enrol, mobile-money checkout and the waiting screen in the app)
+- **Next up:** My courses, learning, player with overlay; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
 
@@ -503,7 +503,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Course page: enroll / buy button (comes with free enroll + checkout)
 - [ ] Catalogue gaps vs PRD-04: course cards with enrollment count, duration and language badge (FR-04); reviews summary and list on the course page (FR-05); rails per category on Explore (FR-01); level/audience filters
 - [ ] Search query survives the app being restored by the OS (it travels in the route's `extra` today)
-- [ ] Free enroll + checkout (waiting screen)
+- [x] Free enroll + checkout (PRD-05 FR-01–FR-06, FR-09, FR-11, FR-19, BR-05): course-page button (open / get / buy), quote with coupon and owned-course exclusion, operator + payer number, order and payment under idempotency keys kept on the phone, waiting screen with countdown and backoff polling, failure reason + retry on the same order, open order resumed after a restart
+- [ ] App: buy a course for another student (PRD-05 FR-14, setting-controlled), order history and receipts (FR-15, FR-17), refund requests (FR-16)
 - [ ] My courses, learning, player with overlay, `FLAG_SECURE`
 - [ ] Downloads manager (quality, sizes, Wi-Fi only, storage, license expiry)
 - [ ] Documents (stamped, app-private), quizzes (offline attempts)
