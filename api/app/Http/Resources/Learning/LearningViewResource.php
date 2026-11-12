@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Learning;
 
+use App\Domain\Authoring\Enums\LessonType;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\Section;
@@ -11,6 +12,7 @@ use App\Domain\Learning\Models\Certificate;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Learning\Models\LessonProgress;
 use App\Domain\Learning\Models\QuizAttempt;
+use App\Integrations\Video\Rendition;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -63,6 +65,7 @@ final class LearningViewResource extends JsonResource
                         'status' => $mine?->status->value ?? 'not_started',
                         'position_seconds' => $mine->position_seconds ?? 0,
                         'quiz' => $lesson->quiz === null ? null : $this->quizFacts($lesson),
+                        'downloads' => $this->downloadOptions($lesson),
                     ];
                 })->all(),
             ];
@@ -85,6 +88,28 @@ final class LearningViewResource extends JsonResource
             'has_reviewed' => $this->reviewed,
             'sections' => $sections,
         ];
+    }
+
+    /**
+     * What can be downloaded for offline use (PRD-07 FR-08): each rendition of a ready video/audio with its real
+     * size, our lowest first (the default). Empty for documents, quizzes and media still processing.
+     *
+     * @return list<array{rendition: string, size_bytes: int, height: int|null}>
+     */
+    private function downloadOptions(Lesson $lesson): array
+    {
+        $asset = $lesson->mediaAsset;
+        if ($asset === null || ! $asset->isReady() || ! in_array($lesson->type, [LessonType::Video, LessonType::Audio], true)) {
+            return [];
+        }
+        $renditions = $asset->renditionList();
+        usort($renditions, fn (Rendition $a, Rendition $b) => $a->bandwidth <=> $b->bandwidth);
+
+        return array_map(fn (Rendition $r): array => [
+            'rendition' => $r->name,
+            'size_bytes' => $r->sizeBytes,
+            'height' => $r->height,
+        ], $renditions);
     }
 
     /** The first lesson of the live curriculum I haven't completed, in course order. */

@@ -162,6 +162,7 @@ export const MeCoursesShowResponse = zod.object({
                 passed: zod.boolean(),
               })
               .nullable(),
+            downloads: zod.array(zod.unknown()),
           }),
         ),
       }),

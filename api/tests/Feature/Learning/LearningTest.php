@@ -48,7 +48,12 @@ it('lists my courses and shows the learning view without answers', function () {
         ->assertJsonPath('data.next_lesson_uid', $this->document->uid)
         ->assertJsonPath('data.sections.0.lessons.0.status', 'not_started')
         ->assertJsonPath('data.sections.0.lessons.1.quiz.question_count', 1)
-        ->assertJsonPath('data.sections.0.lessons.1.quiz.attempts_used', 0);
+        ->assertJsonPath('data.sections.0.lessons.1.quiz.attempts_used', 0)
+        // Download options with real sizes, our lowest first (PRD-07 FR-08); none for documents and quizzes.
+        ->assertJsonPath('data.sections.0.lessons.0.downloads', [])
+        ->assertJsonPath('data.sections.0.lessons.2.downloads.0.rendition', '360p')
+        ->assertJsonPath('data.sections.0.lessons.2.downloads.0.size_bytes', 80_000_000)
+        ->assertJsonPath('data.sections.0.lessons.2.downloads.2.rendition', '720p');
     expect(json_encode($view->json()))->not->toContain('is_correct');
 
     Sanctum::actingAs(User::factory()->create());

@@ -54,7 +54,7 @@ final class LearningController extends Controller
         $user = $this->user($request);
         $enrollment = $access->enrollment($user, $course);
         $model = Course::query()->whereKey($course)->whereNotNull('live_version_id')
-            ->with(['professor', 'liveVersion.media', 'liveVersion.sections.lessons.quiz' => fn ($q) => $q->withCount('questions')])
+            ->with(['professor', 'liveVersion.media', 'liveVersion.sections.lessons.mediaAsset', 'liveVersion.sections.lessons.quiz' => fn ($q) => $q->withCount('questions')])
             ->firstOrFail();
 
         $uids = $model->liveVersion->sections->flatMap->lessons->pluck('uid');

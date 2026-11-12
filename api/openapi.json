@@ -22854,6 +22854,10 @@
                                                     "best_score_pct",
                                                     "passed"
                                                 ]
+                                            },
+                                            "downloads": {
+                                                "type": "array",
+                                                "items": {}
                                             }
                                         },
                                         "required": [
@@ -22863,7 +22867,8 @@
                                             "duration_seconds",
                                             "status",
                                             "position_seconds",
-                                            "quiz"
+                                            "quiz",
+                                            "downloads"
                                         ]
                                     }
                                 }

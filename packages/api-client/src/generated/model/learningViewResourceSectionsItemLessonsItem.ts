@@ -16,4 +16,5 @@ export type LearningViewResourceSectionsItemLessonsItem = {
   position_seconds: number;
   /** @nullable */
   quiz: LearningViewResourceSectionsItemLessonsItemQuiz;
+  downloads: unknown[];
 };
