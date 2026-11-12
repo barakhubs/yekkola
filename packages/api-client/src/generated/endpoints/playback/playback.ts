@@ -23,6 +23,7 @@ import type {
   LessonsPlayback200,
   LessonsPlaybackHeartbeat200,
   LessonsPreviewPlayback200,
+  MeEntitlements200,
   OfflineLicenseRequest,
   ValidationExceptionResponse,
 } from "../../model";
@@ -523,6 +524,133 @@ export function useLessonsOfflineLicense<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getLessonsOfflineLicenseQueryOptions(lesson, offlineLicenseRequest, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export type meEntitlementsResponse200 = {
+  data: MeEntitlements200;
+  status: 200;
+};
+
+export type meEntitlementsResponseSuccess = meEntitlementsResponse200 & {
+  headers: Headers;
+};
+export type meEntitlementsResponse = meEntitlementsResponseSuccess;
+
+export const getMeEntitlementsUrl = () => {
+  return `/me/entitlements`;
+};
+
+/**
+ * @summary Entitlement sync for this registered device: every offline license it holds and what to do with the
+download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too
+ */
+export const meEntitlements = async (
+  options?: Parameters<typeof apiFetch>[1],
+): Promise<meEntitlementsResponse> => {
+  return apiFetch<meEntitlementsResponse>(getMeEntitlementsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getMeEntitlementsQueryKey = () => {
+  return [`/me/entitlements`] as const;
+};
+
+export const getMeEntitlementsQueryOptions = <
+  TData = Awaited<ReturnType<typeof meEntitlements>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEntitlements>>, TError, TData>>;
+  request?: SecondParameter<typeof apiFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getMeEntitlementsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof meEntitlements>>> = ({ signal }) =>
+    meEntitlements({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof meEntitlements>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MeEntitlementsQueryResult = NonNullable<Awaited<ReturnType<typeof meEntitlements>>>;
+export type MeEntitlementsQueryError = ErrorType<unknown>;
+
+export function useMeEntitlements<
+  TData = Awaited<ReturnType<typeof meEntitlements>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEntitlements>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof meEntitlements>>,
+          TError,
+          Awaited<ReturnType<typeof meEntitlements>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useMeEntitlements<
+  TData = Awaited<ReturnType<typeof meEntitlements>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEntitlements>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof meEntitlements>>,
+          TError,
+          Awaited<ReturnType<typeof meEntitlements>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useMeEntitlements<
+  TData = Awaited<ReturnType<typeof meEntitlements>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEntitlements>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Entitlement sync for this registered device: every offline license it holds and what to do with the
+download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too
+ */
+
+export function useMeEntitlements<
+  TData = Awaited<ReturnType<typeof meEntitlements>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meEntitlements>>, TError, TData>>;
+    request?: SecondParameter<typeof apiFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getMeEntitlementsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

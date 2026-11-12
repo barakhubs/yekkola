@@ -11693,6 +11693,92 @@
                 }
             }
         },
+        "/me/entitlements": {
+            "get": {
+                "operationId": "me.entitlements",
+                "summary": "Entitlement sync for this registered device: every offline license it holds and what to do with the\ndownload \u2014 `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,\nmedia_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too",
+                "tags": [
+                    "Playback"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "checked_at": {
+                                                    "type": "string"
+                                                },
+                                                "licenses": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "license_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "lesson_uid": {
+                                                                "type": "string"
+                                                            },
+                                                            "media_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "current_media_id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "rendition": {
+                                                                "type": "string"
+                                                            },
+                                                            "expires_at": {
+                                                                "type": "string"
+                                                            },
+                                                            "action": {
+                                                                "type": "string"
+                                                            },
+                                                            "reason": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "license_id",
+                                                            "lesson_uid",
+                                                            "media_id",
+                                                            "current_media_id",
+                                                            "rendition",
+                                                            "expires_at",
+                                                            "action",
+                                                            "reason"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "checked_at",
+                                                "licenses"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/lessons/{lesson}/preview-playback": {
             "post": {
                 "operationId": "lessons.preview-playback",

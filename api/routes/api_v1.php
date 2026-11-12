@@ -119,6 +119,7 @@ Route::middleware('signed-in')->group(function () {
     Route::post('/lessons/{lesson}/playback', [PlaybackController::class, 'store'])->middleware('throttle:playback')->name('lessons.playback');
     Route::post('/lessons/{lesson}/playback/heartbeat', [PlaybackController::class, 'heartbeat'])->middleware('throttle:playback')->name('lessons.playback.heartbeat');
     Route::post('/lessons/{lesson}/offline-license', [PlaybackController::class, 'offline'])->middleware('throttle:playback')->name('lessons.offline-license');
+    Route::get('/me/entitlements', [PlaybackController::class, 'entitlements'])->middleware('throttle:playback')->name('me.entitlements');
     Route::get('/lessons/{lesson}/document', [DocumentController::class, 'show'])->middleware('throttle:playback')->name('lessons.document');
     Route::get('/me/certificates', [CertificateController::class, 'index'])->name('me.certificates.index');
     Route::get('/me/certificates/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('throttle:certificate-pdf')->name('me.certificates.pdf');
