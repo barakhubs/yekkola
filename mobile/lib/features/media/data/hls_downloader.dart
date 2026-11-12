@@ -10,6 +10,15 @@ import 'download_store.dart';
 import 'hls_playlist.dart';
 import 'offline_key_vault.dart';
 
+/// What the downloads screen shows about a download (it has no network to ask).
+class DownloadLabels {
+  const DownloadLabels({this.courseId, this.courseTitle, this.lessonTitle});
+
+  final String? courseId;
+  final String? courseTitle;
+  final String? lessonTitle;
+}
+
 /// The lesson's media was replaced since it was downloaded: the download was dropped.
 class MediaChanged implements Exception {
   const MediaChanged();
@@ -46,11 +55,12 @@ class HlsDownloader {
   Future<OfflineDownload> download(
     String lessonUid, {
     required String userId,
+    DownloadLabels? labels,
     String? rendition,
     CancelToken? cancel,
     void Function(DownloadProgress progress)? onProgress,
   }) async {
-    var (download, urls, _) = await _license(lessonUid, userId, rendition);
+    var (download, urls, _) = await _license(lessonUid, userId, rendition, labels: labels);
 
     var i = 0;
     while (i < urls.length) {
@@ -62,7 +72,7 @@ class HlsDownloader {
           // An expired or refused signed URL: renew (fresh URLs, same key) and retry this segment once.
           if (!_isExpiredUrl(e)) rethrow;
           final bool reset;
-          (download, urls, reset) = await _license(lessonUid, userId, download.rendition);
+          (download, urls, reset) = await _license(lessonUid, userId, download.rendition, labels: labels);
           if (reset) {
             // The lesson's media changed meanwhile: what we had is gone, start again from the first segment.
             i = 0;
@@ -94,7 +104,12 @@ class HlsDownloader {
 
   /// The license, its segment URLs, and whether what was on disk had to be dropped (new media, another
   /// quality or another account).
-  Future<(OfflineDownload, List<String>, bool)> _license(String lessonUid, String userId, String? rendition) async {
+  Future<(OfflineDownload, List<String>, bool)> _license(
+    String lessonUid,
+    String userId,
+    String? rendition, {
+    DownloadLabels? labels,
+  }) async {
     final response = await ApiException.guard(
       () => api.playback.lessonsOfflineLicense(
         lesson: lessonUid,
@@ -129,6 +144,10 @@ class HlsDownloader {
       watermark: license.watermark.text,
       completedSegments: sameMedia ? previous.completedSegments : 0,
       lastOpenedAt: sameMedia ? previous.lastOpenedAt : null,
+      // Kept across renewals; new labels win when given.
+      courseId: labels?.courseId ?? previous?.courseId,
+      courseTitle: labels?.courseTitle ?? previous?.courseTitle,
+      lessonTitle: labels?.lessonTitle ?? previous?.lessonTitle,
     );
 
     final key = base64Decode(license.key);

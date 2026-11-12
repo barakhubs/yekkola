@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:yekkola/core/config/app_config.dart';
 import 'package:yekkola/core/device/device_identity.dart';
 import 'package:yekkola/core/providers.dart';
@@ -65,9 +66,15 @@ const testDevice = DeviceIdentity(
   appVersion: '0.1.0',
 );
 
-ProviderContainer makeContainer(FakeApi api, {AuthState initial = const SignedOut(), MemorySecureStore? store}) {
+ProviderContainer makeContainer(
+  FakeApi api, {
+  AuthState initial = const SignedOut(),
+  MemorySecureStore? store,
+  List<Override> extra = const [],
+}) {
   final container = ProviderContainer.test(
     overrides: [
+      ...extra,
       appConfigProvider.overrideWithValue(
         const AppConfig(flavor: AppFlavor.staging, apiBaseUrl: 'https://api.test/api/v1'),
       ),

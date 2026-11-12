@@ -1,17 +1,13 @@
 {
   "@@locale": "en",
-
   "appTitle": "Yekkola",
   "appTagline": "Congo's best teachers, anywhere in Congo.",
-
   "commonContinue": "Continue",
   "commonCancel": "Cancel",
   "commonRetry": "Try again",
-
   "languageFrench": "Français",
   "languageEnglish": "English",
   "languageLabel": "Language",
-
   "authTitle": "Sign in",
   "authSubtitle": "Sign in with your phone number: we'll text you a code.",
   "authPhoneLabel": "Phone number",
@@ -27,7 +23,6 @@
   "authChangeNumber": "Change number",
   "authNoCodeTitle": "Still no code?",
   "authNoCodeHint": "Check the number and that your phone can receive texts (signal, full storage), then try again a little later.",
-
   "deviceLimitTitle": "Too many devices signed in",
   "deviceLimitBody": "{limit, plural, =1{Your account can be signed in on 1 phone at a time.} other{Your account can be signed in on {limit} phones at a time.}} Choose a device to sign out to use this one. Its downloads are deleted as soon as it goes online again, and stop playing after their expiry date.",
   "deviceLimitSignOut": "Sign out this device",
@@ -35,19 +30,15 @@
   "deviceUnnamedAndroid": "Android phone",
   "deviceUnnamedIos": "iPhone",
   "deviceThisOne": "This device",
-
   "profileTitle": "Welcome to Yekkola!",
   "profileSubtitle": "What's your name? It will appear on your certificates.",
   "profileNameLabel": "Full name",
   "profileNameRequired": "Enter your name.",
-
   "suspendedTitle": "Your account is suspended",
   "suspendedBody": "You can't take courses for now. Contact Yekkola support to find out more.",
-
   "homeTitle": "My courses",
   "homeWelcome": "Hello {name}!",
   "homeComingSoon": "Your courses and downloads will appear here.",
-
   "accountSignOut": "Sign out",
   "accountDevices": "Devices",
   "accountDevicesIntro": "The phones where the Yekkola app is signed in and can keep downloads.",
@@ -55,7 +46,6 @@
   "accountRemoveDevice": "Remove",
   "accountRemoveDeviceTitle": "Remove this device?",
   "accountRemoveDeviceBody": "It will be signed out. Its downloads are deleted as soon as it goes online again, and stop playing after their expiry date.",
-
   "errorNetwork": "No connection. Check your network and try again.",
   "errorGeneric": "Something went wrong. Try again.",
   "errorPhoneInvalid": "Invalid phone number.",
@@ -68,12 +58,6 @@
   "errorOtpUnavailable": "Sending codes is temporarily unavailable. Try again later.",
   "errorTryAgainIn": "Try again in {seconds} s.",
   "errorAccountBanned": "This account has been deactivated.",
-
-  "mediaLabTitle": "Downloads (test)",
-  "mediaLabIntro": "Offline prototype: download a lesson, turn on airplane mode, then play it. Files stay encrypted on the phone.",
-  "mediaLabEmpty": "No video or audio lessons in your courses.",
-  "mediaVideoLesson": "Video lesson",
-  "mediaAudioLesson": "Audio lesson",
   "mediaDownload": "Download",
   "mediaDownloading": "Downloading… {percent}%",
   "mediaPaused": "Paused at {percent}% — tap Download to resume",
@@ -90,7 +74,6 @@
   "errorOfflineUnsupported": "This lesson can't be downloaded yet.",
   "errorOfflineMediaChanged": "This download was removed: the lesson changed. Download it again.",
   "errorOfflineNotDownloaded": "This download isn't on this phone for your account.",
-
   "navExplore": "Explore",
   "catalogSearchHint": "Search for a course or a subject…",
   "catalogFeatured": "Featured",
@@ -145,7 +128,6 @@
   "ratingNew": "New",
   "refreshFailedCopy": "Couldn't update right now: page saved on {date}.",
   "courseUpdatedOn": "Updated {date}",
-
   "checkoutTitle": "Payment",
   "checkoutSummary": "Your order",
   "checkoutDiscount": "Discount",
@@ -189,7 +171,6 @@
   "checkoutCouponNotApplied": "You already have a pending order for this course: it keeps its price, so the promo code doesn't apply to it.",
   "checkoutRefundedTitle": "Order refunded",
   "checkoutRefundedBody": "This order was refunded; the course is no longer in your account.",
-
   "learnNoCourses": "You don't have any courses yet. Find one you like!",
   "learnExplore": "Explore courses",
   "learnProgress": "{percent}% done",
@@ -210,5 +191,22 @@
   "learnFilterAll": "All",
   "learnFilterInProgress": "In progress",
   "learnFilterCompleted": "Completed",
-  "learnNoneInFilter": "No courses here yet."
+  "learnNoneInFilter": "No courses here yet.",
+  "downloadsTitle": "Downloads",
+  "downloadsEmpty": "No downloads. In a course, tap a lesson's download icon to keep it offline.",
+  "downloadWifiOnly": "Download on Wi-Fi only",
+  "downloadWifiOnlyHint": "Downloads wait for Wi-Fi and pause without it.",
+  "downloadStorageUsed": "{size} used on this phone",
+  "downloadDeleteAll": "Delete all",
+  "downloadDeleteAllTitle": "Delete all downloads?",
+  "downloadDeleteAllBody": "They won't be available offline any more. You can download them again.",
+  "downloadOtherCourse": "Other lessons",
+  "downloadQueued": "Queued",
+  "downloadWaitingForWifi": "Waiting for Wi-Fi",
+  "downloadChooseQuality": "Choose the quality",
+  "downloadQualityRecommended": "{height}p — recommended, less data",
+  "downloadQualityHeight": "{height}p",
+  "downloadQualityAudio": "Audio",
+  "downloadDataNote": "Downloading uses your mobile data when you're not on Wi-Fi.",
+  "downloadWifiOnlyNote": "The download will start on Wi-Fi (setting in Downloads)."
 }

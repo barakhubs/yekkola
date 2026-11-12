@@ -8,6 +8,8 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../auth/presentation/api_error_text.dart';
 import '../../catalog/presentation/catalog_labels.dart';
 import '../../catalog/presentation/widgets/catalog_widgets.dart';
+import '../../media/data/hls_downloader.dart';
+import '../../media/presentation/download_options.dart';
 import '../../media/presentation/downloads_controller.dart';
 import '../../../core/sync/sync_providers.dart';
 import 'learning_providers.dart';
@@ -170,7 +172,20 @@ class _LessonRow extends ConsumerWidget {
         trailing = IconButton(
           tooltip: l10n.mediaDownload,
           icon: const Icon(Icons.download_outlined),
-          onPressed: () => controller.start(lesson.uid),
+          onPressed: () async {
+            // Sizes before anything is downloaded; our lowest is the default (PRD-07 FR-08).
+            final options = DownloadOption.listFrom(lesson.downloads);
+            final rendition = options.length <= 1
+                ? options.firstOrNull?.rendition
+                : await chooseDownloadQuality(context, options, wifiOnly: ref.read(wifiOnlyProvider));
+            if (options.length > 1 && rendition == null) return;
+            final view = ref.read(learnCourseProvider(courseId)).value?.data;
+            controller.enqueue(
+              lesson.uid,
+              rendition: rendition,
+              labels: DownloadLabels(courseId: courseId, courseTitle: view?.course.title, lessonTitle: lesson.title),
+            );
+          },
         );
       }
     }
