@@ -22,6 +22,8 @@ String apiErrorText(AppLocalizations l10n, ApiException e) {
     'offline.device_required' => l10n.errorOfflineDeviceRequired,
     'offline.unsupported_media' => l10n.errorOfflineUnsupported,
     'offline.media_changed' => l10n.errorOfflineMediaChanged,
+    'offline.storage_error' => l10n.errorOfflineStorage,
+    'offline.busy' => l10n.errorOfflineBusy,
     'playback.foreign_url' || 'playback.no_key' || 'playback.bad_key' => l10n.errorPlaybackSetup,
     'offline.not_downloaded' => l10n.errorOfflineNotDownloaded,
     'validation.failed' => e.fieldError('phone') ?? e.fieldError('code') ?? e.fieldError('name') ?? l10n.errorGeneric,

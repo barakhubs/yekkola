@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/mobile-downloads`, PR #88 (downloads manager)
+- **Current branch:** `feature/mobile-downloads`, PR #89 (review fixes for the downloads manager, #88)
 - **Next up:** documents and quizzes in the app; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
@@ -509,7 +509,9 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] My courses, learning view, streaming player with overlay and `FLAG_SECURE` (PRD-06 FR-01–FR-05 in part, PRD-07 FR-02, FR-04, FR-13): My courses tab (progress, last activity, in progress / completed filters), course view (lesson status, continue, per-lesson download), streaming through a loopback proxy (credentials never reach R2), speed control and 10 s back, resume at the furthest of phone and API, progress saving shared with offline playback, mid-lesson failures stop with the reason and a retry — #86, review fixes #87
 - [ ] Learning gaps vs PRD-06: next / previous lesson from the player (FR-02); captions or transcript if the PRD asks; resume across devices for downloads (offline player uses the phone's position)
 - [ ] App: document and quiz lessons (shown as "coming soon" in the course view)
-- [x] Downloads manager (PRD-07 FR-08, FR-09): quality choice with real sizes before downloading (learning view `downloads`, lowest first), queue one at a time, Wi-Fi only (waits / pauses / resumes), downloads screen by course with quality, size, expiry, pause/resume/play/delete, storage used, delete all; interrupted downloads resume at launch on Wi-Fi — #88
+- [x] Downloads manager (PRD-07 FR-08, FR-09): quality choice with real sizes before downloading (learning view `downloads`, lowest first), queue one at a time, Wi-Fi only (waits / pauses / resumes), downloads screen by course with quality, size, expiry, pause/resume/play/delete, delete per course and all, storage used; network drops wait and continue; interrupted downloads resume at launch on Wi-Fi only (a paused one stays paused) — #88, review fixes #89
+- [ ] Per-course download size estimate before downloading a whole course (PRD-07 FR-08) and "download the whole course"
+- [ ] Entitlement renewal and a student resuming the same lesson can overlap (both write its manifest): route renewals through `DownloadsController`
 - [ ] Documents (stamped, app-private), quizzes (offline attempts)
 - [ ] Certificates, reviews, Q&A
 - [ ] Push (FCM) + local notifications, deep links

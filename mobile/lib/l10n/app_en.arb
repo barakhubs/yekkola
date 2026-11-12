@@ -208,5 +208,11 @@
   "downloadQualityHeight": "{height}p",
   "downloadQualityAudio": "Audio",
   "downloadDataNote": "Downloading uses your mobile data when you're not on Wi-Fi.",
-  "downloadWifiOnlyNote": "The download will start on Wi-Fi (setting in Downloads)."
+  "downloadWifiOnlyNote": "The download will start on Wi-Fi (setting in Downloads).",
+  "downloadWaitingForNetwork": "Waiting for the network",
+  "downloadDeleteCourse": "Delete this course's downloads",
+  "downloadUntitled": "Lesson",
+  "downloadSizeUnavailable": "This lesson's size isn't known yet. Try again once you're online.",
+  "errorOfflineStorage": "The download failed: the phone may be short of space.",
+  "errorOfflineBusy": "This download is in progress. Try again in a moment."
 }

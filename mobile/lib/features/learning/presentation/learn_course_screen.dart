@@ -148,6 +148,9 @@ class _LessonRow extends ConsumerWidget {
       if (lesson.durationSeconds != null) durationLabel(l10n, lesson.durationSeconds!),
       switch (entry?.phase) {
         DownloadPhase.downloading => l10n.mediaDownloading((entry!.progress * 100).round()),
+        DownloadPhase.queued => l10n.downloadQueued,
+        DownloadPhase.waitingForWifi => l10n.downloadWaitingForWifi,
+        DownloadPhase.waitingForNetwork => l10n.downloadWaitingForNetwork,
         DownloadPhase.failed when entry?.error != null => apiErrorText(l10n, entry!.error!),
         _ when download != null && download.isComplete => l10n.learnDownloaded,
         _ => null,
@@ -156,7 +159,12 @@ class _LessonRow extends ConsumerWidget {
 
     Widget? trailing;
     if (_playable(lesson.type2)) {
-      if (entry?.phase == DownloadPhase.downloading) {
+      if (const {
+        DownloadPhase.downloading,
+        DownloadPhase.queued,
+        DownloadPhase.waitingForWifi,
+        DownloadPhase.waitingForNetwork,
+      }.contains(entry?.phase)) {
         trailing = IconButton(
           tooltip: l10n.mediaPause,
           icon: const Icon(Icons.pause),
@@ -173,12 +181,26 @@ class _LessonRow extends ConsumerWidget {
           tooltip: l10n.mediaDownload,
           icon: const Icon(Icons.download_outlined),
           onPressed: () async {
-            // Sizes before anything is downloaded; our lowest is the default (PRD-07 FR-08).
-            final options = DownloadOption.listFrom(lesson.downloads);
-            final rendition = options.length <= 1
-                ? options.firstOrNull?.rendition
-                : await chooseDownloadQuality(context, options, wifiOnly: ref.read(wifiOnlyProvider));
-            if (options.length > 1 && rendition == null) return;
+            // The size is always shown before anything is downloaded; our lowest is the default (PRD-07 FR-08).
+            var options = DownloadOption.listFrom(lesson.downloads);
+            if (options.isEmpty) {
+              // An older saved copy of the course without sizes: ask the API again.
+              ref.read(learningRefreshProvider.notifier).pull();
+              final fresh = await ref
+                  .read(learnCourseProvider(courseId).future)
+                  .then<LearningViewResource?>((c) => c.data, onError: (Object _) => null);
+              final again = fresh == null
+                  ? null
+                  : [for (final s in fresh.sections) ...s.lessons].where((l) => l.uid == lesson.uid).firstOrNull;
+              options = again == null ? const [] : DownloadOption.listFrom(again.downloads);
+            }
+            if (!context.mounted) return;
+            if (options.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.downloadSizeUnavailable)));
+              return;
+            }
+            final rendition = await chooseDownloadQuality(context, options, wifiOnly: ref.read(wifiOnlyProvider));
+            if (rendition == null) return;
             final view = ref.read(learnCourseProvider(courseId)).value?.data;
             controller.enqueue(
               lesson.uid,
