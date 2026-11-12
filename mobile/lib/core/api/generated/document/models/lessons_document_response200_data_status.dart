@@ -9,48 +9,37 @@ enum LessonsDocumentResponse200DataStatusValue {
 
 sealed class LessonsDocumentResponse200DataStatus {
   const LessonsDocumentResponse200DataStatus();
-  static const ready = LessonsDocumentResponse200DataStatusKnown(
-    LessonsDocumentResponse200DataStatusValue.ready,
-  );
+  static const ready = LessonsDocumentResponse200DataStatusKnown(LessonsDocumentResponse200DataStatusValue.ready);
   factory LessonsDocumentResponse200DataStatus.fromJson(Object? json) {
     if (!(json is String)) {
       throw ArgumentError.value(json, "LessonsDocumentResponse200DataStatus");
     }
     for (final value in LessonsDocumentResponse200DataStatusValue.values) {
-      if (value.value == json)
-        return LessonsDocumentResponse200DataStatusKnown(value);
+      if (value.value == json) return LessonsDocumentResponse200DataStatusKnown(value);
     }
     return LessonsDocumentResponse200DataStatusUnknown(json);
   }
   String toJson();
 }
 
-final class LessonsDocumentResponse200DataStatusKnown
-    extends LessonsDocumentResponse200DataStatus {
+final class LessonsDocumentResponse200DataStatusKnown extends LessonsDocumentResponse200DataStatus {
   const LessonsDocumentResponse200DataStatusKnown(this.value);
   final LessonsDocumentResponse200DataStatusValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsDocumentResponse200DataStatusKnown &&
-      other.value == value;
+  bool operator ==(Object other) => other is LessonsDocumentResponse200DataStatusKnown && other.value == value;
   @override
-  int get hashCode =>
-      Object.hash(LessonsDocumentResponse200DataStatusKnown, value);
+  int get hashCode => Object.hash(LessonsDocumentResponse200DataStatusKnown, value);
 }
 
-final class LessonsDocumentResponse200DataStatusUnknown
-    extends LessonsDocumentResponse200DataStatus {
+final class LessonsDocumentResponse200DataStatusUnknown extends LessonsDocumentResponse200DataStatus {
   const LessonsDocumentResponse200DataStatusUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsDocumentResponse200DataStatusUnknown &&
-      other.rawValue == rawValue;
+  bool operator ==(Object other) => other is LessonsDocumentResponse200DataStatusUnknown && other.rawValue == rawValue;
   @override
-  int get hashCode =>
-      Object.hash(LessonsDocumentResponse200DataStatusUnknown, rawValue);
+  int get hashCode => Object.hash(LessonsDocumentResponse200DataStatusUnknown, rawValue);
 }

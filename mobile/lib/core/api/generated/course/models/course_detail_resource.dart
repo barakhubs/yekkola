@@ -73,54 +73,32 @@ class CourseDetailResource {
       title: json["title"] as String?,
       subtitle: json["subtitle"] as String?,
       coverUrl: json["cover_url"] as String?,
-      professor: PublicProfessorResource.fromJson(
-        json["professor"] as Map<String, Object?>,
-      ),
+      professor: PublicProfessorResource.fromJson(json["professor"] as Map<String, Object?>),
       category: json["category"] == null
           ? null
-          : CourseDetailResourceCategory.fromJson(
-              json["category"] as Map<String, Object?>,
-            ),
+          : CourseDetailResourceCategory.fromJson(json["category"] as Map<String, Object?>),
       language: json["language"] as String,
       level: json["level"] as String,
-      audience: (json["audience"] as List<Object?>)
-          .map((item) => item as String)
-          .toList(),
+      audience: (json["audience"] as List<Object?>).map((item) => item as String).toList(),
       isFree: json["is_free"] as bool,
-      price: json["price"] == null
-          ? null
-          : CourseDetailResourcePrice.fromJson(
-              json["price"] as Map<String, Object?>,
-            ),
+      price: json["price"] == null ? null : CourseDetailResourcePrice.fromJson(json["price"] as Map<String, Object?>),
       rating: json["rating"] as num?,
       ratingCount: _readJsonInteger(json["rating_count"]),
       enrollmentCount: _readJsonInteger(json["enrollment_count"]),
       totalDurationSeconds: _readJsonInteger(json["total_duration_seconds"]),
       publishedAt: json["published_at"] as String?,
       description: json["description"] as String?,
-      outcomes: (json["outcomes"] as List<Object?>)
-          .map((item) => item as String)
-          .toList(),
-      requirements: (json["requirements"] as List<Object?>)
-          .map((item) => item as String)
-          .toList(),
+      outcomes: (json["outcomes"] as List<Object?>).map((item) => item as String).toList(),
+      requirements: (json["requirements"] as List<Object?>).map((item) => item as String).toList(),
       sections: (json["sections"] as List<Object?>)
-          .map(
-            (item) => CourseDetailResourceSectionsItem.fromJson(
-              item as Map<String, Object?>,
-            ),
-          )
+          .map((item) => CourseDetailResourceSectionsItem.fromJson(item as Map<String, Object?>))
           .toList(),
       lessonCount: _readJsonInteger(json["lesson_count"]),
       downloadBytes: _readJsonInteger(json["download_bytes"]),
       updatedAt: json["updated_at"] as String?,
       canBuyForOthers: json["can_buy_for_others"] as bool,
       bundles: (json["bundles"] as List<Object?>)
-          .map(
-            (item) => CourseDetailResourceBundlesItem.fromJson(
-              item as Map<String, Object?>,
-            ),
-          )
+          .map((item) => CourseDetailResourceBundlesItem.fromJson(item as Map<String, Object?>))
           .toList(),
       additionalProperties: {
         for (final entry in json.entries)

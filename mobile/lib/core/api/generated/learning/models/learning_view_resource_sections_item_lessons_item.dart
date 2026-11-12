@@ -14,9 +14,7 @@ class LearningViewResourceSectionsItemLessonsItem {
     this.additionalProperties = const {},
   });
 
-  factory LearningViewResourceSectionsItemLessonsItem.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory LearningViewResourceSectionsItemLessonsItem.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("duration_seconds")) {
       throw ArgumentError("Missing required property: duration_seconds");
     }
@@ -27,16 +25,12 @@ class LearningViewResourceSectionsItemLessonsItem {
       uid: json["uid"] as String,
       type2: json["type"] as String,
       title: json["title"] as String,
-      durationSeconds: json["duration_seconds"] == null
-          ? null
-          : _readJsonInteger(json["duration_seconds"]),
+      durationSeconds: json["duration_seconds"] == null ? null : _readJsonInteger(json["duration_seconds"]),
       status: json["status"] as String,
       positionSeconds: _readJsonInteger(json["position_seconds"]),
       quiz: json["quiz"] == null
           ? null
-          : LearningViewResourceSectionsItemLessonsItemQuiz.fromJson(
-              json["quiz"] as Map<String, Object?>,
-            ),
+          : LearningViewResourceSectionsItemLessonsItemQuiz.fromJson(json["quiz"] as Map<String, Object?>),
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
@@ -58,15 +52,7 @@ class LearningViewResourceSectionsItemLessonsItem {
 
   final LearningViewResourceSectionsItemLessonsItemQuiz? quiz;
 
-  static const _knownKeys = <String>{
-    "uid",
-    "type",
-    "title",
-    "duration_seconds",
-    "status",
-    "position_seconds",
-    "quiz",
-  };
+  static const _knownKeys = <String>{"uid", "type", "title", "duration_seconds", "status", "position_seconds", "quiz"};
 
   final Map<String, Object?> additionalProperties;
 

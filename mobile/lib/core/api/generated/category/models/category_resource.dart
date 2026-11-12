@@ -27,9 +27,7 @@ class CategoryResource {
       icon: json["icon"] as String?,
       courseCount: json["course_count"] as num,
       children: (json["children"] as List<Object?>)
-          .map(
-            (item) => CategoryResource.fromJson(item as Map<String, Object?>),
-          )
+          .map((item) => CategoryResource.fromJson(item as Map<String, Object?>))
           .toList(),
       additionalProperties: {
         for (final entry in json.entries)
@@ -52,15 +50,7 @@ class CategoryResource {
 
   final List<CategoryResource> children;
 
-  static const _knownKeys = <String>{
-    "id",
-    "slug",
-    "name",
-    "description",
-    "icon",
-    "course_count",
-    "children",
-  };
+  static const _knownKeys = <String>{"id", "slug", "name", "description", "icon", "course_count", "children"};
 
   final Map<String, Object?> additionalProperties;
 

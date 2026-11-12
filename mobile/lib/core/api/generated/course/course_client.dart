@@ -7,13 +7,9 @@ import 'models/audience.dart' as models show Audience;
 import 'models/course_level.dart' as models show CourseLevel;
 import 'models/courses_index_language.dart' as models show CoursesIndexLanguage;
 import 'models/courses_index_price.dart' as models show CoursesIndexPrice;
-import 'models/courses_index_response200.dart'
-    as models
-    show CoursesIndexResponse200;
+import 'models/courses_index_response200.dart' as models show CoursesIndexResponse200;
 import 'models/courses_index_sort.dart' as models show CoursesIndexSort;
-import 'models/courses_show_response200.dart'
-    as models
-    show CoursesShowResponse200;
+import 'models/courses_show_response200.dart' as models show CoursesShowResponse200;
 import 'models/featured_response200.dart' as models show FeaturedResponse200;
 
 class CourseClient {
@@ -66,9 +62,7 @@ class CourseClient {
       },
       cancelToken: cancelToken,
     );
-    return models.CoursesIndexResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CoursesIndexResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   Future<models.CoursesShowResponse200> coursesShow({
@@ -96,9 +90,7 @@ class CourseClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.CoursesShowResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CoursesShowResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Home page rails: featured (admin order), popular, new, free
@@ -118,13 +110,7 @@ class CourseClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/featured",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.FeaturedResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/featured", options: _options, cancelToken: cancelToken);
+    return models.FeaturedResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

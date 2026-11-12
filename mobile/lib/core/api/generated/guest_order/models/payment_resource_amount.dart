@@ -7,15 +7,14 @@ class PaymentResourceAmount {
     this.additionalProperties = const {},
   });
 
-  factory PaymentResourceAmount.fromJson(Map<String, Object?> json) =>
-      PaymentResourceAmount(
-        amountMinor: _readJsonInteger(json["amount_minor"]),
-        currency: json["currency"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory PaymentResourceAmount.fromJson(Map<String, Object?> json) => PaymentResourceAmount(
+    amountMinor: _readJsonInteger(json["amount_minor"]),
+    currency: json["currency"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final int amountMinor;
 

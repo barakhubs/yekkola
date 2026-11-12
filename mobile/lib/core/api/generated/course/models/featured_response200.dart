@@ -3,21 +3,15 @@
 import 'featured_response200_data.dart';
 
 class FeaturedResponse200 {
-  const FeaturedResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const FeaturedResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory FeaturedResponse200.fromJson(Map<String, Object?> json) =>
-      FeaturedResponse200(
-        data: FeaturedResponse200Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory FeaturedResponse200.fromJson(Map<String, Object?> json) => FeaturedResponse200(
+    data: FeaturedResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final FeaturedResponse200Data data;
 

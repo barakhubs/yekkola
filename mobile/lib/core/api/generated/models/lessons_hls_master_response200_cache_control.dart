@@ -14,46 +14,35 @@ sealed class LessonsHlsMasterResponse200CacheControl {
   );
   factory LessonsHlsMasterResponse200CacheControl.fromJson(Object? json) {
     if (!(json is String)) {
-      throw ArgumentError.value(
-        json,
-        "LessonsHlsMasterResponse200CacheControl",
-      );
+      throw ArgumentError.value(json, "LessonsHlsMasterResponse200CacheControl");
     }
     for (final value in LessonsHlsMasterResponse200CacheControlValue.values) {
-      if (value.value == json)
-        return LessonsHlsMasterResponse200CacheControlKnown(value);
+      if (value.value == json) return LessonsHlsMasterResponse200CacheControlKnown(value);
     }
     return LessonsHlsMasterResponse200CacheControlUnknown(json);
   }
   String toJson();
 }
 
-final class LessonsHlsMasterResponse200CacheControlKnown
-    extends LessonsHlsMasterResponse200CacheControl {
+final class LessonsHlsMasterResponse200CacheControlKnown extends LessonsHlsMasterResponse200CacheControl {
   const LessonsHlsMasterResponse200CacheControlKnown(this.value);
   final LessonsHlsMasterResponse200CacheControlValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsHlsMasterResponse200CacheControlKnown &&
-      other.value == value;
+  bool operator ==(Object other) => other is LessonsHlsMasterResponse200CacheControlKnown && other.value == value;
   @override
-  int get hashCode =>
-      Object.hash(LessonsHlsMasterResponse200CacheControlKnown, value);
+  int get hashCode => Object.hash(LessonsHlsMasterResponse200CacheControlKnown, value);
 }
 
-final class LessonsHlsMasterResponse200CacheControlUnknown
-    extends LessonsHlsMasterResponse200CacheControl {
+final class LessonsHlsMasterResponse200CacheControlUnknown extends LessonsHlsMasterResponse200CacheControl {
   const LessonsHlsMasterResponse200CacheControlUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
   bool operator ==(Object other) =>
-      other is LessonsHlsMasterResponse200CacheControlUnknown &&
-      other.rawValue == rawValue;
+      other is LessonsHlsMasterResponse200CacheControlUnknown && other.rawValue == rawValue;
   @override
-  int get hashCode =>
-      Object.hash(LessonsHlsMasterResponse200CacheControlUnknown, rawValue);
+  int get hashCode => Object.hash(LessonsHlsMasterResponse200CacheControlUnknown, rawValue);
 }

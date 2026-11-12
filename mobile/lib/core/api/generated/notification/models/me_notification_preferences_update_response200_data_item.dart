@@ -7,18 +7,15 @@ class MeNotificationPreferencesUpdateResponse200DataItem {
     this.additionalProperties = const {},
   });
 
-  factory MeNotificationPreferencesUpdateResponse200DataItem.fromJson(
-    Map<String, Object?> json,
-  ) => MeNotificationPreferencesUpdateResponse200DataItem(
-    type2: json["type"] as String,
-    channels: (json["channels"] as Map<String, Object?>).map(
-      (key, item) => MapEntry(key, item as bool),
-    ),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeNotificationPreferencesUpdateResponse200DataItem.fromJson(Map<String, Object?> json) =>
+      MeNotificationPreferencesUpdateResponse200DataItem(
+        type2: json["type"] as String,
+        channels: (json["channels"] as Map<String, Object?>).map((key, item) => MapEntry(key, item as bool)),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String type2;
 

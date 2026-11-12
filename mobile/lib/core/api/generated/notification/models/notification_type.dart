@@ -27,59 +27,25 @@ enum NotificationTypeValue {
 
 sealed class NotificationType {
   const NotificationType();
-  static const paymentSucceeded = NotificationTypeKnown(
-    NotificationTypeValue.paymentSucceeded,
-  );
-  static const paymentFailed = NotificationTypeKnown(
-    NotificationTypeValue.paymentFailed,
-  );
-  static const refundDecided = NotificationTypeKnown(
-    NotificationTypeValue.refundDecided,
-  );
-  static const courseUpdated = NotificationTypeKnown(
-    NotificationTypeValue.courseUpdated,
-  );
-  static const questionAnswered = NotificationTypeKnown(
-    NotificationTypeValue.questionAnswered,
-  );
-  static const certificateIssued = NotificationTypeKnown(
-    NotificationTypeValue.certificateIssued,
-  );
-  static const applicationDecided = NotificationTypeKnown(
-    NotificationTypeValue.applicationDecided,
-  );
-  static const versionDecided = NotificationTypeKnown(
-    NotificationTypeValue.versionDecided,
-  );
-  static const newQuestion = NotificationTypeKnown(
-    NotificationTypeValue.newQuestion,
-  );
-  static const newReview = NotificationTypeKnown(
-    NotificationTypeValue.newReview,
-  );
+  static const paymentSucceeded = NotificationTypeKnown(NotificationTypeValue.paymentSucceeded);
+  static const paymentFailed = NotificationTypeKnown(NotificationTypeValue.paymentFailed);
+  static const refundDecided = NotificationTypeKnown(NotificationTypeValue.refundDecided);
+  static const courseUpdated = NotificationTypeKnown(NotificationTypeValue.courseUpdated);
+  static const questionAnswered = NotificationTypeKnown(NotificationTypeValue.questionAnswered);
+  static const certificateIssued = NotificationTypeKnown(NotificationTypeValue.certificateIssued);
+  static const applicationDecided = NotificationTypeKnown(NotificationTypeValue.applicationDecided);
+  static const versionDecided = NotificationTypeKnown(NotificationTypeValue.versionDecided);
+  static const newQuestion = NotificationTypeKnown(NotificationTypeValue.newQuestion);
+  static const newReview = NotificationTypeKnown(NotificationTypeValue.newReview);
   static const newSale = NotificationTypeKnown(NotificationTypeValue.newSale);
-  static const payoutSent = NotificationTypeKnown(
-    NotificationTypeValue.payoutSent,
-  );
-  static const payoutFailed = NotificationTypeKnown(
-    NotificationTypeValue.payoutFailed,
-  );
-  static const payoutHeld = NotificationTypeKnown(
-    NotificationTypeValue.payoutHeld,
-  );
-  static const kycDecided = NotificationTypeKnown(
-    NotificationTypeValue.kycDecided,
-  );
-  static const accountStatus = NotificationTypeKnown(
-    NotificationTypeValue.accountStatus,
-  );
-  static const courseTakenDown = NotificationTypeKnown(
-    NotificationTypeValue.courseTakenDown,
-  );
+  static const payoutSent = NotificationTypeKnown(NotificationTypeValue.payoutSent);
+  static const payoutFailed = NotificationTypeKnown(NotificationTypeValue.payoutFailed);
+  static const payoutHeld = NotificationTypeKnown(NotificationTypeValue.payoutHeld);
+  static const kycDecided = NotificationTypeKnown(NotificationTypeValue.kycDecided);
+  static const accountStatus = NotificationTypeKnown(NotificationTypeValue.accountStatus);
+  static const courseTakenDown = NotificationTypeKnown(NotificationTypeValue.courseTakenDown);
   static const warning = NotificationTypeKnown(NotificationTypeValue.warning);
-  static const staffAlert = NotificationTypeKnown(
-    NotificationTypeValue.staffAlert,
-  );
+  static const staffAlert = NotificationTypeKnown(NotificationTypeValue.staffAlert);
   factory NotificationType.fromJson(Object? json) {
     if (!(json is String)) {
       throw ArgumentError.value(json, "NotificationType");
@@ -98,8 +64,7 @@ final class NotificationTypeKnown extends NotificationType {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is NotificationTypeKnown && other.value == value;
+  bool operator ==(Object other) => other is NotificationTypeKnown && other.value == value;
   @override
   int get hashCode => Object.hash(NotificationTypeKnown, value);
 }
@@ -110,8 +75,7 @@ final class NotificationTypeUnknown extends NotificationType {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is NotificationTypeUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is NotificationTypeUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(NotificationTypeUnknown, rawValue);
 }

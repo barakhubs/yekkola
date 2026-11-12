@@ -43,21 +43,14 @@ class QuizAttemptResource {
       lessonUid: json["lesson_uid"] as String,
       startedAt: json["started_at"] as String,
       endsAt: json["ends_at"] as Null,
-      secondsLeft: json["seconds_left"] == null
-          ? null
-          : _readJsonInteger(json["seconds_left"]),
+      secondsLeft: json["seconds_left"] == null ? null : _readJsonInteger(json["seconds_left"]),
       submittedAt: json["submitted_at"] as String?,
       passMarkPct: _readJsonInteger(json["pass_mark_pct"]),
-      scorePct: json["score_pct"] == null
-          ? null
-          : _readJsonInteger(json["score_pct"]),
+      scorePct: json["score_pct"] == null ? null : _readJsonInteger(json["score_pct"]),
       passed: json["passed"] as bool?,
       timedOut: json["timed_out"] as bool,
       questions: (json["questions"] as List<Object?>)
-          .map(
-            (item) =>
-                QuizQuestionResource.fromJson(item as Map<String, Object?>),
-          )
+          .map((item) => QuizQuestionResource.fromJson(item as Map<String, Object?>))
           .toList(),
       additionalProperties: {
         for (final entry in json.entries)

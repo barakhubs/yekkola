@@ -13,22 +13,17 @@ class VerifyOtpRequestDevice {
     this.additionalProperties = const {},
   });
 
-  factory VerifyOtpRequestDevice.fromJson(Map<String, Object?> json) =>
-      VerifyOtpRequestDevice(
-        installId: json["install_id"] as String,
-        platform: DevicePlatform.fromJson(json["platform"]),
-        name: json.containsKey("name") ? json["name"] as String? : null,
-        appVersion: json.containsKey("app_version")
-            ? json["app_version"] as String?
-            : null,
-        pushToken: json.containsKey("push_token")
-            ? json["push_token"] as String?
-            : null,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory VerifyOtpRequestDevice.fromJson(Map<String, Object?> json) => VerifyOtpRequestDevice(
+    installId: json["install_id"] as String,
+    platform: DevicePlatform.fromJson(json["platform"]),
+    name: json.containsKey("name") ? json["name"] as String? : null,
+    appVersion: json.containsKey("app_version") ? json["app_version"] as String? : null,
+    pushToken: json.containsKey("push_token") ? json["push_token"] as String? : null,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String installId;
 
@@ -40,13 +35,7 @@ class VerifyOtpRequestDevice {
 
   final String? pushToken;
 
-  static const _knownKeys = <String>{
-    "install_id",
-    "platform",
-    "name",
-    "app_version",
-    "push_token",
-  };
+  static const _knownKeys = <String>{"install_id", "platform", "name", "app_version", "push_token"};
 
   final Map<String, Object?> additionalProperties;
 

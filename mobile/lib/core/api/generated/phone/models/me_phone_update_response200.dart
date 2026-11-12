@@ -3,21 +3,15 @@
 import 'me_phone_update_response200_data.dart';
 
 class MePhoneUpdateResponse200 {
-  const MePhoneUpdateResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MePhoneUpdateResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory MePhoneUpdateResponse200.fromJson(Map<String, Object?> json) =>
-      MePhoneUpdateResponse200(
-        data: MePhoneUpdateResponse200Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MePhoneUpdateResponse200.fromJson(Map<String, Object?> json) => MePhoneUpdateResponse200(
+    data: MePhoneUpdateResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final MePhoneUpdateResponse200Data data;
 

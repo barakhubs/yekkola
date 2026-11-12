@@ -12,20 +12,17 @@ class UpdateProfileRequest {
     this.additionalProperties = const {},
   });
 
-  factory UpdateProfileRequest.fromJson(Map<String, Object?> json) =>
-      UpdateProfileRequest(
-        name: json["name"] as String,
-        email: json.containsKey("email") ? json["email"] as String? : null,
-        locale: UpdateProfileRequestLocale.fromJson(json["locale"]),
-        provinceId: json.containsKey("province_id")
-            ? json["province_id"] as String?
-            : null,
-        city: json.containsKey("city") ? json["city"] as String? : null,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory UpdateProfileRequest.fromJson(Map<String, Object?> json) => UpdateProfileRequest(
+    name: json["name"] as String,
+    email: json.containsKey("email") ? json["email"] as String? : null,
+    locale: UpdateProfileRequestLocale.fromJson(json["locale"]),
+    provinceId: json.containsKey("province_id") ? json["province_id"] as String? : null,
+    city: json.containsKey("city") ? json["city"] as String? : null,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String name;
 
@@ -37,13 +34,7 @@ class UpdateProfileRequest {
 
   final String? city;
 
-  static const _knownKeys = <String>{
-    "name",
-    "email",
-    "locale",
-    "province_id",
-    "city",
-  };
+  static const _knownKeys = <String>{"name", "email", "locale", "province_id", "city"};
 
   final Map<String, Object?> additionalProperties;
 

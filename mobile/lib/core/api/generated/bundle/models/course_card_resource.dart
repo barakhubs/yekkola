@@ -54,25 +54,15 @@ class CourseCardResource {
       title: json["title"] as String?,
       subtitle: json["subtitle"] as String?,
       coverUrl: json["cover_url"] as String?,
-      professor: CourseCardResourceProfessor.fromJson(
-        json["professor"] as Map<String, Object?>,
-      ),
+      professor: CourseCardResourceProfessor.fromJson(json["professor"] as Map<String, Object?>),
       category: json["category"] == null
           ? null
-          : CourseCardResourceCategory.fromJson(
-              json["category"] as Map<String, Object?>,
-            ),
+          : CourseCardResourceCategory.fromJson(json["category"] as Map<String, Object?>),
       language: json["language"] as String,
       level: json["level"] as String,
-      audience: (json["audience"] as List<Object?>)
-          .map((item) => item as String)
-          .toList(),
+      audience: (json["audience"] as List<Object?>).map((item) => item as String).toList(),
       isFree: json["is_free"] as bool,
-      price: json["price"] == null
-          ? null
-          : CourseCardResourcePrice.fromJson(
-              json["price"] as Map<String, Object?>,
-            ),
+      price: json["price"] == null ? null : CourseCardResourcePrice.fromJson(json["price"] as Map<String, Object?>),
       rating: json["rating"] as num?,
       ratingCount: _readJsonInteger(json["rating_count"]),
       enrollmentCount: _readJsonInteger(json["enrollment_count"]),

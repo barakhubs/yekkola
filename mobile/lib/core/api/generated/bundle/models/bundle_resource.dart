@@ -34,20 +34,12 @@ class BundleResource {
       professor: json.containsKey("professor")
           ? json["professor"] == null
                 ? null
-                : BundleResourceProfessor.fromJson(
-                    json["professor"] as Map<String, Object?>,
-                  )
+                : BundleResourceProfessor.fromJson(json["professor"] as Map<String, Object?>)
           : null,
-      price: BundleResourcePrice.fromJson(
-        json["price"] as Map<String, Object?>,
-      ),
-      listTotal: BundleResourceListTotal.fromJson(
-        json["list_total"] as Map<String, Object?>,
-      ),
+      price: BundleResourcePrice.fromJson(json["price"] as Map<String, Object?>),
+      listTotal: BundleResourceListTotal.fromJson(json["list_total"] as Map<String, Object?>),
       courses: (json["courses"] as List<Object?>)
-          .map(
-            (item) => CourseCardResource.fromJson(item as Map<String, Object?>),
-          )
+          .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
           .toList(),
       additionalProperties: {
         for (final entry in json.entries)

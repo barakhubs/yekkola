@@ -28,9 +28,7 @@ class LearningViewResourceCourse {
       slug: json["slug"] as String,
       title: json["title"] as String?,
       coverUrl: json["cover_url"] as String?,
-      professor: LearningViewResourceCourseProfessor.fromJson(
-        json["professor"] as Map<String, Object?>,
-      ),
+      professor: LearningViewResourceCourseProfessor.fromJson(json["professor"] as Map<String, Object?>),
       updatedAt: json["updated_at"] as String?,
       additionalProperties: {
         for (final entry in json.entries)
@@ -51,14 +49,7 @@ class LearningViewResourceCourse {
 
   final String? updatedAt;
 
-  static const _knownKeys = <String>{
-    "id",
-    "slug",
-    "title",
-    "cover_url",
-    "professor",
-    "updated_at",
-  };
+  static const _knownKeys = <String>{"id", "slug", "title", "cover_url", "professor", "updated_at"};
 
   final Map<String, Object?> additionalProperties;
 

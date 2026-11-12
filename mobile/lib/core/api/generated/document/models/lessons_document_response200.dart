@@ -3,21 +3,15 @@
 import 'lessons_document_response200_data.dart';
 
 class LessonsDocumentResponse200 {
-  const LessonsDocumentResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const LessonsDocumentResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory LessonsDocumentResponse200.fromJson(Map<String, Object?> json) =>
-      LessonsDocumentResponse200(
-        data: LessonsDocumentResponse200Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory LessonsDocumentResponse200.fromJson(Map<String, Object?> json) => LessonsDocumentResponse200(
+    data: LessonsDocumentResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final LessonsDocumentResponse200Data data;
 

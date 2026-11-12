@@ -9,9 +9,7 @@ class MeEnrollmentsIndexResponse200Links {
     this.additionalProperties = const {},
   });
 
-  factory MeEnrollmentsIndexResponse200Links.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory MeEnrollmentsIndexResponse200Links.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("first")) {
       throw ArgumentError("Missing required property: first");
     }

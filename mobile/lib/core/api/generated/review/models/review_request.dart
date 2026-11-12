@@ -2,11 +2,7 @@
 
 /// A rating (1–5) and optional text (PRD-06 FR-12).
 class ReviewRequest {
-  const ReviewRequest({
-    required this.rating,
-    this.body,
-    this.additionalProperties = const {},
-  });
+  const ReviewRequest({required this.rating, this.body, this.additionalProperties = const {}});
 
   factory ReviewRequest.fromJson(Map<String, Object?> json) => ReviewRequest(
     rating: _readJsonInteger(json["rating"]),

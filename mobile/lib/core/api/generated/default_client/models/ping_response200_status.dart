@@ -28,8 +28,7 @@ final class PingResponse200StatusKnown extends PingResponse200Status {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is PingResponse200StatusKnown && other.value == value;
+  bool operator ==(Object other) => other is PingResponse200StatusKnown && other.value == value;
   @override
   int get hashCode => Object.hash(PingResponse200StatusKnown, value);
 }
@@ -40,8 +39,7 @@ final class PingResponse200StatusUnknown extends PingResponse200Status {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is PingResponse200StatusUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is PingResponse200StatusUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(PingResponse200StatusUnknown, rawValue);
 }

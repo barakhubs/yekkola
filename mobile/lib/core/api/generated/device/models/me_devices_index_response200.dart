@@ -3,23 +3,15 @@
 import 'device_resource.dart';
 
 class MeDevicesIndexResponse200 {
-  const MeDevicesIndexResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MeDevicesIndexResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory MeDevicesIndexResponse200.fromJson(Map<String, Object?> json) =>
-      MeDevicesIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) => DeviceResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeDevicesIndexResponse200.fromJson(Map<String, Object?> json) => MeDevicesIndexResponse200(
+    data: (json["data"] as List<Object?>).map((item) => DeviceResource.fromJson(item as Map<String, Object?>)).toList(),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<DeviceResource> data;
 

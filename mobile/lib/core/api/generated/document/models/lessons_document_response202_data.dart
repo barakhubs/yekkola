@@ -10,17 +10,14 @@ class LessonsDocumentResponse202Data {
     this.additionalProperties = const {},
   });
 
-  factory LessonsDocumentResponse202Data.fromJson(Map<String, Object?> json) =>
-      LessonsDocumentResponse202Data(
-        status: LessonsDocumentResponse202DataStatus.fromJson(json["status"]),
-        retryAfter: LessonsDocumentResponse202DataRetryAfter.fromJson(
-          json["retry_after"],
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory LessonsDocumentResponse202Data.fromJson(Map<String, Object?> json) => LessonsDocumentResponse202Data(
+    status: LessonsDocumentResponse202DataStatus.fromJson(json["status"]),
+    retryAfter: LessonsDocumentResponse202DataRetryAfter.fromJson(json["retry_after"]),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final LessonsDocumentResponse202DataStatus status;
 

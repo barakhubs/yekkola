@@ -32,20 +32,12 @@ class ReviewResource {
       id: json["id"] as String,
       rating: _readJsonInteger(json["rating"]),
       body: json["body"] as String?,
-      author: ReviewResourceAuthor.fromJson(
-        json["author"] as Map<String, Object?>,
-      ),
+      author: ReviewResourceAuthor.fromJson(json["author"] as Map<String, Object?>),
       createdAt: json["created_at"] as String,
       editedAt: json["edited_at"] as String?,
-      reply: json["reply"] == null
-          ? null
-          : ReviewResourceReply.fromJson(json["reply"] as Map<String, Object?>),
+      reply: json["reply"] == null ? null : ReviewResourceReply.fromJson(json["reply"] as Map<String, Object?>),
       status: json.containsKey("status") ? json["status"] as String : null,
-      course: json.containsKey("course")
-          ? ReviewResourceCourse.fromJson(
-              json["course"] as Map<String, Object?>,
-            )
-          : null,
+      course: json.containsKey("course") ? ReviewResourceCourse.fromJson(json["course"] as Map<String, Object?>) : null,
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,

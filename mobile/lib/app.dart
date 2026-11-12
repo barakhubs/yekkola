@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/providers.dart';
 import 'core/router/app_router.dart';
+import 'core/sync/sync_providers.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/auth_controller.dart';
@@ -34,6 +35,8 @@ class _YekkolaAppState extends ConsumerState<YekkolaApp> {
     ref.listen(authControllerProvider, (_, next) {
       if (next is SignedOut && next.sessionExpired) unawaited(ref.read(downloadStoreProvider).deleteAll());
     });
+    // Starts the sync engine (outbox → API) for the app's lifetime.
+    ref.watch(syncSchedulerProvider);
     final router = ref.watch(routerProvider);
     final config = ref.watch(appConfigProvider);
 

@@ -10,51 +10,38 @@ enum CertificateVerificationResourceStatusValue {
 
 sealed class CertificateVerificationResourceStatus {
   const CertificateVerificationResourceStatus();
-  static const revoked = CertificateVerificationResourceStatusKnown(
-    CertificateVerificationResourceStatusValue.revoked,
-  );
-  static const valid = CertificateVerificationResourceStatusKnown(
-    CertificateVerificationResourceStatusValue.valid,
-  );
+  static const revoked = CertificateVerificationResourceStatusKnown(CertificateVerificationResourceStatusValue.revoked);
+  static const valid = CertificateVerificationResourceStatusKnown(CertificateVerificationResourceStatusValue.valid);
   factory CertificateVerificationResourceStatus.fromJson(Object? json) {
     if (!(json is String)) {
       throw ArgumentError.value(json, "CertificateVerificationResourceStatus");
     }
     for (final value in CertificateVerificationResourceStatusValue.values) {
-      if (value.value == json)
-        return CertificateVerificationResourceStatusKnown(value);
+      if (value.value == json) return CertificateVerificationResourceStatusKnown(value);
     }
     return CertificateVerificationResourceStatusUnknown(json);
   }
   String toJson();
 }
 
-final class CertificateVerificationResourceStatusKnown
-    extends CertificateVerificationResourceStatus {
+final class CertificateVerificationResourceStatusKnown extends CertificateVerificationResourceStatus {
   const CertificateVerificationResourceStatusKnown(this.value);
   final CertificateVerificationResourceStatusValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is CertificateVerificationResourceStatusKnown &&
-      other.value == value;
+  bool operator ==(Object other) => other is CertificateVerificationResourceStatusKnown && other.value == value;
   @override
-  int get hashCode =>
-      Object.hash(CertificateVerificationResourceStatusKnown, value);
+  int get hashCode => Object.hash(CertificateVerificationResourceStatusKnown, value);
 }
 
-final class CertificateVerificationResourceStatusUnknown
-    extends CertificateVerificationResourceStatus {
+final class CertificateVerificationResourceStatusUnknown extends CertificateVerificationResourceStatus {
   const CertificateVerificationResourceStatusUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is CertificateVerificationResourceStatusUnknown &&
-      other.rawValue == rawValue;
+  bool operator ==(Object other) => other is CertificateVerificationResourceStatusUnknown && other.rawValue == rawValue;
   @override
-  int get hashCode =>
-      Object.hash(CertificateVerificationResourceStatusUnknown, rawValue);
+  int get hashCode => Object.hash(CertificateVerificationResourceStatusUnknown, rawValue);
 }

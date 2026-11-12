@@ -10,15 +10,9 @@ class OrderResourceItemsItemRefund {
     final hasObject = _matches7(json);
     final hasObject2 = _matches10(json);
     if (!(hasObject || hasObject2)) {
-      throw const FormatException(
-        "No matching OrderResourceItemsItemRefund variant.",
-      );
+      throw const FormatException("No matching OrderResourceItemsItemRefund variant.");
     }
-    return OrderResourceItemsItemRefund._(
-      _copyJson(json),
-      hasObject,
-      hasObject2,
-    );
+    return OrderResourceItemsItemRefund._(_copyJson(json), hasObject, hasObject2);
   }
 
   final Object? _json;
@@ -32,9 +26,7 @@ class OrderResourceItemsItemRefund {
       return null;
     }
     final json = _copyJson(_json);
-    return OrderResourceItemsItemRefundObject.fromJson(
-      json as Map<String, Object?>,
-    );
+    return OrderResourceItemsItemRefundObject.fromJson(json as Map<String, Object?>);
   }
 
   OrderResourceItemsItemRefundObject2? get asObject2 {
@@ -42,9 +34,7 @@ class OrderResourceItemsItemRefund {
       return null;
     }
     final json = _copyJson(_json);
-    return OrderResourceItemsItemRefundObject2.fromJson(
-      json as Map<String, Object?>,
-    );
+    return OrderResourceItemsItemRefundObject2.fromJson(json as Map<String, Object?>);
   }
 
   Object? toJson() => _copyJson(_json);
@@ -53,32 +43,22 @@ class OrderResourceItemsItemRefund {
 bool _matches7(Object? value) =>
     (value is! Map<String, Object?> || value.containsKey("status")) &&
     (value is! Map<String, Object?> || value.containsKey("can_request")) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("status") ||
-        _matches8(value["status"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("can_request") ||
-        _matches9(value["can_request"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("status") || _matches8(value["status"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("can_request") || _matches9(value["can_request"])) &&
     ((value is Map<String, Object?>));
 bool _matches8(Object? value) => ((value is String) || (value == null));
 bool _matches9(Object? value) => ((value is bool));
 bool _matches10(Object? value) =>
     (value is! Map<String, Object?> || value.containsKey("status")) &&
     (value is! Map<String, Object?> || value.containsKey("can_request")) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("status") ||
-        _matches11(value["status"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("can_request") ||
-        _matches12(value["can_request"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("status") || _matches11(value["status"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("can_request") || _matches12(value["can_request"])) &&
     ((value is Map<String, Object?>));
 bool _matches11(Object? value) => ((value == null));
 bool _matches12(Object? value) => ((value is bool));
 Object? _copyJson(Object? value) {
   return switch (value) {
-    Map<String, Object?> map => map.map(
-      (key, item) => MapEntry(key, _copyJson(item)),
-    ),
+    Map<String, Object?> map => map.map((key, item) => MapEntry(key, _copyJson(item))),
     List<Object?> list => list.map(_copyJson).toList(),
     null || bool() || String() || int() => value,
     double() when value.isFinite => value,

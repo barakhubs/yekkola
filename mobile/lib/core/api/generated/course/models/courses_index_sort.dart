@@ -14,16 +14,12 @@ enum CoursesIndexSortValue {
 
 sealed class CoursesIndexSort {
   const CoursesIndexSort();
-  static const relevance = CoursesIndexSortKnown(
-    CoursesIndexSortValue.relevance,
-  );
+  static const relevance = CoursesIndexSortKnown(CoursesIndexSortValue.relevance);
   static const popular = CoursesIndexSortKnown(CoursesIndexSortValue.popular);
   static const newest = CoursesIndexSortKnown(CoursesIndexSortValue.newest);
   static const rating = CoursesIndexSortKnown(CoursesIndexSortValue.rating);
   static const priceAsc = CoursesIndexSortKnown(CoursesIndexSortValue.priceAsc);
-  static const priceDesc = CoursesIndexSortKnown(
-    CoursesIndexSortValue.priceDesc,
-  );
+  static const priceDesc = CoursesIndexSortKnown(CoursesIndexSortValue.priceDesc);
   factory CoursesIndexSort.fromJson(Object? json) {
     if (!(json is String)) {
       throw ArgumentError.value(json, "CoursesIndexSort");
@@ -42,8 +38,7 @@ final class CoursesIndexSortKnown extends CoursesIndexSort {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is CoursesIndexSortKnown && other.value == value;
+  bool operator ==(Object other) => other is CoursesIndexSortKnown && other.value == value;
   @override
   int get hashCode => Object.hash(CoursesIndexSortKnown, value);
 }
@@ -54,8 +49,7 @@ final class CoursesIndexSortUnknown extends CoursesIndexSort {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is CoursesIndexSortUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is CoursesIndexSortUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(CoursesIndexSortUnknown, rawValue);
 }

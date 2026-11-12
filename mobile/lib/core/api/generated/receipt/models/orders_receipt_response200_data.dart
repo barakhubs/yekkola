@@ -41,32 +41,16 @@ class OrdersReceiptResponse200Data {
       student: json["student"] as String?,
       currency: json["currency"] as String,
       items: (json["items"] as List<Object?>)
-          .map(
-            (item) => OrdersReceiptResponse200DataItemsItem.fromJson(
-              item as Map<String, Object?>,
-            ),
-          )
+          .map((item) => OrdersReceiptResponse200DataItemsItem.fromJson(item as Map<String, Object?>))
           .toList(),
-      subtotal: OrdersReceiptResponse200DataSubtotal.fromJson(
-        json["subtotal"] as Map<String, Object?>,
-      ),
-      discount: OrdersReceiptResponse200DataDiscount.fromJson(
-        json["discount"] as Map<String, Object?>,
-      ),
-      total: OrdersReceiptResponse200DataTotal.fromJson(
-        json["total"] as Map<String, Object?>,
-      ),
-      refunded: OrdersReceiptResponse200DataRefunded.fromJson(
-        json["refunded"] as Map<String, Object?>,
-      ),
-      refundPending: OrdersReceiptResponse200DataRefundPending.fromJson(
-        json["refund_pending"] as Map<String, Object?>,
-      ),
+      subtotal: OrdersReceiptResponse200DataSubtotal.fromJson(json["subtotal"] as Map<String, Object?>),
+      discount: OrdersReceiptResponse200DataDiscount.fromJson(json["discount"] as Map<String, Object?>),
+      total: OrdersReceiptResponse200DataTotal.fromJson(json["total"] as Map<String, Object?>),
+      refunded: OrdersReceiptResponse200DataRefunded.fromJson(json["refunded"] as Map<String, Object?>),
+      refundPending: OrdersReceiptResponse200DataRefundPending.fromJson(json["refund_pending"] as Map<String, Object?>),
       payment: json["payment"] == null
           ? null
-          : OrdersReceiptResponse200DataPayment.fromJson(
-              json["payment"] as Map<String, Object?>,
-            ),
+          : OrdersReceiptResponse200DataPayment.fromJson(json["payment"] as Map<String, Object?>),
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,

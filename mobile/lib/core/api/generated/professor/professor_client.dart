@@ -2,9 +2,7 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/professors_show_response200.dart'
-    as models
-    show ProfessorsShowResponse200;
+import 'models/professors_show_response200.dart' as models show ProfessorsShowResponse200;
 
 class ProfessorClient {
   ProfessorClient(this._transport);
@@ -37,8 +35,6 @@ class ProfessorClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.ProfessorsShowResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.ProfessorsShowResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

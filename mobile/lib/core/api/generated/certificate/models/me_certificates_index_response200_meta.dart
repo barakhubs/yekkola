@@ -25,9 +25,7 @@ class MeCertificatesIndexResponse200Meta {
     this.additionalProperties = const {},
   });
 
-  factory MeCertificatesIndexResponse200Meta.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory MeCertificatesIndexResponse200Meta.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("from")) {
       throw ArgumentError("Missing required property: from");
     }
@@ -42,11 +40,7 @@ class MeCertificatesIndexResponse200Meta {
       from: json["from"] == null ? null : _readJsonInteger(json["from"]),
       lastPage: _readJsonInteger(json["last_page"]),
       links: (json["links"] as List<Object?>)
-          .map(
-            (item) => MeCertificatesIndexResponse200MetaLinksItem.fromJson(
-              item as Map<String, Object?>,
-            ),
-          )
+          .map((item) => MeCertificatesIndexResponse200MetaLinksItem.fromJson(item as Map<String, Object?>))
           .toList(),
       path: json["path"] as String?,
       perPage: _readJsonInteger(json["per_page"]),
@@ -80,16 +74,7 @@ class MeCertificatesIndexResponse200Meta {
   /// Total number of items being paginated.
   final int total;
 
-  static const _knownKeys = <String>{
-    "current_page",
-    "from",
-    "last_page",
-    "links",
-    "path",
-    "per_page",
-    "to",
-    "total",
-  };
+  static const _knownKeys = <String>{"current_page", "from", "last_page", "links", "path", "per_page", "to", "total"};
 
   final Map<String, Object?> additionalProperties;
 

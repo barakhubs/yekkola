@@ -3,22 +3,16 @@
 import 'lessons_playback_heartbeat_response200_data.dart';
 
 class LessonsPlaybackHeartbeatResponse200 {
-  const LessonsPlaybackHeartbeatResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const LessonsPlaybackHeartbeatResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory LessonsPlaybackHeartbeatResponse200.fromJson(
-    Map<String, Object?> json,
-  ) => LessonsPlaybackHeartbeatResponse200(
-    data: LessonsPlaybackHeartbeatResponse200Data.fromJson(
-      json["data"] as Map<String, Object?>,
-    ),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory LessonsPlaybackHeartbeatResponse200.fromJson(Map<String, Object?> json) =>
+      LessonsPlaybackHeartbeatResponse200(
+        data: LessonsPlaybackHeartbeatResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final LessonsPlaybackHeartbeatResponse200Data data;
 

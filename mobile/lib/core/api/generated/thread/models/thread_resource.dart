@@ -44,29 +44,17 @@ class ThreadResource {
       title: json["title"] as String,
       body: json["body"] as String,
       status: json["status"] as String,
-      author: ThreadResourceAuthor.fromJson(
-        json["author"] as Map<String, Object?>,
-      ),
+      author: ThreadResourceAuthor.fromJson(json["author"] as Map<String, Object?>),
       replyCount: ThreadResourceReplyCount.fromJson(json["reply_count"]),
       lastReplyAt: json["last_reply_at"] as String?,
       answeredAt: json["answered_at"] as String?,
       hidden: json["hidden"] as bool,
       createdAt: json["created_at"] as String,
-      lessonTitle: json.containsKey("lesson_title")
-          ? json["lesson_title"] as String
-          : null,
-      course: json.containsKey("course")
-          ? ThreadResourceCourse.fromJson(
-              json["course"] as Map<String, Object?>,
-            )
-          : null,
+      lessonTitle: json.containsKey("lesson_title") ? json["lesson_title"] as String : null,
+      course: json.containsKey("course") ? ThreadResourceCourse.fromJson(json["course"] as Map<String, Object?>) : null,
       replies: json.containsKey("replies")
           ? (json["replies"] as List<Object?>)
-                .map(
-                  (item) => ThreadResourceRepliesItem.fromJson(
-                    item as Map<String, Object?>,
-                  ),
-                )
+                .map((item) => ThreadResourceRepliesItem.fromJson(item as Map<String, Object?>))
                 .toList()
           : null,
       additionalProperties: {
@@ -144,7 +132,6 @@ class ThreadResource {
     "created_at": this.createdAt,
     if (this.lessonTitle != null) "lesson_title": this.lessonTitle,
     if (this.course != null) "course": this.course?.toJson(),
-    if (this.replies != null)
-      "replies": this.replies?.map((item) => item.toJson()).toList(),
+    if (this.replies != null) "replies": this.replies?.map((item) => item.toJson()).toList(),
   };
 }

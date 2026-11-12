@@ -16,9 +16,7 @@ class LearningViewResourceSectionsItemLessonsItemQuiz {
     this.additionalProperties = const {},
   });
 
-  factory LearningViewResourceSectionsItemLessonsItemQuiz.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory LearningViewResourceSectionsItemLessonsItemQuiz.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("time_limit_seconds")) {
       throw ArgumentError("Missing required property: time_limit_seconds");
     }
@@ -31,12 +29,8 @@ class LearningViewResourceSectionsItemLessonsItemQuiz {
     return LearningViewResourceSectionsItemLessonsItemQuiz(
       questionCount: _readJsonInteger(json["question_count"]),
       passMarkPct: _readJsonInteger(json["pass_mark_pct"]),
-      timeLimitSeconds: json["time_limit_seconds"] == null
-          ? null
-          : _readJsonInteger(json["time_limit_seconds"]),
-      maxAttempts: json["max_attempts"] == null
-          ? null
-          : _readJsonInteger(json["max_attempts"]),
+      timeLimitSeconds: json["time_limit_seconds"] == null ? null : _readJsonInteger(json["time_limit_seconds"]),
+      maxAttempts: json["max_attempts"] == null ? null : _readJsonInteger(json["max_attempts"]),
       attemptsUsed: _readJsonInteger(json["attempts_used"]),
       openAttemptId: json["open_attempt_id"] as String?,
       canStart: json["can_start"] as bool,

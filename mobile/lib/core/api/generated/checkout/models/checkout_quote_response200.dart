@@ -3,21 +3,15 @@
 import 'checkout_quote_response200_data.dart';
 
 class CheckoutQuoteResponse200 {
-  const CheckoutQuoteResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const CheckoutQuoteResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory CheckoutQuoteResponse200.fromJson(Map<String, Object?> json) =>
-      CheckoutQuoteResponse200(
-        data: CheckoutQuoteResponse200Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CheckoutQuoteResponse200.fromJson(Map<String, Object?> json) => CheckoutQuoteResponse200(
+    data: CheckoutQuoteResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final CheckoutQuoteResponse200Data data;
 

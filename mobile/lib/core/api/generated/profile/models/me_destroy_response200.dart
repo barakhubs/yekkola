@@ -3,21 +3,15 @@
 import 'me_destroy_response200_data.dart';
 
 class MeDestroyResponse200 {
-  const MeDestroyResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MeDestroyResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory MeDestroyResponse200.fromJson(Map<String, Object?> json) =>
-      MeDestroyResponse200(
-        data: MeDestroyResponse200Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeDestroyResponse200.fromJson(Map<String, Object?> json) => MeDestroyResponse200(
+    data: MeDestroyResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final MeDestroyResponse200Data data;
 

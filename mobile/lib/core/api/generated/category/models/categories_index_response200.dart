@@ -3,25 +3,17 @@
 import 'categories_index_response200_data_item.dart';
 
 class CategoriesIndexResponse200 {
-  const CategoriesIndexResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const CategoriesIndexResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory CategoriesIndexResponse200.fromJson(Map<String, Object?> json) =>
-      CategoriesIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) => CategoriesIndexResponse200DataItem.fromJson(
-                item as Map<String, Object?>,
-              ),
-            )
-            .toList(),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CategoriesIndexResponse200.fromJson(Map<String, Object?> json) => CategoriesIndexResponse200(
+    data: (json["data"] as List<Object?>)
+        .map((item) => CategoriesIndexResponse200DataItem.fromJson(item as Map<String, Object?>))
+        .toList(),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<CategoriesIndexResponse200DataItem> data;
 

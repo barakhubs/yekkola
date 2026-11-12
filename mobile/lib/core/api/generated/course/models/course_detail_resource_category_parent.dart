@@ -7,9 +7,7 @@ class CourseDetailResourceCategoryParent {
     this.additionalProperties = const {},
   });
 
-  factory CourseDetailResourceCategoryParent.fromJson(
-    Map<String, Object?> json,
-  ) => CourseDetailResourceCategoryParent(
+  factory CourseDetailResourceCategoryParent.fromJson(Map<String, Object?> json) => CourseDetailResourceCategoryParent(
     slug: json["slug"] as String,
     name: json["name"] as String,
     additionalProperties: {

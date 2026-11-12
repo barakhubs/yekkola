@@ -17,40 +17,31 @@ sealed class LessonsDocumentResponse202DataStatus {
       throw ArgumentError.value(json, "LessonsDocumentResponse202DataStatus");
     }
     for (final value in LessonsDocumentResponse202DataStatusValue.values) {
-      if (value.value == json)
-        return LessonsDocumentResponse202DataStatusKnown(value);
+      if (value.value == json) return LessonsDocumentResponse202DataStatusKnown(value);
     }
     return LessonsDocumentResponse202DataStatusUnknown(json);
   }
   String toJson();
 }
 
-final class LessonsDocumentResponse202DataStatusKnown
-    extends LessonsDocumentResponse202DataStatus {
+final class LessonsDocumentResponse202DataStatusKnown extends LessonsDocumentResponse202DataStatus {
   const LessonsDocumentResponse202DataStatusKnown(this.value);
   final LessonsDocumentResponse202DataStatusValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsDocumentResponse202DataStatusKnown &&
-      other.value == value;
+  bool operator ==(Object other) => other is LessonsDocumentResponse202DataStatusKnown && other.value == value;
   @override
-  int get hashCode =>
-      Object.hash(LessonsDocumentResponse202DataStatusKnown, value);
+  int get hashCode => Object.hash(LessonsDocumentResponse202DataStatusKnown, value);
 }
 
-final class LessonsDocumentResponse202DataStatusUnknown
-    extends LessonsDocumentResponse202DataStatus {
+final class LessonsDocumentResponse202DataStatusUnknown extends LessonsDocumentResponse202DataStatus {
   const LessonsDocumentResponse202DataStatusUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsDocumentResponse202DataStatusUnknown &&
-      other.rawValue == rawValue;
+  bool operator ==(Object other) => other is LessonsDocumentResponse202DataStatusUnknown && other.rawValue == rawValue;
   @override
-  int get hashCode =>
-      Object.hash(LessonsDocumentResponse202DataStatusUnknown, rawValue);
+  int get hashCode => Object.hash(LessonsDocumentResponse202DataStatusUnknown, rawValue);
 }

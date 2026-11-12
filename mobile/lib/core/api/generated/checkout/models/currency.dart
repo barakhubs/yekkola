@@ -30,8 +30,7 @@ final class CurrencyKnown extends Currency {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is CurrencyKnown && other.value == value;
+  bool operator ==(Object other) => other is CurrencyKnown && other.value == value;
   @override
   int get hashCode => Object.hash(CurrencyKnown, value);
 }
@@ -42,8 +41,7 @@ final class CurrencyUnknown extends Currency {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is CurrencyUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is CurrencyUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(CurrencyUnknown, rawValue);
 }

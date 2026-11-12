@@ -7,9 +7,7 @@ class CheckoutQuoteResponse200DataTotal {
     this.additionalProperties = const {},
   });
 
-  factory CheckoutQuoteResponse200DataTotal.fromJson(
-    Map<String, Object?> json,
-  ) => CheckoutQuoteResponse200DataTotal(
+  factory CheckoutQuoteResponse200DataTotal.fromJson(Map<String, Object?> json) => CheckoutQuoteResponse200DataTotal(
     amountMinor: _readJsonInteger(json["amount_minor"]),
     currency: json["currency"] as String,
     additionalProperties: {

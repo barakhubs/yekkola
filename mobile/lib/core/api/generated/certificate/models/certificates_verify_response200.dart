@@ -3,21 +3,15 @@
 import 'certificate_verification_resource.dart';
 
 class CertificatesVerifyResponse200 {
-  const CertificatesVerifyResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const CertificatesVerifyResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory CertificatesVerifyResponse200.fromJson(Map<String, Object?> json) =>
-      CertificatesVerifyResponse200(
-        data: CertificateVerificationResource.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CertificatesVerifyResponse200.fromJson(Map<String, Object?> json) => CertificatesVerifyResponse200(
+    data: CertificateVerificationResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final CertificateVerificationResource data;
 

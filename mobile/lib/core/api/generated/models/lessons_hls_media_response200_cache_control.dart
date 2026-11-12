@@ -17,40 +17,32 @@ sealed class LessonsHlsMediaResponse200CacheControl {
       throw ArgumentError.value(json, "LessonsHlsMediaResponse200CacheControl");
     }
     for (final value in LessonsHlsMediaResponse200CacheControlValue.values) {
-      if (value.value == json)
-        return LessonsHlsMediaResponse200CacheControlKnown(value);
+      if (value.value == json) return LessonsHlsMediaResponse200CacheControlKnown(value);
     }
     return LessonsHlsMediaResponse200CacheControlUnknown(json);
   }
   String toJson();
 }
 
-final class LessonsHlsMediaResponse200CacheControlKnown
-    extends LessonsHlsMediaResponse200CacheControl {
+final class LessonsHlsMediaResponse200CacheControlKnown extends LessonsHlsMediaResponse200CacheControl {
   const LessonsHlsMediaResponse200CacheControlKnown(this.value);
   final LessonsHlsMediaResponse200CacheControlValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsHlsMediaResponse200CacheControlKnown &&
-      other.value == value;
+  bool operator ==(Object other) => other is LessonsHlsMediaResponse200CacheControlKnown && other.value == value;
   @override
-  int get hashCode =>
-      Object.hash(LessonsHlsMediaResponse200CacheControlKnown, value);
+  int get hashCode => Object.hash(LessonsHlsMediaResponse200CacheControlKnown, value);
 }
 
-final class LessonsHlsMediaResponse200CacheControlUnknown
-    extends LessonsHlsMediaResponse200CacheControl {
+final class LessonsHlsMediaResponse200CacheControlUnknown extends LessonsHlsMediaResponse200CacheControl {
   const LessonsHlsMediaResponse200CacheControlUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
   bool operator ==(Object other) =>
-      other is LessonsHlsMediaResponse200CacheControlUnknown &&
-      other.rawValue == rawValue;
+      other is LessonsHlsMediaResponse200CacheControlUnknown && other.rawValue == rawValue;
   @override
-  int get hashCode =>
-      Object.hash(LessonsHlsMediaResponse200CacheControlUnknown, rawValue);
+  int get hashCode => Object.hash(LessonsHlsMediaResponse200CacheControlUnknown, rawValue);
 }

@@ -10,20 +10,16 @@ class CheckoutRailsResponse422 {
     this.additionalProperties = const {},
   });
 
-  factory CheckoutRailsResponse422.fromJson(Map<String, Object?> json) =>
-      CheckoutRailsResponse422(
-        message: json["message"] as String,
-        errors: (json["errors"] as Map<String, Object?>).map(
-          (key, item) => MapEntry(
-            key,
-            (item as List<Object?>).map((item) => item as String).toList(),
-          ),
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CheckoutRailsResponse422.fromJson(Map<String, Object?> json) => CheckoutRailsResponse422(
+    message: json["message"] as String,
+    errors: (json["errors"] as Map<String, Object?>).map(
+      (key, item) => MapEntry(key, (item as List<Object?>).map((item) => item as String).toList()),
+    ),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   /// Errors overview.
   final String message;
@@ -39,8 +35,6 @@ class CheckoutRailsResponse422 {
     for (final entry in additionalProperties.entries)
       if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
     "message": this.message,
-    "errors": this.errors.map(
-      (key, item) => MapEntry(key, item.map((item) => item).toList()),
-    ),
+    "errors": this.errors.map((key, item) => MapEntry(key, item.map((item) => item).toList())),
   };
 }

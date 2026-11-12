@@ -9,25 +9,20 @@ class SyncProgressRequestItemsItem {
     this.additionalProperties = const {},
   });
 
-  factory SyncProgressRequestItemsItem.fromJson(Map<String, Object?> json) =>
-      SyncProgressRequestItemsItem(
-        lessonUid: json["lesson_uid"] as String,
-        positionSeconds: json.containsKey("position_seconds")
-            ? json["position_seconds"] == null
-                  ? null
-                  : _readJsonInteger(json["position_seconds"])
-            : null,
-        completed: json.containsKey("completed")
-            ? json["completed"] as bool?
-            : null,
-        clientUpdatedAt: json.containsKey("client_updated_at")
-            ? json["client_updated_at"] as String?
-            : null,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory SyncProgressRequestItemsItem.fromJson(Map<String, Object?> json) => SyncProgressRequestItemsItem(
+    lessonUid: json["lesson_uid"] as String,
+    positionSeconds: json.containsKey("position_seconds")
+        ? json["position_seconds"] == null
+              ? null
+              : _readJsonInteger(json["position_seconds"])
+        : null,
+    completed: json.containsKey("completed") ? json["completed"] as bool? : null,
+    clientUpdatedAt: json.containsKey("client_updated_at") ? json["client_updated_at"] as String? : null,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String lessonUid;
 
@@ -37,12 +32,7 @@ class SyncProgressRequestItemsItem {
 
   final String? clientUpdatedAt;
 
-  static const _knownKeys = <String>{
-    "lesson_uid",
-    "position_seconds",
-    "completed",
-    "client_updated_at",
-  };
+  static const _knownKeys = <String>{"lesson_uid", "position_seconds", "completed", "client_updated_at"};
 
   final Map<String, Object?> additionalProperties;
 

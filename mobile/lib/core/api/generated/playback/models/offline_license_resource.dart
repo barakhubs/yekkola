@@ -19,30 +19,23 @@ class OfflineLicenseResource {
     this.additionalProperties = const {},
   });
 
-  factory OfflineLicenseResource.fromJson(Map<String, Object?> json) =>
-      OfflineLicenseResource(
-        licenseId: json["license_id"] as String,
-        lessonUid: json["lesson_uid"] as String,
-        mediaId: json["media_id"] as String,
-        kind: json["kind"] as String,
-        rendition: OfflineLicenseResourceRendition.fromJson(
-          json["rendition"] as Map<String, Object?>,
-        ),
-        renditions: (json["renditions"] as List<Object?>)
-            .map((item) => item)
-            .toList(),
-        playlist: json["playlist"] as String,
-        segmentsExpireAt: json["segments_expire_at"] as String,
-        key: json["key"] as String,
-        expiresAt: json["expires_at"] as String,
-        watermark: OfflineLicenseResourceWatermark.fromJson(
-          json["watermark"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory OfflineLicenseResource.fromJson(Map<String, Object?> json) => OfflineLicenseResource(
+    licenseId: json["license_id"] as String,
+    lessonUid: json["lesson_uid"] as String,
+    mediaId: json["media_id"] as String,
+    kind: json["kind"] as String,
+    rendition: OfflineLicenseResourceRendition.fromJson(json["rendition"] as Map<String, Object?>),
+    renditions: (json["renditions"] as List<Object?>).map((item) => item).toList(),
+    playlist: json["playlist"] as String,
+    segmentsExpireAt: json["segments_expire_at"] as String,
+    key: json["key"] as String,
+    expiresAt: json["expires_at"] as String,
+    watermark: OfflineLicenseResourceWatermark.fromJson(json["watermark"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String licenseId;
 

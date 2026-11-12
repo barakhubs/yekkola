@@ -2,9 +2,7 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/me_devices_index_response200.dart'
-    as models
-    show MeDevicesIndexResponse200;
+import 'models/me_devices_index_response200.dart' as models show MeDevicesIndexResponse200;
 
 class DeviceClient {
   DeviceClient(this._transport);
@@ -28,14 +26,8 @@ class DeviceClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/me/devices",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeDevicesIndexResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me/devices", options: _options, cancelToken: cancelToken);
+    return models.MeDevicesIndexResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Remove a device: it is signed out and its downloads stop being renewed

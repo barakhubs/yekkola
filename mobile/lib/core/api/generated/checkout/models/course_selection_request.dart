@@ -13,26 +13,17 @@ class CourseSelectionRequest {
     this.additionalProperties = const {},
   });
 
-  factory CourseSelectionRequest.fromJson(Map<String, Object?> json) =>
-      CourseSelectionRequest(
-        courseIds: (json["course_ids"] as List<Object?>)
-            .map((item) => item as String)
-            .toList(),
-        bundleId: json["bundle_id"] as String,
-        couponCode: json.containsKey("coupon_code")
-            ? json["coupon_code"] as String?
-            : null,
-        beneficiaryPhone: json.containsKey("beneficiary_phone")
-            ? json["beneficiary_phone"] as String?
-            : null,
-        payerMsisdn: json.containsKey("payer_msisdn")
-            ? json["payer_msisdn"] as String?
-            : null,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CourseSelectionRequest.fromJson(Map<String, Object?> json) => CourseSelectionRequest(
+    courseIds: (json["course_ids"] as List<Object?>).map((item) => item as String).toList(),
+    bundleId: json["bundle_id"] as String,
+    couponCode: json.containsKey("coupon_code") ? json["coupon_code"] as String? : null,
+    beneficiaryPhone: json.containsKey("beneficiary_phone") ? json["beneficiary_phone"] as String? : null,
+    payerMsisdn: json.containsKey("payer_msisdn") ? json["payer_msisdn"] as String? : null,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<String> courseIds;
 
@@ -45,13 +36,7 @@ class CourseSelectionRequest {
 
   final String? payerMsisdn;
 
-  static const _knownKeys = <String>{
-    "course_ids",
-    "bundle_id",
-    "coupon_code",
-    "beneficiary_phone",
-    "payer_msisdn",
-  };
+  static const _knownKeys = <String>{"course_ids", "bundle_id", "coupon_code", "beneficiary_phone", "payer_msisdn"};
 
   final Map<String, Object?> additionalProperties;
 
@@ -61,8 +46,7 @@ class CourseSelectionRequest {
     "course_ids": this.courseIds.map((item) => item).toList(),
     "bundle_id": this.bundleId,
     if (this.couponCode != null) "coupon_code": this.couponCode,
-    if (this.beneficiaryPhone != null)
-      "beneficiary_phone": this.beneficiaryPhone,
+    if (this.beneficiaryPhone != null) "beneficiary_phone": this.beneficiaryPhone,
     if (this.payerMsisdn != null) "payer_msisdn": this.payerMsisdn,
   };
 }

@@ -8,19 +8,15 @@ class SubmitQuizRequest {
     this.additionalProperties = const {},
   });
 
-  factory SubmitQuizRequest.fromJson(Map<String, Object?> json) =>
-      SubmitQuizRequest(
-        answers: (json["answers"] as Map<String, Object?>).map(
-          (key, item) => MapEntry(
-            key,
-            (item as List<Object?>).map((item) => item as String).toList(),
-          ),
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory SubmitQuizRequest.fromJson(Map<String, Object?> json) => SubmitQuizRequest(
+    answers: (json["answers"] as Map<String, Object?>).map(
+      (key, item) => MapEntry(key, (item as List<Object?>).map((item) => item as String).toList()),
+    ),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   /// Question id => chosen option ids.
   final Map<String, List<String>> answers;
@@ -32,8 +28,6 @@ class SubmitQuizRequest {
   Map<String, Object?> toJson() => {
     for (final entry in additionalProperties.entries)
       if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    "answers": this.answers.map(
-      (key, item) => MapEntry(key, item.map((item) => item).toList()),
-    ),
+    "answers": this.answers.map((key, item) => MapEntry(key, item.map((item) => item).toList())),
   };
 }

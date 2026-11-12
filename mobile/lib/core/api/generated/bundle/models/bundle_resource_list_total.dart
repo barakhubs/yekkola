@@ -7,15 +7,14 @@ class BundleResourceListTotal {
     this.additionalProperties = const {},
   });
 
-  factory BundleResourceListTotal.fromJson(Map<String, Object?> json) =>
-      BundleResourceListTotal(
-        amountMinor: _readJsonInteger(json["amount_minor"]),
-        currency: json["currency"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory BundleResourceListTotal.fromJson(Map<String, Object?> json) => BundleResourceListTotal(
+    amountMinor: _readJsonInteger(json["amount_minor"]),
+    currency: json["currency"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final int amountMinor;
 

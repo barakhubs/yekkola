@@ -8,9 +8,7 @@ class ThreadResourceReplyCount {
     final hasInteger = _matches13(json);
     final hasInteger2 = _matches14(json);
     if (!(hasInteger || hasInteger2)) {
-      throw const FormatException(
-        "No matching ThreadResourceReplyCount variant.",
-      );
+      throw const FormatException("No matching ThreadResourceReplyCount variant.");
     }
     return ThreadResourceReplyCount._(_copyJson(json), hasInteger, hasInteger2);
   }
@@ -42,17 +40,12 @@ class ThreadResourceReplyCount {
 
 bool _matches13(Object? value) =>
     (value is! num || (value >= 0)) &&
-    ((value is num &&
-        (value is int ||
-            (value.isFinite && value == value.truncateToDouble()))));
+    ((value is num && (value is int || (value.isFinite && value == value.truncateToDouble()))));
 bool _matches14(Object? value) =>
-    ((value is num &&
-    (value is int || (value.isFinite && value == value.truncateToDouble()))));
+    ((value is num && (value is int || (value.isFinite && value == value.truncateToDouble()))));
 Object? _copyJson(Object? value) {
   return switch (value) {
-    Map<String, Object?> map => map.map(
-      (key, item) => MapEntry(key, _copyJson(item)),
-    ),
+    Map<String, Object?> map => map.map((key, item) => MapEntry(key, _copyJson(item))),
     List<Object?> list => list.map(_copyJson).toList(),
     null || bool() || String() || int() => value,
     double() when value.isFinite => value,

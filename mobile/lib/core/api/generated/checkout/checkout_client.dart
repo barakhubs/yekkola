@@ -4,15 +4,9 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/checkout_quote_response200.dart'
-    as models
-    show CheckoutQuoteResponse200;
-import 'models/checkout_rails_response200.dart'
-    as models
-    show CheckoutRailsResponse200;
-import 'models/course_selection_request.dart'
-    as models
-    show CourseSelectionRequest;
+import 'models/checkout_quote_response200.dart' as models show CheckoutQuoteResponse200;
+import 'models/checkout_rails_response200.dart' as models show CheckoutRailsResponse200;
+import 'models/course_selection_request.dart' as models show CourseSelectionRequest;
 import 'models/currency.dart' as models show Currency;
 
 class CheckoutClient {
@@ -44,9 +38,7 @@ class CheckoutClient {
       queryParameters: <String, Object?>{"currency": currency.toJson()},
       cancelToken: cancelToken,
     );
-    return models.CheckoutRailsResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CheckoutRailsResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Price for the selected courses; courses already owned are left out. `can_buy_for_others` says whether the
@@ -67,8 +59,7 @@ class CheckoutClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -80,8 +71,6 @@ class CheckoutClient {
       data: body == null ? null : convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.CheckoutQuoteResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CheckoutQuoteResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

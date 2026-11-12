@@ -3,14 +3,9 @@
 import 'playback_resource.dart';
 
 class LessonsPreviewPlaybackResponse200 {
-  const LessonsPreviewPlaybackResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const LessonsPreviewPlaybackResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory LessonsPreviewPlaybackResponse200.fromJson(
-    Map<String, Object?> json,
-  ) => LessonsPreviewPlaybackResponse200(
+  factory LessonsPreviewPlaybackResponse200.fromJson(Map<String, Object?> json) => LessonsPreviewPlaybackResponse200(
     data: PlaybackResource.fromJson(json["data"] as Map<String, Object?>),
     additionalProperties: {
       for (final entry in json.entries)

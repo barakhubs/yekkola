@@ -3,26 +3,18 @@
 import 'me_notification_preferences_show_response200_data_item.dart';
 
 class MeNotificationPreferencesShowResponse200 {
-  const MeNotificationPreferencesShowResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MeNotificationPreferencesShowResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory MeNotificationPreferencesShowResponse200.fromJson(
-    Map<String, Object?> json,
-  ) => MeNotificationPreferencesShowResponse200(
-    data: (json["data"] as List<Object?>)
-        .map(
-          (item) => MeNotificationPreferencesShowResponse200DataItem.fromJson(
-            item as Map<String, Object?>,
-          ),
-        )
-        .toList(),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeNotificationPreferencesShowResponse200.fromJson(Map<String, Object?> json) =>
+      MeNotificationPreferencesShowResponse200(
+        data: (json["data"] as List<Object?>)
+            .map((item) => MeNotificationPreferencesShowResponse200DataItem.fromJson(item as Map<String, Object?>))
+            .toList(),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<MeNotificationPreferencesShowResponse200DataItem> data;
 

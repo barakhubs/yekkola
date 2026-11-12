@@ -7,15 +7,14 @@ class BundlesIndexResponse200Meta {
     this.additionalProperties = const {},
   });
 
-  factory BundlesIndexResponse200Meta.fromJson(Map<String, Object?> json) =>
-      BundlesIndexResponse200Meta(
-        currentPage: _readJsonInteger(json["current_page"]),
-        lastPage: _readJsonInteger(json["last_page"]),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory BundlesIndexResponse200Meta.fromJson(Map<String, Object?> json) => BundlesIndexResponse200Meta(
+    currentPage: _readJsonInteger(json["current_page"]),
+    lastPage: _readJsonInteger(json["last_page"]),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final int currentPage;
 

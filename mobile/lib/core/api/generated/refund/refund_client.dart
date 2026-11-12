@@ -4,12 +4,8 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/me_refunds_index_response200.dart'
-    as models
-    show MeRefundsIndexResponse200;
-import 'models/orders_refund_requests_store_response201.dart'
-    as models
-    show OrdersRefundRequestsStoreResponse201;
+import 'models/me_refunds_index_response200.dart' as models show MeRefundsIndexResponse200;
+import 'models/orders_refund_requests_store_response201.dart' as models show OrdersRefundRequestsStoreResponse201;
 import 'models/refund_request_request.dart' as models show RefundRequestRequest;
 
 class RefundClient {
@@ -18,8 +14,7 @@ class RefundClient {
   final Dio _transport;
 
   /// Asks for one course of a paid order to be refunded; staff decide
-  Future<models.OrdersRefundRequestsStoreResponse201>
-  ordersRefundRequestsStore({
+  Future<models.OrdersRefundRequestsStoreResponse201> ordersRefundRequestsStore({
     Map<String, Object?> extra = const {
       "openapi.servers": [
         {"url": "http://localhost:8000/api/v1"},
@@ -39,8 +34,7 @@ class RefundClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -52,9 +46,7 @@ class RefundClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.OrdersRefundRequestsStoreResponse201.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.OrdersRefundRequestsStoreResponse201.fromJson(response.data as Map<String, Object?>);
   }
 
   Future<models.MeRefundsIndexResponse200> meRefundsIndex({
@@ -73,13 +65,7 @@ class RefundClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/me/refunds",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeRefundsIndexResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me/refunds", options: _options, cancelToken: cancelToken);
+    return models.MeRefundsIndexResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

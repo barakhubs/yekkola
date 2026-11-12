@@ -7,14 +7,13 @@ class AuthLogoutResponse401 {
     this.additionalProperties = const {},
   });
 
-  factory AuthLogoutResponse401.fromJson(Map<String, Object?> json) =>
-      AuthLogoutResponse401(
-        message: json["message"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory AuthLogoutResponse401.fromJson(Map<String, Object?> json) => AuthLogoutResponse401(
+    message: json["message"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   /// Error overview.
   final String message;

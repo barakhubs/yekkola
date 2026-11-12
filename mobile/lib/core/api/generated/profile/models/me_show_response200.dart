@@ -3,21 +3,15 @@
 import 'me_show_response200_data.dart';
 
 class MeShowResponse200 {
-  const MeShowResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MeShowResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory MeShowResponse200.fromJson(Map<String, Object?> json) =>
-      MeShowResponse200(
-        data: MeShowResponse200Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeShowResponse200.fromJson(Map<String, Object?> json) => MeShowResponse200(
+    data: MeShowResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final MeShowResponse200Data data;
 

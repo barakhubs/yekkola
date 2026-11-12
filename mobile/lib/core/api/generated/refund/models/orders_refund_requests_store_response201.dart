@@ -3,20 +3,16 @@
 import 'refund_resource.dart';
 
 class OrdersRefundRequestsStoreResponse201 {
-  const OrdersRefundRequestsStoreResponse201({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const OrdersRefundRequestsStoreResponse201({required this.data, this.additionalProperties = const {}});
 
-  factory OrdersRefundRequestsStoreResponse201.fromJson(
-    Map<String, Object?> json,
-  ) => OrdersRefundRequestsStoreResponse201(
-    data: RefundResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory OrdersRefundRequestsStoreResponse201.fromJson(Map<String, Object?> json) =>
+      OrdersRefundRequestsStoreResponse201(
+        data: RefundResource.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final RefundResource data;
 

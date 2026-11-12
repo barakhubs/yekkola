@@ -4,18 +4,10 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/courses_review_show_response200.dart'
-    as models
-    show CoursesReviewShowResponse200;
-import 'models/courses_review_store_response201.dart'
-    as models
-    show CoursesReviewStoreResponse201;
-import 'models/courses_review_update_response200.dart'
-    as models
-    show CoursesReviewUpdateResponse200;
-import 'models/courses_reviews_index_response200.dart'
-    as models
-    show CoursesReviewsIndexResponse200;
+import 'models/courses_review_show_response200.dart' as models show CoursesReviewShowResponse200;
+import 'models/courses_review_store_response201.dart' as models show CoursesReviewStoreResponse201;
+import 'models/courses_review_update_response200.dart' as models show CoursesReviewUpdateResponse200;
+import 'models/courses_reviews_index_response200.dart' as models show CoursesReviewsIndexResponse200;
 import 'models/review_request.dart' as models show ReviewRequest;
 
 class ReviewClient {
@@ -48,9 +40,7 @@ class ReviewClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.CoursesReviewShowResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CoursesReviewShowResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Posts my review: enrolled, past the progress threshold (setting), not my own course, one per course
@@ -74,8 +64,7 @@ class ReviewClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -87,9 +76,7 @@ class ReviewClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.CoursesReviewStoreResponse201.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CoursesReviewStoreResponse201.fromJson(response.data as Map<String, Object?>);
   }
 
   Future<void> coursesReviewDestroy({
@@ -139,8 +126,7 @@ class ReviewClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -152,9 +138,7 @@ class ReviewClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.CoursesReviewUpdateResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CoursesReviewUpdateResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Published reviews of a listed course, newest first. `filter[rating]=1..5`, `sort=-created_at|-rating|rating`
@@ -197,8 +181,6 @@ class ReviewClient {
       },
       cancelToken: cancelToken,
     );
-    return models.CoursesReviewsIndexResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.CoursesReviewsIndexResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

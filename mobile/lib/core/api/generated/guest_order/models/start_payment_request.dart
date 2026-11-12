@@ -11,15 +11,14 @@ class StartPaymentRequest {
     this.additionalProperties = const {},
   });
 
-  factory StartPaymentRequest.fromJson(Map<String, Object?> json) =>
-      StartPaymentRequest(
-        rail: MobileMoneyRail.fromJson(json["rail"]),
-        msisdn: json.containsKey("msisdn") ? json["msisdn"] as String? : null,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory StartPaymentRequest.fromJson(Map<String, Object?> json) => StartPaymentRequest(
+    rail: MobileMoneyRail.fromJson(json["rail"]),
+    msisdn: json.containsKey("msisdn") ? json["msisdn"] as String? : null,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   /// DRC mobile-money rails. MTN is not present in the DRC — don't add it.
   final MobileMoneyRail rail;

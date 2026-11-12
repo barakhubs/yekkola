@@ -2,11 +2,7 @@
 
 /// A lesson question: a short title and the details (PRD-06 FR-13).
 class ThreadRequest {
-  const ThreadRequest({
-    required this.title,
-    required this.body,
-    this.additionalProperties = const {},
-  });
+  const ThreadRequest({required this.title, required this.body, this.additionalProperties = const {}});
 
   factory ThreadRequest.fromJson(Map<String, Object?> json) => ThreadRequest(
     title: json["title"] as String,

@@ -3,22 +3,16 @@
 import 'me_notifications_unread_count_response200_data.dart';
 
 class MeNotificationsUnreadCountResponse200 {
-  const MeNotificationsUnreadCountResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MeNotificationsUnreadCountResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory MeNotificationsUnreadCountResponse200.fromJson(
-    Map<String, Object?> json,
-  ) => MeNotificationsUnreadCountResponse200(
-    data: MeNotificationsUnreadCountResponse200Data.fromJson(
-      json["data"] as Map<String, Object?>,
-    ),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeNotificationsUnreadCountResponse200.fromJson(Map<String, Object?> json) =>
+      MeNotificationsUnreadCountResponse200(
+        data: MeNotificationsUnreadCountResponse200Data.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final MeNotificationsUnreadCountResponse200Data data;
 

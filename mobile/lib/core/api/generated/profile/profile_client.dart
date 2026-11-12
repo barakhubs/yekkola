@@ -4,9 +4,7 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/me_deletion_cancel_response200.dart'
-    as models
-    show MeDeletionCancelResponse200;
+import 'models/me_deletion_cancel_response200.dart' as models show MeDeletionCancelResponse200;
 import 'models/me_destroy_response200.dart' as models show MeDestroyResponse200;
 import 'models/me_show_response200.dart' as models show MeShowResponse200;
 import 'models/me_update_response200.dart' as models show MeUpdateResponse200;
@@ -34,14 +32,8 @@ class ProfileClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/me",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeShowResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me", options: _options, cancelToken: cancelToken);
+    return models.MeShowResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Request account deletion. Personal data is erased after the grace period unless cancelled
@@ -61,14 +53,8 @@ class ProfileClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/me",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeDestroyResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me", options: _options, cancelToken: cancelToken);
+    return models.MeDestroyResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Update name, email, language, province, or city
@@ -88,8 +74,7 @@ class ProfileClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -101,9 +86,7 @@ class ProfileClient {
       data: body == null ? null : convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.MeUpdateResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeUpdateResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Cancel a pending deletion request
@@ -123,13 +106,7 @@ class ProfileClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/me/deletion",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeDeletionCancelResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me/deletion", options: _options, cancelToken: cancelToken);
+    return models.MeDeletionCancelResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

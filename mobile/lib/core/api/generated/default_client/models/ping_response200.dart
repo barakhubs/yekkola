@@ -3,19 +3,15 @@
 import 'ping_response200_status.dart';
 
 class PingResponse200 {
-  const PingResponse200({
-    required this.status,
-    this.additionalProperties = const {},
-  });
+  const PingResponse200({required this.status, this.additionalProperties = const {}});
 
-  factory PingResponse200.fromJson(Map<String, Object?> json) =>
-      PingResponse200(
-        status: PingResponse200Status.fromJson(json["status"]),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory PingResponse200.fromJson(Map<String, Object?> json) => PingResponse200(
+    status: PingResponse200Status.fromJson(json["status"]),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final PingResponse200Status status;
 

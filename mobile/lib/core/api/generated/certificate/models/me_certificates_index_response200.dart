@@ -12,25 +12,17 @@ class MeCertificatesIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory MeCertificatesIndexResponse200.fromJson(Map<String, Object?> json) =>
-      MeCertificatesIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) =>
-                  CertificateResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        links: MeCertificatesIndexResponse200Links.fromJson(
-          json["links"] as Map<String, Object?>,
-        ),
-        meta: MeCertificatesIndexResponse200Meta.fromJson(
-          json["meta"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeCertificatesIndexResponse200.fromJson(Map<String, Object?> json) => MeCertificatesIndexResponse200(
+    data: (json["data"] as List<Object?>)
+        .map((item) => CertificateResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    links: MeCertificatesIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
+    meta: MeCertificatesIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<CertificateResource> data;
 

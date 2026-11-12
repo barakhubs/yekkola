@@ -7,16 +7,15 @@ class LearningViewResourceCourseProfessor {
     this.additionalProperties = const {},
   });
 
-  factory LearningViewResourceCourseProfessor.fromJson(
-    Map<String, Object?> json,
-  ) => LearningViewResourceCourseProfessor(
-    slug: json["slug"] as String,
-    displayName: json["display_name"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory LearningViewResourceCourseProfessor.fromJson(Map<String, Object?> json) =>
+      LearningViewResourceCourseProfessor(
+        slug: json["slug"] as String,
+        displayName: json["display_name"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String slug;
 

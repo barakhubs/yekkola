@@ -12,25 +12,18 @@ class LessonsQuizAttemptsIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory LessonsQuizAttemptsIndexResponse200.fromJson(
-    Map<String, Object?> json,
-  ) => LessonsQuizAttemptsIndexResponse200(
-    data: (json["data"] as List<Object?>)
-        .map(
-          (item) => QuizAttemptResource.fromJson(item as Map<String, Object?>),
-        )
-        .toList(),
-    links: LessonsQuizAttemptsIndexResponse200Links.fromJson(
-      json["links"] as Map<String, Object?>,
-    ),
-    meta: LessonsQuizAttemptsIndexResponse200Meta.fromJson(
-      json["meta"] as Map<String, Object?>,
-    ),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory LessonsQuizAttemptsIndexResponse200.fromJson(Map<String, Object?> json) =>
+      LessonsQuizAttemptsIndexResponse200(
+        data: (json["data"] as List<Object?>)
+            .map((item) => QuizAttemptResource.fromJson(item as Map<String, Object?>))
+            .toList(),
+        links: LessonsQuizAttemptsIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
+        meta: LessonsQuizAttemptsIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<QuizAttemptResource> data;
 

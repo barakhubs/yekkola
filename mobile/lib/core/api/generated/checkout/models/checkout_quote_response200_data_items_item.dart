@@ -15,9 +15,7 @@ class CheckoutQuoteResponse200DataItemsItem {
     this.additionalProperties = const {},
   });
 
-  factory CheckoutQuoteResponse200DataItemsItem.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory CheckoutQuoteResponse200DataItemsItem.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("title")) {
       throw ArgumentError("Missing required property: title");
     }
@@ -25,15 +23,9 @@ class CheckoutQuoteResponse200DataItemsItem {
       courseId: json["course_id"] as String,
       courseSlug: json["course_slug"] as String,
       title: json["title"] as String?,
-      listPrice: CheckoutQuoteResponse200DataItemsItemListPrice.fromJson(
-        json["list_price"] as Map<String, Object?>,
-      ),
-      discount: CheckoutQuoteResponse200DataItemsItemDiscount.fromJson(
-        json["discount"] as Map<String, Object?>,
-      ),
-      price: CheckoutQuoteResponse200DataItemsItemPrice.fromJson(
-        json["price"] as Map<String, Object?>,
-      ),
+      listPrice: CheckoutQuoteResponse200DataItemsItemListPrice.fromJson(json["list_price"] as Map<String, Object?>),
+      discount: CheckoutQuoteResponse200DataItemsItemDiscount.fromJson(json["discount"] as Map<String, Object?>),
+      price: CheckoutQuoteResponse200DataItemsItemPrice.fromJson(json["price"] as Map<String, Object?>),
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
@@ -53,14 +45,7 @@ class CheckoutQuoteResponse200DataItemsItem {
 
   final CheckoutQuoteResponse200DataItemsItemPrice price;
 
-  static const _knownKeys = <String>{
-    "course_id",
-    "course_slug",
-    "title",
-    "list_price",
-    "discount",
-    "price",
-  };
+  static const _knownKeys = <String>{"course_id", "course_slug", "title", "list_price", "discount", "price"};
 
   final Map<String, Object?> additionalProperties;
 

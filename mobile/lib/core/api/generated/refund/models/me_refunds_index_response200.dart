@@ -12,24 +12,15 @@ class MeRefundsIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory MeRefundsIndexResponse200.fromJson(Map<String, Object?> json) =>
-      MeRefundsIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) => RefundResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        links: MeRefundsIndexResponse200Links.fromJson(
-          json["links"] as Map<String, Object?>,
-        ),
-        meta: MeRefundsIndexResponse200Meta.fromJson(
-          json["meta"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeRefundsIndexResponse200.fromJson(Map<String, Object?> json) => MeRefundsIndexResponse200(
+    data: (json["data"] as List<Object?>).map((item) => RefundResource.fromJson(item as Map<String, Object?>)).toList(),
+    links: MeRefundsIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
+    meta: MeRefundsIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<RefundResource> data;
 

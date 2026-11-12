@@ -8,9 +8,7 @@ class CheckoutQuoteResponse200DataBundle {
     this.additionalProperties = const {},
   });
 
-  factory CheckoutQuoteResponse200DataBundle.fromJson(
-    Map<String, Object?> json,
-  ) => CheckoutQuoteResponse200DataBundle(
+  factory CheckoutQuoteResponse200DataBundle.fromJson(Map<String, Object?> json) => CheckoutQuoteResponse200DataBundle(
     id: json["id"] as String,
     slug: json["slug"] as String,
     title: json["title"] as String,

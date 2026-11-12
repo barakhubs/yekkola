@@ -14,46 +14,35 @@ sealed class LessonsDocumentResponse202DataRetryAfter {
   );
   factory LessonsDocumentResponse202DataRetryAfter.fromJson(Object? json) {
     if (!(json is int)) {
-      throw ArgumentError.value(
-        json,
-        "LessonsDocumentResponse202DataRetryAfter",
-      );
+      throw ArgumentError.value(json, "LessonsDocumentResponse202DataRetryAfter");
     }
     for (final value in LessonsDocumentResponse202DataRetryAfterValue.values) {
-      if (value.value == json)
-        return LessonsDocumentResponse202DataRetryAfterKnown(value);
+      if (value.value == json) return LessonsDocumentResponse202DataRetryAfterKnown(value);
     }
     return LessonsDocumentResponse202DataRetryAfterUnknown(json);
   }
   int toJson();
 }
 
-final class LessonsDocumentResponse202DataRetryAfterKnown
-    extends LessonsDocumentResponse202DataRetryAfter {
+final class LessonsDocumentResponse202DataRetryAfterKnown extends LessonsDocumentResponse202DataRetryAfter {
   const LessonsDocumentResponse202DataRetryAfterKnown(this.value);
   final LessonsDocumentResponse202DataRetryAfterValue value;
   @override
   int toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is LessonsDocumentResponse202DataRetryAfterKnown &&
-      other.value == value;
+  bool operator ==(Object other) => other is LessonsDocumentResponse202DataRetryAfterKnown && other.value == value;
   @override
-  int get hashCode =>
-      Object.hash(LessonsDocumentResponse202DataRetryAfterKnown, value);
+  int get hashCode => Object.hash(LessonsDocumentResponse202DataRetryAfterKnown, value);
 }
 
-final class LessonsDocumentResponse202DataRetryAfterUnknown
-    extends LessonsDocumentResponse202DataRetryAfter {
+final class LessonsDocumentResponse202DataRetryAfterUnknown extends LessonsDocumentResponse202DataRetryAfter {
   const LessonsDocumentResponse202DataRetryAfterUnknown(this.rawValue);
   final int rawValue;
   @override
   int toJson() => rawValue;
   @override
   bool operator ==(Object other) =>
-      other is LessonsDocumentResponse202DataRetryAfterUnknown &&
-      other.rawValue == rawValue;
+      other is LessonsDocumentResponse202DataRetryAfterUnknown && other.rawValue == rawValue;
   @override
-  int get hashCode =>
-      Object.hash(LessonsDocumentResponse202DataRetryAfterUnknown, rawValue);
+  int get hashCode => Object.hash(LessonsDocumentResponse202DataRetryAfterUnknown, rawValue);
 }

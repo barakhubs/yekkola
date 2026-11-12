@@ -2,15 +2,9 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/me_export_download_response200.dart'
-    as models
-    show MeExportDownloadResponse200;
-import 'models/me_export_show_response200.dart'
-    as models
-    show MeExportShowResponse200;
-import 'models/me_export_store_response202.dart'
-    as models
-    show MeExportStoreResponse202;
+import 'models/me_export_download_response200.dart' as models show MeExportDownloadResponse200;
+import 'models/me_export_show_response200.dart' as models show MeExportShowResponse200;
+import 'models/me_export_store_response202.dart' as models show MeExportStoreResponse202;
 
 class DataExportClient {
   DataExportClient(this._transport);
@@ -34,14 +28,8 @@ class DataExportClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>(
-      "/me/export",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeExportShowResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me/export", options: _options, cancelToken: cancelToken);
+    return models.MeExportShowResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Request a new export (built in the background). One per day
@@ -61,14 +49,8 @@ class DataExportClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 202),
     );
-    final response = await _transport.request<dynamic>(
-      "/me/export",
-      options: _options,
-      cancelToken: cancelToken,
-    );
-    return models.MeExportStoreResponse202.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    final response = await _transport.request<dynamic>("/me/export", options: _options, cancelToken: cancelToken);
+    return models.MeExportStoreResponse202.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Download the latest ready export: a short-lived signed link on object storage, streamed otherwise
@@ -93,8 +75,6 @@ class DataExportClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.MeExportDownloadResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeExportDownloadResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

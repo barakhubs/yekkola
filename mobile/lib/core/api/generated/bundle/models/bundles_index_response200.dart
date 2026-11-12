@@ -4,29 +4,18 @@ import 'bundles_index_response200_data_item.dart';
 import 'bundles_index_response200_meta.dart';
 
 class BundlesIndexResponse200 {
-  const BundlesIndexResponse200({
-    required this.data,
-    required this.meta,
-    this.additionalProperties = const {},
-  });
+  const BundlesIndexResponse200({required this.data, required this.meta, this.additionalProperties = const {}});
 
-  factory BundlesIndexResponse200.fromJson(Map<String, Object?> json) =>
-      BundlesIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) => BundlesIndexResponse200DataItem.fromJson(
-                item as Map<String, Object?>,
-              ),
-            )
-            .toList(),
-        meta: BundlesIndexResponse200Meta.fromJson(
-          json["meta"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory BundlesIndexResponse200.fromJson(Map<String, Object?> json) => BundlesIndexResponse200(
+    data: (json["data"] as List<Object?>)
+        .map((item) => BundlesIndexResponse200DataItem.fromJson(item as Map<String, Object?>))
+        .toList(),
+    meta: BundlesIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<BundlesIndexResponse200DataItem> data;
 

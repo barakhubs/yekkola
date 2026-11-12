@@ -4,15 +4,9 @@ class OrdersReceiptPdfResponse200 {
   const OrdersReceiptPdfResponse200({this.additionalProperties = const {}});
 
   factory OrdersReceiptPdfResponse200.fromJson(Map<String, Object?> json) =>
-      OrdersReceiptPdfResponse200(
-        additionalProperties: {
-          for (final entry in json.entries) entry.key: entry.value,
-        },
-      );
+      OrdersReceiptPdfResponse200(additionalProperties: {for (final entry in json.entries) entry.key: entry.value});
 
   final Map<String, Object?> additionalProperties;
 
-  Map<String, Object?> toJson() => {
-    for (final entry in additionalProperties.entries) entry.key: entry.value,
-  };
+  Map<String, Object?> toJson() => {for (final entry in additionalProperties.entries) entry.key: entry.value};
 }

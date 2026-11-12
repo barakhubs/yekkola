@@ -32,8 +32,7 @@ final class MobileMoneyRailKnown extends MobileMoneyRail {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is MobileMoneyRailKnown && other.value == value;
+  bool operator ==(Object other) => other is MobileMoneyRailKnown && other.value == value;
   @override
   int get hashCode => Object.hash(MobileMoneyRailKnown, value);
 }
@@ -44,8 +43,7 @@ final class MobileMoneyRailUnknown extends MobileMoneyRail {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is MobileMoneyRailUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is MobileMoneyRailUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(MobileMoneyRailUnknown, rawValue);
 }

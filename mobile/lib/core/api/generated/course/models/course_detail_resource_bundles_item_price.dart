@@ -7,16 +7,15 @@ class CourseDetailResourceBundlesItemPrice {
     this.additionalProperties = const {},
   });
 
-  factory CourseDetailResourceBundlesItemPrice.fromJson(
-    Map<String, Object?> json,
-  ) => CourseDetailResourceBundlesItemPrice(
-    amountMinor: _readJsonInteger(json["amount_minor"]),
-    currency: json["currency"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory CourseDetailResourceBundlesItemPrice.fromJson(Map<String, Object?> json) =>
+      CourseDetailResourceBundlesItemPrice(
+        amountMinor: _readJsonInteger(json["amount_minor"]),
+        currency: json["currency"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final int amountMinor;
 

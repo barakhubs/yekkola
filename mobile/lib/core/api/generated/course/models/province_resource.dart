@@ -8,16 +8,15 @@ class ProvinceResource {
     this.additionalProperties = const {},
   });
 
-  factory ProvinceResource.fromJson(Map<String, Object?> json) =>
-      ProvinceResource(
-        id: json["id"] as String,
-        code: json["code"] as String,
-        name: json["name"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory ProvinceResource.fromJson(Map<String, Object?> json) => ProvinceResource(
+    id: json["id"] as String,
+    code: json["code"] as String,
+    name: json["name"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String id;
 

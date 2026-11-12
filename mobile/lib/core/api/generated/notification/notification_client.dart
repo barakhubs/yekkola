@@ -4,27 +4,17 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/mark_notifications_read_request.dart'
-    as models
-    show MarkNotificationsReadRequest;
+import 'models/mark_notifications_read_request.dart' as models show MarkNotificationsReadRequest;
 import 'models/me_notification_preferences_show_response200.dart'
     as models
     show MeNotificationPreferencesShowResponse200;
 import 'models/me_notification_preferences_update_response200.dart'
     as models
     show MeNotificationPreferencesUpdateResponse200;
-import 'models/me_notifications_index_response200.dart'
-    as models
-    show MeNotificationsIndexResponse200;
-import 'models/me_notifications_read_response200.dart'
-    as models
-    show MeNotificationsReadResponse200;
-import 'models/me_notifications_unread_count_response200.dart'
-    as models
-    show MeNotificationsUnreadCountResponse200;
-import 'models/notification_preferences_request.dart'
-    as models
-    show NotificationPreferencesRequest;
+import 'models/me_notifications_index_response200.dart' as models show MeNotificationsIndexResponse200;
+import 'models/me_notifications_read_response200.dart' as models show MeNotificationsReadResponse200;
+import 'models/me_notifications_unread_count_response200.dart' as models show MeNotificationsUnreadCountResponse200;
+import 'models/notification_preferences_request.dart' as models show NotificationPreferencesRequest;
 
 class NotificationClient {
   NotificationClient(this._transport);
@@ -68,14 +58,11 @@ class NotificationClient {
       },
       cancelToken: cancelToken,
     );
-    return models.MeNotificationsIndexResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeNotificationsIndexResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// For the bell; cheap enough to poll
-  Future<models.MeNotificationsUnreadCountResponse200>
-  meNotificationsUnreadCount({
+  Future<models.MeNotificationsUnreadCountResponse200> meNotificationsUnreadCount({
     Map<String, Object?> extra = const {
       "openapi.servers": [
         {"url": "http://localhost:8000/api/v1"},
@@ -97,14 +84,10 @@ class NotificationClient {
     final response = await _transport.request<dynamic>(
       "/me/notifications/unread-count",
       options: _options,
-      queryParameters: <String, Object?>{
-        if (filterApp != null) "filter[app]": filterApp,
-      },
+      queryParameters: <String, Object?>{if (filterApp != null) "filter[app]": filterApp},
       cancelToken: cancelToken,
     );
-    return models.MeNotificationsUnreadCountResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeNotificationsUnreadCountResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Marks the given notifications read, or all of this app's when `ids` is left out (`filter[app]` as for the list)
@@ -127,8 +110,7 @@ class NotificationClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -137,20 +119,15 @@ class NotificationClient {
     final response = await _transport.request<dynamic>(
       "/me/notifications/read",
       options: _options,
-      queryParameters: <String, Object?>{
-        if (filterApp != null) "filter[app]": filterApp,
-      },
+      queryParameters: <String, Object?>{if (filterApp != null) "filter[app]": filterApp},
       data: body == null ? null : convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.MeNotificationsReadResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeNotificationsReadResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Every event I may turn off, with the channels it uses and whether each is on
-  Future<models.MeNotificationPreferencesShowResponse200>
-  meNotificationPreferencesShow({
+  Future<models.MeNotificationPreferencesShowResponse200> meNotificationPreferencesShow({
     Map<String, Object?> extra = const {
       "openapi.servers": [
         {"url": "http://localhost:8000/api/v1"},
@@ -171,14 +148,11 @@ class NotificationClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.MeNotificationPreferencesShowResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeNotificationPreferencesShowResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Sets channels on or off; events that can't be turned off are refused (422)
-  Future<models.MeNotificationPreferencesUpdateResponse200>
-  meNotificationPreferencesUpdate({
+  Future<models.MeNotificationPreferencesUpdateResponse200> meNotificationPreferencesUpdate({
     Map<String, Object?> extra = const {
       "openapi.servers": [
         {"url": "http://localhost:8000/api/v1"},
@@ -194,8 +168,7 @@ class NotificationClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -207,8 +180,6 @@ class NotificationClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.MeNotificationPreferencesUpdateResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeNotificationPreferencesUpdateResponse200.fromJson(response.data as Map<String, Object?>);
   }
 }

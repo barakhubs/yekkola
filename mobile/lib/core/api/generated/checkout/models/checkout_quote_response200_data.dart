@@ -32,35 +32,19 @@ class CheckoutQuoteResponse200Data {
     return CheckoutQuoteResponse200Data(
       currency: json["currency"] as String,
       items: (json["items"] as List<Object?>)
-          .map(
-            (item) => CheckoutQuoteResponse200DataItemsItem.fromJson(
-              item as Map<String, Object?>,
-            ),
-          )
+          .map((item) => CheckoutQuoteResponse200DataItemsItem.fromJson(item as Map<String, Object?>))
           .toList(),
       isFree: json["is_free"] as bool,
-      excludedCourseIds: (json["excluded_course_ids"] as List<Object?>)
-          .map((item) => item as String)
-          .toList(),
+      excludedCourseIds: (json["excluded_course_ids"] as List<Object?>).map((item) => item as String).toList(),
       coupon: json["coupon"] == null
           ? null
-          : CheckoutQuoteResponse200DataCoupon.fromJson(
-              json["coupon"] as Map<String, Object?>,
-            ),
+          : CheckoutQuoteResponse200DataCoupon.fromJson(json["coupon"] as Map<String, Object?>),
       bundle: json["bundle"] == null
           ? null
-          : CheckoutQuoteResponse200DataBundle.fromJson(
-              json["bundle"] as Map<String, Object?>,
-            ),
-      subtotal: CheckoutQuoteResponse200DataSubtotal.fromJson(
-        json["subtotal"] as Map<String, Object?>,
-      ),
-      discount: CheckoutQuoteResponse200DataDiscount.fromJson(
-        json["discount"] as Map<String, Object?>,
-      ),
-      total: CheckoutQuoteResponse200DataTotal.fromJson(
-        json["total"] as Map<String, Object?>,
-      ),
+          : CheckoutQuoteResponse200DataBundle.fromJson(json["bundle"] as Map<String, Object?>),
+      subtotal: CheckoutQuoteResponse200DataSubtotal.fromJson(json["subtotal"] as Map<String, Object?>),
+      discount: CheckoutQuoteResponse200DataDiscount.fromJson(json["discount"] as Map<String, Object?>),
+      total: CheckoutQuoteResponse200DataTotal.fromJson(json["total"] as Map<String, Object?>),
       canBuyForOthers: json["can_buy_for_others"] as bool,
       additionalProperties: {
         for (final entry in json.entries)

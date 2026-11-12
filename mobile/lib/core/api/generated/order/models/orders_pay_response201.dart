@@ -3,19 +3,15 @@
 import '../../guest_order/models/payment_resource.dart';
 
 class OrdersPayResponse201 {
-  const OrdersPayResponse201({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const OrdersPayResponse201({required this.data, this.additionalProperties = const {}});
 
-  factory OrdersPayResponse201.fromJson(Map<String, Object?> json) =>
-      OrdersPayResponse201(
-        data: PaymentResource.fromJson(json["data"] as Map<String, Object?>),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory OrdersPayResponse201.fromJson(Map<String, Object?> json) => OrdersPayResponse201(
+    data: PaymentResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final PaymentResource data;
 

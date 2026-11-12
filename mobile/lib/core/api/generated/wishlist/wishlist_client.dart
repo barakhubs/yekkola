@@ -4,9 +4,7 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/me_wishlist_index_response200.dart'
-    as models
-    show MeWishlistIndexResponse200;
+import 'models/me_wishlist_index_response200.dart' as models show MeWishlistIndexResponse200;
 import 'models/wishlist_request.dart' as models show WishlistRequest;
 
 class WishlistClient {
@@ -35,15 +33,10 @@ class WishlistClient {
     final response = await _transport.request<dynamic>(
       "/me/wishlist",
       options: _options,
-      queryParameters: <String, Object?>{
-        if (page != null) "page": page,
-        if (perPage != null) "per_page": perPage,
-      },
+      queryParameters: <String, Object?>{if (page != null) "page": page, if (perPage != null) "per_page": perPage},
       cancelToken: cancelToken,
     );
-    return models.MeWishlistIndexResponse200.fromJson(
-      response.data as Map<String, Object?>,
-    );
+    return models.MeWishlistIndexResponse200.fromJson(response.data as Map<String, Object?>);
   }
 
   /// Saves a listed course. Idempotent
@@ -63,8 +56,7 @@ class WishlistClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry
-            in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },

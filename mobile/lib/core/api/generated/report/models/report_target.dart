@@ -36,8 +36,7 @@ final class ReportTargetKnown extends ReportTarget {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is ReportTargetKnown && other.value == value;
+  bool operator ==(Object other) => other is ReportTargetKnown && other.value == value;
   @override
   int get hashCode => Object.hash(ReportTargetKnown, value);
 }
@@ -48,8 +47,7 @@ final class ReportTargetUnknown extends ReportTarget {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is ReportTargetUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is ReportTargetUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(ReportTargetUnknown, rawValue);
 }

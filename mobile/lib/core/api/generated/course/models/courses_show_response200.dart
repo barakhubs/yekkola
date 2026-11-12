@@ -3,21 +3,15 @@
 import 'course_detail_resource.dart';
 
 class CoursesShowResponse200 {
-  const CoursesShowResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const CoursesShowResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory CoursesShowResponse200.fromJson(Map<String, Object?> json) =>
-      CoursesShowResponse200(
-        data: CourseDetailResource.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CoursesShowResponse200.fromJson(Map<String, Object?> json) => CoursesShowResponse200(
+    data: CourseDetailResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final CourseDetailResource data;
 

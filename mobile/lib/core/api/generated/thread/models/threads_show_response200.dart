@@ -3,19 +3,15 @@
 import 'thread_resource.dart';
 
 class ThreadsShowResponse200 {
-  const ThreadsShowResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const ThreadsShowResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory ThreadsShowResponse200.fromJson(Map<String, Object?> json) =>
-      ThreadsShowResponse200(
-        data: ThreadResource.fromJson(json["data"] as Map<String, Object?>),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory ThreadsShowResponse200.fromJson(Map<String, Object?> json) => ThreadsShowResponse200(
+    data: ThreadResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final ThreadResource data;
 

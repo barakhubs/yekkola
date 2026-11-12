@@ -11,6 +11,8 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../auth/domain/auth_state.dart';
 import '../../auth/presentation/api_error_text.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../../core/sync/sync_providers.dart';
+import '../../learning/data/progress_sync.dart';
 import '../data/offline_media_server.dart';
 import '../domain/offline_download.dart';
 import 'downloads_controller.dart';
@@ -42,6 +44,8 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
   @override
   void initState() {
     super.initState();
+    final scheduler = ref.read(syncSchedulerProvider);
+    _nudge = scheduler.nudge;
     unawaited(SecureScreen.enable());
     unawaited(_open());
   }
@@ -73,6 +77,20 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
       await player.initialize();
       await store.save(download.openedAt(now));
       if (!mounted) throw StateError('closed');
+
+      // Resume where this account stopped, unless that was the very end.
+      final progress = ref.read(progressRepositoryProvider);
+      final saved = await progress.positionOf(owner.user.id, download.lessonUid);
+      final resumeAt = Duration(seconds: saved?.positionSeconds ?? 0);
+      if (resumeAt > const Duration(seconds: 5) && resumeAt < player.value.duration - const Duration(seconds: 5)) {
+        await player.seekTo(resumeAt);
+      }
+      _saveProgress = () => _record(progress, owner.user.id, download.lessonUid, player!);
+      _progressTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+        if (player!.value.isPlaying) _saveProgress?.call();
+      });
+      player.addListener(_onPlayerChange);
+      if (!mounted) throw StateError('closed');
       setState(() {
         _download = download;
         _server = server;
@@ -92,6 +110,27 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
   }
 
   Timer? _expiryCheck;
+  Timer? _progressTimer;
+  void Function()? _saveProgress;
+  bool _wasPlaying = false;
+
+  /// Progress is saved every 15 s while playing and on pause and close (PRD-06 FR-05), locally first and
+  /// synced when online.
+  void _onPlayerChange() {
+    final playing = _player?.value.isPlaying ?? false;
+    if (_wasPlaying && !playing) _saveProgress?.call();
+    _wasPlaying = playing;
+  }
+
+  void _record(ProgressRepository progress, String userId, String lessonUid, VideoPlayerController player) {
+    unawaited(
+      progress.record(userId: userId, lessonUid: lessonUid, positionSeconds: player.value.position.inSeconds).then((_) {
+        _nudge?.call();
+      }),
+    );
+  }
+
+  void Function()? _nudge;
 
   /// A lesson opened just before its expiry stops when the license ends (PRD-07 FR-11).
   Future<void> _checkExpiry() async {
@@ -100,6 +139,9 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
     _expiryCheck?.cancel();
     final player = _player;
     final server = _server;
+    _saveProgress?.call();
+    _progressTimer?.cancel();
+    player?.removeListener(_onPlayerChange);
     setState(() {
       _player = null;
       _server = null;
@@ -134,6 +176,9 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
   @override
   void dispose() {
     _expiryCheck?.cancel();
+    _progressTimer?.cancel();
+    _player?.removeListener(_onPlayerChange);
+    _saveProgress?.call();
     unawaited(SecureScreen.disable());
     unawaited(_player?.dispose());
     unawaited(_server?.close());

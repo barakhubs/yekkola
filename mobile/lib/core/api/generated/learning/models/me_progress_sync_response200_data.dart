@@ -8,20 +8,15 @@ class MeProgressSyncResponse200Data {
     this.additionalProperties = const {},
   });
 
-  factory MeProgressSyncResponse200Data.fromJson(Map<String, Object?> json) =>
-      MeProgressSyncResponse200Data(
-        accepted: (json["accepted"] as List<Object?>)
-            .map((item) => item as String)
-            .toList(),
-        skipped: (json["skipped"] as List<Object?>)
-            .map((item) => item)
-            .toList(),
-        courses: json["courses"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeProgressSyncResponse200Data.fromJson(Map<String, Object?> json) => MeProgressSyncResponse200Data(
+    accepted: (json["accepted"] as List<Object?>).map((item) => item as String).toList(),
+    skipped: (json["skipped"] as List<Object?>).map((item) => item).toList(),
+    courses: json["courses"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<String> accepted;
 

@@ -32,13 +32,7 @@ class ReportResource {
 
   final String createdAt;
 
-  static const _knownKeys = <String>{
-    "id",
-    "type",
-    "target_id",
-    "reason",
-    "created_at",
-  };
+  static const _knownKeys = <String>{"id", "type", "target_id", "reason", "created_at"};
 
   final Map<String, Object?> additionalProperties;
 

@@ -11,9 +11,7 @@ class CourseDetailResourceSectionsItemLessonsItem {
     this.additionalProperties = const {},
   });
 
-  factory CourseDetailResourceSectionsItemLessonsItem.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory CourseDetailResourceSectionsItemLessonsItem.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("duration_seconds")) {
       throw ArgumentError("Missing required property: duration_seconds");
     }
@@ -21,9 +19,7 @@ class CourseDetailResourceSectionsItemLessonsItem {
       uid: json["uid"] as String,
       type2: json["type"] as String,
       title: json["title"] as String,
-      durationSeconds: json["duration_seconds"] == null
-          ? null
-          : _readJsonInteger(json["duration_seconds"]),
+      durationSeconds: json["duration_seconds"] == null ? null : _readJsonInteger(json["duration_seconds"]),
       isPreview: json["is_preview"] as bool,
       downloadBytes: _readJsonInteger(json["download_bytes"]),
       additionalProperties: {
@@ -45,14 +41,7 @@ class CourseDetailResourceSectionsItemLessonsItem {
 
   final int downloadBytes;
 
-  static const _knownKeys = <String>{
-    "uid",
-    "type",
-    "title",
-    "duration_seconds",
-    "is_preview",
-    "download_bytes",
-  };
+  static const _knownKeys = <String>{"uid", "type", "title", "duration_seconds", "is_preview", "download_bytes"};
 
   final Map<String, Object?> additionalProperties;
 

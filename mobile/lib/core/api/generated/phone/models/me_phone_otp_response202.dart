@@ -3,21 +3,15 @@
 import 'me_phone_otp_response202_data.dart';
 
 class MePhoneOtpResponse202 {
-  const MePhoneOtpResponse202({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const MePhoneOtpResponse202({required this.data, this.additionalProperties = const {}});
 
-  factory MePhoneOtpResponse202.fromJson(Map<String, Object?> json) =>
-      MePhoneOtpResponse202(
-        data: MePhoneOtpResponse202Data.fromJson(
-          json["data"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MePhoneOtpResponse202.fromJson(Map<String, Object?> json) => MePhoneOtpResponse202(
+    data: MePhoneOtpResponse202Data.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final MePhoneOtpResponse202Data data;
 

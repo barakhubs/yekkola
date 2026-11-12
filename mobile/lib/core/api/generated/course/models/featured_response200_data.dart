@@ -11,37 +11,24 @@ class FeaturedResponse200Data {
     this.additionalProperties = const {},
   });
 
-  factory FeaturedResponse200Data.fromJson(Map<String, Object?> json) =>
-      FeaturedResponse200Data(
-        featured: (json["featured"] as List<Object?>)
-            .map(
-              (item) =>
-                  CourseCardResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        popular: (json["popular"] as List<Object?>)
-            .map(
-              (item) =>
-                  CourseCardResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        new2: (json["new"] as List<Object?>)
-            .map(
-              (item) =>
-                  CourseCardResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        free: (json["free"] as List<Object?>)
-            .map(
-              (item) =>
-                  CourseCardResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory FeaturedResponse200Data.fromJson(Map<String, Object?> json) => FeaturedResponse200Data(
+    featured: (json["featured"] as List<Object?>)
+        .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    popular: (json["popular"] as List<Object?>)
+        .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    new2: (json["new"] as List<Object?>)
+        .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    free: (json["free"] as List<Object?>)
+        .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<CourseCardResource> featured;
 

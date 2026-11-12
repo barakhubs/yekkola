@@ -12,24 +12,17 @@ class MeEnrollmentsIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory MeEnrollmentsIndexResponse200.fromJson(Map<String, Object?> json) =>
-      MeEnrollmentsIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) => MyCourseResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        links: MeEnrollmentsIndexResponse200Links.fromJson(
-          json["links"] as Map<String, Object?>,
-        ),
-        meta: MeEnrollmentsIndexResponse200Meta.fromJson(
-          json["meta"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeEnrollmentsIndexResponse200.fromJson(Map<String, Object?> json) => MeEnrollmentsIndexResponse200(
+    data: (json["data"] as List<Object?>)
+        .map((item) => MyCourseResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    links: MeEnrollmentsIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
+    meta: MeEnrollmentsIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<MyCourseResource> data;
 

@@ -7,14 +7,13 @@ class GuestOrdersReceiptResponse404 {
     this.additionalProperties = const {},
   });
 
-  factory GuestOrdersReceiptResponse404.fromJson(Map<String, Object?> json) =>
-      GuestOrdersReceiptResponse404(
-        message: json["message"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory GuestOrdersReceiptResponse404.fromJson(Map<String, Object?> json) => GuestOrdersReceiptResponse404(
+    message: json["message"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   /// Error overview.
   final String message;

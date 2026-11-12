@@ -3,19 +3,15 @@
 import '../../guest_order/models/order_resource.dart';
 
 class OrdersStoreResponse201 {
-  const OrdersStoreResponse201({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const OrdersStoreResponse201({required this.data, this.additionalProperties = const {}});
 
-  factory OrdersStoreResponse201.fromJson(Map<String, Object?> json) =>
-      OrdersStoreResponse201(
-        data: OrderResource.fromJson(json["data"] as Map<String, Object?>),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory OrdersStoreResponse201.fromJson(Map<String, Object?> json) => OrdersStoreResponse201(
+    data: OrderResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final OrderResource data;
 

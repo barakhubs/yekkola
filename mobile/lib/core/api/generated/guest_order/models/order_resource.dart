@@ -35,22 +35,15 @@ class OrderResource {
       number: json["number"] as String,
       status: json["status"] as String,
       currency: json["currency"] as String,
-      subtotal: OrderResourceSubtotal.fromJson(
-        json["subtotal"] as Map<String, Object?>,
-      ),
-      discount: OrderResourceDiscount.fromJson(
-        json["discount"] as Map<String, Object?>,
-      ),
+      subtotal: OrderResourceSubtotal.fromJson(json["subtotal"] as Map<String, Object?>),
+      discount: OrderResourceDiscount.fromJson(json["discount"] as Map<String, Object?>),
       total: OrderResourceTotal.fromJson(json["total"] as Map<String, Object?>),
       expiresAt: json["expires_at"] as String,
       paidAt: json["paid_at"] as String?,
       createdAt: json["created_at"] as String,
       isGift: json["is_gift"] as bool,
       items: (json["items"] as List<Object?>)
-          .map(
-            (item) =>
-                OrderResourceItemsItem.fromJson(item as Map<String, Object?>),
-          )
+          .map((item) => OrderResourceItemsItem.fromJson(item as Map<String, Object?>))
           .toList(),
       payments: (json["payments"] as List<Object?>)
           .map((item) => PaymentResource.fromJson(item as Map<String, Object?>))

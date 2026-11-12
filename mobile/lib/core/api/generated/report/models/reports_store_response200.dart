@@ -3,19 +3,15 @@
 import 'report_resource.dart';
 
 class ReportsStoreResponse200 {
-  const ReportsStoreResponse200({
-    required this.data,
-    this.additionalProperties = const {},
-  });
+  const ReportsStoreResponse200({required this.data, this.additionalProperties = const {}});
 
-  factory ReportsStoreResponse200.fromJson(Map<String, Object?> json) =>
-      ReportsStoreResponse200(
-        data: ReportResource.fromJson(json["data"] as Map<String, Object?>),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory ReportsStoreResponse200.fromJson(Map<String, Object?> json) => ReportsStoreResponse200(
+    data: ReportResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final ReportResource data;
 

@@ -2,19 +2,15 @@
 
 /// The stream session returned with the playback tokens (PRD-07 FR-05).
 class HeartbeatRequest {
-  const HeartbeatRequest({
-    required this.sessionId,
-    this.additionalProperties = const {},
-  });
+  const HeartbeatRequest({required this.sessionId, this.additionalProperties = const {}});
 
-  factory HeartbeatRequest.fromJson(Map<String, Object?> json) =>
-      HeartbeatRequest(
-        sessionId: json["session_id"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory HeartbeatRequest.fromJson(Map<String, Object?> json) => HeartbeatRequest(
+    sessionId: json["session_id"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String sessionId;
 

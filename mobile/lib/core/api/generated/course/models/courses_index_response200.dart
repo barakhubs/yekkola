@@ -12,25 +12,17 @@ class CoursesIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory CoursesIndexResponse200.fromJson(Map<String, Object?> json) =>
-      CoursesIndexResponse200(
-        data: (json["data"] as List<Object?>)
-            .map(
-              (item) =>
-                  CourseCardResource.fromJson(item as Map<String, Object?>),
-            )
-            .toList(),
-        links: CoursesIndexResponse200Links.fromJson(
-          json["links"] as Map<String, Object?>,
-        ),
-        meta: CoursesIndexResponse200Meta.fromJson(
-          json["meta"] as Map<String, Object?>,
-        ),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CoursesIndexResponse200.fromJson(Map<String, Object?> json) => CoursesIndexResponse200(
+    data: (json["data"] as List<Object?>)
+        .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
+        .toList(),
+    links: CoursesIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
+    meta: CoursesIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final List<CourseCardResource> data;
 

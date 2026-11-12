@@ -3,25 +3,15 @@
 import '../../device/models/device_resource.dart';
 
 class AuthOtpVerifyResponse200DataDevice {
-  AuthOtpVerifyResponse200DataDevice._(
-    this._json,
-    this.hasDeviceResource,
-    this.hasNull,
-  );
+  AuthOtpVerifyResponse200DataDevice._(this._json, this.hasDeviceResource, this.hasNull);
 
   factory AuthOtpVerifyResponse200DataDevice.fromJson(Object? json) {
     final hasDeviceResource = _matches17(json);
     final hasNull = _matches26(json);
     if (!(hasDeviceResource || hasNull)) {
-      throw const FormatException(
-        "No matching AuthOtpVerifyResponse200DataDevice variant.",
-      );
+      throw const FormatException("No matching AuthOtpVerifyResponse200DataDevice variant.");
     }
-    return AuthOtpVerifyResponse200DataDevice._(
-      _copyJson(json),
-      hasDeviceResource,
-      hasNull,
-    );
+    return AuthOtpVerifyResponse200DataDevice._(_copyJson(json), hasDeviceResource, hasNull);
   }
 
   final Object? _json;
@@ -58,27 +48,13 @@ bool _matches18(Object? value) =>
     (value is! Map<String, Object?> || value.containsKey("registered_at")) &&
     (value is! Map<String, Object?> || value.containsKey("last_active_at")) &&
     (value is! Map<String, Object?> || value.containsKey("is_current")) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("id") ||
-        _matches19(value["id"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("platform") ||
-        _matches20(value["platform"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("name") ||
-        _matches21(value["name"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("app_version") ||
-        _matches22(value["app_version"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("registered_at") ||
-        _matches23(value["registered_at"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("last_active_at") ||
-        _matches24(value["last_active_at"])) &&
-    (value is! Map<String, Object?> ||
-        !value.containsKey("is_current") ||
-        _matches25(value["is_current"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("id") || _matches19(value["id"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("platform") || _matches20(value["platform"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("name") || _matches21(value["name"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("app_version") || _matches22(value["app_version"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("registered_at") || _matches23(value["registered_at"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("last_active_at") || _matches24(value["last_active_at"])) &&
+    (value is! Map<String, Object?> || !value.containsKey("is_current") || _matches25(value["is_current"])) &&
     ((value is Map<String, Object?>));
 bool _matches19(Object? value) => ((value is String));
 bool _matches20(Object? value) => ((value is String));
@@ -90,9 +66,7 @@ bool _matches25(Object? value) => ((value is bool));
 bool _matches26(Object? value) => ((value == null));
 Object? _copyJson(Object? value) {
   return switch (value) {
-    Map<String, Object?> map => map.map(
-      (key, item) => MapEntry(key, _copyJson(item)),
-    ),
+    Map<String, Object?> map => map.map((key, item) => MapEntry(key, _copyJson(item))),
     List<Object?> list => list.map(_copyJson).toList(),
     null || bool() || String() || int() => value,
     double() when value.isFinite => value,

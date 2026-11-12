@@ -10,12 +10,8 @@ enum UpdateProfileRequestLocaleValue {
 
 sealed class UpdateProfileRequestLocale {
   const UpdateProfileRequestLocale();
-  static const fr = UpdateProfileRequestLocaleKnown(
-    UpdateProfileRequestLocaleValue.fr,
-  );
-  static const en = UpdateProfileRequestLocaleKnown(
-    UpdateProfileRequestLocaleValue.en,
-  );
+  static const fr = UpdateProfileRequestLocaleKnown(UpdateProfileRequestLocaleValue.fr);
+  static const en = UpdateProfileRequestLocaleKnown(UpdateProfileRequestLocaleValue.en);
   factory UpdateProfileRequestLocale.fromJson(Object? json) {
     if (!(json is String)) {
       throw ArgumentError.value(json, "UpdateProfileRequestLocale");
@@ -34,21 +30,18 @@ final class UpdateProfileRequestLocaleKnown extends UpdateProfileRequestLocale {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) =>
-      other is UpdateProfileRequestLocaleKnown && other.value == value;
+  bool operator ==(Object other) => other is UpdateProfileRequestLocaleKnown && other.value == value;
   @override
   int get hashCode => Object.hash(UpdateProfileRequestLocaleKnown, value);
 }
 
-final class UpdateProfileRequestLocaleUnknown
-    extends UpdateProfileRequestLocale {
+final class UpdateProfileRequestLocaleUnknown extends UpdateProfileRequestLocale {
   const UpdateProfileRequestLocaleUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) =>
-      other is UpdateProfileRequestLocaleUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) => other is UpdateProfileRequestLocaleUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(UpdateProfileRequestLocaleUnknown, rawValue);
 }

@@ -10,9 +10,7 @@ class OrdersReceiptResponse200DataPayment {
     this.additionalProperties = const {},
   });
 
-  factory OrdersReceiptResponse200DataPayment.fromJson(
-    Map<String, Object?> json,
-  ) {
+  factory OrdersReceiptResponse200DataPayment.fromJson(Map<String, Object?> json) {
     if (!json.containsKey("operator_reference")) {
       throw ArgumentError("Missing required property: operator_reference");
     }
@@ -42,13 +40,7 @@ class OrdersReceiptResponse200DataPayment {
 
   final String? paidAt;
 
-  static const _knownKeys = <String>{
-    "rail",
-    "payer",
-    "reference",
-    "operator_reference",
-    "paid_at",
-  };
+  static const _knownKeys = <String>{"rail", "payer", "reference", "operator_reference", "paid_at"};
 
   final Map<String, Object?> additionalProperties;
 
