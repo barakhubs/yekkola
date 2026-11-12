@@ -548,7 +548,7 @@ export const getMeEntitlementsUrl = () => {
 
 /**
  * @summary Entitlement sync for this registered device: every offline license it holds and what to do with the
-download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access, media_unavailable,
 media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too
  */
 export const meEntitlements = async (
@@ -636,7 +636,7 @@ export function useMeEntitlements<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Entitlement sync for this registered device: every offline license it holds and what to do with the
-download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access, media_unavailable,
 media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too
  */
 

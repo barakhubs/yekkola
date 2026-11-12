@@ -11696,7 +11696,7 @@
         "/me/entitlements": {
             "get": {
                 "operationId": "me.entitlements",
-                "summary": "Entitlement sync for this registered device: every offline license it holds and what to do with the\ndownload \u2014 `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,\nmedia_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too",
+                "summary": "Entitlement sync for this registered device: every offline license it holds and what to do with the\ndownload \u2014 `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access, media_unavailable,\nmedia_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too",
                 "tags": [
                     "Playback"
                 ],

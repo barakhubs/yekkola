@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-07-entitlement-sync`, PR #81 (`GET /me/entitlements` + the app deleting/renewing downloads)
+- **Current branch:** `feature/prd-07-entitlement-sync`, PR #82 (review fixes for entitlement sync, #81)
 - **Next up:** catalogue, search, course and professor pages with offline cache; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
@@ -493,7 +493,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Offline encrypted HLS prototype: own downloader for a rendition's segments (resumable, license renewal on expired URLs), AES key wrapped with a per-device key bound to the offline expiry, `video_player` (AES-128 HLS) via a loopback server, overlay, `FLAG_SECURE`; staging-only lab screen (PRD-07 FR-07, FR-13, FR-16) — #79
 - [ ] Run the offline prototype on a low-end Android phone (2 GB RAM, Android 8+) against staging with R2: download, airplane mode, play, seek, renew; note memory/CPU and playback start time **(needs: owner, a real phone + `VIDEO_DRIVER=r2` on staging)**
 - [ ] Downloads survive backgrounding and app kills (background_downloader or a foreground service), Wi-Fi-only, queue (PRD-07 FR-09)
-- [x] Entitlement sync: `GET /me/entitlements` (keep/renew/delete per license) and the app deleting/renewing downloads (PRD-07 FR-10, FR-15) — #81
+- [x] Entitlement sync: `GET /me/entitlements` (keep/renew/delete per license) and the app deleting/renewing downloads (PRD-07 FR-10, FR-15) — #81, review fixes #82
+- [ ] Release an offline license when the app deletes a download (or stop listing revoked/expired licenses after N days), so `GET /me/entitlements` doesn't grow with every lesson a device ever downloaded
 - [ ] iOS: hide content on screen capture (PRD-07 FR-13) and check AVPlayer with the loopback server **(needs: a Mac + iPhone)**
 - [x] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list — #78
 - [ ] Try sign-in end to end on a real Android phone against staging
