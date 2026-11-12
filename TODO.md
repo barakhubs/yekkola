@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-07-entitlement-sync`, PR #81 (`GET /me/entitlements` + the app deleting/renewing downloads)
+- **Current branch:** `feature/prd-07-entitlement-sync`, PR #82 (`GET /me/entitlements` + the app deleting/renewing downloads)
 - **Next up:** catalogue, search, course and professor pages with offline cache; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
@@ -130,7 +130,7 @@ Cannot be defaulted:
 - [ ] Staff password reset by email, once an email provider is chosen
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
-- [~] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — done for offline licenses (#79) and entitlements (#81); other mobile routes still to do
+- [~] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — done for offline licenses (#79) and entitlements (#82); other mobile routes still to do
 - [ ] Verify trusted-proxy / client-IP handling on Laravel Cloud so per-IP limits see real client IPs (now also the per-visitor baseline on every public route: if `request->ip()` is the edge, trust only the Cloud edge, never `*`) — first staging deploy
 - [ ] Real SMS provider driver + delivery reports — phase 4
 
@@ -493,7 +493,7 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Offline encrypted HLS prototype: own downloader for a rendition's segments (resumable, license renewal on expired URLs), AES key wrapped with a per-device key bound to the offline expiry, `video_player` (AES-128 HLS) via a loopback server, overlay, `FLAG_SECURE`; staging-only lab screen (PRD-07 FR-07, FR-13, FR-16) — #79
 - [ ] Run the offline prototype on a low-end Android phone (2 GB RAM, Android 8+) against staging with R2: download, airplane mode, play, seek, renew; note memory/CPU and playback start time **(needs: owner, a real phone + `VIDEO_DRIVER=r2` on staging)**
 - [ ] Downloads survive backgrounding and app kills (background_downloader or a foreground service), Wi-Fi-only, queue (PRD-07 FR-09)
-- [x] Entitlement sync: `GET /me/entitlements` (keep/renew/delete per license) and the app deleting/renewing downloads (PRD-07 FR-10, FR-15) — #81
+- [x] Entitlement sync: `GET /me/entitlements` (keep/renew/delete per license) and the app deleting/renewing downloads (PRD-07 FR-10, FR-15) — #82
 - [ ] Release an offline license when the app deletes a download (or stop listing revoked/expired licenses after N days), so `GET /me/entitlements` doesn't grow with every lesson a device ever downloaded
 - [ ] iOS: hide content on screen capture (PRD-07 FR-13) and check AVPlayer with the loopback server **(needs: a Mac + iPhone)**
 - [x] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list — #78
