@@ -10,6 +10,11 @@ import '../../features/auth/presentation/device_limit_screen.dart';
 import '../../features/auth/presentation/phone_screen.dart';
 import '../../features/auth/presentation/profile_screen.dart';
 import '../../features/auth/presentation/suspended_screen.dart';
+import '../../features/catalog/data/catalog_repository.dart';
+import '../../features/catalog/presentation/course_screen.dart';
+import '../../features/catalog/presentation/explore_screen.dart';
+import '../../features/catalog/presentation/professor_screen.dart';
+import '../../features/catalog/presentation/search_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/media/presentation/downloads_lab_screen.dart';
 import '../../features/media/presentation/offline_player_screen.dart';
@@ -20,6 +25,14 @@ abstract final class Routes {
   static const signInDevices = '/sign-in/devices';
   static const welcome = '/welcome';
   static const suspended = '/suspended';
+
+  /// Landing after sign-in: discovery.
+  static const explore = '/explore';
+  static const search = '/explore/search';
+  static String course(String slug) => '/courses/$slug';
+  static String professor(String slug) => '/professors/$slug';
+
+  /// My courses.
   static const home = '/home';
   static const devices = '/account/devices';
   static const downloadsLab = '/lab/downloads';
@@ -34,7 +47,7 @@ String? authRedirect(AuthState auth, String location) {
     SignedOut() => inSignIn ? null : Routes.signIn,
     SignedIn(:final user) when user.isSuspended => location == Routes.suspended ? null : Routes.suspended,
     SignedIn(:final user) when user.needsProfile => location == Routes.welcome ? null : Routes.welcome,
-    SignedIn() => inSignIn || location == Routes.welcome || location == Routes.suspended ? Routes.home : null,
+    SignedIn() => inSignIn || location == Routes.welcome || location == Routes.suspended ? Routes.explore : null,
   };
 }
 
@@ -44,7 +57,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(refresh.dispose);
 
   final router = GoRouter(
-    initialLocation: Routes.home,
+    initialLocation: Routes.explore,
     refreshListenable: refresh,
     redirect: (context, state) => authRedirect(refresh.value, state.matchedLocation),
     routes: [
@@ -53,7 +66,31 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.signInDevices, builder: (_, _) => const DeviceLimitScreen()),
       GoRoute(path: Routes.welcome, builder: (_, _) => const ProfileScreen()),
       GoRoute(path: Routes.suspended, builder: (_, _) => const SuspendedScreen()),
-      GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen()),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, shell) =>
+            TabsShell(selectedIndex: shell.currentIndex, onSelect: shell.goBranch, child: shell),
+        branches: [
+          StatefulShellBranch(
+            routes: [GoRoute(path: Routes.explore, builder: (_, _) => const ExploreScreen())],
+          ),
+          StatefulShellBranch(
+            routes: [GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen())],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.search,
+        builder: (_, state) =>
+            SearchScreen(initial: state.extra is CourseQuery ? state.extra! as CourseQuery : const CourseQuery()),
+      ),
+      GoRoute(
+        path: '/courses/:slug',
+        builder: (_, state) => CourseScreen(slug: state.pathParameters['slug']!),
+      ),
+      GoRoute(
+        path: '/professors/:slug',
+        builder: (_, state) => ProfessorScreen(slug: state.pathParameters['slug']!),
+      ),
       GoRoute(path: Routes.devices, builder: (_, _) => const DevicesScreen()),
       GoRoute(
         path: Routes.downloadsLab,

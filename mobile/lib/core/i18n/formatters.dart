@@ -5,6 +5,30 @@ abstract final class Formatters {
   /// `12 nov. 2026, 14:05` / `Nov 12, 2026, 2:05 PM`.
   static String dateTime(DateTime value, String locale) => DateFormat.yMMMd(locale).add_jm().format(value.toLocal());
 
+  /// Prices, like the web's formatMoney: `15,00 $US` / `$15.00`; francs hide centimes when whole.
+  /// Money is integer minor units with its own currency — never converted.
+  static String money(int amountMinor, String currency, String locale) {
+    const digits = 2; // USD and CDF (ISO 4217)
+    final whole = currency == 'CDF' && amountMinor % 100 == 0;
+    final symbol = switch (currency) {
+      'USD' => locale == 'fr' ? r'$US' : r'$',
+      'CDF' => 'FC',
+      _ => currency,
+    };
+    return NumberFormat.currency(
+      locale: locale == 'fr' ? 'fr' : 'en',
+      name: currency,
+      symbol: symbol,
+      decimalDigits: whole ? 0 : digits,
+    ).format(amountMinor / 100);
+  }
+
+  /// `novembre 2026` / `November 2026`.
+  static String monthYear(DateTime value, String locale) => DateFormat.yMMMM(locale).format(value.toLocal());
+
+  /// `4,5` / `4.5`.
+  static String decimal(num value, String locale) => NumberFormat('#,##0.#', locale).format(value);
+
   /// Download sizes: `80 Mo` / `80 MB` (decimal units, as phones show storage).
   static String bytes(int value, String locale) {
     const units = ['B', 'KB', 'MB', 'GB'];

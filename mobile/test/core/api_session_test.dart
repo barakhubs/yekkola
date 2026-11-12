@@ -150,8 +150,8 @@ void main() {
     test('a missing name is collected first, then sign-in screens lead home', () {
       expect(authRedirect(SignedIn(user: _user(name: null), token: 't'), Routes.home), Routes.welcome);
       final active = SignedIn(user: _user(), token: 't');
-      expect(authRedirect(active, Routes.signInCode), Routes.home);
-      expect(authRedirect(active, Routes.welcome), Routes.home);
+      expect(authRedirect(active, Routes.signInCode), Routes.explore);
+      expect(authRedirect(active, Routes.welcome), Routes.explore);
       expect(authRedirect(active, Routes.devices), isNull);
     });
   });

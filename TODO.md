@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/prd-07-entitlement-sync`, PR #82 (review fixes for entitlement sync, #81)
-- **Next up:** catalogue, search, course and professor pages with offline cache; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
+- **Current branch:** `feature/mobile-catalogue`, PR #83 (catalogue, search, course and professor pages with offline copies)
+- **Next up:** free enroll + checkout (waiting screen); owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
 
@@ -499,7 +499,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list — #78
 - [ ] Try sign-in end to end on a real Android phone against staging
 - [ ] `POST /auth/otp/request` returns the normalised `phone`, so the app stops pre-normalising national numbers (+243 default lives only in the API)
-- [ ] Catalogue, search, course and professor pages (offline cache)
+- [x] Catalogue, search, course and professor pages with offline copies (PRD-04 FR-01–05): Explore tab, search + filters + sort, course page with curriculum and download sizes, professor page — #83
+- [ ] Course page: enroll / buy button (comes with free enroll + checkout)
 - [ ] Free enroll + checkout (waiting screen)
 - [ ] My courses, learning, player with overlay, `FLAG_SECURE`
 - [ ] Downloads manager (quality, sizes, Wi-Fi only, storage, license expiry)
