@@ -17,6 +17,9 @@ import 'models/lessons_playback_response200.dart'
 import 'models/lessons_preview_playback_response200.dart'
     as models
     show LessonsPreviewPlaybackResponse200;
+import 'models/me_entitlements_response200.dart'
+    as models
+    show MeEntitlementsResponse200;
 import 'models/offline_license_request.dart'
     as models
     show OfflineLicenseRequest;
@@ -134,6 +137,35 @@ class PlaybackClient {
       cancelToken: cancelToken,
     );
     return models.LessonsOfflineLicenseResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
+  }
+
+  /// Entitlement sync for this registered device: every offline license it holds and what to do with the
+  /// download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+  /// media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too
+  Future<models.MeEntitlementsResponse200> meEntitlements({
+    Map<String, Object?> extra = const {
+      "openapi.servers": [
+        {"url": "http://localhost:8000/api/v1"},
+      ],
+    },
+    CancelToken? cancelToken,
+    Options? options,
+  }) async {
+    final _options = (options ?? Options()).copyWith(
+      method: "GET",
+      responseType: ResponseType.json,
+      extra: {...?options?.extra, ...extra},
+      headers: {...?options?.headers, 'Accept': "application/json"},
+      validateStatus: (status) => status != null && (status == 200),
+    );
+    final response = await _transport.request<dynamic>(
+      "/me/entitlements",
+      options: _options,
+      cancelToken: cancelToken,
+    );
+    return models.MeEntitlementsResponse200.fromJson(
       response.data as Map<String, Object?>,
     );
   }

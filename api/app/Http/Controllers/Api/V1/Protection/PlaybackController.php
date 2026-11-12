@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\V1\Protection;
 use App\Domain\Identity\Models\User;
 use App\Domain\Protection\Actions\IssueOfflineLicense;
 use App\Domain\Protection\Actions\IssuePlayback;
+use App\Domain\Protection\Actions\ListEntitlements;
 use App\Domain\Protection\Actions\RecordStreamHeartbeat;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Protection\HeartbeatRequest;
@@ -45,6 +46,32 @@ final class PlaybackController extends Controller
             $lesson,
             is_string($rendition) ? $rendition : null,
         ));
+    }
+
+    /**
+     * Entitlement sync for this registered device: every offline license it holds and what to do with the
+     * download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+     * media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too.
+     *
+     * @return array{data: array{checked_at: string, licenses: list<array{license_id: string, lesson_uid: string, media_id: string, current_media_id: string|null, rendition: string, expires_at: string, action: string, reason: string|null}>}}
+     */
+    public function entitlements(Request $request, ListEntitlements $entitlements): array
+    {
+        $items = $entitlements->handle($this->user($request), AuthContext::client($request)->deviceId);
+
+        return ['data' => [
+            'checked_at' => now()->toIso8601String(),
+            'licenses' => array_map(fn (array $item): array => [
+                'license_id' => $item['license']->id,
+                'lesson_uid' => $item['license']->lesson_uid,
+                'media_id' => $item['license']->media_asset_id,
+                'current_media_id' => $item['current_media_id'],
+                'rendition' => $item['license']->rendition,
+                'expires_at' => $item['license']->expires_at->toIso8601String(),
+                'action' => $item['action'],
+                'reason' => $item['reason'],
+            ], $items),
+        ]];
     }
 
     /**

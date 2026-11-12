@@ -14,6 +14,7 @@ use App\Domain\Platform\Settings\ProtectionSettings;
 use App\Domain\Protection\Exceptions\ProtectionException;
 use App\Domain\Protection\Models\OfflineLicense;
 use App\Domain\Protection\OfflineGrant;
+use App\Domain\Protection\RegisteredDevice;
 use App\Domain\Protection\ViewerMark;
 use App\Integrations\Video\Rendition;
 use App\Integrations\Video\VideoProvider;
@@ -39,11 +40,12 @@ final class IssueOfflineLicense
         private readonly CourseAccess $access,
         private readonly VideoProvider $video,
         private readonly ProtectionSettings $settings,
+        private readonly RegisteredDevice $devices,
     ) {}
 
     public function handle(User $user, ?string $installId, string $lessonUid, ?string $renditionName): OfflineGrant
     {
-        $device = $this->device($user, $installId);
+        $device = $this->devices->resolve($user, $installId);
 
         [$lesson, $course] = $this->access->liveLesson($lessonUid);
         if (! in_array($lesson->type, [LessonType::Video, LessonType::Audio], true)) {
@@ -105,19 +107,6 @@ final class IssueOfflineLicense
 
             return $license;
         });
-    }
-
-    /** The token's device, still registered, and the same install that is asking. */
-    private function device(User $user, ?string $installId): Device
-    {
-        $deviceId = $user->currentDeviceId();
-        $device = $deviceId === null ? null : Device::query()->whereKey($deviceId)->where('user_id', $user->id)->first();
-
-        if ($device === null || ! $device->isActive() || $installId === null || ! hash_equals($device->install_id, $installId)) {
-            throw ProtectionException::registeredDeviceRequired();
-        }
-
-        return $device;
     }
 
     /**

@@ -104,6 +104,29 @@ export const LessonsOfflineLicenseResponse = zod.object({
 });
 
 /**
+ * @summary Entitlement sync for this registered device: every offline license it holds and what to do with the
+download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too
+ */
+export const MeEntitlementsResponse = zod.object({
+  data: zod.object({
+    checked_at: zod.string(),
+    licenses: zod.array(
+      zod.object({
+        license_id: zod.string(),
+        lesson_uid: zod.string(),
+        media_id: zod.string(),
+        current_media_id: zod.string().nullable(),
+        rendition: zod.string(),
+        expires_at: zod.string(),
+        action: zod.string(),
+        reason: zod.string().nullable(),
+      }),
+    ),
+  }),
+});
+
+/**
  * @summary Tokens for a preview lesson of a listed course, without signing in (PRD-04 FR-06). No watermark name
  */
 export const LessonsPreviewPlaybackParams = zod.object({
