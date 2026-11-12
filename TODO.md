@@ -5,8 +5,8 @@
 
 ## Now
 
-- **Current branch:** `feature/mobile-checkout`, PR #85 (free enrol, mobile-money checkout and the waiting screen in the app)
-- **Next up:** My courses, learning, player with overlay; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
+- **Current branch:** `feature/mobile-learning`, PR #86 (My courses, learning view, streaming player)
+- **Next up:** downloads manager (quality, sizes, Wi-Fi only, storage, background); owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
 
@@ -505,7 +505,8 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] Search query survives the app being restored by the OS (it travels in the route's `extra` today)
 - [x] Free enroll + checkout (PRD-05 FR-01–FR-06, FR-09, FR-11, FR-19, BR-05): course-page button (open / get / buy), quote with coupon and owned-course exclusion, operator + payer number, order and payment under idempotency keys kept on the phone, waiting screen with countdown and backoff polling, failure reason + retry on the same order, open order resumed after a restart — #85
 - [ ] App: buy a course for another student (PRD-05 FR-14, setting-controlled), order history and receipts (FR-15, FR-17), refund requests (FR-16)
-- [ ] My courses, learning, player with overlay, `FLAG_SECURE`
+- [x] My courses, learning view, streaming player with overlay and `FLAG_SECURE` (PRD-06 FR-01–FR-05, PRD-07 FR-02, FR-04, FR-13): My courses tab with progress, course view with lesson status and continue, per-lesson download, streaming through a loopback proxy (credentials never reach R2), resume + progress saving shared with offline playback — #86
+- [ ] App: document and quiz lessons (shown as "coming soon" in the course view)
 - [ ] Downloads manager (quality, sizes, Wi-Fi only, storage, license expiry)
 - [ ] Documents (stamped, app-private), quizzes (offline attempts)
 - [ ] Certificates, reviews, Q&A

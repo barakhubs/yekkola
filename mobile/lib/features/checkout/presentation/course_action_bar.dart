@@ -49,7 +49,10 @@ class _CourseActionBarState extends ConsumerState<CourseActionBar> {
 
     final Widget button;
     if (mine) {
-      button = FilledButton(onPressed: () => context.go(Routes.home), child: Text(l10n.checkoutGoToCourse));
+      button = FilledButton(
+        onPressed: () => context.push(Routes.learn(course.id)),
+        child: Text(l10n.checkoutGoToCourse),
+      );
     } else if (course.isFree) {
       button = FilledButton(
         onPressed: _busy ? null : _enroll,
