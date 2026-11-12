@@ -492,5 +492,11 @@
   },
   "downloadQualityAudio": "Audio",
   "downloadDataNote": "Le téléchargement utilise tes données mobiles si tu n’es pas en Wi-Fi.",
-  "downloadWifiOnlyNote": "Le téléchargement commencera en Wi-Fi (réglage dans Téléchargements)."
+  "downloadWifiOnlyNote": "Le téléchargement commencera en Wi-Fi (réglage dans Téléchargements).",
+  "downloadWaitingForNetwork": "En attente du réseau",
+  "downloadDeleteCourse": "Supprimer les téléchargements de ce cours",
+  "downloadUntitled": "Leçon",
+  "downloadSizeUnavailable": "La taille de cette leçon n’est pas encore connue. Réessaie quand tu es connecté.",
+  "errorOfflineStorage": "Le téléchargement a échoué : le téléphone manque peut-être d’espace.",
+  "errorOfflineBusy": "Ce téléchargement est en cours. Réessaie dans un instant."
 }

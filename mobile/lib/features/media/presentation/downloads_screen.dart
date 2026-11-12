@@ -8,12 +8,18 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../auth/presentation/api_error_text.dart';
 import 'downloads_controller.dart';
 
+/// Space used on the phone: walked again only when the set of downloads or a finished one changes, not on
+/// every progress tick.
 final _storageUsedProvider = FutureProvider.autoDispose<int>((ref) async {
-  final downloads = ref.watch(downloadsControllerProvider);
+  final signature = ref.watch(
+    downloadsControllerProvider.select(
+      (s) => (s.entries.map((e) => '${e.key}:${e.value.phase == DownloadPhase.done}').toList()..sort()).join(','),
+    ),
+  );
   final store = ref.read(downloadStoreProvider);
   var total = 0;
-  for (final uid in downloads.keys) {
-    total += await store.sizeOnDisk(uid);
+  for (final part in signature.split(',').where((p) => p.isNotEmpty)) {
+    total += await store.sizeOnDisk(part.split(':').first);
   }
   return total;
 });
@@ -31,10 +37,10 @@ class DownloadsScreen extends ConsumerWidget {
     final wifiOnly = ref.watch(wifiOnlyProvider);
     final used = ref.watch(_storageUsedProvider).value;
 
-    final byCourse = <String, List<MapEntry<String, DownloadEntry>>>{};
+    // Grouped by course id (two courses may share a title), shown by title.
+    final byCourse = <String?, List<MapEntry<String, DownloadEntry>>>{};
     for (final entry in downloads.entries) {
-      final course = entry.value.download?.courseTitle ?? l10n.downloadOtherCourse;
-      byCourse.putIfAbsent(course, () => []).add(entry);
+      byCourse.putIfAbsent(entry.value.courseId, () => []).add(entry);
     }
 
     Future<void> confirmDeleteAll() async {
@@ -79,10 +85,25 @@ class DownloadsScreen extends ConsumerWidget {
             ),
           const Divider(),
           if (downloads.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(l10n.downloadsEmpty)),
-          for (final MapEntry(key: course, value: entries) in byCourse.entries) ...[
+          for (final MapEntry(key: courseId, value: entries) in byCourse.entries) ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text(course, style: Theme.of(context).textTheme.titleMedium),
+              padding: const EdgeInsets.fromLTRB(16, 12, 4, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      entries.first.value.courseTitle ?? l10n.downloadOtherCourse,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  // Delete per course (PRD-07 FR-09).
+                  IconButton(
+                    tooltip: l10n.downloadDeleteCourse,
+                    icon: const Icon(Icons.delete_sweep_outlined),
+                    onPressed: () => ref.read(downloadsControllerProvider.notifier).deleteCourse(courseId),
+                  ),
+                ],
+              ),
             ),
             for (final entry in entries) _DownloadTile(lessonUid: entry.key, entry: entry.value),
           ],
@@ -112,6 +133,7 @@ class _DownloadTile extends ConsumerWidget {
       DownloadPhase.downloading => l10n.mediaDownloading(percent),
       DownloadPhase.queued => l10n.downloadQueued,
       DownloadPhase.waitingForWifi => l10n.downloadWaitingForWifi,
+      DownloadPhase.waitingForNetwork => l10n.downloadWaitingForNetwork,
       DownloadPhase.failed => entry.error == null ? l10n.errorGeneric : apiErrorText(l10n, entry.error!),
       _ when expired => l10n.mediaLicenseExpired,
       _ when download != null && download.isComplete => l10n.mediaDownloaded(
@@ -122,11 +144,11 @@ class _DownloadTile extends ConsumerWidget {
     };
 
     final busy = entry.phase == DownloadPhase.downloading || entry.phase == DownloadPhase.queued;
-    final waiting = entry.phase == DownloadPhase.waitingForWifi;
+    final waiting = entry.phase == DownloadPhase.waitingForWifi || entry.phase == DownloadPhase.waitingForNetwork;
 
     return ListTile(
       leading: Icon(download?.kind == 'audio' ? Icons.headphones : Icons.movie_outlined),
-      title: Text(download?.lessonTitle ?? lessonUid),
+      title: Text(entry.lessonTitle ?? l10n.downloadUntitled),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -150,7 +172,7 @@ class _DownloadTile extends ConsumerWidget {
             IconButton(
               tooltip: l10n.mediaPlay,
               icon: const Icon(Icons.play_arrow),
-              onPressed: () => context.push(Routes.offlinePlayer(lessonUid), extra: download.lessonTitle),
+              onPressed: () => context.push(Routes.offlinePlayer(lessonUid), extra: entry.lessonTitle),
             )
           else
             IconButton(
