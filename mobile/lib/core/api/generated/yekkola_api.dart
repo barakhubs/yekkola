@@ -55,26 +55,39 @@ final class YekkolaApi {
   late final clients.BrandingClient branding = clients.BrandingClient(_client);
   late final clients.BundleClient bundle = clients.BundleClient(_client);
   late final clients.CategoryClient category = clients.CategoryClient(_client);
-  late final clients.CertificateClient certificate = clients.CertificateClient(_client);
+  late final clients.CertificateClient certificate = clients.CertificateClient(
+    _client,
+  );
   late final clients.CheckoutClient checkout = clients.CheckoutClient(_client);
   late final clients.CourseClient course = clients.CourseClient(_client);
-  late final clients.DataExportClient dataExport = clients.DataExportClient(_client);
+  late final clients.DataExportClient dataExport = clients.DataExportClient(
+    _client,
+  );
   late final clients.DeviceClient device = clients.DeviceClient(_client);
   late final clients.DocumentClient document = clients.DocumentClient(_client);
-  late final clients.EnrollmentClient enrollment = clients.EnrollmentClient(_client);
-  late final clients.GuestOrderClient guestOrder = clients.GuestOrderClient(_client);
+  late final clients.EnrollmentClient enrollment = clients.EnrollmentClient(
+    _client,
+  );
+  late final clients.GuestOrderClient guestOrder = clients.GuestOrderClient(
+    _client,
+  );
   late final clients.HlsClient hls = clients.HlsClient(_client);
   late final clients.LearningClient learning = clients.LearningClient(_client);
   late final clients.LogoutClient logout = clients.LogoutClient(_client);
-  late final clients.NotificationClient notification = clients.NotificationClient(_client);
+  late final clients.NotificationClient notification =
+      clients.NotificationClient(_client);
   late final clients.OrderClient order = clients.OrderClient(_client);
   late final clients.OtpClient otp = clients.OtpClient(_client);
   late final clients.PhoneClient phone = clients.PhoneClient(_client);
   late final clients.PlaybackClient playback = clients.PlaybackClient(_client);
-  late final clients.ProfessorClient professor = clients.ProfessorClient(_client);
+  late final clients.ProfessorClient professor = clients.ProfessorClient(
+    _client,
+  );
   late final clients.ProfileClient profile = clients.ProfileClient(_client);
   late final clients.ProvinceClient province = clients.ProvinceClient(_client);
-  late final clients.QuizAttemptClient quizAttempt = clients.QuizAttemptClient(_client);
+  late final clients.QuizAttemptClient quizAttempt = clients.QuizAttemptClient(
+    _client,
+  );
   late final clients.ReceiptClient receipt = clients.ReceiptClient(_client);
   late final clients.RefundClient refund = clients.RefundClient(_client);
   late final clients.ReportClient report = clients.ReportClient(_client);

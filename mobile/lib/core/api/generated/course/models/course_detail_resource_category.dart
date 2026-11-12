@@ -19,7 +19,9 @@ class CourseDetailResourceCategory {
       name: json["name"] as String,
       parent: json["parent"] == null
           ? null
-          : CourseDetailResourceCategoryParent.fromJson(json["parent"] as Map<String, Object?>),
+          : CourseDetailResourceCategoryParent.fromJson(
+              json["parent"] as Map<String, Object?>,
+            ),
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,

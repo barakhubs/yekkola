@@ -25,7 +25,13 @@ class ApiClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>("/ping", options: _options, cancelToken: cancelToken);
-    return models.PingResponse200.fromJson(response.data as Map<String, Object?>);
+    final response = await _transport.request<dynamic>(
+      "/ping",
+      options: _options,
+      cancelToken: cancelToken,
+    );
+    return models.PingResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

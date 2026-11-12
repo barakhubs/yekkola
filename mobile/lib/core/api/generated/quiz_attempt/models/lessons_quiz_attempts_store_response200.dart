@@ -3,16 +3,20 @@
 import 'quiz_attempt_resource.dart';
 
 class LessonsQuizAttemptsStoreResponse200 {
-  const LessonsQuizAttemptsStoreResponse200({required this.data, this.additionalProperties = const {}});
+  const LessonsQuizAttemptsStoreResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory LessonsQuizAttemptsStoreResponse200.fromJson(Map<String, Object?> json) =>
-      LessonsQuizAttemptsStoreResponse200(
-        data: QuizAttemptResource.fromJson(json["data"] as Map<String, Object?>),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory LessonsQuizAttemptsStoreResponse200.fromJson(
+    Map<String, Object?> json,
+  ) => LessonsQuizAttemptsStoreResponse200(
+    data: QuizAttemptResource.fromJson(json["data"] as Map<String, Object?>),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final QuizAttemptResource data;
 

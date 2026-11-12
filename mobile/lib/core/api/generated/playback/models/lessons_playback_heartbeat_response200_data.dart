@@ -8,16 +8,17 @@ class LessonsPlaybackHeartbeatResponse200Data {
     this.additionalProperties = const {},
   });
 
-  factory LessonsPlaybackHeartbeatResponse200Data.fromJson(Map<String, Object?> json) =>
-      LessonsPlaybackHeartbeatResponse200Data(
-        sessionId: json["session_id"] as String,
-        active: json["active"] as bool,
-        heartbeatSeconds: _readJsonInteger(json["heartbeat_seconds"]),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory LessonsPlaybackHeartbeatResponse200Data.fromJson(
+    Map<String, Object?> json,
+  ) => LessonsPlaybackHeartbeatResponse200Data(
+    sessionId: json["session_id"] as String,
+    active: json["active"] as bool,
+    heartbeatSeconds: _readJsonInteger(json["heartbeat_seconds"]),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String sessionId;
 
@@ -25,7 +26,11 @@ class LessonsPlaybackHeartbeatResponse200Data {
 
   final int heartbeatSeconds;
 
-  static const _knownKeys = <String>{"session_id", "active", "heartbeat_seconds"};
+  static const _knownKeys = <String>{
+    "session_id",
+    "active",
+    "heartbeat_seconds",
+  };
 
   final Map<String, Object?> additionalProperties;
 

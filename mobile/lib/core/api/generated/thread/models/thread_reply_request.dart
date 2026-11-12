@@ -2,15 +2,19 @@
 
 /// A reply to a lesson question (PRD-06 FR-13).
 class ThreadReplyRequest {
-  const ThreadReplyRequest({required this.body, this.additionalProperties = const {}});
+  const ThreadReplyRequest({
+    required this.body,
+    this.additionalProperties = const {},
+  });
 
-  factory ThreadReplyRequest.fromJson(Map<String, Object?> json) => ThreadReplyRequest(
-    body: json["body"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory ThreadReplyRequest.fromJson(Map<String, Object?> json) =>
+      ThreadReplyRequest(
+        body: json["body"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String body;
 

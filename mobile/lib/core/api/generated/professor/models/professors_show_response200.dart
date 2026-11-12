@@ -3,15 +3,21 @@
 import '../../course/models/public_professor_resource.dart';
 
 class ProfessorsShowResponse200 {
-  const ProfessorsShowResponse200({required this.data, this.additionalProperties = const {}});
+  const ProfessorsShowResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory ProfessorsShowResponse200.fromJson(Map<String, Object?> json) => ProfessorsShowResponse200(
-    data: PublicProfessorResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory ProfessorsShowResponse200.fromJson(Map<String, Object?> json) =>
+      ProfessorsShowResponse200(
+        data: PublicProfessorResource.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final PublicProfessorResource data;
 

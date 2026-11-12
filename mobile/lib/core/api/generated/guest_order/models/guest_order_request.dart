@@ -13,20 +13,31 @@ class GuestOrderRequest {
     this.additionalProperties = const {},
   });
 
-  factory GuestOrderRequest.fromJson(Map<String, Object?> json) => GuestOrderRequest(
-    courseIds: json.containsKey("course_ids")
-        ? (json["course_ids"] as List<Object?>).map((item) => item as String).toList()
-        : null,
-    bundleId: json.containsKey("bundle_id") ? json["bundle_id"] as String : null,
-    couponCode: json.containsKey("coupon_code") ? json["coupon_code"] as String? : null,
-    beneficiaryPhone: json["beneficiary_phone"] as String,
-    payerMsisdn: json.containsKey("payer_msisdn") ? json["payer_msisdn"] as String? : null,
-    botToken: json.containsKey("bot_token") ? json["bot_token"] as String? : null,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory GuestOrderRequest.fromJson(Map<String, Object?> json) =>
+      GuestOrderRequest(
+        courseIds: json.containsKey("course_ids")
+            ? (json["course_ids"] as List<Object?>)
+                  .map((item) => item as String)
+                  .toList()
+            : null,
+        bundleId: json.containsKey("bundle_id")
+            ? json["bundle_id"] as String
+            : null,
+        couponCode: json.containsKey("coupon_code")
+            ? json["coupon_code"] as String?
+            : null,
+        beneficiaryPhone: json["beneficiary_phone"] as String,
+        payerMsisdn: json.containsKey("payer_msisdn")
+            ? json["payer_msisdn"] as String?
+            : null,
+        botToken: json.containsKey("bot_token")
+            ? json["bot_token"] as String?
+            : null,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<String>? courseIds;
 
@@ -54,7 +65,8 @@ class GuestOrderRequest {
   Map<String, Object?> toJson() => {
     for (final entry in additionalProperties.entries)
       if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    if (this.courseIds != null) "course_ids": this.courseIds?.map((item) => item).toList(),
+    if (this.courseIds != null)
+      "course_ids": this.courseIds?.map((item) => item).toList(),
     if (this.bundleId != null) "bundle_id": this.bundleId,
     if (this.couponCode != null) "coupon_code": this.couponCode,
     "beneficiary_phone": this.beneficiaryPhone,

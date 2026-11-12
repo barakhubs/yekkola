@@ -12,15 +12,22 @@ class MeOrdersIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory MeOrdersIndexResponse200.fromJson(Map<String, Object?> json) => MeOrdersIndexResponse200(
-    data: (json["data"] as List<Object?>).map((item) => OrderResource.fromJson(item as Map<String, Object?>)).toList(),
-    links: MeOrdersIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
-    meta: MeOrdersIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeOrdersIndexResponse200.fromJson(Map<String, Object?> json) =>
+      MeOrdersIndexResponse200(
+        data: (json["data"] as List<Object?>)
+            .map((item) => OrderResource.fromJson(item as Map<String, Object?>))
+            .toList(),
+        links: MeOrdersIndexResponse200Links.fromJson(
+          json["links"] as Map<String, Object?>,
+        ),
+        meta: MeOrdersIndexResponse200Meta.fromJson(
+          json["meta"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<OrderResource> data;
 

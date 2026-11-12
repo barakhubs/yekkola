@@ -3,15 +3,19 @@
 import 'playback_resource.dart';
 
 class LessonsPlaybackResponse200 {
-  const LessonsPlaybackResponse200({required this.data, this.additionalProperties = const {}});
+  const LessonsPlaybackResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory LessonsPlaybackResponse200.fromJson(Map<String, Object?> json) => LessonsPlaybackResponse200(
-    data: PlaybackResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory LessonsPlaybackResponse200.fromJson(Map<String, Object?> json) =>
+      LessonsPlaybackResponse200(
+        data: PlaybackResource.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final PlaybackResource data;
 

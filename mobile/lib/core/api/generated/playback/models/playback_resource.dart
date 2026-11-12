@@ -34,8 +34,14 @@ class PlaybackResource {
       expiresAt: json["expires_at"] as String,
       watermark: json["watermark"] == null
           ? null
-          : PlaybackResourceWatermark.fromJson(json["watermark"] as Map<String, Object?>),
-      stream: json["stream"] == null ? null : PlaybackResourceStream.fromJson(json["stream"] as Map<String, Object?>),
+          : PlaybackResourceWatermark.fromJson(
+              json["watermark"] as Map<String, Object?>,
+            ),
+      stream: json["stream"] == null
+          ? null
+          : PlaybackResourceStream.fromJson(
+              json["stream"] as Map<String, Object?>,
+            ),
       isPreview: json["is_preview"] as bool,
       additionalProperties: {
         for (final entry in json.entries)

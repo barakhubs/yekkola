@@ -3,15 +3,21 @@
 import 'me_progress_sync_response200_data.dart';
 
 class MeProgressSyncResponse200 {
-  const MeProgressSyncResponse200({required this.data, this.additionalProperties = const {}});
+  const MeProgressSyncResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory MeProgressSyncResponse200.fromJson(Map<String, Object?> json) => MeProgressSyncResponse200(
-    data: MeProgressSyncResponse200Data.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeProgressSyncResponse200.fromJson(Map<String, Object?> json) =>
+      MeProgressSyncResponse200(
+        data: MeProgressSyncResponse200Data.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final MeProgressSyncResponse200Data data;
 

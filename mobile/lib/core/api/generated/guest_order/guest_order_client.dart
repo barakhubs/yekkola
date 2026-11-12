@@ -5,10 +5,18 @@ import 'dart:convert' as convert;
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
 import 'models/guest_order_request.dart' as models show GuestOrderRequest;
-import 'models/guest_orders_pay_response201.dart' as models show GuestOrdersPayResponse201;
-import 'models/guest_orders_receipt_response200.dart' as models show GuestOrdersReceiptResponse200;
-import 'models/guest_orders_show_response200.dart' as models show GuestOrdersShowResponse200;
-import 'models/guest_orders_store_response201.dart' as models show GuestOrdersStoreResponse201;
+import 'models/guest_orders_pay_response201.dart'
+    as models
+    show GuestOrdersPayResponse201;
+import 'models/guest_orders_receipt_response200.dart'
+    as models
+    show GuestOrdersReceiptResponse200;
+import 'models/guest_orders_show_response200.dart'
+    as models
+    show GuestOrdersShowResponse200;
+import 'models/guest_orders_store_response201.dart'
+    as models
+    show GuestOrdersStoreResponse201;
 import 'models/start_payment_request.dart' as models show StartPaymentRequest;
 
 class GuestOrderClient {
@@ -33,7 +41,8 @@ class GuestOrderClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -45,7 +54,9 @@ class GuestOrderClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.GuestOrdersStoreResponse201.fromJson(response.data as Map<String, Object?>);
+    return models.GuestOrdersStoreResponse201.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.GuestOrdersShowResponse200> guestOrdersShow({
@@ -73,7 +84,9 @@ class GuestOrderClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.GuestOrdersShowResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.GuestOrdersShowResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Requires an `Idempotency-Key`. The number defaults to the payer named on the order
@@ -97,7 +110,8 @@ class GuestOrderClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -109,7 +123,9 @@ class GuestOrderClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.GuestOrdersPayResponse201.fromJson(response.data as Map<String, Object?>);
+    return models.GuestOrdersPayResponse201.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.GuestOrdersReceiptResponse200> guestOrdersReceipt({
@@ -137,6 +153,8 @@ class GuestOrderClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.GuestOrdersReceiptResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.GuestOrdersReceiptResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

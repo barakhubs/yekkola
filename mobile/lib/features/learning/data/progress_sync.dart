@@ -29,7 +29,8 @@ class ProgressRepository {
     int? positionSeconds,
     bool? completed,
   }) async {
-    final now = _clock().toUtc();
+    // Milliseconds at most: the API accepts `…:ss.vZ`, and the VM clock has microseconds.
+    final now = DateTime.fromMillisecondsSinceEpoch(_clock().millisecondsSinceEpoch, isUtc: true);
     final int? position = positionSeconds?.clamp(0, 86400);
 
     await _db.transaction(() async {
@@ -92,20 +93,34 @@ class ProgressOutboxHandler implements OutboxHandler {
 
   @override
   Future<OutboxResult> send(List<OutboxRow> rows) async {
-    final items = [
-      for (final row in rows) SyncProgressRequestItemsItem.fromJson((jsonDecode(row.payload) as Map).cast()),
-    ];
+    // A row we can't read is dropped rather than blocking the rest.
+    final valid = <OutboxRow>[];
+    final unreadable = <OutboxRow>[];
+    final items = <SyncProgressRequestItemsItem>[];
+    for (final row in rows) {
+      try {
+        items.add(SyncProgressRequestItemsItem.fromJson((jsonDecode(row.payload) as Map).cast()));
+        valid.add(row);
+      } catch (_) {
+        unreadable.add(row);
+      }
+    }
+    if (items.isEmpty) return OutboxResult(dropped: unreadable);
+
     // Read raw: the spec types `courses` loosely and the app doesn't need it (TODO.md Phase 3).
     final response = await ApiException.guard(
-      () => _dio.put<Map<String, Object?>>('/me/progress', data: SyncProgressRequest(items: items).toJson()),
+      () => _dio.put<Object?>('/me/progress', data: SyncProgressRequest(items: items).toJson()),
     );
-    final data = (response.data?['data'] as Map?)?.cast<String, Object?>() ?? const {};
+    final body = response.data;
+    final data = body is Map && body['data'] is Map ? (body['data'] as Map).cast<String, Object?>() : null;
+    // A 200 that isn't our API (captive portal, proxy page): nothing was saved; try later.
+    if (data == null) throw const ApiException(code: 'sync.unexpected_response', status: 502);
     final accepted = (data['accepted'] as List? ?? const []).map((e) => '$e').toSet();
     final skipped = (data['skipped'] as List? ?? const []).map((e) => '$e').toSet();
 
     return OutboxResult(
-      sent: rows.where((r) => accepted.contains(r.dedupeKey)).toList(),
-      dropped: rows.where((r) => skipped.contains(r.dedupeKey)).toList(),
+      sent: valid.where((r) => accepted.contains(r.dedupeKey)).toList(),
+      dropped: [...unreadable, ...valid.where((r) => skipped.contains(r.dedupeKey))],
     );
   }
 }

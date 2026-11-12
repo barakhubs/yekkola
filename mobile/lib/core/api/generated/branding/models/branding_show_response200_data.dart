@@ -42,7 +42,12 @@ class BrandingShowResponse200Data {
 
   final String? shareImageUrl;
 
-  static const _knownKeys = <String>{"logo_url", "footer_logo_url", "favicon_url", "share_image_url"};
+  static const _knownKeys = <String>{
+    "logo_url",
+    "footer_logo_url",
+    "favicon_url",
+    "share_image_url",
+  };
 
   final Map<String, Object?> additionalProperties;
 

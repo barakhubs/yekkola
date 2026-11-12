@@ -4,9 +4,15 @@ class MeCertificatesPdfResponse200 {
   const MeCertificatesPdfResponse200({this.additionalProperties = const {}});
 
   factory MeCertificatesPdfResponse200.fromJson(Map<String, Object?> json) =>
-      MeCertificatesPdfResponse200(additionalProperties: {for (final entry in json.entries) entry.key: entry.value});
+      MeCertificatesPdfResponse200(
+        additionalProperties: {
+          for (final entry in json.entries) entry.key: entry.value,
+        },
+      );
 
   final Map<String, Object?> additionalProperties;
 
-  Map<String, Object?> toJson() => {for (final entry in additionalProperties.entries) entry.key: entry.value};
+  Map<String, Object?> toJson() => {
+    for (final entry in additionalProperties.entries) entry.key: entry.value,
+  };
 }

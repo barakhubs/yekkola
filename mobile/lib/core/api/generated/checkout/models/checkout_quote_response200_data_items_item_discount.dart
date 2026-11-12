@@ -7,15 +7,16 @@ class CheckoutQuoteResponse200DataItemsItemDiscount {
     this.additionalProperties = const {},
   });
 
-  factory CheckoutQuoteResponse200DataItemsItemDiscount.fromJson(Map<String, Object?> json) =>
-      CheckoutQuoteResponse200DataItemsItemDiscount(
-        amountMinor: _readJsonInteger(json["amount_minor"]),
-        currency: json["currency"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory CheckoutQuoteResponse200DataItemsItemDiscount.fromJson(
+    Map<String, Object?> json,
+  ) => CheckoutQuoteResponse200DataItemsItemDiscount(
+    amountMinor: _readJsonInteger(json["amount_minor"]),
+    currency: json["currency"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final int amountMinor;
 

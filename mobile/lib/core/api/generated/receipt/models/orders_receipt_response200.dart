@@ -3,15 +3,21 @@
 import 'orders_receipt_response200_data.dart';
 
 class OrdersReceiptResponse200 {
-  const OrdersReceiptResponse200({required this.data, this.additionalProperties = const {}});
+  const OrdersReceiptResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory OrdersReceiptResponse200.fromJson(Map<String, Object?> json) => OrdersReceiptResponse200(
-    data: OrdersReceiptResponse200Data.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory OrdersReceiptResponse200.fromJson(Map<String, Object?> json) =>
+      OrdersReceiptResponse200(
+        data: OrdersReceiptResponse200Data.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final OrdersReceiptResponse200Data data;
 

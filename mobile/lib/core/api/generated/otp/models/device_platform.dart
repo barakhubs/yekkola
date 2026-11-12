@@ -30,7 +30,8 @@ final class DevicePlatformKnown extends DevicePlatform {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is DevicePlatformKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is DevicePlatformKnown && other.value == value;
   @override
   int get hashCode => Object.hash(DevicePlatformKnown, value);
 }
@@ -41,7 +42,8 @@ final class DevicePlatformUnknown extends DevicePlatform {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is DevicePlatformUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is DevicePlatformUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(DevicePlatformUnknown, rawValue);
 }

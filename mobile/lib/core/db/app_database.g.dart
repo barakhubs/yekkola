@@ -83,6 +83,18 @@ class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxRow> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _attemptsMeta = const VerificationMeta(
     'attempts',
   );
@@ -127,6 +139,7 @@ class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxRow> {
     payload,
     createdAt,
     updatedAt,
+    revision,
     attempts,
     nextAttemptAt,
     lastError,
@@ -194,6 +207,12 @@ class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxRow> {
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
     if (data.containsKey('attempts')) {
       context.handle(
         _attemptsMeta,
@@ -258,6 +277,10 @@ class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
       attempts: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}attempts'],
@@ -295,6 +318,9 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   final String payload;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Bumped on every merge: a row sent while a newer write was merged in is neither removed nor delayed.
+  final int revision;
   final int attempts;
 
   /// Not sent before this (exponential backoff after failures).
@@ -308,6 +334,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     required this.payload,
     required this.createdAt,
     required this.updatedAt,
+    required this.revision,
     required this.attempts,
     required this.nextAttemptAt,
     this.lastError,
@@ -322,6 +349,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     map['payload'] = Variable<String>(payload);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
     map['attempts'] = Variable<int>(attempts);
     map['next_attempt_at'] = Variable<DateTime>(nextAttemptAt);
     if (!nullToAbsent || lastError != null) {
@@ -339,6 +367,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
       payload: Value(payload),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      revision: Value(revision),
       attempts: Value(attempts),
       nextAttemptAt: Value(nextAttemptAt),
       lastError: lastError == null && nullToAbsent
@@ -360,6 +389,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
       payload: serializer.fromJson<String>(json['payload']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
       attempts: serializer.fromJson<int>(json['attempts']),
       nextAttemptAt: serializer.fromJson<DateTime>(json['nextAttemptAt']),
       lastError: serializer.fromJson<String?>(json['lastError']),
@@ -376,6 +406,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
       'payload': serializer.toJson<String>(payload),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
       'attempts': serializer.toJson<int>(attempts),
       'nextAttemptAt': serializer.toJson<DateTime>(nextAttemptAt),
       'lastError': serializer.toJson<String?>(lastError),
@@ -390,6 +421,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     String? payload,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? revision,
     int? attempts,
     DateTime? nextAttemptAt,
     Value<String?> lastError = const Value.absent(),
@@ -401,6 +433,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     payload: payload ?? this.payload,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
     attempts: attempts ?? this.attempts,
     nextAttemptAt: nextAttemptAt ?? this.nextAttemptAt,
     lastError: lastError.present ? lastError.value : this.lastError,
@@ -414,6 +447,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
       payload: data.payload.present ? data.payload.value : this.payload,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
       attempts: data.attempts.present ? data.attempts.value : this.attempts,
       nextAttemptAt: data.nextAttemptAt.present
           ? data.nextAttemptAt.value
@@ -432,6 +466,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
           ..write('payload: $payload, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
           ..write('attempts: $attempts, ')
           ..write('nextAttemptAt: $nextAttemptAt, ')
           ..write('lastError: $lastError')
@@ -448,6 +483,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     payload,
     createdAt,
     updatedAt,
+    revision,
     attempts,
     nextAttemptAt,
     lastError,
@@ -463,6 +499,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
           other.payload == this.payload &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
           other.attempts == this.attempts &&
           other.nextAttemptAt == this.nextAttemptAt &&
           other.lastError == this.lastError);
@@ -476,6 +513,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
   final Value<String> payload;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> revision;
   final Value<int> attempts;
   final Value<DateTime> nextAttemptAt;
   final Value<String?> lastError;
@@ -487,6 +525,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
     this.payload = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
     this.attempts = const Value.absent(),
     this.nextAttemptAt = const Value.absent(),
     this.lastError = const Value.absent(),
@@ -499,6 +538,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
     required String payload,
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.revision = const Value.absent(),
     this.attempts = const Value.absent(),
     required DateTime nextAttemptAt,
     this.lastError = const Value.absent(),
@@ -517,6 +557,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
     Expression<String>? payload,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
     Expression<int>? attempts,
     Expression<DateTime>? nextAttemptAt,
     Expression<String>? lastError,
@@ -529,6 +570,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
       if (payload != null) 'payload': payload,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
       if (attempts != null) 'attempts': attempts,
       if (nextAttemptAt != null) 'next_attempt_at': nextAttemptAt,
       if (lastError != null) 'last_error': lastError,
@@ -543,6 +585,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
     Value<String>? payload,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? revision,
     Value<int>? attempts,
     Value<DateTime>? nextAttemptAt,
     Value<String?>? lastError,
@@ -555,6 +598,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
       payload: payload ?? this.payload,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
       attempts: attempts ?? this.attempts,
       nextAttemptAt: nextAttemptAt ?? this.nextAttemptAt,
       lastError: lastError ?? this.lastError,
@@ -585,6 +629,9 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
     if (attempts.present) {
       map['attempts'] = Variable<int>(attempts.value);
     }
@@ -607,6 +654,7 @@ class OutboxCompanion extends UpdateCompanion<OutboxRow> {
           ..write('payload: $payload, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
           ..write('attempts: $attempts, ')
           ..write('nextAttemptAt: $nextAttemptAt, ')
           ..write('lastError: $lastError')
@@ -1222,6 +1270,7 @@ typedef $$OutboxTableCreateCompanionBuilder = OutboxCompanion Function({
   required String payload,
   required DateTime createdAt,
   required DateTime updatedAt,
+  Value<int> revision,
   Value<int> attempts,
   required DateTime nextAttemptAt,
   Value<String?> lastError,
@@ -1234,6 +1283,7 @@ typedef $$OutboxTableUpdateCompanionBuilder = OutboxCompanion Function({
   Value<String> payload,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
+  Value<int> revision,
   Value<int> attempts,
   Value<DateTime> nextAttemptAt,
   Value<String?> lastError,
@@ -1280,6 +1330,11 @@ class $$OutboxTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1343,6 +1398,11 @@ class $$OutboxTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get attempts => $composableBuilder(
     column: $table.attempts,
     builder: (column) => ColumnOrderings(column),
@@ -1388,6 +1448,9 @@ class $$OutboxTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
 
   GeneratedColumn<int> get attempts =>
       $composableBuilder(column: $table.attempts, builder: (column) => column);
@@ -1436,6 +1499,7 @@ class $$OutboxTableTableManager
                 Value<String> payload = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
                 Value<int> attempts = const Value.absent(),
                 Value<DateTime> nextAttemptAt = const Value.absent(),
                 Value<String?> lastError = const Value.absent(),
@@ -1447,6 +1511,7 @@ class $$OutboxTableTableManager
                 payload: payload,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
                 attempts: attempts,
                 nextAttemptAt: nextAttemptAt,
                 lastError: lastError,
@@ -1460,6 +1525,7 @@ class $$OutboxTableTableManager
                 required String payload,
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
                 Value<int> attempts = const Value.absent(),
                 required DateTime nextAttemptAt,
                 Value<String?> lastError = const Value.absent(),
@@ -1471,6 +1537,7 @@ class $$OutboxTableTableManager
                 payload: payload,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
                 attempts: attempts,
                 nextAttemptAt: nextAttemptAt,
                 lastError: lastError,

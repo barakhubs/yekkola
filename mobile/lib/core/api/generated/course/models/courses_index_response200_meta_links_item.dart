@@ -8,7 +8,9 @@ class CoursesIndexResponse200MetaLinksItem {
     this.additionalProperties = const {},
   });
 
-  factory CoursesIndexResponse200MetaLinksItem.fromJson(Map<String, Object?> json) {
+  factory CoursesIndexResponse200MetaLinksItem.fromJson(
+    Map<String, Object?> json,
+  ) {
     if (!json.containsKey("url")) {
       throw ArgumentError("Missing required property: url");
     }

@@ -4,8 +4,12 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/auth_otp_request_response202.dart' as models show AuthOtpRequestResponse202;
-import 'models/auth_otp_verify_response200.dart' as models show AuthOtpVerifyResponse200;
+import 'models/auth_otp_request_response202.dart'
+    as models
+    show AuthOtpRequestResponse202;
+import 'models/auth_otp_verify_response200.dart'
+    as models
+    show AuthOtpVerifyResponse200;
 import 'models/request_otp_request.dart' as models show RequestOtpRequest;
 import 'models/verify_otp_request.dart' as models show VerifyOtpRequest;
 
@@ -31,7 +35,8 @@ class OtpClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -43,7 +48,9 @@ class OtpClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.AuthOtpRequestResponse202.fromJson(response.data as Map<String, Object?>);
+    return models.AuthOtpRequestResponse202.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Verify the code and sign in (creates the account on first sign-in)
@@ -63,7 +70,8 @@ class OtpClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -75,6 +83,8 @@ class OtpClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.AuthOtpVerifyResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.AuthOtpVerifyResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

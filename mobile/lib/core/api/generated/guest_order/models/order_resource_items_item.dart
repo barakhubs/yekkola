@@ -27,9 +27,15 @@ class OrderResourceItemsItem {
       courseId: json["course_id"] as String,
       courseSlug: json["course_slug"] as String,
       title: json["title"] as String,
-      listPrice: OrderResourceItemsItemListPrice.fromJson(json["list_price"] as Map<String, Object?>),
-      discount: OrderResourceItemsItemDiscount.fromJson(json["discount"] as Map<String, Object?>),
-      price: OrderResourceItemsItemPrice.fromJson(json["price"] as Map<String, Object?>),
+      listPrice: OrderResourceItemsItemListPrice.fromJson(
+        json["list_price"] as Map<String, Object?>,
+      ),
+      discount: OrderResourceItemsItemDiscount.fromJson(
+        json["discount"] as Map<String, Object?>,
+      ),
+      price: OrderResourceItemsItemPrice.fromJson(
+        json["price"] as Map<String, Object?>,
+      ),
       refund: OrderResourceItemsItemRefund.fromJson(json["refund"]),
       additionalProperties: {
         for (final entry in json.entries)

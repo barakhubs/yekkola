@@ -4,9 +4,15 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/lessons_quiz_attempts_index_response200.dart' as models show LessonsQuizAttemptsIndexResponse200;
-import 'models/lessons_quiz_attempts_store_response200.dart' as models show LessonsQuizAttemptsStoreResponse200;
-import 'models/quiz_attempts_submit_response200.dart' as models show QuizAttemptsSubmitResponse200;
+import 'models/lessons_quiz_attempts_index_response200.dart'
+    as models
+    show LessonsQuizAttemptsIndexResponse200;
+import 'models/lessons_quiz_attempts_store_response200.dart'
+    as models
+    show LessonsQuizAttemptsStoreResponse200;
+import 'models/quiz_attempts_submit_response200.dart'
+    as models
+    show QuizAttemptsSubmitResponse200;
 import 'models/submit_quiz_request.dart' as models show SubmitQuizRequest;
 
 class QuizAttemptClient {
@@ -40,7 +46,9 @@ class QuizAttemptClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.LessonsQuizAttemptsIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsQuizAttemptsIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Starts an attempt (or resumes the open one): questions without answers
@@ -69,7 +77,9 @@ class QuizAttemptClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.LessonsQuizAttemptsStoreResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsQuizAttemptsStoreResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Submits answers: score, pass/fail, and the corrections with explanations
@@ -93,7 +103,8 @@ class QuizAttemptClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -105,6 +116,8 @@ class QuizAttemptClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.QuizAttemptsSubmitResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.QuizAttemptsSubmitResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

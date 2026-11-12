@@ -47,7 +47,14 @@ class DataExportResource {
 
   final String? downloadUrl;
 
-  static const _knownKeys = <String>{"id", "status", "requested_at", "ready_at", "expires_at", "download_url"};
+  static const _knownKeys = <String>{
+    "id",
+    "status",
+    "requested_at",
+    "ready_at",
+    "expires_at",
+    "download_url",
+  };
 
   final Map<String, Object?> additionalProperties;
 

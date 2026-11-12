@@ -4,17 +4,25 @@ import 'notification_preferences_request_preferences_item.dart';
 
 /// Channel switches for events users may turn off (PRD-10 FR-05, BR-02).
 class NotificationPreferencesRequest {
-  const NotificationPreferencesRequest({required this.preferences, this.additionalProperties = const {}});
+  const NotificationPreferencesRequest({
+    required this.preferences,
+    this.additionalProperties = const {},
+  });
 
-  factory NotificationPreferencesRequest.fromJson(Map<String, Object?> json) => NotificationPreferencesRequest(
-    preferences: (json["preferences"] as List<Object?>)
-        .map((item) => NotificationPreferencesRequestPreferencesItem.fromJson(item as Map<String, Object?>))
-        .toList(),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory NotificationPreferencesRequest.fromJson(Map<String, Object?> json) =>
+      NotificationPreferencesRequest(
+        preferences: (json["preferences"] as List<Object?>)
+            .map(
+              (item) => NotificationPreferencesRequestPreferencesItem.fromJson(
+                item as Map<String, Object?>,
+              ),
+            )
+            .toList(),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<NotificationPreferencesRequestPreferencesItem> preferences;
 

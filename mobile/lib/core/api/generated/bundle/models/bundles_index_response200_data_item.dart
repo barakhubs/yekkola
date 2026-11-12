@@ -8,15 +8,16 @@ class BundlesIndexResponse200DataItem {
     this.additionalProperties = const {},
   });
 
-  factory BundlesIndexResponse200DataItem.fromJson(Map<String, Object?> json) => BundlesIndexResponse200DataItem(
-    slug: json["slug"] as String,
-    title: json["title"] as String,
-    updatedAt: json["updated_at"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory BundlesIndexResponse200DataItem.fromJson(Map<String, Object?> json) =>
+      BundlesIndexResponse200DataItem(
+        slug: json["slug"] as String,
+        title: json["title"] as String,
+        updatedAt: json["updated_at"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String slug;
 

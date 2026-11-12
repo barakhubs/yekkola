@@ -5,9 +5,15 @@ import 'dart:convert' as convert;
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
 import 'models/change_phone_request.dart' as models show ChangePhoneRequest;
-import 'models/me_phone_otp_response202.dart' as models show MePhoneOtpResponse202;
-import 'models/me_phone_update_response200.dart' as models show MePhoneUpdateResponse200;
-import 'models/request_phone_change_otp_request.dart' as models show RequestPhoneChangeOtpRequest;
+import 'models/me_phone_otp_response202.dart'
+    as models
+    show MePhoneOtpResponse202;
+import 'models/me_phone_update_response200.dart'
+    as models
+    show MePhoneUpdateResponse200;
+import 'models/request_phone_change_otp_request.dart'
+    as models
+    show RequestPhoneChangeOtpRequest;
 
 class PhoneClient {
   PhoneClient(this._transport);
@@ -31,7 +37,8 @@ class PhoneClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -43,7 +50,9 @@ class PhoneClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.MePhoneOtpResponse202.fromJson(response.data as Map<String, Object?>);
+    return models.MePhoneOtpResponse202.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Confirm the new number. Every other session and device is signed out; the old number is notified
@@ -63,7 +72,8 @@ class PhoneClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -75,6 +85,8 @@ class PhoneClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.MePhoneUpdateResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MePhoneUpdateResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

@@ -3,15 +3,21 @@
 import 'me_deletion_cancel_response200_data.dart';
 
 class MeDeletionCancelResponse200 {
-  const MeDeletionCancelResponse200({required this.data, this.additionalProperties = const {}});
+  const MeDeletionCancelResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory MeDeletionCancelResponse200.fromJson(Map<String, Object?> json) => MeDeletionCancelResponse200(
-    data: MeDeletionCancelResponse200Data.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeDeletionCancelResponse200.fromJson(Map<String, Object?> json) =>
+      MeDeletionCancelResponse200(
+        data: MeDeletionCancelResponse200Data.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final MeDeletionCancelResponse200Data data;
 

@@ -2,8 +2,12 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/orders_receipt_pdf_response200.dart' as models show OrdersReceiptPdfResponse200;
-import 'models/orders_receipt_response200.dart' as models show OrdersReceiptResponse200;
+import 'models/orders_receipt_pdf_response200.dart'
+    as models
+    show OrdersReceiptPdfResponse200;
+import 'models/orders_receipt_response200.dart'
+    as models
+    show OrdersReceiptResponse200;
 
 class ReceiptClient {
   ReceiptClient(this._transport);
@@ -35,7 +39,9 @@ class ReceiptClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.OrdersReceiptResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.OrdersReceiptResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.OrdersReceiptPdfResponse200> ordersReceiptPdf({
@@ -63,6 +69,8 @@ class ReceiptClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.OrdersReceiptPdfResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.OrdersReceiptPdfResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

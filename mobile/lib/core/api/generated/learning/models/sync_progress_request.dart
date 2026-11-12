@@ -4,17 +4,25 @@ import 'sync_progress_request_items_item.dart';
 
 /// A batch of progress updates (PRD-06 FR-05).
 class SyncProgressRequest {
-  const SyncProgressRequest({required this.items, this.additionalProperties = const {}});
+  const SyncProgressRequest({
+    required this.items,
+    this.additionalProperties = const {},
+  });
 
-  factory SyncProgressRequest.fromJson(Map<String, Object?> json) => SyncProgressRequest(
-    items: (json["items"] as List<Object?>)
-        .map((item) => SyncProgressRequestItemsItem.fromJson(item as Map<String, Object?>))
-        .toList(),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory SyncProgressRequest.fromJson(Map<String, Object?> json) =>
+      SyncProgressRequest(
+        items: (json["items"] as List<Object?>)
+            .map(
+              (item) => SyncProgressRequestItemsItem.fromJson(
+                item as Map<String, Object?>,
+              ),
+            )
+            .toList(),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<SyncProgressRequestItemsItem> items;
 

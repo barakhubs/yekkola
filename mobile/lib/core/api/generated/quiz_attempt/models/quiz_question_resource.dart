@@ -37,12 +37,22 @@ class QuizQuestionResource {
       prompt: json["prompt"] as String,
       points: _readJsonInteger(json["points"]),
       options: (json["options"] as List<Object?>)
-          .map((item) => QuizQuestionResourceOptionsItem.fromJson(item as Map<String, Object?>))
+          .map(
+            (item) => QuizQuestionResourceOptionsItem.fromJson(
+              item as Map<String, Object?>,
+            ),
+          )
           .toList(),
-      chosen: json["chosen"] == null ? null : (json["chosen"] as List<Object?>).map((item) => item as String).toList(),
+      chosen: json["chosen"] == null
+          ? null
+          : (json["chosen"] as List<Object?>)
+                .map((item) => item as String)
+                .toList(),
       correct: json["correct"] == null
           ? null
-          : (json["correct"] as List<Object?>).map((item) => item as String).toList(),
+          : (json["correct"] as List<Object?>)
+                .map((item) => item as String)
+                .toList(),
       answeredCorrectly: json["answered_correctly"] as bool?,
       explanation: json["explanation"] as String?,
       additionalProperties: {

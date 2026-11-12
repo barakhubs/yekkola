@@ -40,7 +40,11 @@ class MeWishlistIndexResponse200Meta {
       from: json["from"] == null ? null : _readJsonInteger(json["from"]),
       lastPage: _readJsonInteger(json["last_page"]),
       links: (json["links"] as List<Object?>)
-          .map((item) => MeWishlistIndexResponse200MetaLinksItem.fromJson(item as Map<String, Object?>))
+          .map(
+            (item) => MeWishlistIndexResponse200MetaLinksItem.fromJson(
+              item as Map<String, Object?>,
+            ),
+          )
           .toList(),
       path: json["path"] as String?,
       perPage: _readJsonInteger(json["per_page"]),
@@ -74,7 +78,16 @@ class MeWishlistIndexResponse200Meta {
   /// Total number of items being paginated.
   final int total;
 
-  static const _knownKeys = <String>{"current_page", "from", "last_page", "links", "path", "per_page", "to", "total"};
+  static const _knownKeys = <String>{
+    "current_page",
+    "from",
+    "last_page",
+    "links",
+    "path",
+    "per_page",
+    "to",
+    "total",
+  };
 
   final Map<String, Object?> additionalProperties;
 

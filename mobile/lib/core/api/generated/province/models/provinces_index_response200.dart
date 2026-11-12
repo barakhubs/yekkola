@@ -3,17 +3,23 @@
 import '../../course/models/province_resource.dart';
 
 class ProvincesIndexResponse200 {
-  const ProvincesIndexResponse200({required this.data, this.additionalProperties = const {}});
+  const ProvincesIndexResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory ProvincesIndexResponse200.fromJson(Map<String, Object?> json) => ProvincesIndexResponse200(
-    data: (json["data"] as List<Object?>)
-        .map((item) => ProvinceResource.fromJson(item as Map<String, Object?>))
-        .toList(),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory ProvincesIndexResponse200.fromJson(Map<String, Object?> json) =>
+      ProvincesIndexResponse200(
+        data: (json["data"] as List<Object?>)
+            .map(
+              (item) => ProvinceResource.fromJson(item as Map<String, Object?>),
+            )
+            .toList(),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<ProvinceResource> data;
 

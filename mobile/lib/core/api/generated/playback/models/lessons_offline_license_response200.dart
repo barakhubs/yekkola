@@ -3,9 +3,14 @@
 import 'offline_license_resource.dart';
 
 class LessonsOfflineLicenseResponse200 {
-  const LessonsOfflineLicenseResponse200({required this.data, this.additionalProperties = const {}});
+  const LessonsOfflineLicenseResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory LessonsOfflineLicenseResponse200.fromJson(Map<String, Object?> json) => LessonsOfflineLicenseResponse200(
+  factory LessonsOfflineLicenseResponse200.fromJson(
+    Map<String, Object?> json,
+  ) => LessonsOfflineLicenseResponse200(
     data: OfflineLicenseResource.fromJson(json["data"] as Map<String, Object?>),
     additionalProperties: {
       for (final entry in json.entries)

@@ -3,15 +3,25 @@
 import 'province_resource.dart';
 
 class PublicProfessorResourceProvince {
-  PublicProfessorResourceProvince._(this._json, this.hasProvinceResource, this.hasNull);
+  PublicProfessorResourceProvince._(
+    this._json,
+    this.hasProvinceResource,
+    this.hasNull,
+  );
 
   factory PublicProfessorResourceProvince.fromJson(Object? json) {
     final hasProvinceResource = _matches1(json);
     final hasNull = _matches6(json);
     if (!(hasProvinceResource || hasNull)) {
-      throw const FormatException("No matching PublicProfessorResourceProvince variant.");
+      throw const FormatException(
+        "No matching PublicProfessorResourceProvince variant.",
+      );
     }
-    return PublicProfessorResourceProvince._(_copyJson(json), hasProvinceResource, hasNull);
+    return PublicProfessorResourceProvince._(
+      _copyJson(json),
+      hasProvinceResource,
+      hasNull,
+    );
   }
 
   final Object? _json;
@@ -44,9 +54,15 @@ bool _matches2(Object? value) =>
     (value is! Map<String, Object?> || value.containsKey("id")) &&
     (value is! Map<String, Object?> || value.containsKey("code")) &&
     (value is! Map<String, Object?> || value.containsKey("name")) &&
-    (value is! Map<String, Object?> || !value.containsKey("id") || _matches3(value["id"])) &&
-    (value is! Map<String, Object?> || !value.containsKey("code") || _matches4(value["code"])) &&
-    (value is! Map<String, Object?> || !value.containsKey("name") || _matches5(value["name"])) &&
+    (value is! Map<String, Object?> ||
+        !value.containsKey("id") ||
+        _matches3(value["id"])) &&
+    (value is! Map<String, Object?> ||
+        !value.containsKey("code") ||
+        _matches4(value["code"])) &&
+    (value is! Map<String, Object?> ||
+        !value.containsKey("name") ||
+        _matches5(value["name"])) &&
     ((value is Map<String, Object?>));
 bool _matches3(Object? value) => ((value is String));
 bool _matches4(Object? value) => ((value is String));
@@ -54,7 +70,9 @@ bool _matches5(Object? value) => ((value is String));
 bool _matches6(Object? value) => ((value == null));
 Object? _copyJson(Object? value) {
   return switch (value) {
-    Map<String, Object?> map => map.map((key, item) => MapEntry(key, _copyJson(item))),
+    Map<String, Object?> map => map.map(
+      (key, item) => MapEntry(key, _copyJson(item)),
+    ),
     List<Object?> list => list.map(_copyJson).toList(),
     null || bool() || String() || int() => value,
     double() when value.isFinite => value,

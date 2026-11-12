@@ -10,17 +10,18 @@ class EnrollmentResource {
     this.additionalProperties = const {},
   });
 
-  factory EnrollmentResource.fromJson(Map<String, Object?> json) => EnrollmentResource(
-    id: json["id"] as String,
-    courseId: json["course_id"] as String,
-    source: json["source"] as String,
-    status: json["status"] as String,
-    enrolledAt: json["enrolled_at"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory EnrollmentResource.fromJson(Map<String, Object?> json) =>
+      EnrollmentResource(
+        id: json["id"] as String,
+        courseId: json["course_id"] as String,
+        source: json["source"] as String,
+        status: json["status"] as String,
+        enrolledAt: json["enrolled_at"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String id;
 
@@ -32,7 +33,13 @@ class EnrollmentResource {
 
   final String enrolledAt;
 
-  static const _knownKeys = <String>{"id", "course_id", "source", "status", "enrolled_at"};
+  static const _knownKeys = <String>{
+    "id",
+    "course_id",
+    "source",
+    "status",
+    "enrolled_at",
+  };
 
   final Map<String, Object?> additionalProperties;
 

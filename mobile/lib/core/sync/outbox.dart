@@ -46,7 +46,13 @@ class OutboxStore {
 
     final merged = merge((jsonDecode(existing.payload) as Map).cast<String, Object?>(), payload);
     await (_db.update(_db.outbox)..where((o) => o.id.equals(existing.id))).write(
-      OutboxCompanion(payload: Value(jsonEncode(merged)), updatedAt: Value(now), nextAttemptAt: Value(now)),
+      OutboxCompanion(
+        payload: Value(jsonEncode(merged)),
+        updatedAt: Value(now),
+        revision: Value(existing.revision + 1),
+        // A row backing off (API down) keeps waiting: saving every 15 s must not hammer a failing API.
+        nextAttemptAt: Value(existing.nextAttemptAt.isAfter(now) ? existing.nextAttemptAt : now),
+      ),
     );
   });
 
@@ -72,17 +78,17 @@ class OutboxStore {
   /// the request was in flight stays queued.
   Future<void> remove(Iterable<OutboxRow> rows) => _db.transaction(() async {
     for (final row in rows) {
-      await (_db.delete(_db.outbox)..where((o) => o.id.equals(row.id) & o.updatedAt.equals(row.updatedAt))).go();
+      await (_db.delete(_db.outbox)..where((o) => o.id.equals(row.id) & o.revision.equals(row.revision))).go();
     }
   });
 
-  /// Failed for a reason worth retrying: try again after [delay].
+  /// Failed for a reason worth retrying: try again after [delay]. A row merged since it was read is due as is.
   Future<void> retryLater(Iterable<OutboxRow> rows, Duration Function(int attempts) delay, String error) =>
       _db.transaction(() async {
         final now = _clock().toUtc();
         for (final row in rows) {
           final attempts = row.attempts + 1;
-          await (_db.update(_db.outbox)..where((o) => o.id.equals(row.id))).write(
+          await (_db.update(_db.outbox)..where((o) => o.id.equals(row.id) & o.revision.equals(row.revision))).write(
             OutboxCompanion(
               attempts: Value(attempts),
               nextAttemptAt: Value(now.add(delay(attempts))),

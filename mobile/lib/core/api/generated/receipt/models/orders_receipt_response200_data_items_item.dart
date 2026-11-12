@@ -14,18 +14,25 @@ class OrdersReceiptResponse200DataItemsItem {
     this.additionalProperties = const {},
   });
 
-  factory OrdersReceiptResponse200DataItemsItem.fromJson(Map<String, Object?> json) =>
-      OrdersReceiptResponse200DataItemsItem(
-        title: json["title"] as String,
-        listPrice: OrdersReceiptResponse200DataItemsItemListPrice.fromJson(json["list_price"] as Map<String, Object?>),
-        discount: OrdersReceiptResponse200DataItemsItemDiscount.fromJson(json["discount"] as Map<String, Object?>),
-        price: OrdersReceiptResponse200DataItemsItemPrice.fromJson(json["price"] as Map<String, Object?>),
-        refunded: json["refunded"] as bool,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory OrdersReceiptResponse200DataItemsItem.fromJson(
+    Map<String, Object?> json,
+  ) => OrdersReceiptResponse200DataItemsItem(
+    title: json["title"] as String,
+    listPrice: OrdersReceiptResponse200DataItemsItemListPrice.fromJson(
+      json["list_price"] as Map<String, Object?>,
+    ),
+    discount: OrdersReceiptResponse200DataItemsItemDiscount.fromJson(
+      json["discount"] as Map<String, Object?>,
+    ),
+    price: OrdersReceiptResponse200DataItemsItemPrice.fromJson(
+      json["price"] as Map<String, Object?>,
+    ),
+    refunded: json["refunded"] as bool,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String title;
 
@@ -37,7 +44,13 @@ class OrdersReceiptResponse200DataItemsItem {
 
   final bool refunded;
 
-  static const _knownKeys = <String>{"title", "list_price", "discount", "price", "refunded"};
+  static const _knownKeys = <String>{
+    "title",
+    "list_price",
+    "discount",
+    "price",
+    "refunded",
+  };
 
   final Map<String, Object?> additionalProperties;
 

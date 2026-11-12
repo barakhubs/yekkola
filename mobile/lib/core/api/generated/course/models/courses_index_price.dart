@@ -30,7 +30,8 @@ final class CoursesIndexPriceKnown extends CoursesIndexPrice {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is CoursesIndexPriceKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is CoursesIndexPriceKnown && other.value == value;
   @override
   int get hashCode => Object.hash(CoursesIndexPriceKnown, value);
 }
@@ -41,7 +42,8 @@ final class CoursesIndexPriceUnknown extends CoursesIndexPrice {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is CoursesIndexPriceUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is CoursesIndexPriceUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(CoursesIndexPriceUnknown, rawValue);
 }

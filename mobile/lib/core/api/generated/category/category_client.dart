@@ -2,7 +2,9 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/categories_index_response200.dart' as models show CategoriesIndexResponse200;
+import 'models/categories_index_response200.dart'
+    as models
+    show CategoriesIndexResponse200;
 
 class CategoryClient {
   CategoryClient(this._transport);
@@ -26,7 +28,13 @@ class CategoryClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>("/categories", options: _options, cancelToken: cancelToken);
-    return models.CategoriesIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    final response = await _transport.request<dynamic>(
+      "/categories",
+      options: _options,
+      cancelToken: cancelToken,
+    );
+    return models.CategoriesIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

@@ -3,15 +3,19 @@
 import 'review_resource.dart';
 
 class CoursesReviewStoreResponse201 {
-  const CoursesReviewStoreResponse201({required this.data, this.additionalProperties = const {}});
+  const CoursesReviewStoreResponse201({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory CoursesReviewStoreResponse201.fromJson(Map<String, Object?> json) => CoursesReviewStoreResponse201(
-    data: ReviewResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory CoursesReviewStoreResponse201.fromJson(Map<String, Object?> json) =>
+      CoursesReviewStoreResponse201(
+        data: ReviewResource.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final ReviewResource data;
 

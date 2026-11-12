@@ -7,14 +7,15 @@ class OrderResourceItemsItemListPrice {
     this.additionalProperties = const {},
   });
 
-  factory OrderResourceItemsItemListPrice.fromJson(Map<String, Object?> json) => OrderResourceItemsItemListPrice(
-    amountMinor: _readJsonInteger(json["amount_minor"]),
-    currency: json["currency"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory OrderResourceItemsItemListPrice.fromJson(Map<String, Object?> json) =>
+      OrderResourceItemsItemListPrice(
+        amountMinor: _readJsonInteger(json["amount_minor"]),
+        currency: json["currency"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final int amountMinor;
 

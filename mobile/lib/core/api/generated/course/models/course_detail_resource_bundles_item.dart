@@ -11,16 +11,19 @@ class CourseDetailResourceBundlesItem {
     this.additionalProperties = const {},
   });
 
-  factory CourseDetailResourceBundlesItem.fromJson(Map<String, Object?> json) => CourseDetailResourceBundlesItem(
-    slug: json["slug"] as String,
-    title: json["title"] as String,
-    price: CourseDetailResourceBundlesItemPrice.fromJson(json["price"] as Map<String, Object?>),
-    courseCount: _readJsonInteger(json["course_count"]),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory CourseDetailResourceBundlesItem.fromJson(Map<String, Object?> json) =>
+      CourseDetailResourceBundlesItem(
+        slug: json["slug"] as String,
+        title: json["title"] as String,
+        price: CourseDetailResourceBundlesItemPrice.fromJson(
+          json["price"] as Map<String, Object?>,
+        ),
+        courseCount: _readJsonInteger(json["course_count"]),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String slug;
 

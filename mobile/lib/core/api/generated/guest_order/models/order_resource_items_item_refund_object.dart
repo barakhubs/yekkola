@@ -7,7 +7,9 @@ class OrderResourceItemsItemRefundObject {
     this.additionalProperties = const {},
   });
 
-  factory OrderResourceItemsItemRefundObject.fromJson(Map<String, Object?> json) {
+  factory OrderResourceItemsItemRefundObject.fromJson(
+    Map<String, Object?> json,
+  ) {
     if (!json.containsKey("status")) {
       throw ArgumentError("Missing required property: status");
     }

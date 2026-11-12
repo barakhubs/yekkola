@@ -3,15 +3,19 @@
 import 'data_export_resource.dart';
 
 class MeExportStoreResponse202 {
-  const MeExportStoreResponse202({required this.data, this.additionalProperties = const {}});
+  const MeExportStoreResponse202({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory MeExportStoreResponse202.fromJson(Map<String, Object?> json) => MeExportStoreResponse202(
-    data: DataExportResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeExportStoreResponse202.fromJson(Map<String, Object?> json) =>
+      MeExportStoreResponse202(
+        data: DataExportResource.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final DataExportResource data;
 

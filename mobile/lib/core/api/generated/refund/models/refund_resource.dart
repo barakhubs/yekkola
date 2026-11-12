@@ -45,7 +45,9 @@ class RefundResource {
       orderId: json["order_id"] as String,
       orderNumber: json["order_number"] as String,
       course: json["course"] as String?,
-      amount: RefundResourceAmount.fromJson(json["amount"] as Map<String, Object?>),
+      amount: RefundResourceAmount.fromJson(
+        json["amount"] as Map<String, Object?>,
+      ),
       status: json["status"] as String,
       reason: json["reason"] as String?,
       decisionNote: json["decision_note"] as String?,

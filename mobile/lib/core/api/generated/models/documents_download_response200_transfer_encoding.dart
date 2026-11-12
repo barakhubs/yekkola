@@ -14,35 +14,49 @@ sealed class DocumentsDownloadResponse200TransferEncoding {
   );
   factory DocumentsDownloadResponse200TransferEncoding.fromJson(Object? json) {
     if (!(json is String)) {
-      throw ArgumentError.value(json, "DocumentsDownloadResponse200TransferEncoding");
+      throw ArgumentError.value(
+        json,
+        "DocumentsDownloadResponse200TransferEncoding",
+      );
     }
-    for (final value in DocumentsDownloadResponse200TransferEncodingValue.values) {
-      if (value.value == json) return DocumentsDownloadResponse200TransferEncodingKnown(value);
+    for (final value
+        in DocumentsDownloadResponse200TransferEncodingValue.values) {
+      if (value.value == json)
+        return DocumentsDownloadResponse200TransferEncodingKnown(value);
     }
     return DocumentsDownloadResponse200TransferEncodingUnknown(json);
   }
   String toJson();
 }
 
-final class DocumentsDownloadResponse200TransferEncodingKnown extends DocumentsDownloadResponse200TransferEncoding {
+final class DocumentsDownloadResponse200TransferEncodingKnown
+    extends DocumentsDownloadResponse200TransferEncoding {
   const DocumentsDownloadResponse200TransferEncodingKnown(this.value);
   final DocumentsDownloadResponse200TransferEncodingValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is DocumentsDownloadResponse200TransferEncodingKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is DocumentsDownloadResponse200TransferEncodingKnown &&
+      other.value == value;
   @override
-  int get hashCode => Object.hash(DocumentsDownloadResponse200TransferEncodingKnown, value);
+  int get hashCode =>
+      Object.hash(DocumentsDownloadResponse200TransferEncodingKnown, value);
 }
 
-final class DocumentsDownloadResponse200TransferEncodingUnknown extends DocumentsDownloadResponse200TransferEncoding {
+final class DocumentsDownloadResponse200TransferEncodingUnknown
+    extends DocumentsDownloadResponse200TransferEncoding {
   const DocumentsDownloadResponse200TransferEncodingUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
   bool operator ==(Object other) =>
-      other is DocumentsDownloadResponse200TransferEncodingUnknown && other.rawValue == rawValue;
+      other is DocumentsDownloadResponse200TransferEncodingUnknown &&
+      other.rawValue == rawValue;
   @override
-  int get hashCode => Object.hash(DocumentsDownloadResponse200TransferEncodingUnknown, rawValue);
+  int get hashCode => Object.hash(
+    DocumentsDownloadResponse200TransferEncodingUnknown,
+    rawValue,
+  );
 }

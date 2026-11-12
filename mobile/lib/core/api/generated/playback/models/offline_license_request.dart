@@ -2,15 +2,21 @@
 
 /// Which rendition to download (PRD-07 FR-08); omitted = our lowest.
 class OfflineLicenseRequest {
-  const OfflineLicenseRequest({this.rendition, this.additionalProperties = const {}});
+  const OfflineLicenseRequest({
+    this.rendition,
+    this.additionalProperties = const {},
+  });
 
-  factory OfflineLicenseRequest.fromJson(Map<String, Object?> json) => OfflineLicenseRequest(
-    rendition: json.containsKey("rendition") ? json["rendition"] as String? : null,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory OfflineLicenseRequest.fromJson(Map<String, Object?> json) =>
+      OfflineLicenseRequest(
+        rendition: json.containsKey("rendition")
+            ? json["rendition"] as String?
+            : null,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String? rendition;
 

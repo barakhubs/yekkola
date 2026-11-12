@@ -33,7 +33,9 @@ class MyCourseResource {
       enrolledAt: json["enrolled_at"] as String,
       lastActivityAt: json["last_activity_at"] as String?,
       completedAt: json["completed_at"] as String?,
-      course: CourseCardResource.fromJson(json["course"] as Map<String, Object?>),
+      course: CourseCardResource.fromJson(
+        json["course"] as Map<String, Object?>,
+      ),
       additionalProperties: {
         for (final entry in json.entries)
           if (!_knownKeys.contains(entry.key)) entry.key: entry.value,

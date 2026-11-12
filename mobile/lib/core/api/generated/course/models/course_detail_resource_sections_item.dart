@@ -10,11 +10,17 @@ class CourseDetailResourceSectionsItem {
     this.additionalProperties = const {},
   });
 
-  factory CourseDetailResourceSectionsItem.fromJson(Map<String, Object?> json) => CourseDetailResourceSectionsItem(
+  factory CourseDetailResourceSectionsItem.fromJson(
+    Map<String, Object?> json,
+  ) => CourseDetailResourceSectionsItem(
     id: json["id"] as String,
     title: json["title"] as String,
     lessons: (json["lessons"] as List<Object?>)
-        .map((item) => CourseDetailResourceSectionsItemLessonsItem.fromJson(item as Map<String, Object?>))
+        .map(
+          (item) => CourseDetailResourceSectionsItemLessonsItem.fromJson(
+            item as Map<String, Object?>,
+          ),
+        )
         .toList(),
     additionalProperties: {
       for (final entry in json.entries)

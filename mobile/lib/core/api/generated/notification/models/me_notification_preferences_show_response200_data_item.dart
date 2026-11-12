@@ -7,15 +7,18 @@ class MeNotificationPreferencesShowResponse200DataItem {
     this.additionalProperties = const {},
   });
 
-  factory MeNotificationPreferencesShowResponse200DataItem.fromJson(Map<String, Object?> json) =>
-      MeNotificationPreferencesShowResponse200DataItem(
-        type2: json["type"] as String,
-        channels: (json["channels"] as Map<String, Object?>).map((key, item) => MapEntry(key, item as bool)),
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory MeNotificationPreferencesShowResponse200DataItem.fromJson(
+    Map<String, Object?> json,
+  ) => MeNotificationPreferencesShowResponse200DataItem(
+    type2: json["type"] as String,
+    channels: (json["channels"] as Map<String, Object?>).map(
+      (key, item) => MapEntry(key, item as bool),
+    ),
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final String type2;
 

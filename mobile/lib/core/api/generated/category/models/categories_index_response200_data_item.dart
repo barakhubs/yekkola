@@ -14,7 +14,9 @@ class CategoriesIndexResponse200DataItem {
     this.additionalProperties = const {},
   });
 
-  factory CategoriesIndexResponse200DataItem.fromJson(Map<String, Object?> json) {
+  factory CategoriesIndexResponse200DataItem.fromJson(
+    Map<String, Object?> json,
+  ) {
     if (!json.containsKey("description")) {
       throw ArgumentError("Missing required property: description");
     }
@@ -29,7 +31,9 @@ class CategoriesIndexResponse200DataItem {
       icon: json["icon"] as String?,
       courseCount: json["course_count"] as num,
       children: (json["children"] as List<Object?>)
-          .map((item) => CategoryResource.fromJson(item as Map<String, Object?>))
+          .map(
+            (item) => CategoryResource.fromJson(item as Map<String, Object?>),
+          )
           .toList(),
       additionalProperties: {
         for (final entry in json.entries)
@@ -52,7 +56,15 @@ class CategoriesIndexResponse200DataItem {
 
   final List<CategoryResource> children;
 
-  static const _knownKeys = <String>{"id", "slug", "name", "description", "icon", "course_count", "children"};
+  static const _knownKeys = <String>{
+    "id",
+    "slug",
+    "name",
+    "description",
+    "icon",
+    "course_count",
+    "children",
+  };
 
   final Map<String, Object?> additionalProperties;
 

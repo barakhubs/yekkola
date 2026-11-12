@@ -2,16 +2,21 @@
 
 /// The professor who made it; null for a platform bundle (loaded in the back office).
 class BundleResourceProfessor {
-  const BundleResourceProfessor({required this.id, required this.displayName, this.additionalProperties = const {}});
+  const BundleResourceProfessor({
+    required this.id,
+    required this.displayName,
+    this.additionalProperties = const {},
+  });
 
-  factory BundleResourceProfessor.fromJson(Map<String, Object?> json) => BundleResourceProfessor(
-    id: json["id"] as String,
-    displayName: json["display_name"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory BundleResourceProfessor.fromJson(Map<String, Object?> json) =>
+      BundleResourceProfessor(
+        id: json["id"] as String,
+        displayName: json["display_name"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String id;
 

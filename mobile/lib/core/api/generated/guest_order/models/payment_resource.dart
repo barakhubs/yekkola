@@ -32,7 +32,9 @@ class PaymentResource {
       orderId: json["order_id"] as String,
       rail: json["rail"] as String,
       payer: json["payer"] as String,
-      amount: PaymentResourceAmount.fromJson(json["amount"] as Map<String, Object?>),
+      amount: PaymentResourceAmount.fromJson(
+        json["amount"] as Map<String, Object?>,
+      ),
       status: json["status"] as String,
       failureCode: json["failure_code"] as String?,
       failureReason: json["failure_reason"] as String?,

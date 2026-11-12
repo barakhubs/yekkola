@@ -3,15 +3,21 @@
 import 'quiz_attempt_resource.dart';
 
 class QuizAttemptsSubmitResponse200 {
-  const QuizAttemptsSubmitResponse200({required this.data, this.additionalProperties = const {}});
+  const QuizAttemptsSubmitResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory QuizAttemptsSubmitResponse200.fromJson(Map<String, Object?> json) => QuizAttemptsSubmitResponse200(
-    data: QuizAttemptResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory QuizAttemptsSubmitResponse200.fromJson(Map<String, Object?> json) =>
+      QuizAttemptsSubmitResponse200(
+        data: QuizAttemptResource.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final QuizAttemptResource data;
 

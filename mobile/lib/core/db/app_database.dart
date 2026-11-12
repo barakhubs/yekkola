@@ -22,6 +22,9 @@ class Outbox extends Table {
   TextColumn get payload => text()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
+
+  /// Bumped on every merge: a row sent while a newer write was merged in is neither removed nor delayed.
+  IntColumn get revision => integer().withDefault(const Constant(0))();
   IntColumn get attempts => integer().withDefault(const Constant(0))();
 
   /// Not sent before this (exponential backoff after failures).
@@ -68,10 +71,4 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (m) => m.createAll());
-
-  /// Everything of one account (e.g. its session was ended by the API).
-  Future<void> forgetUser(String userId) => transaction(() async {
-    await (delete(outbox)..where((o) => o.userId.equals(userId))).go();
-    await (delete(lessonProgress)..where((p) => p.userId.equals(userId))).go();
-  });
 }

@@ -8,15 +8,16 @@ class AuthOtpRequestResponse202Data {
     this.additionalProperties = const {},
   });
 
-  factory AuthOtpRequestResponse202Data.fromJson(Map<String, Object?> json) => AuthOtpRequestResponse202Data(
-    challengeId: json["challenge_id"] as String,
-    expiresAt: json["expires_at"] as String,
-    resendAfterSeconds: _readJsonInteger(json["resend_after_seconds"]),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory AuthOtpRequestResponse202Data.fromJson(Map<String, Object?> json) =>
+      AuthOtpRequestResponse202Data(
+        challengeId: json["challenge_id"] as String,
+        expiresAt: json["expires_at"] as String,
+        resendAfterSeconds: _readJsonInteger(json["resend_after_seconds"]),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String challengeId;
 
@@ -24,7 +25,11 @@ class AuthOtpRequestResponse202Data {
 
   final int resendAfterSeconds;
 
-  static const _knownKeys = <String>{"challenge_id", "expires_at", "resend_after_seconds"};
+  static const _knownKeys = <String>{
+    "challenge_id",
+    "expires_at",
+    "resend_after_seconds",
+  };
 
   final Map<String, Object?> additionalProperties;
 

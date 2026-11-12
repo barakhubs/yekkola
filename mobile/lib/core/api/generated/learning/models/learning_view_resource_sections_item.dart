@@ -10,11 +10,17 @@ class LearningViewResourceSectionsItem {
     this.additionalProperties = const {},
   });
 
-  factory LearningViewResourceSectionsItem.fromJson(Map<String, Object?> json) => LearningViewResourceSectionsItem(
+  factory LearningViewResourceSectionsItem.fromJson(
+    Map<String, Object?> json,
+  ) => LearningViewResourceSectionsItem(
     id: json["id"] as String,
     title: json["title"] as String,
     lessons: (json["lessons"] as List<Object?>)
-        .map((item) => LearningViewResourceSectionsItemLessonsItem.fromJson(item as Map<String, Object?>))
+        .map(
+          (item) => LearningViewResourceSectionsItemLessonsItem.fromJson(
+            item as Map<String, Object?>,
+          ),
+        )
         .toList(),
     additionalProperties: {
       for (final entry in json.entries)

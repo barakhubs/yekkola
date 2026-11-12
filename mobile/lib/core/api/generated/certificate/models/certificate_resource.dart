@@ -22,7 +22,9 @@ class CertificateResource {
     return CertificateResource(
       id: json["id"] as String,
       serial: json["serial"] as String,
-      course: CertificateResourceCourse.fromJson(json["course"] as Map<String, Object?>),
+      course: CertificateResourceCourse.fromJson(
+        json["course"] as Map<String, Object?>,
+      ),
       studentName: json["student_name"] as String,
       professorName: json["professor_name"] as String,
       issuedAt: json["issued_at"] as String,

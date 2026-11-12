@@ -8,16 +8,17 @@ class OrdersReceiptResponse200DataRefunded {
     this.additionalProperties = const {},
   });
 
-  factory OrdersReceiptResponse200DataRefunded.fromJson(Map<String, Object?> json) =>
-      OrdersReceiptResponse200DataRefunded(
-        amountMinor: _readJsonInteger(json["amount_minor"]),
-        currency: json["currency"] as String,
-        formatted: json["formatted"] as String,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory OrdersReceiptResponse200DataRefunded.fromJson(
+    Map<String, Object?> json,
+  ) => OrdersReceiptResponse200DataRefunded(
+    amountMinor: _readJsonInteger(json["amount_minor"]),
+    currency: json["currency"] as String,
+    formatted: json["formatted"] as String,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   final int amountMinor;
 

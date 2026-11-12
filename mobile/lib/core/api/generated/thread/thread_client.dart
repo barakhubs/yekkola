@@ -4,12 +4,20 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/lessons_threads_index_response200.dart' as models show LessonsThreadsIndexResponse200;
-import 'models/lessons_threads_store_response200.dart' as models show LessonsThreadsStoreResponse200;
+import 'models/lessons_threads_index_response200.dart'
+    as models
+    show LessonsThreadsIndexResponse200;
+import 'models/lessons_threads_store_response200.dart'
+    as models
+    show LessonsThreadsStoreResponse200;
 import 'models/thread_reply_request.dart' as models show ThreadReplyRequest;
 import 'models/thread_request.dart' as models show ThreadRequest;
-import 'models/threads_replies_store_response200.dart' as models show ThreadsRepliesStoreResponse200;
-import 'models/threads_show_response200.dart' as models show ThreadsShowResponse200;
+import 'models/threads_replies_store_response200.dart'
+    as models
+    show ThreadsRepliesStoreResponse200;
+import 'models/threads_show_response200.dart'
+    as models
+    show ThreadsShowResponse200;
 
 class ThreadClient {
   ThreadClient(this._transport);
@@ -41,10 +49,15 @@ class ThreadClient {
     final response = await _transport.request<dynamic>(
       "/lessons/" + Uri.encodeComponent(lesson) + "/threads",
       options: _options,
-      queryParameters: <String, Object?>{if (page != null) "page": page, if (perPage != null) "per_page": perPage},
+      queryParameters: <String, Object?>{
+        if (page != null) "page": page,
+        if (perPage != null) "per_page": perPage,
+      },
       cancelToken: cancelToken,
     );
-    return models.LessonsThreadsIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsThreadsIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.LessonsThreadsStoreResponse200> lessonsThreadsStore({
@@ -67,7 +80,8 @@ class ThreadClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -79,7 +93,9 @@ class ThreadClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.LessonsThreadsStoreResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsThreadsStoreResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.ThreadsShowResponse200> threadsShow({
@@ -107,7 +123,9 @@ class ThreadClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.ThreadsShowResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.ThreadsShowResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.ThreadsRepliesStoreResponse200> threadsRepliesStore({
@@ -130,7 +148,8 @@ class ThreadClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -142,6 +161,8 @@ class ThreadClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.ThreadsRepliesStoreResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.ThreadsRepliesStoreResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

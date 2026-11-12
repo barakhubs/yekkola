@@ -34,7 +34,8 @@ final class NotificationChannelKnown extends NotificationChannel {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is NotificationChannelKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is NotificationChannelKnown && other.value == value;
   @override
   int get hashCode => Object.hash(NotificationChannelKnown, value);
 }
@@ -45,7 +46,8 @@ final class NotificationChannelUnknown extends NotificationChannel {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is NotificationChannelUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is NotificationChannelUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(NotificationChannelUnknown, rawValue);
 }

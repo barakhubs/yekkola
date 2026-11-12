@@ -2,15 +2,21 @@
 
 /// Notifications to mark read; leave `ids` out to mark them all.
 class MarkNotificationsReadRequest {
-  const MarkNotificationsReadRequest({required this.ids, this.additionalProperties = const {}});
+  const MarkNotificationsReadRequest({
+    required this.ids,
+    this.additionalProperties = const {},
+  });
 
-  factory MarkNotificationsReadRequest.fromJson(Map<String, Object?> json) => MarkNotificationsReadRequest(
-    ids: (json["ids"] as List<Object?>).map((item) => item as String).toList(),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MarkNotificationsReadRequest.fromJson(Map<String, Object?> json) =>
+      MarkNotificationsReadRequest(
+        ids: (json["ids"] as List<Object?>)
+            .map((item) => item as String)
+            .toList(),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<String> ids;
 

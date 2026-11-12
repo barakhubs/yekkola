@@ -30,7 +30,8 @@ final class CoursesIndexLanguageKnown extends CoursesIndexLanguage {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is CoursesIndexLanguageKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is CoursesIndexLanguageKnown && other.value == value;
   @override
   int get hashCode => Object.hash(CoursesIndexLanguageKnown, value);
 }
@@ -41,7 +42,8 @@ final class CoursesIndexLanguageUnknown extends CoursesIndexLanguage {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is CoursesIndexLanguageUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is CoursesIndexLanguageUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(CoursesIndexLanguageUnknown, rawValue);
 }

@@ -5,11 +5,21 @@ import 'dart:convert' as convert;
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
 import 'models/heartbeat_request.dart' as models show HeartbeatRequest;
-import 'models/lessons_offline_license_response200.dart' as models show LessonsOfflineLicenseResponse200;
-import 'models/lessons_playback_heartbeat_response200.dart' as models show LessonsPlaybackHeartbeatResponse200;
-import 'models/lessons_playback_response200.dart' as models show LessonsPlaybackResponse200;
-import 'models/lessons_preview_playback_response200.dart' as models show LessonsPreviewPlaybackResponse200;
-import 'models/offline_license_request.dart' as models show OfflineLicenseRequest;
+import 'models/lessons_offline_license_response200.dart'
+    as models
+    show LessonsOfflineLicenseResponse200;
+import 'models/lessons_playback_heartbeat_response200.dart'
+    as models
+    show LessonsPlaybackHeartbeatResponse200;
+import 'models/lessons_playback_response200.dart'
+    as models
+    show LessonsPlaybackResponse200;
+import 'models/lessons_preview_playback_response200.dart'
+    as models
+    show LessonsPreviewPlaybackResponse200;
+import 'models/offline_license_request.dart'
+    as models
+    show OfflineLicenseRequest;
 
 class PlaybackClient {
   PlaybackClient(this._transport);
@@ -43,7 +53,9 @@ class PlaybackClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.LessonsPlaybackResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsPlaybackResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Keeps a web stream live. `playback.stream_replaced` (409) means another screen took over: stop playing
@@ -67,7 +79,8 @@ class PlaybackClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -79,7 +92,9 @@ class PlaybackClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.LessonsPlaybackHeartbeatResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsPlaybackHeartbeatResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Offline download for this registered device: the rendition's playlist, the AES key and the license
@@ -105,7 +120,8 @@ class PlaybackClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -117,7 +133,9 @@ class PlaybackClient {
       data: body == null ? null : convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.LessonsOfflineLicenseResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsOfflineLicenseResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Tokens for a preview lesson of a listed course, without signing in (PRD-04 FR-06). No watermark name
@@ -146,6 +164,8 @@ class PlaybackClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.LessonsPreviewPlaybackResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.LessonsPreviewPlaybackResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

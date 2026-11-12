@@ -3,15 +3,21 @@
 import 'learning_view_resource.dart';
 
 class MeCoursesShowResponse200 {
-  const MeCoursesShowResponse200({required this.data, this.additionalProperties = const {}});
+  const MeCoursesShowResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory MeCoursesShowResponse200.fromJson(Map<String, Object?> json) => MeCoursesShowResponse200(
-    data: LearningViewResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeCoursesShowResponse200.fromJson(Map<String, Object?> json) =>
+      MeCoursesShowResponse200(
+        data: LearningViewResource.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final LearningViewResource data;
 

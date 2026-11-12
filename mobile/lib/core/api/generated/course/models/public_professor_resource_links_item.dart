@@ -7,7 +7,9 @@ class PublicProfessorResourceLinksItem {
     this.additionalProperties = const {},
   });
 
-  factory PublicProfessorResourceLinksItem.fromJson(Map<String, Object?> json) => PublicProfessorResourceLinksItem(
+  factory PublicProfessorResourceLinksItem.fromJson(
+    Map<String, Object?> json,
+  ) => PublicProfessorResourceLinksItem(
     label: json["label"] as String,
     url: json["url"] as String,
     additionalProperties: {

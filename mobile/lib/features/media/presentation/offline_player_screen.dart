@@ -85,6 +85,7 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
       if (resumeAt > const Duration(seconds: 5) && resumeAt < player.value.duration - const Duration(seconds: 5)) {
         await player.seekTo(resumeAt);
       }
+      if (!mounted) throw StateError('closed');
       _saveProgress = () => _record(progress, owner.user.id, download.lessonUid, player!);
       _progressTimer = Timer.periodic(const Duration(seconds: 15), (_) {
         if (player!.value.isPlaying) _saveProgress?.call();
@@ -100,6 +101,11 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
       await player.play();
     } catch (_) {
       // Nothing may outlive a failed start: the server holds the plain key.
+      if (_player != player) {
+        _progressTimer?.cancel();
+        player?.removeListener(_onPlayerChange);
+        _saveProgress = null;
+      }
       if (_player != player) await player?.dispose();
       if (_server != server) {
         await server?.close();
@@ -142,6 +148,7 @@ class _OfflinePlayerScreenState extends ConsumerState<OfflinePlayerScreen> {
     _saveProgress?.call();
     _progressTimer?.cancel();
     player?.removeListener(_onPlayerChange);
+    _saveProgress = null;
     setState(() {
       _player = null;
       _server = null;

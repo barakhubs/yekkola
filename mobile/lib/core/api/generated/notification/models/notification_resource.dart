@@ -55,7 +55,16 @@ class NotificationResource {
 
   final String createdAt;
 
-  static const _knownKeys = <String>{"id", "type", "title", "body", "link", "app", "read_at", "created_at"};
+  static const _knownKeys = <String>{
+    "id",
+    "type",
+    "title",
+    "body",
+    "link",
+    "app",
+    "read_at",
+    "created_at",
+  };
 
   final Map<String, Object?> additionalProperties;
 

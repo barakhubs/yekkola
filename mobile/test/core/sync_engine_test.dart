@@ -165,6 +165,100 @@ void main() {
       expect(jsonDecode(pending.single.payload)['position_seconds'], 45);
     });
 
+    test('sends timestamps the API accepts, even from a microsecond clock', () async {
+      now = DateTime.utc(2026, 11, 12, 10, 0, 15, 123, 456);
+      await progress.record(userId: 'user-a', lessonUid: _a, positionSeconds: 30);
+      final (subject, api) = engine((body) => accept(body));
+
+      await subject.flush();
+
+      final sent = (api.bodies.single!['items']! as List).single as Map;
+      // Laravel rule: Y-m-d\TH:i:s(.v)?Z — three fraction digits at most.
+      expect(sent['client_updated_at'], '2026-11-12T10:00:15.123Z');
+      expect(
+        RegExp(r'^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d{3})?Z$').hasMatch(sent['client_updated_at'] as String),
+        isTrue,
+      );
+    });
+
+    test('a 422 naming one item drops only that row; the rest go in the next run', () async {
+      await progress.record(userId: 'user-a', lessonUid: _a, positionSeconds: 30);
+      await progress.record(userId: 'user-a', lessonUid: _b, positionSeconds: 40);
+      var call = 0;
+      final (subject, api) = engine((body) {
+        if (call++ == 0) {
+          return const FakeResponse(422, {
+            'status': 422,
+            'code': 'validation.failed',
+            'errors': {
+              'items.1.lesson_uid': ['The lesson uid is invalid.'],
+            },
+          });
+        }
+        return accept(body);
+      });
+
+      await subject.flush();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(api.requests, hasLength(2));
+      expect((api.bodies.last!['items']! as List).single, containsPair('lesson_uid', _a));
+      expect(await rows(), isEmpty);
+    });
+
+    test('an unexpected failure backs off instead of throwing', () async {
+      await progress.record(userId: 'user-a', lessonUid: _a, positionSeconds: 30);
+      // A captive portal answering 200 with something that isn't our API.
+      final (subject, _) = engine((_) => const FakeResponse(200, ['not', 'our', 'api']));
+
+      expect(await subject.flush(), SyncOutcome.failed);
+      final row = (await rows()).single;
+      expect(row.attempts, 1);
+      expect(row.nextAttemptAt.isAfter(now), isTrue);
+    });
+
+    test('a save while the API is failing keeps the backoff', () async {
+      await progress.record(userId: 'user-a', lessonUid: _a, positionSeconds: 30);
+      final (failing, _) = engine((_) => const FakeResponse(503, {'status': 503, 'code': 'server.error'}));
+      await failing.flush();
+      final waitUntil = (await rows()).single.nextAttemptAt;
+
+      await progress.record(userId: 'user-a', lessonUid: _a, positionSeconds: 45);
+
+      final row = (await rows()).single;
+      expect(row.nextAttemptAt, waitUntil);
+      expect(jsonDecode(row.payload)['position_seconds'], 45);
+    });
+
+    test('stops when the account changes during a run', () async {
+      for (var n = 0; n < 150; n++) {
+        await progress.record(
+          userId: 'user-a',
+          lessonUid: '01JLESSON${n.toString().padLeft(17, '0')}',
+          positionSeconds: n,
+        );
+      }
+      String? current = 'user-a';
+      final api = FakeApi((_, body) {
+        current = 'user-b'; // signed out and in as someone else while the first batch was in flight
+        return accept(body);
+      });
+      final container = makeContainer(
+        api,
+        initial: SignedIn(user: AppUser.fromJson(userJson()), token: 't'),
+      );
+      final subject = SyncEngine(
+        outbox: outbox,
+        handlers: [ProgressOutboxHandler(container.read(dioProvider))],
+        currentUserId: () => current,
+      );
+
+      await subject.flush();
+
+      expect(api.requests, hasLength(1), reason: 'the second batch is not sent with the new token');
+      expect(await rows(), hasLength(50));
+    });
+
     test('backs off exponentially up to 15 minutes', () {
       final (subject, _) = engine((body) => accept(body));
       expect(subject.backoff(1).inSeconds, inInclusiveRange(4, 6));

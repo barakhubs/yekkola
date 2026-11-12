@@ -48,9 +48,15 @@ class PublicProfessorResource {
       displayName: json["display_name"] as String,
       headline: json["headline"] as String?,
       bio: json["bio"] as String?,
-      subjects: (json["subjects"] as List<Object?>).map((item) => item as String).toList(),
+      subjects: (json["subjects"] as List<Object?>)
+          .map((item) => item as String)
+          .toList(),
       links: (json["links"] as List<Object?>)
-          .map((item) => PublicProfessorResourceLinksItem.fromJson(item as Map<String, Object?>))
+          .map(
+            (item) => PublicProfessorResourceLinksItem.fromJson(
+              item as Map<String, Object?>,
+            ),
+          )
           .toList(),
       avatarUrl: json["avatar_url"] as String?,
       province: PublicProfessorResourceProvince.fromJson(json["province"]),
@@ -63,7 +69,11 @@ class PublicProfessorResource {
           ? json["courses"] == null
                 ? null
                 : (json["courses"] as List<Object?>)
-                      .map((item) => CourseCardResource.fromJson(item as Map<String, Object?>))
+                      .map(
+                        (item) => CourseCardResource.fromJson(
+                          item as Map<String, Object?>,
+                        ),
+                      )
                       .toList()
           : null,
       additionalProperties: {
@@ -141,7 +151,8 @@ class PublicProfessorResource {
     "rating": this.rating,
     "student_count": this.studentCount,
     "member_since": this.memberSince,
-    if (this.courses != null) "courses": this.courses?.map((item) => item.toJson()).toList(),
+    if (this.courses != null)
+      "courses": this.courses?.map((item) => item.toJson()).toList(),
   };
 }
 

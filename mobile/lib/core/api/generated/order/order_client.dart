@@ -4,12 +4,22 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import '../checkout/models/course_selection_request.dart' as models show CourseSelectionRequest;
-import '../guest_order/models/start_payment_request.dart' as models show StartPaymentRequest;
-import 'models/me_orders_index_response200.dart' as models show MeOrdersIndexResponse200;
+import '../checkout/models/course_selection_request.dart'
+    as models
+    show CourseSelectionRequest;
+import '../guest_order/models/start_payment_request.dart'
+    as models
+    show StartPaymentRequest;
+import 'models/me_orders_index_response200.dart'
+    as models
+    show MeOrdersIndexResponse200;
 import 'models/orders_pay_response201.dart' as models show OrdersPayResponse201;
-import 'models/orders_show_response200.dart' as models show OrdersShowResponse200;
-import 'models/orders_store_response201.dart' as models show OrdersStoreResponse201;
+import 'models/orders_show_response200.dart'
+    as models
+    show OrdersShowResponse200;
+import 'models/orders_store_response201.dart'
+    as models
+    show OrdersStoreResponse201;
 
 class OrderClient {
   OrderClient(this._transport);
@@ -34,7 +44,8 @@ class OrderClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -46,7 +57,9 @@ class OrderClient {
       data: body == null ? null : convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.OrdersStoreResponse201.fromJson(response.data as Map<String, Object?>);
+    return models.OrdersStoreResponse201.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Order status for the waiting screen
@@ -75,7 +88,9 @@ class OrderClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.OrdersShowResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.OrdersShowResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Starts a mobile-money payment: the payer approves it on their phone. Requires an `Idempotency-Key`.
@@ -100,7 +115,8 @@ class OrderClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -112,7 +128,9 @@ class OrderClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.OrdersPayResponse201.fromJson(response.data as Map<String, Object?>);
+    return models.OrdersPayResponse201.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// My orders, newest first (PRD-05 FR-17)
@@ -137,9 +155,14 @@ class OrderClient {
     final response = await _transport.request<dynamic>(
       "/me/orders",
       options: _options,
-      queryParameters: <String, Object?>{if (page != null) "page": page, if (perPage != null) "per_page": perPage},
+      queryParameters: <String, Object?>{
+        if (page != null) "page": page,
+        if (perPage != null) "per_page": perPage,
+      },
       cancelToken: cancelToken,
     );
-    return models.MeOrdersIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MeOrdersIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

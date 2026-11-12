@@ -2,9 +2,15 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/certificates_verify_response200.dart' as models show CertificatesVerifyResponse200;
-import 'models/me_certificates_index_response200.dart' as models show MeCertificatesIndexResponse200;
-import 'models/me_certificates_pdf_response200.dart' as models show MeCertificatesPdfResponse200;
+import 'models/certificates_verify_response200.dart'
+    as models
+    show CertificatesVerifyResponse200;
+import 'models/me_certificates_index_response200.dart'
+    as models
+    show MeCertificatesIndexResponse200;
+import 'models/me_certificates_pdf_response200.dart'
+    as models
+    show MeCertificatesPdfResponse200;
 
 class CertificateClient {
   CertificateClient(this._transport);
@@ -33,10 +39,15 @@ class CertificateClient {
     final response = await _transport.request<dynamic>(
       "/me/certificates",
       options: _options,
-      queryParameters: <String, Object?>{if (page != null) "page": page, if (perPage != null) "per_page": perPage},
+      queryParameters: <String, Object?>{
+        if (page != null) "page": page,
+        if (perPage != null) "per_page": perPage,
+      },
       cancelToken: cancelToken,
     );
-    return models.MeCertificatesIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MeCertificatesIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// The certificate as a PDF in my language, with a QR code to its verification page. Valid ones only
@@ -65,7 +76,9 @@ class CertificateClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.MeCertificatesPdfResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MeCertificatesPdfResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Public check of a certificate by serial: valid or revoked, with the names as issued
@@ -94,6 +107,8 @@ class CertificateClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.CertificatesVerifyResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.CertificatesVerifyResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

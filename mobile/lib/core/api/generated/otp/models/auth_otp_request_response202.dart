@@ -3,15 +3,21 @@
 import 'auth_otp_request_response202_data.dart';
 
 class AuthOtpRequestResponse202 {
-  const AuthOtpRequestResponse202({required this.data, this.additionalProperties = const {}});
+  const AuthOtpRequestResponse202({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory AuthOtpRequestResponse202.fromJson(Map<String, Object?> json) => AuthOtpRequestResponse202(
-    data: AuthOtpRequestResponse202Data.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory AuthOtpRequestResponse202.fromJson(Map<String, Object?> json) =>
+      AuthOtpRequestResponse202(
+        data: AuthOtpRequestResponse202Data.fromJson(
+          json["data"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final AuthOtpRequestResponse202Data data;
 

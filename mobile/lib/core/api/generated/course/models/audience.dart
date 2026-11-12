@@ -34,7 +34,8 @@ final class AudienceKnown extends Audience {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is AudienceKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is AudienceKnown && other.value == value;
   @override
   int get hashCode => Object.hash(AudienceKnown, value);
 }
@@ -45,7 +46,8 @@ final class AudienceUnknown extends Audience {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is AudienceUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is AudienceUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(AudienceUnknown, rawValue);
 }

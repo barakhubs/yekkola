@@ -24,6 +24,10 @@ class LogoutClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 204),
     );
-    await _transport.request<dynamic>("/auth/logout", options: _options, cancelToken: cancelToken);
+    await _transport.request<dynamic>(
+      "/auth/logout",
+      options: _options,
+      cancelToken: cancelToken,
+    );
   }
 }

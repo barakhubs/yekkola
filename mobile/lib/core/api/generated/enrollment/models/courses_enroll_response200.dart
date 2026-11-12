@@ -3,15 +3,19 @@
 import 'enrollment_resource.dart';
 
 class CoursesEnrollResponse200 {
-  const CoursesEnrollResponse200({required this.data, this.additionalProperties = const {}});
+  const CoursesEnrollResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory CoursesEnrollResponse200.fromJson(Map<String, Object?> json) => CoursesEnrollResponse200(
-    data: EnrollmentResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory CoursesEnrollResponse200.fromJson(Map<String, Object?> json) =>
+      CoursesEnrollResponse200(
+        data: EnrollmentResource.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final EnrollmentResource data;
 

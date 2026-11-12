@@ -9,14 +9,17 @@ class RequestOtpRequest {
     this.additionalProperties = const {},
   });
 
-  factory RequestOtpRequest.fromJson(Map<String, Object?> json) => RequestOtpRequest(
-    phone: json["phone"] as String,
-    botToken: json.containsKey("bot_token") ? json["bot_token"] as String? : null,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory RequestOtpRequest.fromJson(Map<String, Object?> json) =>
+      RequestOtpRequest(
+        phone: json["phone"] as String,
+        botToken: json.containsKey("bot_token")
+            ? json["bot_token"] as String?
+            : null,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String phone;
 

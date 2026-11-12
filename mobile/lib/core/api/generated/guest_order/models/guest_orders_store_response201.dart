@@ -9,14 +9,15 @@ class GuestOrdersStoreResponse201 {
     this.additionalProperties = const {},
   });
 
-  factory GuestOrdersStoreResponse201.fromJson(Map<String, Object?> json) => GuestOrdersStoreResponse201(
-    data: OrderResource.fromJson(json["data"] as Map<String, Object?>),
-    accessToken: json["access_token"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory GuestOrdersStoreResponse201.fromJson(Map<String, Object?> json) =>
+      GuestOrdersStoreResponse201(
+        data: OrderResource.fromJson(json["data"] as Map<String, Object?>),
+        accessToken: json["access_token"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final OrderResource data;
 

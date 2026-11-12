@@ -33,7 +33,12 @@ class CourseCardResourceProfessor {
 
   final bool isVerified;
 
-  static const _knownKeys = <String>{"slug", "display_name", "avatar_url", "is_verified"};
+  static const _knownKeys = <String>{
+    "slug",
+    "display_name",
+    "avatar_url",
+    "is_verified",
+  };
 
   final Map<String, Object?> additionalProperties;
 

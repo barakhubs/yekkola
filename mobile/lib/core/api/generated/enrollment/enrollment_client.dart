@@ -2,7 +2,9 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/courses_enroll_response200.dart' as models show CoursesEnrollResponse200;
+import 'models/courses_enroll_response200.dart'
+    as models
+    show CoursesEnrollResponse200;
 
 class EnrollmentClient {
   EnrollmentClient(this._transport);
@@ -35,6 +37,8 @@ class EnrollmentClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.CoursesEnrollResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.CoursesEnrollResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

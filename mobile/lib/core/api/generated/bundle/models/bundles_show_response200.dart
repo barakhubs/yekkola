@@ -3,15 +3,19 @@
 import 'bundle_resource.dart';
 
 class BundlesShowResponse200 {
-  const BundlesShowResponse200({required this.data, this.additionalProperties = const {}});
+  const BundlesShowResponse200({
+    required this.data,
+    this.additionalProperties = const {},
+  });
 
-  factory BundlesShowResponse200.fromJson(Map<String, Object?> json) => BundlesShowResponse200(
-    data: BundleResource.fromJson(json["data"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory BundlesShowResponse200.fromJson(Map<String, Object?> json) =>
+      BundlesShowResponse200(
+        data: BundleResource.fromJson(json["data"] as Map<String, Object?>),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final BundleResource data;
 

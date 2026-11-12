@@ -15,16 +15,23 @@ class VerifyOtpRequest {
     this.additionalProperties = const {},
   });
 
-  factory VerifyOtpRequest.fromJson(Map<String, Object?> json) => VerifyOtpRequest(
-    phone: json["phone"] as String,
-    code: json["code"] as String,
-    device: json.containsKey("device") ? VerifyOtpRequestDevice.fromJson(json["device"] as Map<String, Object?>) : null,
-    replaceDeviceId: json.containsKey("replace_device_id") ? json["replace_device_id"] as String? : null,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory VerifyOtpRequest.fromJson(Map<String, Object?> json) =>
+      VerifyOtpRequest(
+        phone: json["phone"] as String,
+        code: json["code"] as String,
+        device: json.containsKey("device")
+            ? VerifyOtpRequestDevice.fromJson(
+                json["device"] as Map<String, Object?>,
+              )
+            : null,
+        replaceDeviceId: json.containsKey("replace_device_id")
+            ? json["replace_device_id"] as String?
+            : null,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String phone;
 
@@ -36,7 +43,12 @@ class VerifyOtpRequest {
   /// After `device.limit_reached`: the device to sign out to make room.
   final String? replaceDeviceId;
 
-  static const _knownKeys = <String>{"phone", "code", "device", "replace_device_id"};
+  static const _knownKeys = <String>{
+    "phone",
+    "code",
+    "device",
+    "replace_device_id",
+  };
 
   final Map<String, Object?> additionalProperties;
 

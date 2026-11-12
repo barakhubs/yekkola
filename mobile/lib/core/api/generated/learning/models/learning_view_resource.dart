@@ -31,17 +31,25 @@ class LearningViewResource {
       throw ArgumentError("Missing required property: certificate");
     }
     return LearningViewResource(
-      course: LearningViewResourceCourse.fromJson(json["course"] as Map<String, Object?>),
+      course: LearningViewResourceCourse.fromJson(
+        json["course"] as Map<String, Object?>,
+      ),
       progressPct: _readJsonInteger(json["progress_pct"]),
       completedAt: json["completed_at"] as String?,
       continueLessonUid: json["continue_lesson_uid"] as String?,
       nextLessonUid: json["next_lesson_uid"] as String?,
       certificate: json["certificate"] == null
           ? null
-          : LearningViewResourceCertificate.fromJson(json["certificate"] as Map<String, Object?>),
+          : LearningViewResourceCertificate.fromJson(
+              json["certificate"] as Map<String, Object?>,
+            ),
       hasReviewed: json["has_reviewed"] as bool,
       sections: (json["sections"] as List<Object?>)
-          .map((item) => LearningViewResourceSectionsItem.fromJson(item as Map<String, Object?>))
+          .map(
+            (item) => LearningViewResourceSectionsItem.fromJson(
+              item as Map<String, Object?>,
+            ),
+          )
           .toList(),
       additionalProperties: {
         for (final entry in json.entries)

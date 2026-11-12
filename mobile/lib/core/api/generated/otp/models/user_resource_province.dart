@@ -11,7 +11,11 @@ class UserResourceProvince {
     if (!(hasProvinceResource || hasNull)) {
       throw const FormatException("No matching UserResourceProvince variant.");
     }
-    return UserResourceProvince._(_copyJson(json), hasProvinceResource, hasNull);
+    return UserResourceProvince._(
+      _copyJson(json),
+      hasProvinceResource,
+      hasNull,
+    );
   }
 
   final Object? _json;
@@ -44,9 +48,15 @@ bool _matches2(Object? value) =>
     (value is! Map<String, Object?> || value.containsKey("id")) &&
     (value is! Map<String, Object?> || value.containsKey("code")) &&
     (value is! Map<String, Object?> || value.containsKey("name")) &&
-    (value is! Map<String, Object?> || !value.containsKey("id") || _matches3(value["id"])) &&
-    (value is! Map<String, Object?> || !value.containsKey("code") || _matches4(value["code"])) &&
-    (value is! Map<String, Object?> || !value.containsKey("name") || _matches5(value["name"])) &&
+    (value is! Map<String, Object?> ||
+        !value.containsKey("id") ||
+        _matches3(value["id"])) &&
+    (value is! Map<String, Object?> ||
+        !value.containsKey("code") ||
+        _matches4(value["code"])) &&
+    (value is! Map<String, Object?> ||
+        !value.containsKey("name") ||
+        _matches5(value["name"])) &&
     ((value is Map<String, Object?>));
 bool _matches3(Object? value) => ((value is String));
 bool _matches4(Object? value) => ((value is String));
@@ -54,7 +64,9 @@ bool _matches5(Object? value) => ((value is String));
 bool _matches16(Object? value) => ((value == null));
 Object? _copyJson(Object? value) {
   return switch (value) {
-    Map<String, Object?> map => map.map((key, item) => MapEntry(key, _copyJson(item))),
+    Map<String, Object?> map => map.map(
+      (key, item) => MapEntry(key, _copyJson(item)),
+    ),
     List<Object?> list => list.map(_copyJson).toList(),
     null || bool() || String() || int() => value,
     double() when value.isFinite => value,

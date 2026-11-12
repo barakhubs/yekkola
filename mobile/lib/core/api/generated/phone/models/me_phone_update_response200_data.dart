@@ -66,14 +66,20 @@ class MePhoneUpdateResponse200Data {
       province: UserResourceProvince.fromJson(json["province"]),
       city: json["city"] as String?,
       status: json["status"] as String,
-      roles: (json["roles"] as List<Object?>).map((item) => item as String).toList(),
+      roles: (json["roles"] as List<Object?>)
+          .map((item) => item as String)
+          .toList(),
       isStaff: json["is_staff"] as bool,
       hasPassword: json["has_password"] as bool,
       mustChangePassword: json["must_change_password"] as bool,
       impersonation: json["impersonation"] == null
           ? null
-          : UserResourceImpersonation.fromJson(json["impersonation"] as Map<String, Object?>),
-      permissions: (json["permissions"] as List<Object?>).map((item) => item as String).toList(),
+          : UserResourceImpersonation.fromJson(
+              json["impersonation"] as Map<String, Object?>,
+            ),
+      permissions: (json["permissions"] as List<Object?>)
+          .map((item) => item as String)
+          .toList(),
       deletionRequestedAt: json["deletion_requested_at"] as String?,
       deletionScheduledFor: json["deletion_scheduled_for"] as String?,
       createdAt: json["created_at"] as String,

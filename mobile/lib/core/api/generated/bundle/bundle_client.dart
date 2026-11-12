@@ -2,8 +2,12 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/bundles_index_response200.dart' as models show BundlesIndexResponse200;
-import 'models/bundles_show_response200.dart' as models show BundlesShowResponse200;
+import 'models/bundles_index_response200.dart'
+    as models
+    show BundlesIndexResponse200;
+import 'models/bundles_show_response200.dart'
+    as models
+    show BundlesShowResponse200;
 
 class BundleClient {
   BundleClient(this._transport);
@@ -32,10 +36,15 @@ class BundleClient {
     final response = await _transport.request<dynamic>(
       "/bundles",
       options: _options,
-      queryParameters: <String, Object?>{if (page != null) "page": page, if (perPage != null) "per_page": perPage},
+      queryParameters: <String, Object?>{
+        if (page != null) "page": page,
+        if (perPage != null) "per_page": perPage,
+      },
       cancelToken: cancelToken,
     );
-    return models.BundlesIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.BundlesIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// A bundle on sale: active, with every course published (PRD-05 FR-13); otherwise not found
@@ -64,6 +73,8 @@ class BundleClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.BundlesShowResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.BundlesShowResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

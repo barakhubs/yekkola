@@ -5,7 +5,9 @@ import 'dart:convert' as convert;
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
 import 'models/report_request.dart' as models show ReportRequest;
-import 'models/reports_store_response200.dart' as models show ReportsStoreResponse200;
+import 'models/reports_store_response200.dart'
+    as models
+    show ReportsStoreResponse200;
 
 class ReportClient {
   ReportClient(this._transport);
@@ -28,7 +30,8 @@ class ReportClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -40,6 +43,8 @@ class ReportClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.ReportsStoreResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.ReportsStoreResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

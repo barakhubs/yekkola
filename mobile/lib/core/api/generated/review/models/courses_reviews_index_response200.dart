@@ -12,15 +12,24 @@ class CoursesReviewsIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory CoursesReviewsIndexResponse200.fromJson(Map<String, Object?> json) => CoursesReviewsIndexResponse200(
-    data: (json["data"] as List<Object?>).map((item) => ReviewResource.fromJson(item as Map<String, Object?>)).toList(),
-    links: CoursesReviewsIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
-    meta: CoursesReviewsIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory CoursesReviewsIndexResponse200.fromJson(Map<String, Object?> json) =>
+      CoursesReviewsIndexResponse200(
+        data: (json["data"] as List<Object?>)
+            .map(
+              (item) => ReviewResource.fromJson(item as Map<String, Object?>),
+            )
+            .toList(),
+        links: CoursesReviewsIndexResponse200Links.fromJson(
+          json["links"] as Map<String, Object?>,
+        ),
+        meta: CoursesReviewsIndexResponse200Meta.fromJson(
+          json["meta"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<ReviewResource> data;
 

@@ -12,17 +12,20 @@ class ThreadResourceRepliesItem {
     this.additionalProperties = const {},
   });
 
-  factory ThreadResourceRepliesItem.fromJson(Map<String, Object?> json) => ThreadResourceRepliesItem(
-    id: json["id"] as String,
-    body: json["body"] as String,
-    author: ThreadResourceRepliesItemAuthor.fromJson(json["author"] as Map<String, Object?>),
-    hidden: json["hidden"] as bool,
-    createdAt: json["created_at"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory ThreadResourceRepliesItem.fromJson(Map<String, Object?> json) =>
+      ThreadResourceRepliesItem(
+        id: json["id"] as String,
+        body: json["body"] as String,
+        author: ThreadResourceRepliesItemAuthor.fromJson(
+          json["author"] as Map<String, Object?>,
+        ),
+        hidden: json["hidden"] as bool,
+        createdAt: json["created_at"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String id;
 
@@ -34,7 +37,13 @@ class ThreadResourceRepliesItem {
 
   final String createdAt;
 
-  static const _knownKeys = <String>{"id", "body", "author", "hidden", "created_at"};
+  static const _knownKeys = <String>{
+    "id",
+    "body",
+    "author",
+    "hidden",
+    "created_at",
+  };
 
   final Map<String, Object?> additionalProperties;
 

@@ -8,15 +8,16 @@ class LearningViewResourceCertificate {
     this.additionalProperties = const {},
   });
 
-  factory LearningViewResourceCertificate.fromJson(Map<String, Object?> json) => LearningViewResourceCertificate(
-    id: json["id"] as String,
-    serial: json["serial"] as String,
-    verificationUrl: json["verification_url"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory LearningViewResourceCertificate.fromJson(Map<String, Object?> json) =>
+      LearningViewResourceCertificate(
+        id: json["id"] as String,
+        serial: json["serial"] as String,
+        verificationUrl: json["verification_url"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String id;
 

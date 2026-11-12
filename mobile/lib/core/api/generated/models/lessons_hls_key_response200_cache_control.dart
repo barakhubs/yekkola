@@ -17,31 +17,40 @@ sealed class LessonsHlsKeyResponse200CacheControl {
       throw ArgumentError.value(json, "LessonsHlsKeyResponse200CacheControl");
     }
     for (final value in LessonsHlsKeyResponse200CacheControlValue.values) {
-      if (value.value == json) return LessonsHlsKeyResponse200CacheControlKnown(value);
+      if (value.value == json)
+        return LessonsHlsKeyResponse200CacheControlKnown(value);
     }
     return LessonsHlsKeyResponse200CacheControlUnknown(json);
   }
   String toJson();
 }
 
-final class LessonsHlsKeyResponse200CacheControlKnown extends LessonsHlsKeyResponse200CacheControl {
+final class LessonsHlsKeyResponse200CacheControlKnown
+    extends LessonsHlsKeyResponse200CacheControl {
   const LessonsHlsKeyResponse200CacheControlKnown(this.value);
   final LessonsHlsKeyResponse200CacheControlValue value;
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is LessonsHlsKeyResponse200CacheControlKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is LessonsHlsKeyResponse200CacheControlKnown &&
+      other.value == value;
   @override
-  int get hashCode => Object.hash(LessonsHlsKeyResponse200CacheControlKnown, value);
+  int get hashCode =>
+      Object.hash(LessonsHlsKeyResponse200CacheControlKnown, value);
 }
 
-final class LessonsHlsKeyResponse200CacheControlUnknown extends LessonsHlsKeyResponse200CacheControl {
+final class LessonsHlsKeyResponse200CacheControlUnknown
+    extends LessonsHlsKeyResponse200CacheControl {
   const LessonsHlsKeyResponse200CacheControlUnknown(this.rawValue);
   final String rawValue;
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is LessonsHlsKeyResponse200CacheControlUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is LessonsHlsKeyResponse200CacheControlUnknown &&
+      other.rawValue == rawValue;
   @override
-  int get hashCode => Object.hash(LessonsHlsKeyResponse200CacheControlUnknown, rawValue);
+  int get hashCode =>
+      Object.hash(LessonsHlsKeyResponse200CacheControlUnknown, rawValue);
 }

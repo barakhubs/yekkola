@@ -17,7 +17,9 @@ sealed class ReportReason {
   const ReportReason();
   static const spam = ReportReasonKnown(ReportReasonValue.spam);
   static const abusive = ReportReasonKnown(ReportReasonValue.abusive);
-  static const inappropriate = ReportReasonKnown(ReportReasonValue.inappropriate);
+  static const inappropriate = ReportReasonKnown(
+    ReportReasonValue.inappropriate,
+  );
   static const misleading = ReportReasonKnown(ReportReasonValue.misleading);
   static const copyright = ReportReasonKnown(ReportReasonValue.copyright);
   static const fraud = ReportReasonKnown(ReportReasonValue.fraud);
@@ -40,7 +42,8 @@ final class ReportReasonKnown extends ReportReason {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is ReportReasonKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is ReportReasonKnown && other.value == value;
   @override
   int get hashCode => Object.hash(ReportReasonKnown, value);
 }
@@ -51,7 +54,8 @@ final class ReportReasonUnknown extends ReportReason {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is ReportReasonUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is ReportReasonUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(ReportReasonUnknown, rawValue);
 }

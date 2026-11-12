@@ -34,7 +34,8 @@ final class CourseLevelKnown extends CourseLevel {
   @override
   String toJson() => value.value;
   @override
-  bool operator ==(Object other) => other is CourseLevelKnown && other.value == value;
+  bool operator ==(Object other) =>
+      other is CourseLevelKnown && other.value == value;
   @override
   int get hashCode => Object.hash(CourseLevelKnown, value);
 }
@@ -45,7 +46,8 @@ final class CourseLevelUnknown extends CourseLevel {
   @override
   String toJson() => rawValue;
   @override
-  bool operator ==(Object other) => other is CourseLevelUnknown && other.rawValue == rawValue;
+  bool operator ==(Object other) =>
+      other is CourseLevelUnknown && other.rawValue == rawValue;
   @override
   int get hashCode => Object.hash(CourseLevelUnknown, rawValue);
 }

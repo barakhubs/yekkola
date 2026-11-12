@@ -7,14 +7,15 @@ class CourseCardResourcePrice {
     this.additionalProperties = const {},
   });
 
-  factory CourseCardResourcePrice.fromJson(Map<String, Object?> json) => CourseCardResourcePrice(
-    amountMinor: _readJsonInteger(json["amount_minor"]),
-    currency: json["currency"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory CourseCardResourcePrice.fromJson(Map<String, Object?> json) =>
+      CourseCardResourcePrice(
+        amountMinor: _readJsonInteger(json["amount_minor"]),
+        currency: json["currency"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final int amountMinor;
 

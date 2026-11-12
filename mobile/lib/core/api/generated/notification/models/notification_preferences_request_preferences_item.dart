@@ -33,16 +33,17 @@ class NotificationPreferencesRequestPreferencesItem {
     this.additionalProperties = const {},
   });
 
-  factory NotificationPreferencesRequestPreferencesItem.fromJson(Map<String, Object?> json) =>
-      NotificationPreferencesRequestPreferencesItem(
-        type2: NotificationType.fromJson(json["type"]),
-        channel: NotificationChannel.fromJson(json["channel"]),
-        enabled: json["enabled"] as bool,
-        additionalProperties: {
-          for (final entry in json.entries)
-            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-        },
-      );
+  factory NotificationPreferencesRequestPreferencesItem.fromJson(
+    Map<String, Object?> json,
+  ) => NotificationPreferencesRequestPreferencesItem(
+    type2: NotificationType.fromJson(json["type"]),
+    channel: NotificationChannel.fromJson(json["channel"]),
+    enabled: json["enabled"] as bool,
+    additionalProperties: {
+      for (final entry in json.entries)
+        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+    },
+  );
 
   /// The notification catalogue (PRD-10 §3): which channels each event uses and whether users may turn it off. Critical events ignore preferences (BR-02); SMS only where the catalogue marks it (BR-01). Push joins with the FCM channel.
   /// | |

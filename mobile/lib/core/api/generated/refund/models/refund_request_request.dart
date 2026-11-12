@@ -2,16 +2,21 @@
 
 /// A refund request for one course of a paid order (PRD-05 FR-16).
 class RefundRequestRequest {
-  const RefundRequestRequest({required this.orderItemId, required this.reason, this.additionalProperties = const {}});
+  const RefundRequestRequest({
+    required this.orderItemId,
+    required this.reason,
+    this.additionalProperties = const {},
+  });
 
-  factory RefundRequestRequest.fromJson(Map<String, Object?> json) => RefundRequestRequest(
-    orderItemId: json["order_item_id"] as String,
-    reason: json["reason"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory RefundRequestRequest.fromJson(Map<String, Object?> json) =>
+      RefundRequestRequest(
+        orderItemId: json["order_item_id"] as String,
+        reason: json["reason"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final String orderItemId;
 

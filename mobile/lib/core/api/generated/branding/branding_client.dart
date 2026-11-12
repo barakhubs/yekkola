@@ -2,7 +2,9 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/branding_show_response200.dart' as models show BrandingShowResponse200;
+import 'models/branding_show_response200.dart'
+    as models
+    show BrandingShowResponse200;
 
 class BrandingClient {
   BrandingClient(this._transport);
@@ -25,7 +27,13 @@ class BrandingClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>("/branding", options: _options, cancelToken: cancelToken);
-    return models.BrandingShowResponse200.fromJson(response.data as Map<String, Object?>);
+    final response = await _transport.request<dynamic>(
+      "/branding",
+      options: _options,
+      cancelToken: cancelToken,
+    );
+    return models.BrandingShowResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

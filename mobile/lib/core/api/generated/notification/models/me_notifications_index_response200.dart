@@ -12,17 +12,25 @@ class MeNotificationsIndexResponse200 {
     this.additionalProperties = const {},
   });
 
-  factory MeNotificationsIndexResponse200.fromJson(Map<String, Object?> json) => MeNotificationsIndexResponse200(
-    data: (json["data"] as List<Object?>)
-        .map((item) => NotificationResource.fromJson(item as Map<String, Object?>))
-        .toList(),
-    links: MeNotificationsIndexResponse200Links.fromJson(json["links"] as Map<String, Object?>),
-    meta: MeNotificationsIndexResponse200Meta.fromJson(json["meta"] as Map<String, Object?>),
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory MeNotificationsIndexResponse200.fromJson(Map<String, Object?> json) =>
+      MeNotificationsIndexResponse200(
+        data: (json["data"] as List<Object?>)
+            .map(
+              (item) =>
+                  NotificationResource.fromJson(item as Map<String, Object?>),
+            )
+            .toList(),
+        links: MeNotificationsIndexResponse200Links.fromJson(
+          json["links"] as Map<String, Object?>,
+        ),
+        meta: MeNotificationsIndexResponse200Meta.fromJson(
+          json["meta"] as Map<String, Object?>,
+        ),
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final List<NotificationResource> data;
 

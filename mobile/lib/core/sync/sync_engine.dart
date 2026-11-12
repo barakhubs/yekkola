@@ -72,6 +72,17 @@ class SyncEngine {
   }
 
   Future<SyncOutcome> _run() async {
+    try {
+      return await _sendDue();
+    } catch (_) {
+      // Never throw out of a run (callers don't await it); the next trigger tries again.
+      return SyncOutcome.failed;
+    }
+  }
+
+  static final _itemError = RegExp(r'^items\.(\d+)\.');
+
+  Future<SyncOutcome> _sendDue() async {
     final userId = currentUserId();
     if (userId == null) return SyncOutcome.idle;
 
@@ -89,6 +100,9 @@ class SyncEngine {
       if (handler == null) continue; // written by a newer app version; left for it
 
       for (var i = 0; i < rows.length; i += handler.batchSize) {
+        // Signed out or another account meanwhile: its token must not carry this account's rows.
+        if (currentUserId() != userId) return SyncOutcome.idle;
+
         final batch = rows.sublist(i, min(i + handler.batchSize, rows.length));
         try {
           final result = await handler.send(batch);
@@ -106,11 +120,23 @@ class SyncEngine {
             await outbox.retryLater(rows.sublist(i), backoff, e.code);
             return SyncOutcome.failed;
           }
-          if (e.status >= 400 && e.status < 500 && e.status != 408 && e.status != 429) {
+          outcome = SyncOutcome.failed;
+          if (e.status == 422) {
+            // Drop only the items the API names (`items.<n>.…`); the others go again in the next run.
+            final bad = {
+              for (final field in e.fieldErrors.keys)
+                if (_itemError.firstMatch(field) case final m?) int.parse(m.group(1)!),
+            }.where((n) => n < batch.length).map((n) => batch[n]).toList();
+            await outbox.remove(bad.isEmpty ? batch : bad);
+            if (bad.isNotEmpty) _again = true;
+          } else if (e.status >= 400 && e.status < 500 && e.status != 408 && e.status != 429) {
             await outbox.remove(batch);
           } else {
             await outbox.retryLater(batch, backoff, e.code);
           }
+        } catch (_) {
+          // Our own bug or a local storage error: back off instead of retrying on every trigger.
+          await outbox.retryLater(batch, backoff, 'client.error');
           outcome = SyncOutcome.failed;
         }
       }

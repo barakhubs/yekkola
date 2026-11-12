@@ -2,7 +2,9 @@
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/provinces_index_response200.dart' as models show ProvincesIndexResponse200;
+import 'models/provinces_index_response200.dart'
+    as models
+    show ProvincesIndexResponse200;
 
 class ProvinceClient {
   ProvinceClient(this._transport);
@@ -26,7 +28,13 @@ class ProvinceClient {
       headers: {...?options?.headers, 'Accept': "application/json"},
       validateStatus: (status) => status != null && (status == 200),
     );
-    final response = await _transport.request<dynamic>("/provinces", options: _options, cancelToken: cancelToken);
-    return models.ProvincesIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    final response = await _transport.request<dynamic>(
+      "/provinces",
+      options: _options,
+      cancelToken: cancelToken,
+    );
+    return models.ProvincesIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }

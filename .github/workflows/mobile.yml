@@ -61,7 +61,11 @@ jobs:
       - name: Database code is up to date (drift)
         run: |
           dart run build_runner build
-          git diff --exit-code -- lib/core/db || (echo "::error::Run 'dart run build_runner build' in mobile/ and commit lib/core/db." && exit 1)
+          if [ -n "$(git status --porcelain -- lib/core/db)" ]; then
+            git status --porcelain -- lib/core/db
+            echo "::error::Run 'dart run build_runner build' in mobile/ and commit lib/core/db."
+            exit 1
+          fi
 
       - name: Test
         run: flutter test

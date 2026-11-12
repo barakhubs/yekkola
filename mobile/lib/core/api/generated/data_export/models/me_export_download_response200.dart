@@ -4,9 +4,15 @@ class MeExportDownloadResponse200 {
   const MeExportDownloadResponse200({this.additionalProperties = const {}});
 
   factory MeExportDownloadResponse200.fromJson(Map<String, Object?> json) =>
-      MeExportDownloadResponse200(additionalProperties: {for (final entry in json.entries) entry.key: entry.value});
+      MeExportDownloadResponse200(
+        additionalProperties: {
+          for (final entry in json.entries) entry.key: entry.value,
+        },
+      );
 
   final Map<String, Object?> additionalProperties;
 
-  Map<String, Object?> toJson() => {for (final entry in additionalProperties.entries) entry.key: entry.value};
+  Map<String, Object?> toJson() => {
+    for (final entry in additionalProperties.entries) entry.key: entry.value,
+  };
 }

@@ -10,15 +10,16 @@ class LessonsDocumentResponse200Data {
     this.additionalProperties = const {},
   });
 
-  factory LessonsDocumentResponse200Data.fromJson(Map<String, Object?> json) => LessonsDocumentResponse200Data(
-    status: LessonsDocumentResponse200DataStatus.fromJson(json["status"]),
-    url: json["url"] as String,
-    expiresAt: json["expires_at"] as String,
-    additionalProperties: {
-      for (final entry in json.entries)
-        if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
-    },
-  );
+  factory LessonsDocumentResponse200Data.fromJson(Map<String, Object?> json) =>
+      LessonsDocumentResponse200Data(
+        status: LessonsDocumentResponse200DataStatus.fromJson(json["status"]),
+        url: json["url"] as String,
+        expiresAt: json["expires_at"] as String,
+        additionalProperties: {
+          for (final entry in json.entries)
+            if (!_knownKeys.contains(entry.key)) entry.key: entry.value,
+        },
+      );
 
   final LessonsDocumentResponse200DataStatus status;
 

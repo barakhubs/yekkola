@@ -4,9 +4,15 @@ import 'dart:convert' as convert;
 
 import 'package:dio/dio.dart' show Dio, Options, ResponseType, CancelToken;
 
-import 'models/me_courses_show_response200.dart' as models show MeCoursesShowResponse200;
-import 'models/me_enrollments_index_response200.dart' as models show MeEnrollmentsIndexResponse200;
-import 'models/me_progress_sync_response200.dart' as models show MeProgressSyncResponse200;
+import 'models/me_courses_show_response200.dart'
+    as models
+    show MeCoursesShowResponse200;
+import 'models/me_enrollments_index_response200.dart'
+    as models
+    show MeEnrollmentsIndexResponse200;
+import 'models/me_progress_sync_response200.dart'
+    as models
+    show MeProgressSyncResponse200;
 import 'models/sync_progress_request.dart' as models show SyncProgressRequest;
 
 class LearningClient {
@@ -50,7 +56,9 @@ class LearningClient {
       },
       cancelToken: cancelToken,
     );
-    return models.MeEnrollmentsIndexResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MeEnrollmentsIndexResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   Future<models.MeCoursesShowResponse200> meCoursesShow({
@@ -78,7 +86,9 @@ class LearningClient {
       options: _options,
       cancelToken: cancelToken,
     );
-    return models.MeCoursesShowResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MeCoursesShowResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 
   /// Batch progress sync (web every 15 s and on pause/leave; mobile when back online). Monotonic: an older
@@ -99,7 +109,8 @@ class LearningClient {
       extra: {...?options?.extra, ...extra},
       contentType: "application/json",
       headers: {
-        for (final entry in (options?.headers ?? const <String, Object?>{}).entries)
+        for (final entry
+            in (options?.headers ?? const <String, Object?>{}).entries)
           if (entry.key.toLowerCase() != 'content-type') entry.key: entry.value,
         'Accept': "application/json",
       },
@@ -111,6 +122,8 @@ class LearningClient {
       data: convert.jsonEncode(body),
       cancelToken: cancelToken,
     );
-    return models.MeProgressSyncResponse200.fromJson(response.data as Map<String, Object?>);
+    return models.MeProgressSyncResponse200.fromJson(
+      response.data as Map<String, Object?>,
+    );
   }
 }
