@@ -50,7 +50,7 @@ final class PlaybackController extends Controller
 
     /**
      * Entitlement sync for this registered device: every offline license it holds and what to do with the
-     * download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access,
+     * download — `keep`, `renew` (ask for the offline license again) or `delete` (`reason`: revoked, no_access, media_unavailable,
      * media_changed; renew: expired, expiring). Downloads whose license is missing from the list are deleted too.
      *
      * @return array{data: array{checked_at: string, licenses: list<array{license_id: string, lesson_uid: string, media_id: string, current_media_id: string|null, rendition: string, expires_at: string, action: string, reason: string|null}>}}

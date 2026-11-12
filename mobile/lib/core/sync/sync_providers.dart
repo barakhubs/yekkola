@@ -39,8 +39,8 @@ final syncEngineProvider = Provider<SyncEngine>(
 
 /// When to sync: at start, when the network comes back, when the app returns to the foreground, every minute
 /// while open, after a sign-in, and shortly after a write ([nudge]). One request per kind per run, so this
-/// stays cheap on data. [entitlements] (download checks, PRD-07 FR-10) runs on start, reconnect, resume and
-/// sign-in; it throttles itself.
+/// stays cheap on data. [entitlements] (download checks, PRD-07 FR-10) runs on start, reconnect, resume,
+/// sign-in and with the periodic timer; it throttles itself (30 min).
 class SyncScheduler with WidgetsBindingObserver {
   SyncScheduler(this._engine, {this.entitlements, Stream<List<ConnectivityResult>>? connectivity})
     : _connectivity = connectivity ?? Connectivity().onConnectivityChanged;
@@ -69,7 +69,10 @@ class SyncScheduler with WidgetsBindingObserver {
         checkEntitlements();
       }
     });
-    _periodic = Timer.periodic(const Duration(minutes: 1), (_) => unawaited(_engine.flush()));
+    _periodic = Timer.periodic(const Duration(minutes: 1), (_) {
+      unawaited(_engine.flush());
+      checkEntitlements(); // throttled to every 30 min inside
+    });
     unawaited(_engine.flush());
     checkEntitlements();
   }
@@ -112,7 +115,16 @@ final syncSchedulerProvider = Provider<SyncScheduler>((ref) {
     entitlements: () async {
       final auth = ref.read(authControllerProvider);
       if (auth is! SignedIn) return;
-      final result = await ref.read(entitlementSyncProvider).run(auth.user.id);
+      final userId = auth.user.id;
+      final result = await ref
+          .read(entitlementSyncProvider)
+          .run(
+            userId,
+            stillSignedIn: () => switch (ref.read(authControllerProvider)) {
+              SignedIn(:final user) => user.id == userId,
+              SignedOut() => false,
+            },
+          );
       if (result.deleted.isNotEmpty || result.renewed.isNotEmpty) {
         await ref.read(downloadsControllerProvider.notifier).reload();
       }

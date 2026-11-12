@@ -147,6 +147,45 @@ void main() {
     expect(api.requests.map((r) => r.path), ['/me/entitlements', '/lessons/$_renew/offline-license']);
   });
 
+  test('a renewal that fails never keeps a revoked download on the phone', () async {
+    // Folder order puts the lesson to renew before the one to delete.
+    await seed(_renew);
+    await seed(_gone);
+    final (sync, _) = subject((request) {
+      if (request.path == '/me/entitlements') return entitlements(request);
+      return const FakeResponse(200, {'data': 'not a license'}); // unreadable renewal answer
+    });
+
+    final result = await sync.run('user-a');
+
+    expect(result.deleted, [_gone]);
+    expect(result.renewed, isEmpty);
+    expect(await store.read(_gone), isNull);
+    expect(await store.read(_renew), isNotNull);
+  });
+
+  test('a check stored "in the future" (clock set ahead, then fixed) does not switch checks off', () async {
+    await seed(_keep);
+    final (sync, api) = subject(entitlements);
+    now = DateTime.utc(2027, 1, 1);
+    await sync.run('user-a');
+
+    now = DateTime.utc(2026, 11, 12, 11);
+    await sync.run('user-a');
+
+    expect(api.requests.where((r) => r.path == '/me/entitlements'), hasLength(2));
+  });
+
+  test('touches nothing if another account signed in while the check was in flight', () async {
+    await seed(_unlisted);
+    final (sync, _) = subject(entitlements);
+
+    final result = await sync.run('user-a', stillSignedIn: () => false);
+
+    expect(result.skipped, isTrue);
+    expect(await store.read(_unlisted), isNotNull);
+  });
+
   test("leaves other accounts' downloads alone, and asks nothing when this account has none", () async {
     await seed(_gone, userId: 'user-b');
     final (sync, api) = subject(entitlements);

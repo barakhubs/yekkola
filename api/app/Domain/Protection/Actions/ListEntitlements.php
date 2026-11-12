@@ -7,6 +7,7 @@ namespace App\Domain\Protection\Actions;
 use App\Domain\Authoring\Enums\LessonType;
 use App\Domain\Authoring\Models\Course;
 use App\Domain\Authoring\Models\Lesson;
+use App\Domain\Authoring\Models\MediaAsset;
 use App\Domain\Identity\Models\User;
 use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Platform\Settings\ProtectionSettings;
@@ -19,7 +20,8 @@ use Carbon\CarbonImmutable;
  * with what to do with the download. The API decides; the app only follows:
  *
  * - `delete` — the license was revoked (device removed, account deleted), access is gone (refund,
- *   enrollment ended, takedown, lesson no longer in the live version), or the lesson has new media.
+ *   enrollment ended, takedown, lesson no longer in the live version), the lesson has new media, or the
+ *   download can't be renewed any more (media no longer ready, its quality removed).
  * - `renew` — access is fine and the license has expired or has less than half its duration left.
  * - `keep` — nothing to do.
  *
@@ -51,18 +53,23 @@ final class ListEntitlements
         }
 
         $lessons = $this->accessibleLessons($user, $licenses->pluck('lesson_uid')->unique()->values()->all());
+        $assets = MediaAsset::query()->whereIn('id', $licenses->pluck('media_asset_id')->unique()->values())->get()->keyBy('id');
         $now = CarbonImmutable::now();
         // Renew once half the license duration is used up, so a phone that comes online now and then never
         // reaches the expiry; the setting in force today decides.
         $renewWithin = intdiv($this->settings->offline_license_days * 86_400, 2);
 
-        return $licenses->map(function (OfflineLicense $license) use ($lessons, $now, $renewWithin): array {
+        return $licenses->map(function (OfflineLicense $license) use ($lessons, $assets, $now, $renewWithin): array {
             $lesson = $lessons[$license->lesson_uid] ?? null;
+            $asset = $assets[$license->media_asset_id] ?? null;
+            // The download can never be renewed: its media is no longer ready, or its quality is gone.
+            $renewable = $asset !== null && $asset->isReady() && $asset->key() !== null && $asset->rendition($license->rendition) !== null;
 
             [$action, $reason] = match (true) {
                 $license->revoked_at !== null => [self::DELETE, 'revoked'],
                 $lesson === null => [self::DELETE, 'no_access'],
                 $lesson->media_asset_id !== $license->media_asset_id => [self::DELETE, 'media_changed'],
+                ! $renewable => [self::DELETE, 'media_unavailable'],
                 $license->expires_at->lessThanOrEqualTo($now) => [self::RENEW, 'expired'],
                 $now->diffInSeconds($license->expires_at) < $renewWithin => [self::RENEW, 'expiring'],
                 default => [self::KEEP, null],
@@ -86,9 +93,12 @@ final class ListEntitlements
      */
     private function accessibleLessons(User $user, array $uids): array
     {
-        $courseIds = Enrollment::query()->active()->where('user_id', $user->id)->pluck('course_id');
-        $liveVersions = Course::query()->whereIn('id', $courseIds)->whereNull('taken_down_at')
-            ->whereNotNull('live_version_id')->pluck('live_version_id');
+        // Only the courses behind these licenses, in one query: live version, not taken down, actively enrolled.
+        $liveVersions = Course::query()
+            ->whereNull('taken_down_at')->whereNotNull('live_version_id')
+            ->whereIn('id', Enrollment::query()->active()->where('user_id', $user->id)->select('course_id'))
+            ->whereIn('live_version_id', Lesson::query()->whereIn('uid', $uids)->select('course_version_id'))
+            ->select('live_version_id');
 
         return Lesson::query()->whereIn('uid', $uids)->whereIn('course_version_id', $liveVersions)
             ->whereIn('type', [LessonType::Video, LessonType::Audio])->get()

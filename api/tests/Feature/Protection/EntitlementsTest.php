@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Authoring\Models\Lesson;
 use App\Domain\Authoring\Models\MediaAsset;
 use App\Domain\Identity\Enums\Role;
+use App\Domain\Learning\Models\Enrollment;
 use App\Domain\Protection\Models\OfflineLicense;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -72,6 +73,18 @@ it('tells the app to delete when the license is revoked, access is gone, or the 
     Sanctum::actingAs(actingAsStaff(Role::Admin));
     $this->postJson("/api/v1/admin/courses/{$this->course->id}/take-down", ['note' => 'Plainte'])->assertOk();
     entitlements($this->headers)->assertJsonPath('data.licenses.0.action', 'delete')->assertJsonPath('data.licenses.0.reason', 'no_access');
+});
+
+it('deletes after a refund, and when the download can never be renewed', function () {
+    // Refund or revoked enrollment: access is gone.
+    Enrollment::query()->update(['status' => 'revoked']);
+    entitlements($this->headers)->assertJsonPath('data.licenses.0.action', 'delete')->assertJsonPath('data.licenses.0.reason', 'no_access');
+    Enrollment::query()->update(['status' => 'active']);
+
+    // Its quality was removed from the media (re-processed): renewal would always fail.
+    $asset = MediaAsset::query()->findOrFail($this->video->media_asset_id);
+    $asset->forceFill(['renditions' => array_values(array_filter($asset->renditions, fn (array $r) => $r['name'] !== '360p'))])->save();
+    entitlements($this->headers)->assertJsonPath('data.licenses.0.action', 'delete')->assertJsonPath('data.licenses.0.reason', 'media_unavailable');
 });
 
 it('is only for the registered device that holds the token, and lists only its licenses', function () {
