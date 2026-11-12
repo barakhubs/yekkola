@@ -118,6 +118,7 @@ Route::middleware('signed-in')->group(function () {
     // Content protection (PRD-07)
     Route::post('/lessons/{lesson}/playback', [PlaybackController::class, 'store'])->middleware('throttle:playback')->name('lessons.playback');
     Route::post('/lessons/{lesson}/playback/heartbeat', [PlaybackController::class, 'heartbeat'])->middleware('throttle:playback')->name('lessons.playback.heartbeat');
+    Route::post('/lessons/{lesson}/offline-license', [PlaybackController::class, 'offline'])->middleware('throttle:playback')->name('lessons.offline-license');
     Route::get('/lessons/{lesson}/document', [DocumentController::class, 'show'])->middleware('throttle:playback')->name('lessons.document');
     Route::get('/me/certificates', [CertificateController::class, 'index'])->name('me.certificates.index');
     Route::get('/me/certificates/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('throttle:certificate-pdf')->name('me.certificates.pdf');

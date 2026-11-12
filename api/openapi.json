@@ -11642,6 +11642,57 @@
                 }
             }
         },
+        "/lessons/{lesson}/offline-license": {
+            "post": {
+                "operationId": "lessons.offline-license",
+                "summary": "Offline download for this registered device: the rendition's playlist, the AES key and the license\nexpiry. Asking again renews the license and refreshes the segment URLs (to resume a download).\n`offline.device_required` (403) outside the app or from another install than the token's device",
+                "tags": [
+                    "Playback"
+                ],
+                "parameters": [
+                    {
+                        "name": "lesson",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OfflineLicenseRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`OfflineLicenseResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/OfflineLicenseResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/lessons/{lesson}/preview-playback": {
             "post": {
                 "operationId": "lessons.preview-playback",
@@ -23169,6 +23220,107 @@
                     "staff_alert"
                 ],
                 "title": "NotificationType"
+            },
+            "OfflineLicenseRequest": {
+                "type": "object",
+                "description": "Which rendition to download (PRD-07 FR-08); omitted = our lowest.",
+                "properties": {
+                    "rendition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^[a-z0-9]{1,16}$"
+                    }
+                },
+                "title": "OfflineLicenseRequest"
+            },
+            "OfflineLicenseResource": {
+                "type": "object",
+                "properties": {
+                    "license_id": {
+                        "type": "string"
+                    },
+                    "lesson_uid": {
+                        "type": "string"
+                    },
+                    "media_id": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "type": "string"
+                    },
+                    "rendition": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "size_bytes": {
+                                "type": "integer"
+                            },
+                            "width": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "height": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "size_bytes",
+                            "width",
+                            "height"
+                        ]
+                    },
+                    "renditions": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "playlist": {
+                        "type": "string"
+                    },
+                    "segments_expire_at": {
+                        "type": "string"
+                    },
+                    "key": {
+                        "type": "string"
+                    },
+                    "expires_at": {
+                        "type": "string"
+                    },
+                    "watermark": {
+                        "type": "object",
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "text"
+                        ]
+                    }
+                },
+                "required": [
+                    "license_id",
+                    "lesson_uid",
+                    "media_id",
+                    "kind",
+                    "rendition",
+                    "renditions",
+                    "playlist",
+                    "segments_expire_at",
+                    "key",
+                    "expires_at",
+                    "watermark"
+                ],
+                "title": "OfflineLicenseResource"
             },
             "OrderResource": {
                 "type": "object",

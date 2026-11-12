@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-11-10
+> Last updated: 2026-11-11
 
 ## Now
 
-- **Current branch:** `feature/mobile-scaffold`, PR #78 (Phase 3 starts: Flutter app scaffold + phone sign-in with the device limit)
-- **Next up:** offline encrypted HLS prototype on low-end Android (own PR); owner: switch staging to `VIDEO_DRIVER=r2` and run the R2 media test
+- **Current branch:** `feature/prd-07-offline-hls`, PR #79 (offline license endpoint + offline encrypted HLS prototype in the app)
+- **Next up:** owner: switch staging to `VIDEO_DRIVER=r2`, then run the prototype on a low-end Android phone; then the drift schema, outbox and entitlement sync
 
 ## Legend
 
@@ -130,7 +130,7 @@ Cannot be defaulted:
 - [ ] Staff password reset by email, once an email provider is chosen
 - [ ] Staff sessions expire after 12 h + optional TOTP for admins (FR-14, Should) — with the admin API (1.11)
 - [ ] Mobile app attestation (Play Integrity / App Attest) on OTP requests — phase 3
-- [ ] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — with offline licenses (1.9)
+- [~] Enforce a registered device (`X-Device-Id` matches the token's device) on mobile routes — done for offline licenses (#79); other mobile routes still to do
 - [ ] Verify trusted-proxy / client-IP handling on Laravel Cloud so per-IP limits see real client IPs (now also the per-visitor baseline on every public route: if `request->ip()` is the edge, trust only the Cloud edge, never `*`) — first staging deploy
 - [ ] Real SMS provider driver + delivery reports — phase 4
 
@@ -182,7 +182,7 @@ Cannot be defaulted:
 - [ ] Delete the R2 source once an asset is `ready` (kept for now in case of re-transcoding; decide with the cost estimate)
 - [x] `media_assets` schema: source key, size, output prefix, renditions, AES key (encrypted cast, never in R2), poster flag (arch §3.3) — #61
 - [x] Playlist + key endpoints: `GET /lessons/{uid}/hls/master.m3u8`, `/hls/{rendition}.m3u8` (segments → pre-signed R2 URLs, signed playlists cached) and `/hls/key`, each re-checking access (`AuthorizeMedia`); `POST /lessons/{uid}/playback` returns `playlist_url` + `poster_url` (arch §1.3 D, §4.2) — #61
-- [ ] Offline license endpoint returns rendition playlist + AES key + expiry (arch §1.3 E) — with 1.9 FR-07
+- [x] Offline license endpoint returns rendition playlist + AES key + expiry (arch §1.3 E) — #79
 - [x] Remove the Mux driver, `/webhooks/video`, the video webhook inbox use and Mux env vars; `FakeVideoProvider` reworked for parts; contract tests updated — #61
 - [x] Check the R2/transcoding outage runbook (`docs/runbooks/media-outage.md`) against the driver (job name, cached signed playlists, retries) — #61
 
@@ -260,7 +260,7 @@ _Three PRs: a) progress + quizzes, b) certificates + reviews, c) Q&A + reports._
 - [x] Playback + DRM token endpoint with checks, viewer watermark text (FR-02, FR-04) — #17
 - [ ] Playback for mobile: require the registered device (`X-Device-Id`) and check account device limits (FR-06) — with offline licenses
 - [x] Stream sessions + concurrent web limit (FR-05) — #17
-- [ ] Offline license endpoint + `offline_licenses` (FR-07)
+- [x] Offline license endpoint + `offline_licenses` (FR-07, FR-08 lowest by default, BR-04 revoked with the device) — #79
 - [ ] Entitlement sync endpoint (FR-10)
 - [x] Per-student PDF stamping + signed URLs (FR-12) — #17
 - [ ] Free FPDI can't read PDFs with compressed cross-reference streams (many PDF 1.5+ exports); those uploads are refused with export advice. Evaluate the FPDI PDF-Parser licence or a qpdf/Ghostscript normaliser on Laravel Cloud **(needs: decision)**
@@ -489,7 +489,11 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [ ] drift schema, outbox, sync engine, entitlement sync
 - [-] `mux_player_plugin`: Android (Kotlin, Media3, `MuxDownloadManager`) — superseded by R2, 2026-11-09 (no native-SDK plugin needed)
 - [-] `mux_player_plugin`: iOS (Swift, `MuxOfflineAccessManager`) — superseded by R2, 2026-11-09
-- [ ] Offline encrypted HLS: own downloader for a rendition's segments (resumable, background), AES key wrapped with a per-device key (Keystore / Keychain) with the offline expiry, standard Flutter player with AES-128 HLS + overlay; delete revoked content at sync — prototype early (PRD-07)
+- [x] Offline encrypted HLS prototype: own downloader for a rendition's segments (resumable, license renewal on expired URLs), AES key wrapped with a per-device key bound to the offline expiry, `video_player` (AES-128 HLS) via a loopback server, overlay, `FLAG_SECURE`; staging-only lab screen (PRD-07 FR-07, FR-13, FR-16) — #79
+- [ ] Run the offline prototype on a low-end Android phone (2 GB RAM, Android 8+) against staging with R2: download, airplane mode, play, seek, renew; note memory/CPU and playback start time **(needs: owner, a real phone + `VIDEO_DRIVER=r2` on staging)**
+- [ ] Downloads survive backgrounding and app kills (background_downloader or a foreground service), Wi-Fi-only, queue (PRD-07 FR-09)
+- [ ] Entitlement sync deletes revoked/expired downloads and renews near-expiry licenses (PRD-07 FR-10) — needs `GET /me/entitlements`
+- [ ] iOS: hide content on screen capture (PRD-07 FR-13) and check AVPlayer with the loopback server **(needs: a Mac + iPhone)**
 - [x] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list — #78
 - [ ] Try sign-in end to end on a real Android phone against staging
 - [ ] `POST /auth/otp/request` returns the normalised `phone`, so the app stops pre-normalising national numbers (+243 default lives only in the API)

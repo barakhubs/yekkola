@@ -19,6 +19,10 @@ String apiErrorText(AppLocalizations l10n, ApiException e) {
     'otp.cooldown' => wait != null ? l10n.errorTryAgainIn(wait) : l10n.errorOtpRateLimited,
     'otp.temporarily_unavailable' => withWait(l10n.errorOtpUnavailable),
     'account.banned' => l10n.errorAccountBanned,
+    'offline.device_required' => l10n.errorOfflineDeviceRequired,
+    'offline.unsupported_media' => l10n.errorOfflineUnsupported,
+    'offline.media_changed' => l10n.errorOfflineMediaChanged,
+    'offline.not_downloaded' => l10n.errorOfflineNotDownloaded,
     'validation.failed' => e.fieldError('phone') ?? e.fieldError('code') ?? e.fieldError('name') ?? l10n.errorGeneric,
     _ => e.title ?? l10n.errorGeneric,
   };

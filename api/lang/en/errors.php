@@ -139,6 +139,10 @@ return [
         'preview_only' => 'Sign in and enrol to watch this lesson.',
         'stream_replaced' => 'This course is playing on another screen.',
     ],
+    'offline' => [
+        'device_required' => 'Downloads are made in the app, on a registered device. Sign in again and retry.',
+        'rendition_unavailable' => 'This quality is not available for this lesson.',
+    ],
     'document' => [
         'not_a_document' => 'This lesson has no document.',
         'unavailable' => 'This document is not available right now.',

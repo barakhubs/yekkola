@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\Protection;
 
 use App\Domain\Identity\Models\User;
+use App\Domain\Protection\Actions\IssueOfflineLicense;
 use App\Domain\Protection\Actions\IssuePlayback;
 use App\Domain\Protection\Actions\RecordStreamHeartbeat;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Protection\HeartbeatRequest;
+use App\Http\Requests\Protection\OfflineLicenseRequest;
+use App\Http\Resources\Protection\OfflineLicenseResource;
 use App\Http\Resources\Protection\PlaybackResource;
+use App\Http\Support\AuthContext;
 use Illuminate\Http\Request;
 
-/** Playback tokens for video and audio lessons, and web stream heartbeats (PRD-07 FR-02, FR-04, FR-05). */
+/** Playback tokens for video and audio lessons, web stream heartbeats, offline licenses (PRD-07 FR-02, FR-04, FR-05, FR-07). */
 final class PlaybackController extends Controller
 {
     /**
@@ -24,6 +28,23 @@ final class PlaybackController extends Controller
         $user = $this->user($request);
 
         return new PlaybackResource($issue->handle($user, $lesson, isWebStream: $user->currentDeviceId() === null));
+    }
+
+    /**
+     * Offline download for this registered device: the rendition's playlist, the AES key and the license
+     * expiry. Asking again renews the license and refreshes the segment URLs (to resume a download).
+     * `offline.device_required` (403) outside the app or from another install than the token's device.
+     */
+    public function offline(OfflineLicenseRequest $request, string $lesson, IssueOfflineLicense $issue): OfflineLicenseResource
+    {
+        $rendition = $request->input('rendition');
+
+        return new OfflineLicenseResource($issue->handle(
+            $this->user($request),
+            AuthContext::client($request)->deviceId,
+            $lesson,
+            is_string($rendition) ? $rendition : null,
+        ));
     }
 
     /**
