@@ -43,13 +43,17 @@ class ResponseCache {
   final DateTime Function() _clock;
 
   Future<CachedResponseRow?> read(String key) async {
-    final row = await (_db.select(_db.cachedResponses)..where((c) => c.key.equals(key))).getSingleOrNull();
-    if (row != null) {
-      await (_db.update(
-        _db.cachedResponses,
-      )..where((c) => c.key.equals(key))).write(CachedResponsesCompanion(usedAt: Value(_clock().toUtc())));
+    try {
+      final row = await (_db.select(_db.cachedResponses)..where((c) => c.key.equals(key))).getSingleOrNull();
+      if (row != null) {
+        await (_db.update(
+          _db.cachedResponses,
+        )..where((c) => c.key.equals(key))).write(CachedResponsesCompanion(usedAt: Value(_clock().toUtc())));
+      }
+      return row;
+    } catch (_) {
+      return null; // storage trouble: behave as if nothing was saved
     }
-    return row;
   }
 
   Future<void> write(String key, Map<String, Object?> body) async {
@@ -92,19 +96,36 @@ class ResponseCache {
     }
     if (!force && copy != null && _clock().toUtc().difference(copy.fetchedAt) < freshFor) return;
 
+    final Map<String, Object?> body;
+    final Cached<T> fresh;
     try {
-      final body = await fetch();
-      final fresh = Cached(parse(body), fetchedAt: _clock().toUtc());
-      await write(key, body);
-      yield fresh;
+      body = await fetch();
+      fresh = Cached(parse(body), fetchedAt: _clock().toUtc());
     } catch (e) {
       // A reply we can't read counts as a failed refresh too.
       final error = e is ApiException ? e : const ApiException(code: 'cache.unreadable', status: 0);
-      if (copy == null) {
+      if (error.status == 404 || error.status == 410) {
+        // Gone (taken down, unpublished): never keep showing the old copy.
+        await _forget(key);
+        yield* Stream.error(error);
+      } else if (copy == null) {
         yield* Stream.error(error);
       } else {
         yield copy.withError(error);
       }
+      return;
     }
+
+    // Show the answer even if it can't be saved (e.g. a full phone).
+    yield fresh;
+    try {
+      await write(key, body);
+    } catch (_) {}
+  }
+
+  Future<void> _forget(String key) async {
+    try {
+      await (_db.delete(_db.cachedResponses)..where((c) => c.key.equals(key))).go();
+    } catch (_) {}
   }
 }

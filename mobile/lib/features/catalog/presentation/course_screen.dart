@@ -27,8 +27,10 @@ class CourseScreen extends ConsumerWidget {
         value: value,
         onRetry: () => ref.invalidate(courseProvider(slug)),
         builder: (context, cached) => RefreshIndicator(
-          onRefresh: () =>
-              ref.read(catalogRepositoryProvider).course(slug, force: true).drain<void>().catchError((_) {}),
+          onRefresh: () {
+            ref.read(catalogRefreshProvider.notifier).pull();
+            return ref.read(courseProvider(slug).future).then((_) {}, onError: (_) {});
+          },
           child: _CourseBody(
             course: cached.data,
             notice: OfflineNotice(cached: cached),
@@ -84,6 +86,10 @@ class _CourseBody extends StatelessWidget {
                   for (final audience in course.audience) Text(audienceLabel(l10n, audience), style: muted),
                 ],
               ),
+              if (course.updatedAt != null && DateTime.tryParse(course.updatedAt!) != null) ...[
+                const SizedBox(height: 8),
+                Text(l10n.courseUpdatedOn(Formatters.date(DateTime.parse(course.updatedAt!), locale)), style: muted),
+              ],
               const SizedBox(height: 16),
               _ProfessorRow(professor: course.professor),
             ],

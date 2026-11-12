@@ -63,6 +63,37 @@ void main() {
       await expectLater(watch('none', () async => throw offline), emitsError(isA<ApiException>()));
     });
 
+    test('a page the API now says is gone is no longer shown from the copy', () async {
+      await watch('k', () async => {'v': 'old'}).drain<void>();
+      now = now.add(const Duration(hours: 1));
+      const gone = ApiException(code: 'resource.not_found', status: 404);
+
+      await expectLater(watch('k', () async => throw gone), emitsInOrder([isA<Cached<String>>(), emitsError(gone)]));
+      expect(await db.select(db.cachedResponses).get(), isEmpty);
+    });
+
+    test('shows a good answer even when the phone cannot save it', () async {
+      final full = ResponseCache(db, clock: () => now);
+      await db.close(); // every write now fails
+      db = AppDatabase(DatabaseConnection(NativeDatabase.memory(), closeStreamsSynchronously: true));
+      expect(
+        await full
+            .watch('k', fetch: () async => {'v': 'fresh'}, parse: (j) => j['v']! as String)
+            .map((c) => c.data)
+            .toList(),
+        ['fresh'],
+      );
+    });
+
+    test('a server error with a copy says "could not update", not "offline"', () async {
+      await watch('k', () async => {'v': 'old'}).drain<void>();
+      now = now.add(const Duration(hours: 1));
+      final last = await watch('k', () async => throw const ApiException(code: 'server.error', status: 503)).last;
+      expect(last.data, 'old');
+      expect(last.isOffline, isFalse);
+      expect(last.refreshError?.status, 503);
+    });
+
     test('a copy the app can no longer read is fetched again', () async {
       await cache.write('k', {'unexpected': true});
       expect(await watch('k', () async => {'v': 'fresh'}).map((c) => c.data).toList(), ['fresh']);
@@ -106,6 +137,7 @@ void main() {
       expect(text, startsWith('25 000'));
       expect(text, isNot(contains(',')));
       expect(Formatters.money(2500050, 'CDF', 'fr'), contains(',50'));
+      expect(Formatters.money(2500000, 'CDF', 'en').replaceAll(' ', ' '), 'CDF 25,000');
     });
   });
 }

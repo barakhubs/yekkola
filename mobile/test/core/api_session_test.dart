@@ -84,7 +84,12 @@ void main() {
     );
 
     await expectLater(container.read(authRepositoryProvider).devices(), throwsA(anything));
-    await Future<void>.delayed(const Duration(milliseconds: 10));
+    // The refresh runs in the background: wait for it (not a fixed delay, which flakes on a busy machine).
+    for (var i = 0; i < 200; i++) {
+      final current = container.read(authControllerProvider);
+      if (current is SignedIn && current.user.isSuspended) break;
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
 
     final auth = container.read(authControllerProvider) as SignedIn;
     expect(auth.user.isSuspended, isTrue);

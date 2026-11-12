@@ -25,8 +25,10 @@ class ProfessorScreen extends ConsumerWidget {
         value: value,
         onRetry: () => ref.invalidate(professorProvider(slug)),
         builder: (context, cached) => RefreshIndicator(
-          onRefresh: () =>
-              ref.read(catalogRepositoryProvider).professor(slug, force: true).drain<void>().catchError((_) {}),
+          onRefresh: () {
+            ref.read(catalogRefreshProvider.notifier).pull();
+            return ref.read(professorProvider(slug).future).then((_) {}, onError: (_) {});
+          },
           child: _ProfessorBody(
             professor: cached.data,
             notice: OfflineNotice(cached: cached),

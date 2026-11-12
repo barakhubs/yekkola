@@ -12,7 +12,8 @@ abstract final class Formatters {
     final whole = currency == 'CDF' && amountMinor % 100 == 0;
     final symbol = switch (currency) {
       'USD' => locale == 'fr' ? r'$US' : r'$',
-      'CDF' => 'FC',
+      // Like the web (Intl): `25 000 FC` in French, `CDF 25,000` in English.
+      'CDF' => locale == 'fr' ? 'FC' : 'CDF\u00a0',
       _ => currency,
     };
     return NumberFormat.currency(
@@ -22,6 +23,9 @@ abstract final class Formatters {
       decimalDigits: whole ? 0 : digits,
     ).format(amountMinor / 100);
   }
+
+  /// `12 nov. 2026` / `Nov 12, 2026`.
+  static String date(DateTime value, String locale) => DateFormat.yMMMd(locale).format(value.toLocal());
 
   /// `novembre 2026` / `November 2026`.
   static String monthYear(DateTime value, String locale) => DateFormat.yMMMM(locale).format(value.toLocal());

@@ -68,7 +68,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (n) {
-          if (n.metrics.extentAfter < 400) controller.loadMore();
+          // Only the results list, not the horizontal filter row.
+          if (n.depth == 0 && n.metrics.axis == Axis.vertical && n.metrics.extentAfter < 400) controller.loadMore();
           return false;
         },
         child: CustomScrollView(
@@ -101,7 +102,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ),
                     if (_query.category != null)
                       _Filter(
-                        label: l10n.filterCategory,
+                        label: _query.categoryName ?? l10n.filterCategory,
                         selected: true,
                         onTap: (_) => _set(_query.copyWith(clearCategory: true)),
                       ),
@@ -147,6 +148,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(16),
                     child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              if (results.loadMoreError != null)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Text(apiErrorText(l10n, results.loadMoreError!), textAlign: TextAlign.center),
+                        const SizedBox(height: 8),
+                        OutlinedButton(onPressed: controller.retryMore, child: Text(l10n.commonRetry)),
+                      ],
+                    ),
                   ),
                 ),
               const SliverToBoxAdapter(child: SizedBox(height: 24)),

@@ -63,7 +63,9 @@ class PriceTag extends StatelessWidget {
     final theme = Theme.of(context);
     final style = large ? theme.textTheme.titleLarge : theme.textTheme.labelLarge;
 
-    if (isFree || amountMinor == null || currency == null) {
+    // The API says what is free; a paid course without a price shows none rather than "Gratuit".
+    if (!isFree && (amountMinor == null || currency == null)) return const SizedBox.shrink();
+    if (isFree) {
       final brand = theme.extension<BrandColors>()!;
       return DecoratedBox(
         decoration: BoxDecoration(color: brand.accent, borderRadius: BorderRadius.circular(6)),
@@ -89,8 +91,11 @@ class Rating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (rating == null || count == 0) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
+    // No rating yet: "Nouveau" rather than a misleading score (PRD-04 BR-02).
+    if (rating == null || count == 0) {
+      return Text(l10n.ratingNew, style: TextStyle(color: Theme.of(context).extension<BrandColors>()!.accentText));
+    }
     final locale = Localizations.localeOf(context).languageCode;
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -127,7 +132,13 @@ class OfflineNotice extends StatelessWidget {
             children: [
               Icon(cached.isOffline ? Icons.cloud_off : Icons.error_outline, size: 18),
               const SizedBox(width: 8),
-              Expanded(child: Text(l10n.offlineCopy(Formatters.dateTime(cached.fetchedAt, locale)))),
+              Expanded(
+                child: Text(
+                  cached.isOffline
+                      ? l10n.offlineCopy(Formatters.dateTime(cached.fetchedAt, locale))
+                      : l10n.refreshFailedCopy(Formatters.dateTime(cached.fetchedAt, locale)),
+                ),
+              ),
             ],
           ),
         ),
