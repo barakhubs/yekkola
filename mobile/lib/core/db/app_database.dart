@@ -61,14 +61,38 @@ class SyncState extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+/// API answers kept for offline reading (catalogue, course and professor pages). Read first, refreshed from
+/// the network; pruned by age and count (see `ResponseCache`).
+@DataClassName('CachedResponseRow')
+class CachedResponses extends Table {
+  /// What was asked, e.g. `course:algebre-pour-l-exetat` or `courses?q=maths&page=1`.
+  TextColumn get key => text()();
+
+  /// The JSON body as the API sent it.
+  TextColumn get body => text()();
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  /// Last time a screen read it: what nobody reads goes first when pruning.
+  DateTimeColumn get usedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
 /// The app's offline database (drift / SQLite): the source of truth for the UI; the network refreshes it.
-@DriftDatabase(tables: [Outbox, LessonProgress, SyncState])
+@DriftDatabase(tables: [Outbox, LessonProgress, SyncState, CachedResponses])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'yekkola'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(onCreate: (m) => m.createAll());
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      // v2: offline copies of catalogue answers.
+      if (from < 2) await m.createTable(cachedResponses);
+    },
+  );
 }

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../core/i18n/locale_controller.dart';
-import '../../../core/providers.dart';
-import '../../../core/router/app_router.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../auth/domain/auth_state.dart';
 import '../../auth/presentation/auth_controller.dart';
+import 'account_menu.dart';
 
-/// Signed-in landing screen. My courses, downloads and the catalogue replace the placeholder in
-/// later Phase 3 work.
+/// The "My courses" tab. My courses, learning and downloads replace the placeholder in later Phase 3 work.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -20,34 +16,9 @@ class HomeScreen extends ConsumerWidget {
     final auth = ref.watch(authControllerProvider);
     final name = auth is SignedIn ? auth.user.name ?? '' : '';
     final theme = Theme.of(context);
-    final language = ref.watch(localeControllerProvider).languageCode;
-    final isProduction = ref.watch(appConfigProvider).isProduction;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.homeTitle),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.account_circle_outlined),
-            onSelected: (value) => switch (value) {
-              'devices' => context.push(Routes.devices),
-              'downloads-lab' => context.push(Routes.downloadsLab),
-              'fr' || 'en' => ref.read(authControllerProvider.notifier).changeLanguage(value),
-              _ => ref.read(authControllerProvider.notifier).signOut(),
-            },
-            itemBuilder: (_) => [
-              PopupMenuItem(value: 'devices', child: Text(l10n.accountDevices)),
-              // Offline prototype: staging builds only.
-              if (!isProduction) PopupMenuItem(value: 'downloads-lab', child: Text(l10n.mediaLabTitle)),
-              const PopupMenuDivider(),
-              CheckedPopupMenuItem(value: 'fr', checked: language == 'fr', child: Text(l10n.languageFrench)),
-              CheckedPopupMenuItem(value: 'en', checked: language == 'en', child: Text(l10n.languageEnglish)),
-              const PopupMenuDivider(),
-              PopupMenuItem(value: 'sign-out', child: Text(l10n.accountSignOut)),
-            ],
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.homeTitle), actions: const [AccountMenu()]),
       body: RefreshIndicator(
         onRefresh: () => ref.read(authControllerProvider.notifier).refreshUser(),
         child: ListView(
@@ -58,6 +29,39 @@ class HomeScreen extends ConsumerWidget {
             Text(l10n.homeComingSoon, style: theme.textTheme.bodyLarge),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Bottom navigation between the signed-in tabs.
+class TabsShell extends StatelessWidget {
+  const TabsShell({super.key, required this.selectedIndex, required this.onSelect, required this.child});
+
+  final int selectedIndex;
+  final void Function(int index) onSelect;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: onSelect,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.explore_outlined),
+            selectedIcon: const Icon(Icons.explore),
+            label: l10n.navExplore,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.school_outlined),
+            selectedIcon: const Icon(Icons.school),
+            label: l10n.homeTitle,
+          ),
+        ],
       ),
     );
   }
