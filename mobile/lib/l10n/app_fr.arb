@@ -162,5 +162,10 @@
   "professorVerified": "Professeur vérifié",
   "professorCourses": "Ses cours",
   "professorMemberSince": "Sur Yekkola depuis {date}",
-  "@professorMemberSince": {"placeholders": {"date": {"type": "String"}}}
+  "@professorMemberSince": {"placeholders": {"date": {"type": "String"}}},
+  "ratingNew": "Nouveau",
+  "refreshFailedCopy": "Mise à jour impossible pour le moment : page enregistrée le {date}.",
+  "@refreshFailedCopy": {"placeholders": {"date": {"type": "String"}}},
+  "courseUpdatedOn": "Mis à jour le {date}",
+  "@courseUpdatedOn": {"placeholders": {"date": {"type": "String"}}}
 }

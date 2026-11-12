@@ -5,7 +5,7 @@
 
 ## Now
 
-- **Current branch:** `feature/mobile-catalogue`, PR #83 (catalogue, search, course and professor pages with offline copies)
+- **Current branch:** `feature/mobile-catalogue`, PR #84 (review fixes for the catalogue, #83)
 - **Next up:** free enroll + checkout (waiting screen); owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
@@ -499,8 +499,10 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Sign-in + device limit flow (PRD-01 FR-01–04, FR-07, FR-08, FR-15): phone, code, device choice, first-sign-in name, suspended screen, device list — #78
 - [ ] Try sign-in end to end on a real Android phone against staging
 - [ ] `POST /auth/otp/request` returns the normalised `phone`, so the app stops pre-normalising national numbers (+243 default lives only in the API)
-- [x] Catalogue, search, course and professor pages with offline copies (PRD-04 FR-01–05): Explore tab, search + filters + sort, course page with curriculum and download sizes, professor page — #83
+- [x] Catalogue, search, course and professor pages with offline copies (PRD-04 FR-01–05, partly): Explore tab (featured/popular/new/free shelves, categories), search + price/language filters + sort, course page (curriculum, download sizes, "Nouveau" without ratings, last updated), professor page — #83, review fixes #84
 - [ ] Course page: enroll / buy button (comes with free enroll + checkout)
+- [ ] Catalogue gaps vs PRD-04: course cards with enrollment count, duration and language badge (FR-04); reviews summary and list on the course page (FR-05); rails per category on Explore (FR-01); level/audience filters
+- [ ] Search query survives the app being restored by the OS (it travels in the route's `extra` today)
 - [ ] Free enroll + checkout (waiting screen)
 - [ ] My courses, learning, player with overlay, `FLAG_SECURE`
 - [ ] Downloads manager (quality, sizes, Wi-Fi only, storage, license expiry)

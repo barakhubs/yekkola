@@ -141,5 +141,8 @@
   "durationMinutes": "{minutes} min",
   "professorVerified": "Verified teacher",
   "professorCourses": "Courses",
-  "professorMemberSince": "On Yekkola since {date}"
+  "professorMemberSince": "On Yekkola since {date}",
+  "ratingNew": "New",
+  "refreshFailedCopy": "Couldn't update right now: page saved on {date}.",
+  "courseUpdatedOn": "Updated {date}"
 }

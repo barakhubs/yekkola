@@ -4,12 +4,15 @@ import '../../../core/cache/response_cache.dart';
 
 /// Catalogue search and filters (PRD-04 FR-02). Only the API's values; the API does the filtering.
 class CourseQuery {
-  const CourseQuery({this.q, this.category, this.price, this.language, this.sort});
+  const CourseQuery({this.q, this.category, this.categoryName, this.price, this.language, this.sort});
 
   final String? q;
 
   /// Category slug.
   final String? category;
+
+  /// The category's name, for the filter chip only (not part of the search).
+  final String? categoryName;
 
   /// `free` or `paid`.
   final String? price;
@@ -20,7 +23,7 @@ class CourseQuery {
   /// `relevance`, `popular`, `newest`, `rating`, `price_asc`, `price_desc`.
   final String? sort;
 
-  bool get isEmpty => (q ?? '').trim().isEmpty && category == null && price == null && language == null;
+  bool get isEmpty => (q ?? '').trim().isEmpty && category == null && price == null && language == null && sort == null;
 
   CourseQuery copyWith({
     String? q,
@@ -34,6 +37,7 @@ class CourseQuery {
   }) => CourseQuery(
     q: q ?? this.q,
     category: clearCategory ? null : (category ?? this.category),
+    categoryName: clearCategory ? null : categoryName,
     price: clearPrice ? null : (price ?? this.price),
     language: clearLanguage ? null : (language ?? this.language),
     sort: sort ?? this.sort,
@@ -66,48 +70,50 @@ class CourseQuery {
 }
 
 /// Catalogue, course and professor pages, offline-first (PRD-04): every read comes from the cache first,
-/// then the network. Search result pages after the first are network only (no point keeping them).
+/// then the network. Search result pages after the first are network only (no point keeping them). Copies
+/// are kept per UI language (`lang`): names come translated from the API.
 class CatalogRepository {
   CatalogRepository(this._api, this._cache);
 
   final YekkolaApi _api;
   final ResponseCache _cache;
 
-  Stream<Cached<FeaturedResponse200Data>> featured({bool force = false}) => _cache.watch(
-    'featured',
+  Stream<Cached<FeaturedResponse200Data>> featured(String lang, {bool force = false}) => _cache.watch(
+    '$lang:featured',
     force: force,
     fetch: () async => (await ApiException.guard(() => _api.course.featured())).toJson(),
     parse: (json) => FeaturedResponse200.fromJson(json).data,
   );
 
-  Stream<Cached<List<CategoryResource>>> categories({bool force = false}) => _cache.watch(
-    'categories',
+  Stream<Cached<List<CategoryResource>>> categories(String lang, {bool force = false}) => _cache.watch(
+    '$lang:categories',
     force: force,
     fetch: () async => (await ApiException.guard(() => _api.category.categoriesIndex())).toJson(),
     parse: (json) => CategoriesIndexResponse200.fromJson(json).data.map(_category).toList(),
   );
 
-  Stream<Cached<CourseDetailResource>> course(String slug, {bool force = false}) => _cache.watch(
-    'course:$slug',
+  Stream<Cached<CourseDetailResource>> course(String slug, String lang, {bool force = false}) => _cache.watch(
+    '$lang:course:$slug',
     force: force,
     fetch: () async => (await ApiException.guard(() => _api.course.coursesShow(slug: slug))).toJson(),
     parse: (json) => CoursesShowResponse200.fromJson(json).data,
   );
 
-  Stream<Cached<PublicProfessorResource>> professor(String slug, {bool force = false}) => _cache.watch(
-    'professor:$slug',
+  Stream<Cached<PublicProfessorResource>> professor(String slug, String lang, {bool force = false}) => _cache.watch(
+    '$lang:professor:$slug',
     force: force,
     fetch: () async => (await ApiException.guard(() => _api.professor.professorsShow(slug: slug))).toJson(),
     parse: (json) => ProfessorsShowResponse200.fromJson(json).data,
   );
 
   /// First page: cached. Later pages: network only.
-  Stream<Cached<CoursesIndexResponse200>> firstPage(CourseQuery query, {bool force = false}) => _cache.watch(
-    query.key(1),
-    force: force,
-    fetch: () async => (await _search(query, 1)).toJson(),
-    parse: CoursesIndexResponse200.fromJson,
-  );
+  Stream<Cached<CoursesIndexResponse200>> firstPage(CourseQuery query, String lang, {bool force = false}) =>
+      _cache.watch(
+        '$lang:${query.key(1)}',
+        force: force,
+        fetch: () async => (await _search(query, 1)).toJson(),
+        parse: CoursesIndexResponse200.fromJson,
+      );
 
   Future<CoursesIndexResponse200> page(CourseQuery query, int page) => _search(query, page);
 

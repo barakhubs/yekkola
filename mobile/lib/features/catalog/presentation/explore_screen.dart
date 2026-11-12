@@ -22,9 +22,8 @@ class ExploreScreen extends ConsumerWidget {
     final categories = ref.watch(categoriesProvider);
 
     Future<void> refresh() async {
-      ref.invalidate(featuredProvider);
-      ref.invalidate(categoriesProvider);
-      await ref.read(catalogRepositoryProvider).featured(force: true).drain<void>().catchError((_) {});
+      ref.read(catalogRefreshProvider.notifier).pull();
+      await ref.read(featuredProvider.future).then((_) {}, onError: (_) {});
     }
 
     return Scaffold(
@@ -47,7 +46,7 @@ class ExploreScreen extends ConsumerWidget {
             if (categories case AsyncData(:final value) when value.data.isNotEmpty)
               SliverToBoxAdapter(
                 child: SizedBox(
-                  height: 48,
+                  height: MediaQuery.textScalerOf(context).scale(48),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -57,7 +56,10 @@ class ExploreScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: ActionChip(
                             label: Text(category.name),
-                            onPressed: () => context.push(Routes.search, extra: CourseQuery(category: category.slug)),
+                            onPressed: () => context.push(
+                              Routes.search,
+                              extra: CourseQuery(category: category.slug, categoryName: category.name),
+                            ),
                           ),
                         ),
                     ],
@@ -129,7 +131,8 @@ class _Shelf extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 250,
+          // Cover + two-line title + professor + rating + price, growing with the phone's text size.
+          height: 120 + MediaQuery.textScalerOf(context).scale(140),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
