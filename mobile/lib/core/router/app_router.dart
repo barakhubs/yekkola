@@ -18,9 +18,11 @@ import '../../features/catalog/presentation/search_screen.dart';
 import '../../features/checkout/presentation/checkout_screen.dart';
 import '../../features/checkout/presentation/order_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/learning/presentation/document_screen.dart';
 import '../../features/learning/presentation/learn_course_screen.dart';
 import '../../features/learning/presentation/lesson_player_screen.dart';
 import '../../features/learning/presentation/my_courses_screen.dart';
+import '../../features/learning/presentation/quiz_screen.dart';
 import '../../features/media/presentation/downloads_screen.dart';
 import '../../features/media/presentation/offline_player_screen.dart';
 
@@ -40,6 +42,8 @@ abstract final class Routes {
   static String order(String orderId) => '/orders/$orderId';
   static String learn(String courseId) => '/learn/$courseId';
   static String lesson(String courseId, String lessonUid) => '/learn/$courseId/lessons/$lessonUid';
+  static String document(String courseId, String lessonUid) => '/learn/$courseId/documents/$lessonUid';
+  static String quiz(String courseId, String lessonUid) => '/learn/$courseId/quizzes/$lessonUid';
 
   /// My courses.
   static const home = '/home';
@@ -117,6 +121,25 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, state) => LessonPlayerScreen(
               lessonUid: state.pathParameters['lesson']!,
               args: state.extra is LessonArgs ? state.extra! as LessonArgs : const LessonArgs(),
+            ),
+          ),
+          GoRoute(
+            path: 'documents/:lesson',
+            builder: (_, state) {
+              final args = state.extra is DocumentArgs ? state.extra! as DocumentArgs : const DocumentArgs();
+              return DocumentScreen(
+                lessonUid: state.pathParameters['lesson']!,
+                title: args.title,
+                completed: args.completed,
+              );
+            },
+          ),
+          GoRoute(
+            path: 'quizzes/:lesson',
+            builder: (_, state) => QuizScreen(
+              courseId: state.pathParameters['course']!,
+              lessonUid: state.pathParameters['lesson']!,
+              args: state.extra is QuizArgs ? state.extra! as QuizArgs : const QuizArgs(),
             ),
           ),
         ],

@@ -1,12 +1,12 @@
 # Yekkola — Project TODO
 
 > Single list of everything from start to launch. **Update it in the same PR as the work** (see _How to update_).
-> Last updated: 2026-11-12
+> Last updated: 2026-11-13
 
 ## Now
 
-- **Current branch:** `feature/mobile-downloads`, PR #89 (review fixes for the downloads manager, #88)
-- **Next up:** documents and quizzes in the app; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
+- **Current branch:** `feature/mobile-documents-quizzes` (documents and quizzes in the app)
+- **Next up:** certificates, reviews and Q&A in the app; owner: `VIDEO_DRIVER=r2` on staging and the low-end phone test
 
 ## Legend
 
@@ -512,7 +512,9 @@ Needs from the owner for a hosted demo: Cloudflare R2 buckets (real playback) an
 - [x] Downloads manager (PRD-07 FR-08, FR-09): quality choice with real sizes before downloading (learning view `downloads`, lowest first), queue one at a time, Wi-Fi only (waits / pauses / resumes), downloads screen by course with quality, size, expiry, pause/resume/play/delete, delete per course and all, storage used; network drops wait and continue; interrupted downloads resume at launch on Wi-Fi only (a paused one stays paused) — #88, review fixes #89
 - [ ] Per-course download size estimate before downloading a whole course (PRD-07 FR-08) and "download the whole course"
 - [ ] Entitlement renewal and a student resuming the same lesson can overlap (both write its manifest): route renewals through `DownloadsController`
-- [ ] Documents (stamped, app-private), quizzes (offline attempts)
+- [x] Documents (stamped, app-private), quizzes (offline attempts) — stamped PDF kept per account and viewed in-app; quiz answered and handed in offline, graded on sync; `ends_at` and `best_score_pct` typed in the spec — #90
+- [ ] Remove stamped documents of courses whose access ended at sync (today: on the next online open, or when the session ends) (PRD-07 FR-15)
+- [ ] Quizzes can't be started offline (the API deals the questions and starts the clock): decide whether an offline start is worth an API change (PRD-06 FR-08)
 - [ ] Certificates, reviews, Q&A
 - [ ] Push (FCM) + local notifications, deep links
 - [ ] Forced-update screen (`min_supported_version`)

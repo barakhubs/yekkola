@@ -10,6 +10,7 @@ import 'core/sync/sync_providers.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/auth_controller.dart';
+import 'features/learning/presentation/document_screen.dart';
 import 'features/media/presentation/downloads_controller.dart';
 import 'l10n/generated/app_localizations.dart';
 
@@ -33,7 +34,11 @@ class _YekkolaAppState extends ConsumerState<YekkolaApp> {
     // The API ended this device's session (removed, phone changed, banned): its downloads go now — the
     // "next sync" of PRD-07 BR-04. A plain sign-out keeps them for that account only.
     ref.listen(authControllerProvider, (_, next) {
-      if (next is SignedOut && next.sessionExpired) unawaited(ref.read(downloadStoreProvider).deleteAll());
+      if (next is SignedOut && next.sessionExpired) {
+        unawaited(ref.read(downloadStoreProvider).deleteAll());
+        // Stamped documents carry the student's name: they go too.
+        unawaited(ref.read(documentRepositoryProvider).deleteAll());
+      }
     });
     // Starts the sync engine (outbox → API) for the app's lifetime.
     ref.watch(syncSchedulerProvider);

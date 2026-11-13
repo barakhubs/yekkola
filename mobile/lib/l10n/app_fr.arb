@@ -498,5 +498,121 @@
   "downloadUntitled": "Leçon",
   "downloadSizeUnavailable": "La taille de cette leçon n’est pas encore connue. Réessaie quand tu es connecté.",
   "errorOfflineStorage": "Le téléchargement a échoué : le téléphone manque peut-être d’espace.",
-  "errorOfflineBusy": "Ce téléchargement est en cours. Réessaie dans un instant."
+  "errorOfflineBusy": "Ce téléchargement est en cours. Réessaie dans un instant.",
+  "documentPreparing": "Préparation de ton document… On y ajoute ton nom, cela peut prendre quelques secondes.",
+  "documentOffline": "Pas de connexion. Ouvre ce document une fois en ligne : il restera ensuite sur ton téléphone.",
+  "documentRefresh": "Télécharger à nouveau",
+  "documentMarkDone": "Marquer comme terminé",
+  "quizQuestions": "{count, plural, =1{1 question} other{{count} questions}}",
+  "@quizQuestions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizPassMark": "Pour réussir : {percent} %",
+  "@quizPassMark": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "quizTimeLimit": "Temps limité : {duration}",
+  "@quizTimeLimit": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "quizAttempts": "Tentatives : {used} sur {max}",
+  "@quizAttempts": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "quizBestScore": "Meilleur score : {score} %",
+  "@quizBestScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "quizPassed": "Quiz réussi !",
+  "quizNotPassed": "Pas encore : il faut {percent} % pour réussir.",
+  "@quizNotPassed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "quizTimedOut": "Le temps était écoulé : tes réponses n’ont pas pu compter.",
+  "quizStart": "Commencer le quiz",
+  "quizResume": "Reprendre le quiz",
+  "quizTryAgain": "Réessayer",
+  "quizNoAttemptsLeft": "Tu as utilisé toutes tes tentatives pour ce quiz.",
+  "quizNeedsNetwork": "Il faut une connexion pour commencer le quiz. Une fois commencé, tu peux le finir hors connexion.",
+  "quizOfflineNote": "Une fois commencé, tu peux répondre hors connexion : le résultat s’affichera après synchronisation.",
+  "quizRefused": "Ton dernier envoi n’a pas pu être corrigé (accès au cours terminé ou tentative expirée).",
+  "quizQuestionOf": "Question {index} sur {count}",
+  "@quizQuestionOf": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizSeveralAnswers": "Plusieurs réponses possibles.",
+  "quizPrevious": "Précédente",
+  "quizNext": "Suivante",
+  "quizHandIn": "Terminer",
+  "quizHandInTitle": "Terminer le quiz ?",
+  "quizHandInBody": "Tes réponses seront envoyées pour correction.",
+  "quizUnanswered": "{count, plural, =1{Il reste 1 question sans réponse.} other{Il reste {count} questions sans réponse.}}",
+  "@quizUnanswered": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizWaitingForResult": "Tes réponses sont enregistrées. Le résultat s’affichera dès qu’elles seront envoyées (connexion nécessaire).",
+  "quizScore": "{score} %",
+  "@quizScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "quizCorrect": "Bonne réponse",
+  "quizWrong": "Mauvaise réponse",
+  "quizRightAnswer": "bonne réponse",
+  "quizYourAnswer": "ta réponse",
+  "quizTimeLeft": "Temps restant : {duration}",
+  "@quizTimeLeft": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "documentStillProcessing": "Ton document est encore en préparation. Réessaie dans un instant.",
+  "quizTimedNote": "Quiz chronométré : tes réponses doivent être envoyées avant la fin du temps. Garde ta connexion jusqu’à la fin.",
+  "quizLeaveTitle": "Quitter le quiz ?",
+  "quizLeaveBody": "Le temps continue de tourner. Si tu ne reviens pas avant la fin, tes réponses ne compteront pas.",
+  "quizLeave": "Quitter",
+  "quizStay": "Continuer le quiz"
 }

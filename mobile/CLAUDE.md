@@ -17,7 +17,7 @@ Student app. Download-then-watch is the primary pattern — never design streami
 - `lib/core/`: config (flavor → API), `api/` (Dio, headers interceptor, `ApiException`, generated client), storage, device identity, i18n (locale, formatters), theme, router.
 - `lib/core/api/generated/` and `lib/l10n/generated/`: generated, never edited by hand.
 - `lib/core/cache/`: `ResponseCache` (offline copies of read-only answers, stale-while-revalidate).
-- `lib/features/<feature>/{data,domain,presentation}`: `auth` (sign-in, session), `account` (devices), `home` (tabs shell, account menu), `catalog` (explore, search, course and professor pages), `learning` (progress), `media` (offline license, segment downloader, key vault, loopback server, offline player, staging-only lab screen).
+- `lib/features/<feature>/{data,domain,presentation}`: `auth` (sign-in, session), `account` (devices), `home` (tabs shell, account menu), `catalog` (explore, search, course and professor pages), `learning` (my courses, course view, streaming, progress, documents, quizzes), `media` (offline license, segment downloader, key vault, loopback server, offline player, staging-only lab screen).
 - `lib/core/db/` (drift: outbox, lesson progress, sync state) and `lib/core/sync/` (outbox store, `SyncEngine`, `SyncScheduler`, providers).
 - `lib/core/platform/`: platform channels (`SecureScreen` → `FLAG_SECURE` in `MainActivity.kt`).
 

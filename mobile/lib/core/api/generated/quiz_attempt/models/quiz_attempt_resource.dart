@@ -42,7 +42,7 @@ class QuizAttemptResource {
       id: json["id"] as String,
       lessonUid: json["lesson_uid"] as String,
       startedAt: json["started_at"] as String,
-      endsAt: json["ends_at"] as Null,
+      endsAt: json["ends_at"] as String?,
       secondsLeft: json["seconds_left"] == null
           ? null
           : _readJsonInteger(json["seconds_left"]),
@@ -73,7 +73,7 @@ class QuizAttemptResource {
   final String startedAt;
 
   /// Count down to this; the server accepts answers for a short grace period after it (network slack).
-  final Null endsAt;
+  final String? endsAt;
 
   /// Count down from this rather than the device clock (it can be minutes off, PRD-06 §7).
   final int? secondsLeft;
