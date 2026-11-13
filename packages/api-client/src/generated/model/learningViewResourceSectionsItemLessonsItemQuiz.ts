@@ -23,6 +23,7 @@ export type LearningViewResourceSectionsItemLessonsItemQuiz = {
    */
   open_attempt_id: string | null;
   can_start: boolean;
-  best_score_pct: string;
+  /** @nullable */
+  best_score_pct: number | null;
   passed: boolean;
 } | null;

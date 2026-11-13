@@ -24,7 +24,8 @@ export const LessonsQuizAttemptsIndexResponse = zod.object({
       lesson_uid: zod.string(),
       started_at: zod.string(),
       ends_at: zod
-        .null()
+        .string()
+        .nullable()
         .describe(
           "Count down to this; the server accepts answers for a short grace period after it (network slack).",
         ),
@@ -105,7 +106,8 @@ export const LessonsQuizAttemptsStoreResponse = zod.object({
     lesson_uid: zod.string(),
     started_at: zod.string(),
     ends_at: zod
-      .null()
+      .string()
+      .nullable()
       .describe(
         "Count down to this; the server accepts answers for a short grace period after it (network slack).",
       ),
@@ -161,7 +163,8 @@ export const QuizAttemptsSubmitResponse = zod.object({
     lesson_uid: zod.string(),
     started_at: zod.string(),
     ends_at: zod
-      .null()
+      .string()
+      .nullable()
       .describe(
         "Count down to this; the server accepts answers for a short grace period after it (network slack).",
       ),

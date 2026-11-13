@@ -158,7 +158,7 @@ export const MeCoursesShowResponse = zod.object({
                   .nullable()
                   .describe("An open attempt can always be resumed, even on the last allowed try."),
                 can_start: zod.boolean(),
-                best_score_pct: zod.string(),
+                best_score_pct: zod.int().nullable(),
                 passed: zod.boolean(),
               })
               .nullable(),

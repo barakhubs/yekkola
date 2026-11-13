@@ -29,8 +29,12 @@ final class QuizAttemptResource extends JsonResource
             'id' => $this->id,
             'lesson_uid' => $this->lesson_uid,
             'started_at' => $this->started_at->toIso8601String(),
-            // Count down to this; the server accepts answers for a short grace period after it (network slack).
-            'ends_at' => $this->quiz->time_limit_seconds === null ? null : $this->started_at->copy()->addSeconds($this->quiz->time_limit_seconds)->toIso8601String(),
+            /**
+             * Count down to this; the server accepts answers for a short grace period after it (network slack).
+             *
+             * @var string|null
+             */
+            'ends_at' => $this->endsAt(),
             // Count down from this rather than the device clock (it can be minutes off, PRD-06 §7).
             'seconds_left' => $this->secondsLeft(),
             'submitted_at' => $this->submitted_at?->toIso8601String(),
@@ -44,6 +48,16 @@ final class QuizAttemptResource extends JsonResource
                 ->map(fn (QuizQuestion $q) => new QuizQuestionResource($q, $submitted, $submitted ? ($this->answers[$q->id] ?? []) : null))
                 ->values(),
         ];
+    }
+
+    /** When the time limit runs out (ISO-8601), or null when untimed. */
+    private function endsAt(): ?string
+    {
+        if ($this->quiz->time_limit_seconds === null) {
+            return null;
+        }
+
+        return $this->started_at->copy()->addSeconds($this->quiz->time_limit_seconds)->toIso8601String();
     }
 
     /** Until the time limit (the server adds a short grace after it); null when untimed or submitted. */

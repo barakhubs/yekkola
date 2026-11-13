@@ -22837,7 +22837,10 @@
                                                         "type": "boolean"
                                                     },
                                                     "best_score_pct": {
-                                                        "type": "string"
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
                                                     },
                                                     "passed": {
                                                         "type": "boolean"
@@ -24635,7 +24638,10 @@
                         "type": "string"
                     },
                     "ends_at": {
-                        "type": "null",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Count down to this; the server accepts answers for a short grace period after it (network slack)."
                     },
                     "seconds_left": {

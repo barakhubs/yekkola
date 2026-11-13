@@ -14,7 +14,7 @@ export interface QuizAttemptResource {
    * Count down to this; the server accepts answers for a short grace period after it (network slack).
    * @nullable
    */
-  ends_at: null;
+  ends_at: string | null;
   /**
    * Count down from this rather than the device clock (it can be minutes off, PRD-06 §7).
    * @nullable
