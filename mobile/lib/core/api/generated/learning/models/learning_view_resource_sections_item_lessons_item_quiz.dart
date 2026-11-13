@@ -28,6 +28,9 @@ class LearningViewResourceSectionsItemLessonsItemQuiz {
     if (!json.containsKey("open_attempt_id")) {
       throw ArgumentError("Missing required property: open_attempt_id");
     }
+    if (!json.containsKey("best_score_pct")) {
+      throw ArgumentError("Missing required property: best_score_pct");
+    }
     return LearningViewResourceSectionsItemLessonsItemQuiz(
       questionCount: _readJsonInteger(json["question_count"]),
       passMarkPct: _readJsonInteger(json["pass_mark_pct"]),
@@ -40,7 +43,9 @@ class LearningViewResourceSectionsItemLessonsItemQuiz {
       attemptsUsed: _readJsonInteger(json["attempts_used"]),
       openAttemptId: json["open_attempt_id"] as String?,
       canStart: json["can_start"] as bool,
-      bestScorePct: json["best_score_pct"] as String,
+      bestScorePct: json["best_score_pct"] == null
+          ? null
+          : _readJsonInteger(json["best_score_pct"]),
       passed: json["passed"] as bool,
       additionalProperties: {
         for (final entry in json.entries)
@@ -64,7 +69,7 @@ class LearningViewResourceSectionsItemLessonsItemQuiz {
 
   final bool canStart;
 
-  final String bestScorePct;
+  final int? bestScorePct;
 
   final bool passed;
 

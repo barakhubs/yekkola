@@ -30,6 +30,9 @@ abstract final class Formatters {
   /// `novembre 2026` / `November 2026`.
   static String monthYear(DateTime value, String locale) => DateFormat.yMMMM(locale).format(value.toLocal());
 
+  /// A countdown: `4:05`.
+  static String clock(int seconds) => '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+
   /// `4,5` / `4.5`.
   static String decimal(num value, String locale) => NumberFormat('#,##0.#', locale).format(value);
 

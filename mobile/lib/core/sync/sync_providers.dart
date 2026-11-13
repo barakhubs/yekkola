@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/domain/auth_state.dart';
 import '../../features/auth/presentation/auth_controller.dart';
 import '../../features/learning/data/progress_sync.dart';
+import '../../features/learning/data/quiz_repository.dart';
 import '../../features/media/data/entitlement_sync.dart';
 import '../../features/media/presentation/downloads_controller.dart';
 import '../db/app_database.dart';
@@ -26,10 +27,17 @@ final progressRepositoryProvider = Provider<ProgressRepository>(
   (ref) => ProgressRepository(ref.watch(appDatabaseProvider), ref.watch(outboxStoreProvider)),
 );
 
+final quizRepositoryProvider = Provider<QuizRepository>(
+  (ref) => QuizRepository(ref.watch(dioProvider), ref.watch(appDatabaseProvider), ref.watch(outboxStoreProvider)),
+);
+
 final syncEngineProvider = Provider<SyncEngine>(
   (ref) => SyncEngine(
     outbox: ref.watch(outboxStoreProvider),
-    handlers: [ProgressOutboxHandler(ref.watch(dioProvider))],
+    handlers: [
+      ProgressOutboxHandler(ref.watch(dioProvider)),
+      QuizSubmitHandler(ref.watch(dioProvider), ref.watch(appDatabaseProvider)),
+    ],
     currentUserId: () => switch (ref.read(authControllerProvider)) {
       SignedIn(:final user) => user.id,
       SignedOut() => null,

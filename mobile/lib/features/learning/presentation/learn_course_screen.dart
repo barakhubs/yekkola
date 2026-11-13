@@ -13,7 +13,9 @@ import '../../media/presentation/download_options.dart';
 import '../../media/presentation/downloads_controller.dart';
 import '../../../core/sync/sync_providers.dart';
 import 'learning_providers.dart';
+import 'document_screen.dart';
 import 'lesson_player_screen.dart';
+import 'quiz_screen.dart';
 
 /// A course as its student sees it (PRD-06 FR-02): progress, "continue", and the curriculum with each
 /// lesson's status. Video and audio lessons play online or, once downloaded, offline (PRD-07 FR-16);
@@ -98,10 +100,36 @@ Future<void> openLesson(
   String courseId,
   LearningViewResourceSectionsItemLessonsItem lesson,
 ) async {
-  if (!_playable(lesson.type2)) {
+  if (lesson.type2 == 'document') {
+    await context.push(
+      Routes.document(courseId, lesson.uid),
+      extra: DocumentArgs(title: lesson.title, completed: lesson.status == 'completed'),
+    );
+  } else if (lesson.type2 == 'quiz') {
+    await context.push(
+      Routes.quiz(courseId, lesson.uid),
+      extra: QuizArgs(title: lesson.title, facts: lesson.quiz),
+    );
+  } else if (!_playable(lesson.type2)) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).learnSoon)));
     return;
+  } else {
+    await _play(context, ref, courseId, lesson);
   }
+  // Back from the lesson: send the progress, then show the updated statuses and "continue".
+  if (!context.mounted) return;
+  final engine = ref.read(syncEngineProvider);
+  final refresh = ref.read(learningRefreshProvider.notifier);
+  await engine.flush();
+  refresh.pull();
+}
+
+Future<void> _play(
+  BuildContext context,
+  WidgetRef ref,
+  String courseId,
+  LearningViewResourceSectionsItemLessonsItem lesson,
+) async {
   final download = ref.read(downloadsControllerProvider)[lesson.uid]?.download;
   // A complete download still within its license plays offline; an expired one streams instead (online).
   if (download != null && download.isComplete && download.isUsableAt(DateTime.now().toUtc())) {
@@ -112,12 +140,6 @@ Future<void> openLesson(
       extra: LessonArgs(title: lesson.title, positionSeconds: lesson.positionSeconds),
     );
   }
-  // Back from the lesson: send the progress, then show the updated statuses and "continue".
-  if (!context.mounted) return;
-  final engine = ref.read(syncEngineProvider);
-  final refresh = ref.read(learningRefreshProvider.notifier);
-  await engine.flush();
-  refresh.pull();
 }
 
 class _LessonRow extends ConsumerWidget {

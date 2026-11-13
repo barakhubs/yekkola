@@ -151,6 +151,7 @@ final class LearningViewResource extends JsonResource
             'can_start' => (bool) ($attempts->contains(fn (QuizAttempt $a) => $a->isOpen())
                 || $quiz->max_attempts === null
                 || $attempts->count() < $quiz->max_attempts),
+            /** @var int|null */
             'best_score_pct' => $submitted->max('score_pct'),
             'passed' => $submitted->contains('passed', true),
         ];
